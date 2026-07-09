@@ -1,0 +1,26 @@
+# System
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archives & zips
+*.zip
+archive/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Node
+node_modules/
+
+# Temp
+*.tmp
+*.log

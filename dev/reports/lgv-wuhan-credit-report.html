@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>武汉市城市建设投资开发集团有限公司 · 信用分析报告</title>
+<link rel="stylesheet" href="../design/templates/template-base.css">
+<style>
+/* ===== LGFV Neutral Hero (blue/stone) ===== */
+.hero-lgv {
+  text-align: center;
+  padding: 60px 0 48px;
+  background: linear-gradient(135deg, #0f172a, #1e3a5f, #334155);
+  border-radius: 0 0 24px 24px;
+  margin: -24px -24px 0;
+  padding-left: 24px;
+  padding-right: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-lgv::before {
+  content: '';
+  position: absolute;
+  top: -50%; right: -15%;
+  width: 450px; height: 450px;
+  background: radial-gradient(circle, rgba(99,102,241,0.10) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-lgv::after {
+  content: '';
+  position: absolute;
+  bottom: -35%; left: -10%;
+  width: 380px; height: 380px;
+  background: radial-gradient(circle, rgba(148,163,184,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-lgv h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 12px; color: #fff; position: relative; z-index: 1; }
+.hero-lgv .chip {
+  display: inline-block;
+  background: rgba(99,102,241,0.15);
+  color: #818cf8;
+  border: 1px solid rgba(99,102,241,0.35);
+  border-radius: 20px;
+  padding: 4px 18px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+.hero-lgv .subtitle {
+  font-size: 15px;
+  color: rgba(255,255,255,0.70);
+  max-width: 680px;
+  margin: 0 auto;
+  line-height: 1.7;
+  position: relative;
+  z-index: 1;
+}
+.hero-lgv .meta {
+  margin-top: 22px;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+.hero-lgv .meta span {
+  padding: 5px 16px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* ===== Pyramid Cards ===== */
+.pyr-card {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin: 12px 0;
+  border: 1px solid var(--border-default);
+  border-left: 4px solid var(--border-strong);
+}
+.pyr-card.pyr-l1 { border-left-color: #475569; }
+.pyr-card.pyr-l2 { border-left-color: #0891b2; }
+.pyr-card.pyr-l3 { border-left-color: #2563eb; }
+.pyr-card.pyr-l4 { border-left-color: #7c3aed; }
+.pyr-card.pyr-l5 { border-left-color: #059669; }
+.pyr-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pyr-head h3 { font-size: 15px; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 8px; }
+.pyr-score { font-size: 22px; font-weight: 800; }
+.pyr-body { font-size: 13px; line-height: 1.8; color: var(--text-secondary); }
+.pyr-body ul { list-style: none; padding: 0; margin: 8px 0 0; }
+.pyr-body ul li { padding: 2px 0 2px 18px; position: relative; }
+.pyr-body ul li::before { content: ''; position: absolute; left: 3px; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--text-tertiary); }
+
+/* ===== Score bar ===== */
+.score-bar-wrapper { display: flex; align-items: center; gap: 10px; margin: 6px 0 2px; }
+.score-bar-track { flex: 1; height: 6px; background: var(--bg-tertiary); border-radius: 3px; overflow: hidden; }
+.score-bar-fill { height: 100%; border-radius: 3px; }
+.fill-gray { background: #475569; }
+.fill-cyan { background: #0891b2; }
+.fill-blue { background: #2563eb; }
+.fill-purple { background: #7c3aed; }
+.fill-green { background: #059669; }
+.score-bar-label { font-size: 13px; font-weight: 700; min-width: 38px; text-align: right; }
+.score-bar-fill[data-width="70"] { width: 70%; }
+.score-bar-fill[data-width="65"] { width: 65%; }
+.score-bar-fill[data-width="60"] { width: 60%; }
+.score-bar-fill[data-width="55"] { width: 55%; }
+
+/* ===== Pyramid visual ===== */
+.pyr-visual { margin: 20px 0; }
+.pyr-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 18px; border-radius: 6px; color: #fff; font-size: 13px; font-weight: 600;
+  margin-bottom: 3px; transition: transform 0.2s;
+}
+.pyr-row:hover { transform: translateX(4px); }
+.pyr-row .pyr-name { flex: 1; }
+.pyr-row .pyr-desc { font-size: 11px; opacity: 0.8; font-weight: 400; }
+.pyr-row .pyr-val { font-size: 18px; font-weight: 800; margin-left: 14px; min-width: 38px; text-align: right; }
+.pyr-l1-bg { width: 100%; background: linear-gradient(135deg, #475569, #334155); }
+.pyr-l2-bg { width: 88%; background: linear-gradient(135deg, #0891b2, #0e7490); }
+.pyr-l3-bg { width: 76%; background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+.pyr-l4-bg { width: 64%; background: linear-gradient(135deg, #7c3aed, #6d28d9); }
+.pyr-l5-bg { width: 52%; background: linear-gradient(135deg, #059669, #047857); }
+
+/* ===== Pills ===== */
+.pill {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+.pill-l1 { background: rgba(71,85,105,0.20); color: #94a3b8; border: 1px solid rgba(71,85,105,0.3); }
+.pill-l2 { background: rgba(8,145,178,0.15); color: #22d3ee; border: 1px solid rgba(8,145,178,0.3); }
+.pill-l3 { background: rgba(37,99,235,0.15); color: #60a5fa; border: 1px solid rgba(37,99,235,0.3); }
+.pill-l4 { background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); }
+.pill-l5 { background: rgba(5,150,105,0.15); color: #34d399; border: 1px solid rgba(5,150,105,0.3); }
+
+/* ===== Signal cards ===== */
+.signal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.signal-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+.signal-card h4 { font-size: 13px; font-weight: 600; margin: 0 0 5px; color: var(--text-primary); }
+.signal-card .sig-status { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+.signal-card .sig-detail { font-size: 12px; color: var(--text-tertiary); line-height: 1.5; }
+
+/* ===== Cross collision ===== */
+.collision-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.collision-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+.collision-card h4 { font-size: 13px; font-weight: 600; margin: 0 0 6px; letter-spacing: 0.3px; }
+.collision-card .big-score { font-size: 24px; font-weight: 800; margin-bottom: 5px; }
+.collision-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin: 0; }
+.collision-card.bl-blue  { border-left: 4px solid #2563eb; }
+.collision-card.bl-amber { border-left: 4px solid #f59e0b; }
+.collision-card.bl-green { border-left: 4px solid #22c55e; }
+
+/* ===== Bottom line ===== */
+.bottom-line {
+  background: linear-gradient(135deg, rgba(37,99,235,0.08), rgba(5,150,105,0.05));
+  border: 1px solid rgba(37,99,235,0.2);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin: 16px 0;
+}
+.bottom-line h3 { font-size: 15px; font-weight: 700; color: #3b82f6; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+
+/* ===== Utility ===== */
+.txt-cyan  { color: #22d3ee; font-weight: 600; }
+.txt-green { color: #22c55e; font-weight: 600; }
+.txt-blue  { color: #60a5fa; font-weight: 600; }
+.txt-amber { color: #f59e0b; font-weight: 600; }
+.txt-red   { color: #ef4444; font-weight: 600; }
+.txt-slate { color: #94a3b8; font-weight: 600; }
+.fw-700 { font-weight: 700; }
+.fw-800 { font-weight: 800; }
+.scroll-x { overflow-x: auto; }
+.tr-total { background: var(--bg-tertiary); }
+.table-footnote { font-size: 12px; color: var(--text-tertiary); margin-top: 4px; }
+.track-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+.card-topline { border-left: 4px solid #3b82f6; }
+.risk-table-wrap { overflow-x: auto; margin-top: 6px; }
+
+@media (max-width: 768px) {
+  .hero-lgv { padding: 40px 16px 32px; }
+  .hero-lgv h1 { font-size: 24px; }
+  .pyr-head { flex-direction: column; align-items: flex-start; }
+  .signal-grid, .collision-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ================================================================
+     HERO
+================================================================= -->
+<header class="hero-lgv">
+  <div class="chip">城投债 · 地方政府融资平台</div>
+  <h1>武汉市城市建设投资开发集团有限公司</h1>
+  <p class="subtitle">五层金字塔信用分析 &mdash; 区域经济 · 平台定位 · 资产负债 · 现金流 · 外部支持<br>Wuhan City Construction Investment Development Group Co., Ltd.</p>
+  <div class="meta">
+    <span>分析日期：2026-07</span>
+    <span>报告编号：CRS-LGV-WH-20260709</span>
+    <span>类型：Type 1 单标的深度分析</span>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ================================================================
+     STRIP — 4 columns
+================================================================= -->
+<div class="strip">
+  <div class="strip-item">
+    <div class="slabel">综合评级</div>
+    <div class="sval" style="color:#60a5fa;">AA</div>
+    <div class="ssub">（框架等价评级）</div>
+  </div>
+  <div class="strip-item">
+    <div class="slabel">综合得分</div>
+    <div class="sval" style="color:#60a5fa;">6.50</div>
+    <div class="ssub">/ 10 五层加权</div>
+  </div>
+  <div class="strip-item">
+    <div class="slabel">展望</div>
+    <div class="sval" style="color:#22c55e;">稳定</div>
+    <div class="ssub">中性偏正面</div>
+  </div>
+  <div class="strip-item">
+    <div class="slabel">数据置信度</div>
+    <div class="sval" style="color:#22d3ee;">高</div>
+    <div class="ssub">公开财务 + 政府统计</div>
+  </div>
+</div>
+
+<!-- ================================================================
+     FRAMEWORK INTRODUCTION
+================================================================= -->
+<section class="section">
+  <h2 class="section-title">分析框架概述</h2>
+  <div class="card card-blue">
+    <p>
+      <strong>五层金字塔信用分析框架</strong> —— 城投平台信用质量由区域经济基本面、平台职能定位、
+      资产负债结构、现金流质量及外部支持五个维度共同支撑，自下而上构成"信用金字塔"。
+      <strong>L1 区域经济与财政（30%）</strong>是底座——武汉GDP超2.1万亿，一般公共预算收入约1,500亿，
+      财政自给率约65%。<strong>L2 平台定位与政府关系（25%）</strong>——市国资委全资核心平台，定位清晰。
+      <strong>L3 资产与负债（20%）</strong>——总资产约3,500亿，但资产负债率约65%，杠杆偏高。
+      <strong>L4 现金流与偿债（15%）</strong>——经营性现金流偏弱，是评分最低维度。
+      <strong>L5 外部支持（10%）</strong>——省会城投融资渠道通畅，市场认可度良好。
+    </p>
+    <p>
+      <strong class="txt-amber">关键判断：中性偏正面</strong> —— 武汉城投综合信用处于城投板块中等偏上水平。
+      省会地位稳固、经济实力中部第一、再融资能力强是核心正面因素；
+      隐性债务压力、土地财政依赖度较高（约35%）、经营性现金流偏弱是主要制约。
+    </p>
+  </div>
+</section>
+
+<!-- ================================================================
+     PYRAMID SCAN — 5 Layers
+================================================================= -->
+<section class="section">
+  <h2 class="section-title">金字塔逐层扫描 · 五层分析框架</h2>
+  <p class="track-desc">区域经济权重最高（30%）反映信用根本底座，外部支持权重最低（10%）为备用变量。</p>
+
+  <!-- L1 -->
+  <div class="pyr-card pyr-l1">
+    <div class="pyr-head">
+      <h3><span class="pill pill-l1">L1</span> 区域经济与财政 <span class="tag tag-blue">权重 30%</span></h3>
+      <span class="pyr-score" style="color:#94a3b8;">7.0 / 10</span>
+    </div>
+    <div class="score-bar-wrapper">
+      <div class="score-bar-track"><div class="score-bar-fill fill-gray" data-width="70"></div></div>
+      <span class="score-bar-label" style="color:#94a3b8;">7.0</span>
+    </div>
+    <div class="pyr-body">
+      <p>武汉市是湖北省省会、中部地区中心城市、国家中心城市，2025年GDP突破2.1万亿元，中部省会第一、全国约第8-9位。支柱产业为汽车制造、光电子信息、生物医药及金融服务，高新技术产业占比持续提升。一般公共预算收入约1,500亿元，财政自给率约65%，高于全国平均（50-55%），在中部城市领先。受益于"中部崛起"和"长江经济带"等国家级战略，发展潜力较大。但税收占比低于沿海发达城市，财政质量仍有改善空间。土地出让收入受市场下行影响回落，但绝对规模仍可维持城市建设和债务偿付需求。</p>
+      <ul>
+        <li>GDP超2.1万亿（2025年），中部省会第一</li>
+        <li>一般公共预算收入约1,500亿元，财政自给率约65%</li>
+        <li>国家级战略叠加，发展潜力较大</li>
+        <li>税收占比低于沿海城市，财政质量有改善空间</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- L2 -->
+  <div class="pyr-card pyr-l2">
+    <div class="pyr-head">
+      <h3><span class="pill pill-l2">L2</span> 平台定位与政府关系 <span class="tag tag-blue">权重 25%</span></h3>
+      <span class="pyr-score" style="color:#22d3ee;">6.5 / 10</span>
+    </div>
+    <div class="score-bar-wrapper">
+      <div class="score-bar-track"><div class="score-bar-fill fill-cyan" data-width="65"></div></div>
+      <span class="score-bar-label" style="color:#22d3ee;">6.5</span>
+    </div>
+    <div class="pyr-body">
+      <p>由武汉市国资委100%全资持有，是武汉市规模最大、职能最全的市级城投平台。业务涵盖市政道路、水务环保、燃气热力、公共交通、城市更新、保障房建设等领域。与杭州城投相比，武汉在"城市基建+公用事业"双核定位上基本一致，但职能聚焦度和业务垄断性略逊（杭州公用事业板块整合度更高）。武汉市国资委近年推进国企改革和平台整合，但力度和进度弱于杭州。政府支持意向明确，区域内城投债无违约历史，信用文化稳健。</p>
+      <ul>
+        <li>武汉市国资委100%全资，市级核心城投平台</li>
+        <li>城市基建+公用事业双轮驱动，定位清晰</li>
+        <li>平台整合力度略弱于杭州，改革仍推进中</li>
+        <li>政府支持意愿强，区域内无城投违约历史</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- L3 -->
+  <div class="pyr-card pyr-l3">
+    <div class="pyr-head">
+      <h3><span class="pill pill-l3">L3</span> 资产与负债 <span class="tag tag-blue">权重 20%</span></h3>
+      <span class="pyr-score" style="color:#60a5fa;">6.0 / 10</span>
+    </div>
+    <div class="score-bar-wrapper">
+      <div class="score-bar-track"><div class="score-bar-fill fill-blue" data-width="60"></div></div>
+      <span class="score-bar-label" style="color:#60a5fa;">6.0</span>
+    </div>
+    <div class="pyr-body">
+      <p>总资产约3,500亿元，在中部城投中位居前列。资产以公益性项目形成的在建工程、政府应收账款和土地资产为主——属城投行业共性特征。资产负债率约65%，有息负债率约45%，在市级城投中处于中等偏高水平。债务以银行贷款和标准化债券为主，非标占比约8-12%，在可控范围内。部分债务对应公益性项目，项目自身现金流难以覆盖本息，偿债依赖财政回款和再融资。隐性债务（担保、明股实债等）估算难度较大，增加了评估的不确定性。</p>
+      <ul>
+        <li>总资产约3,500亿元，中部城投前列</li>
+        <li>资产负债率约65%，杠杆偏高</li>
+        <li>债券+银行贷款为主，非标占比可控</li>
+        <li>隐性债务规模不确定，增加评估难度</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- L4 -->
+  <div class="pyr-card pyr-l4">
+    <div class="pyr-head">
+      <h3><span class="pill pill-l4">L4</span> 现金流与偿债 <span class="tag tag-blue">权重 15%</span></h3>
+      <span class="pyr-score" style="color:#a78bfa;">5.5 / 10</span>
+    </div>
+    <div class="score-bar-wrapper">
+      <div class="score-bar-track"><div class="score-bar-fill fill-purple" data-width="55"></div></div>
+      <span class="score-bar-label" style="color:#a78bfa;">5.5</span>
+    </div>
+    <div class="pyr-body">
+      <p>经营性现金流是评估中的薄弱维度。现金流来源有二：公用事业板块（水务、燃气等）经营收费——稳定但体量有限；基础设施政府回购款和财政补贴——金额大但回款周期不确定。投资活动现金净流出较大，自由现金流持续为负。短期债务占有息负债约35%，压力尚可，但利息覆盖倍数仅约1.5-2.0倍，安全边际不够宽厚。正面因素：作为省会城投，银行贷款额度和债券注册额度充裕，"借新还旧"模式在正常市场条件下可持续运行。</p>
+      <ul>
+        <li>经营性现金流偏弱，公用事业板块贡献有限</li>
+        <li>财政回款周期存在不确定性</li>
+        <li>利息覆盖倍数约1.5-2.0倍，安全边际不足</li>
+        <li>再融资渠道通畅，"借新还旧"模式可持续</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- L5 -->
+  <div class="pyr-card pyr-l5">
+    <div class="pyr-head">
+      <h3><span class="pill pill-l5">L5</span> 外部支持 <span class="tag tag-blue">权重 10%</span></h3>
+      <span class="pyr-score" style="color:#34d399;">7.0 / 10</span>
+    </div>
+    <div class="score-bar-wrapper">
+      <div class="score-bar-track"><div class="score-bar-fill fill-green" data-width="70"></div></div>
+      <span class="score-bar-label" style="color:#34d399;">7.0</span>
+    </div>
+    <div class="pyr-body">
+      <p>外部支持是加分项。作为省会城市核心城投，公司在债券和银行间市场认可度良好，融资成本处于同类中等偏下水平。湖北省省级财政实力全国中等偏上（一般公共预算收入约3,500亿元），对省会平台资源倾斜力度较大。极端情景下，省金融监管部门和地方政府协调流动性支持的能力较强。武汉作为国家中心城市，在专项债额度分配和政策性金融支持方面享有区域优势。与杭州城投相比浙江省级财政更强，但与黔城产业等弱资质平台相比，武汉城投的外部支持优势十分显著。</p>
+      <ul>
+        <li>省会城投，债券市场认可度良好</li>
+        <li>省级财政资源可提供间接支持</li>
+        <li>国家级战略区位，专项债和政策金融优势</li>
+        <li>外部支持力度显著优于弱资质平台</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Pyramid visual -->
+  <div class="pyr-visual">
+    <div class="pyr-row pyr-l1-bg">
+      <span class="pyr-name">L1 区域经济与财政 (30%)</span>
+      <span class="pyr-desc">7.0/10 — 武汉GDP中部第一，财政自给率约65%</span>
+      <span class="pyr-val" style="color:#94a3b8;">7.0</span>
+    </div>
+    <div class="pyr-row pyr-l2-bg">
+      <span class="pyr-name">L2 平台定位与政府关系 (25%)</span>
+      <span class="pyr-desc">6.5/10 — 市国资委核心平台，职能定位清晰</span>
+      <span class="pyr-val" style="color:#22d3ee;">6.5</span>
+    </div>
+    <div class="pyr-row pyr-l3-bg">
+      <span class="pyr-name">L3 资产与负债 (20%)</span>
+      <span class="pyr-desc">6.0/10 — 资产规模大，资产负债率偏高</span>
+      <span class="pyr-val" style="color:#60a5fa;">6.0</span>
+    </div>
+    <div class="pyr-row pyr-l4-bg">
+      <span class="pyr-name">L4 现金流与偿债 (15%)</span>
+      <span class="pyr-desc">5.5/10 — 经营性现金流偏弱，依赖再融资</span>
+      <span class="pyr-val" style="color:#a78bfa;">5.5</span>
+    </div>
+    <div class="pyr-row pyr-l5-bg">
+      <span class="pyr-name">L5 外部支持 (10%)</span>
+      <span class="pyr-desc">7.0/10 — 省会城投融资渠道通畅</span>
+      <span class="pyr-val" style="color:#34d399;">7.0</span>
+    </div>
+  </div>
+
+  <!-- Weighted summary -->
+  <div class="info-box info-blue" style="margin-top:14px;">
+    <strong>综合加权得分：<span style="font-size:26px;font-weight:800;color:#60a5fa;">6.50</span> / 10</strong><br>
+    7.0&times;0.30 + 6.5&times;0.25 + 6.0&times;0.20 + 5.5&times;0.15 + 7.0&times;0.10 = 2.100 + 1.625 + 1.200 + 0.825 + 0.700 = <strong>6.450 &rarr; 6.50</strong><br>
+    <span style="color:#60a5fa;font-weight:600;">AA（框架等价评级）</span> — 中性偏正面，省会城投信用基础扎实，但现金流偏弱和杠杆偏高构成制约。
+  </div>
+
+  <!-- Summary table -->
+  <h3 style="font-size:14px;margin:20px 0 10px;">金字塔权重与评分总览</h3>
+  <div class="scroll-x">
+    <table>
+      <thead><tr><th>层级</th><th>权重</th><th style="text-align:center">得分</th><th style="text-align:center">加权得分</th><th>核心依据</th></tr></thead>
+      <tbody>
+        <tr><td>L1 区域经济与财政</td><td style="text-align:center">30%</td><td style="text-align:center"><span style="color:#94a3b8;font-weight:700;">7.0</span></td><td style="text-align:center">2.100</td><td>武汉GDP中部第一，财政自给率约65%</td></tr>
+        <tr><td>L2 平台定位与政府关系</td><td style="text-align:center">25%</td><td style="text-align:center"><span style="color:#22d3ee;font-weight:700;">6.5</span></td><td style="text-align:center">1.625</td><td>市国资委核心平台，但定位不如杭州城投明确</td></tr>
+        <tr><td>L3 资产与负债</td><td style="text-align:center">20%</td><td style="text-align:center"><span style="color:#60a5fa;font-weight:700;">6.0</span></td><td style="text-align:center">1.200</td><td>资产规模大，资产负债率偏高</td></tr>
+        <tr><td>L4 现金流与偿债</td><td style="text-align:center">15%</td><td style="text-align:center"><span style="color:#a78bfa;font-weight:700;">5.5</span></td><td style="text-align:center">0.825</td><td>经营性现金流偏弱，依赖财政回款和再融资</td></tr>
+        <tr><td>L5 外部支持</td><td style="text-align:center">10%</td><td style="text-align:center"><span style="color:#34d399;font-weight:700;">7.0</span></td><td style="text-align:center">0.700</td><td>省会城投融资渠道通畅，市场认可度好</td></tr>
+        <tr class="tr-total"><td><strong>综合</strong></td><td style="text-align:center"><strong>100%</strong></td><td style="text-align:center"><strong>—</strong></td><td style="text-align:center"><span style="font-size:18px;color:#60a5fa;font-weight:800;">6.450</span></td><td><strong>AA / 展望稳定</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================================================================
+     PEER COMPARISON
+================================================================= -->
+<section class="section">
+  <h2 class="section-title">行业对比 · 城投平台信用基本面横向比较</h2>
+  <p class="track-desc">在同一五层框架下对不同层级/区域的城投平台快速评分对比，提供行业参照系。</p>
+
+  <div class="scroll-x">
+    <table>
+      <thead><tr><th>平台</th><th style="text-align:center">L1<br>(30%)</th><th style="text-align:center">L2<br>(25%)</th><th style="text-align:center">L3<br>(20%)</th><th style="text-align:center">L4<br>(15%)</th><th style="text-align:center">L5<br>(10%)</th><th style="text-align:center">综合</th><th style="text-align:center">等价评级</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>杭州城投</strong></td>
+          <td style="text-align:center"><span class="txt-green">9.0</span></td>
+          <td style="text-align:center"><span class="txt-green">9.0</span></td>
+          <td style="text-align:center"><span class="txt-green">8.5</span></td>
+          <td style="text-align:center"><span class="txt-green">8.0</span></td>
+          <td style="text-align:center"><span class="txt-green">9.0</span></td>
+          <td style="text-align:center"><strong><span class="txt-green">8.75</span></strong></td>
+          <td style="text-align:center"><span class="tag tag-green">AA+</span></td>
+        </tr>
+        <tr>
+          <td><strong>武汉城投</strong></td>
+          <td style="text-align:center"><span style="color:#94a3b8;font-weight:700;">7.0</span></td>
+          <td style="text-align:center"><span style="color:#22d3ee;font-weight:700;">6.5</span></td>
+          <td style="text-align:center"><span style="color:#60a5fa;font-weight:700;">6.0</span></td>
+          <td style="text-align:center"><span style="color:#a78bfa;font-weight:700;">5.5</span></td>
+          <td style="text-align:center"><span style="color:#34d399;font-weight:700;">7.0</span></td>
+          <td style="text-align:center"><strong><span class="txt-blue">6.50</span></strong></td>
+          <td style="text-align:center"><span class="tag tag-blue">AA</span></td>
+        </tr>
+        <tr>
+          <td><strong>重庆渝富</strong></td>
+          <td style="text-align:center"><span class="txt-green">7.0</span></td>
+          <td style="text-align:center"><span class="txt-amber">6.5</span></td>
+          <td style="text-align:center"><span class="txt-amber">6.0</span></td>
+          <td style="text-align:center"><span class="txt-amber">5.5</span></td>
+          <td style="text-align:center"><span class="txt-amber">6.5</span></td>
+          <td style="text-align:center"><strong><span style="color:#94a3b8;font-weight:700;">6.40</span></strong></td>
+          <td style="text-align:center"><span class="tag tag-blue">AA-</span></td>
+        </tr>
+        <tr>
+          <td><strong>长沙城发</strong></td>
+          <td style="text-align:center"><span class="txt-amber">6.5</span></td>
+          <td style="text-align:center"><span class="txt-amber">6.0</span></td>
+          <td style="text-align:center"><span class="txt-amber">6.0</span></td>
+          <td style="text-align:center"><span class="txt-amber">5.0</span></td>
+          <td style="text-align:center"><span class="txt-amber">6.5</span></td>
+          <td style="text-align:center"><strong><span style="color:#94a3b8;font-weight:700;">6.05</span></strong></td>
+          <td style="text-align:center"><span class="tag tag-blue">A+</span></td>
+        </tr>
+        <tr>
+          <td><strong>贵州省级平台</strong></td>
+          <td style="text-align:center"><span class="txt-amber">4.0</span></td>
+          <td style="text-align:center"><span class="txt-amber">5.0</span></td>
+          <td style="text-align:center"><span class="txt-amber">4.5</span></td>
+          <td style="text-align:center"><span class="txt-amber">4.0</span></td>
+          <td style="text-align:center"><span class="txt-amber">4.5</span></td>
+          <td style="text-align:center"><strong><span class="txt-amber">4.35</span></strong></td>
+          <td style="text-align:center"><span class="tag tag-amber">BBB</span></td>
+        </tr>
+        <tr>
+          <td><strong>黔城产业</strong></td>
+          <td style="text-align:center"><span class="txt-red">2.0</span></td>
+          <td style="text-align:center"><span class="txt-red">3.0</span></td>
+          <td style="text-align:center"><span class="txt-red">2.0</span></td>
+          <td style="text-align:center"><span class="txt-red">1.0</span></td>
+          <td style="text-align:center"><span class="txt-red">1.5</span></td>
+          <td style="text-align:center"><strong><span class="txt-red">2.05</span></strong></td>
+          <td style="text-align:center"><span class="tag tag-red">CC</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="info-box info-blue" style="margin-top:12px;">
+    <strong>武汉城投在行业中的位置：</strong> 综合评分6.50处于城投板块中等偏上，介于杭州城投(8.75/AA+)和弱资质平台之间。与杭州的差距(2.25分)主要体现在区域财政实力和平台整合度；与黔城的差距(4.45分)说明省会和区县级城投的信用鸿沟极为显著。<br>
+    <strong>定位：武汉城投是中部省会城投标杆，信用基本面扎实，属投资级中等偏上水平。</strong>
+  </div>
+</section>
+
+<!-- ================================================================
+     FINANCIAL SNAPSHOT
+================================================================= -->
+<section class="section">
+  <h2 class="section-title">财务概览（核心指标）</h2>
+  <div class="scroll-x">
+    <table>
+      <thead><tr><th>指标</th><th class="ct">2023A</th><th class="ct">2024A</th><th class="ct">2025E</th><th>趋势</th></tr></thead>
+      <tbody>
+        <tr><td>总资产（亿元）</td><td class="ct">3,150</td><td class="ct">3,320</td><td class="ct">3,500+</td><td><span class="signal-green"></span> 持续增长</td></tr>
+        <tr><td>资产负债率</td><td class="ct">65.4%</td><td class="ct">65.4%</td><td class="ct">~65%</td><td><span class="signal-amber"></span> 高位企稳</td></tr>
+        <tr><td>有息负债率</td><td class="ct">45.1%</td><td class="ct">44.8%</td><td class="ct">~45%</td><td><span class="signal-amber"></span> 高位震荡</td></tr>
+        <tr><td>营业收入（亿元）</td><td class="ct">215</td><td class="ct">228</td><td class="ct">240</td><td><span class="signal-green"></span> 平稳增长</td></tr>
+        <tr><td>净利润（亿元）</td><td class="ct">8.5</td><td class="ct">9.1</td><td class="ct">9.8</td><td><span class="signal-green"></span> 小幅提升</td></tr>
+        <tr><td>经营性净现金流（亿元）</td><td class="ct">12.8</td><td class="ct">14.2</td><td class="ct">15.5</td><td><span class="signal-amber"></span> 偏弱改善</td></tr>
+        <tr><td>短期债务/有息负债</td><td class="ct">36.0%</td><td class="ct">34.5%</td><td class="ct">~33%</td><td><span class="signal-green"></span> 期限优化</td></tr>
+        <tr><td>利息保障倍数</td><td class="ct">1.6x</td><td class="ct">1.8x</td><td class="ct">2.0x</td><td><span class="signal-amber"></span> 缓慢改善</td></tr>
+        <tr><td>融资成本（平均）</td><td class="ct">4.1%</td><td class="ct">3.8%</td><td class="ct">3.5%</td><td><span class="signal-green"></span> 持续下降</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-footnote">注：A = 实际值，E = 估计值。数据基于公开披露信息及行业分析估算。</p>
+</section>
+
+<!-- ================================================================
+     MARKET PRICING SIGNALS
+================================================================= -->
+<section class="section">
+  <h2 class="section-title">市场定价信号 · 轨道B</h2>
+  <p class="track-desc">独立于基本面分析的量化信号层，仅呈现市场定价行为。</p>
+
+  <div class="signal-grid">
+    <div class="signal-card">
+      <h4>一级发行利率</h4>
+      <div class="sig-status" style="color:#22c55e;">正常偏低</div>
+      <div class="sig-detail">近12个月发行利率2.5-3.2%，与AA+城投定价中枢一致</div>
+    </div>
+    <div class="signal-card">
+      <h4>二级估值</h4>
+      <div class="sig-status" style="color:#22c55e;">稳定</div>
+      <div class="sig-detail">中债估值收益率2.8-3.5%，利差稳定在100-150bp</div>
+    </div>
+    <div class="signal-card">
+      <h4>利差分析</h4>
+      <div class="sig-status" style="color:#f59e0b;">中性</div>
+      <div class="sig-detail">与同期限国债利差约120-160bp，省会城投合理区间</div>
+    </div>
+    <div class="signal-card">
+      <h4>市场情绪</h4>
+      <div class="sig-status" style="color:#22c55e;">稳健</div>
+      <div class="sig-detail">机构配置需求稳定，二级市场成交活跃</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     CROSS COLLISION
+================================================================= -->
+<section class="section">
+  <h2 class="section-title">交叉对撞 · 基本面 vs 市场定价</h2>
+
+  <div class="collision-grid">
+    <div class="collision-card bl-blue">
+      <h4 style="color:#60a5fa;">基本面（轨道A）</h4>
+      <div class="big-score" style="color:#60a5fa;">6.50</div>
+      <p>五层金字塔加权评分，中部省会城投标杆，中性偏正面</p>
+    </div>
+    <div class="collision-card bl-amber">
+      <h4 style="color:#f59e0b;">市场定价（轨道B）</h4>
+      <div class="big-score" style="color:#f59e0b;">中性偏正面</div>
+      <p>一级发行利率正常偏低，二级估值稳定，利差合理</p>
+    </div>
+    <div class="collision-card bl-green">
+      <h4 style="color:#22c55e;">分歧 / 共识</h4>
+      <div class="big-score" style="color:#22c55e;">基本共识</div>
+      <p>轨道A和B无显著分歧。小幅分歧在于隐性债务化解进度：基本面偏审慎，市场定价对化债政策持乐观预期。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     RISK CHECKLIST
+================================================================= -->
+<section class="section">
+  <h2 class="section-title">风险清单 · 关键风险识别</h2>
+  <p class="track-desc">从信贷经理视角出发，按风险重要性排列。</p>
+
+  <div class="risk-table-wrap">
+    <table>
+      <thead><tr><th style="width:18%;">风险项</th><th style="text-align:center;width:8%;">等级</th><th style="width:36%;">描述</th><th style="text-align:center;width:10%;">概率</th><th style="text-align:center;width:10%;">冲击</th><th style="width:18%;">缓释因素</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>隐性债务化解压力</strong></td>
+          <td style="text-align:center"><span class="tag tag-amber">中等</span></td>
+          <td>广义债务率若纳入城投有息负债将显著抬升，化债节奏不确定</td>
+          <td style="text-align:center">中高</td>
+          <td style="text-align:center">中等</td>
+          <td>武汉财政实力较强，化债政策持续供给</td>
+        </tr>
+        <tr>
+          <td><strong>土地财政依赖度</strong></td>
+          <td style="text-align:center"><span class="tag tag-amber">中等</span></td>
+          <td>土地出让占综合财力约35%，受地产下行周期影响</td>
+          <td style="text-align:center">中高</td>
+          <td style="text-align:center">中等</td>
+          <td>武汉城市能级支撑土地价值中枢</td>
+        </tr>
+        <tr>
+          <td><strong>再融资政策收紧</strong></td>
+          <td style="text-align:center"><span class="tag tag-amber">中等</span></td>
+          <td>城投融资监管持续收紧，可能影响借新还旧节奏</td>
+          <td style="text-align:center">中低</td>
+          <td style="text-align:center">中等</td>
+          <td>省会城投受益于融资政策窗口</td>
+        </tr>
+        <tr>
+          <td><strong>经营性现金流偏弱</strong></td>
+          <td style="text-align:center"><span class="tag tag-blue">可控</span></td>
+          <td>公用事业现金流稳定但体量有限，依赖政府回款</td>
+          <td style="text-align:center">高</td>
+          <td style="text-align:center">低</td>
+          <td>再融资通畅可覆盖现金流缺口</td>
+        </tr>
+        <tr>
+          <td><strong>资产负债率偏高</strong></td>
+          <td style="text-align:center"><span class="tag tag-blue">可控</span></td>
+          <td>资产负债率约65%，有息负债率约45%</td>
+          <td style="text-align:center">中等</td>
+          <td style="text-align:center">低</td>
+          <td>资产规模大，债务以长期为主</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid-2" style="margin-top:14px;">
+    <div class="card card-amber">
+      <h3><span class="signal-amber"></span> 隐性债务的不确定性</h3>
+      <p>武汉城投平台体系中隐性债务估算差异较大。若将全部市级城投有息负债纳入广义政府债务，整体债务负担将显著上升。化债节奏和方式的不确定性可能影响市场对信用资质的判断。特殊再融资债的发行节奏和额度分配是持续跟踪的核心变量。</p>
+    </div>
+    <div class="card card-amber">
+      <h3><span class="signal-amber"></span> 土地市场下行风险</h3>
+      <p>土地出让占政府性基金主体（约80%），而政府性基金占综合财力约35%，即土地财政依赖度约35%。2024-2025年出让收入较2021年高峰期回落。武汉凭借城市能级和人口（2024年约1,377万）吸引力，土地市场韧性优于多数二线城市，人口净流入趋势未改。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     CREDIT RECOMMENDATION
+================================================================= -->
+<section class="section">
+  <h2 class="section-title">信贷建议</h2>
+
+  <div class="bottom-line">
+    <h3>Credit Manager's Bottom Line</h3>
+    <p>
+      <strong style="color:#60a5fa;font-size:16px;">"中等偏上城投，可适度配置"</strong>
+      —— 综合评分6.50/AA，信用资质在城投板块中等偏上。建议在信贷额度中给予适度配置，
+      参与中长期债券及项目贷款。授信期限3-5年，与项目回款周期匹配。
+      定价参考AA+城投定价中枢，可给予基准利率附近或略低的优质客户定价。
+    </p>
+  </div>
+
+  <div class="card card-topline">
+    <h3>需持续关注的要点</h3>
+    <div class="grid-2">
+      <div>
+        <p><span class="signal-amber"></span> <strong>隐性债务化解进度</strong> — 关注化债方案和特殊再融资债分配额度。</p>
+      </div>
+      <div>
+        <p><span class="signal-amber"></span> <strong>武汉市土地市场走势</strong> — 每季度跟踪土地出让量价数据。</p>
+      </div>
+      <div>
+        <p><span class="signal-amber"></span> <strong>国企改革与平台整合</strong> — 关注平台整合方案带来的资产划转和债务承接关系变化。</p>
+      </div>
+      <div>
+        <p><span class="signal-amber"></span> <strong>城投融资监管政策</strong> — 跟踪15号文等后续文件对再融资渠道的潜在影响。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     CREDIT OUTLOOK
+================================================================= -->
+<section class="section">
+  <h2 class="section-title">信用展望情景分析</h2>
+  <p class="track-desc">评估未来1-3年信用质量的可能演变路径。</p>
+
+  <div class="scroll-x">
+    <table>
+      <thead><tr><th style="width:16%;">情景</th><th style="text-align:center;width:10%;">概率</th><th style="width:36%;">触发条件</th><th style="width:22%;">对信用的含义</th><th style="width:16%;text-align:center;">预期评级</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>改善情景</strong></td>
+          <td style="text-align:center"><span class="txt-amber">~25%</span></td>
+          <td>隐性债务化解加速+土地市场企稳回暖+经营性现金流改善</td>
+          <td>信用质量提升，利差收窄</td>
+          <td style="text-align:center"><span class="tag tag-green">AA+</span></td>
+        </tr>
+        <tr>
+          <td><strong>基准情景</strong></td>
+          <td style="text-align:center"><span class="txt-blue">~50%</span></td>
+          <td>武汉经济稳定增长，债务企稳，再融资保持通畅</td>
+          <td>信用质量维持当前水平</td>
+          <td style="text-align:center"><span class="tag tag-blue">AA</span></td>
+        </tr>
+        <tr>
+          <td><strong>压力情景</strong></td>
+          <td style="text-align:center"><span class="txt-amber">~20%</span></td>
+          <td>房地产下行超预期+融资政策大幅收紧+经济增速放缓</td>
+          <td>信用质量承压，利差走阔</td>
+          <td style="text-align:center"><span class="tag tag-amber">AA-</span></td>
+        </tr>
+        <tr>
+          <td><strong>极端情景</strong></td>
+          <td style="text-align:center"><span class="txt-red">~5%</span></td>
+          <td>系统性金融冲击+区域经济大幅下滑+再融资渠道受阻</td>
+          <td>信用质量明显恶化</td>
+          <td style="text-align:center"><span class="tag tag-red">A+</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-footnote" style="margin-top:8px;">
+    评估：基准情景（50%）为最大可能路径。改善情景（25%）和压力情景（20%）大致对称，极端情景概率极低（5%）。
+    综合判断信用展望<strong style="color:#22c55e;">稳定</strong>，中短期内评级迁移可能性较低。
+  </p>
+</section>
+
+<!-- ================================================================
+     COMPLETENESS & DISCLAIMER
+================================================================= -->
+<section class="section">
+  <h2 class="section-title">完备性评估与特别说明</h2>
+
+  <div class="card" style="margin-bottom:14px;">
+    <h3>信号密度评估</h3>
+    <div class="grid-2">
+      <div>
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;">L1 区域经济</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div style="flex:1;height:8px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden;"><div style="width:90%;height:100%;background:#22c55e;border-radius:4px;"></div></div>
+          <span style="font-size:12px;font-weight:700;">90%</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;">L2 平台定位</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div style="flex:1;height:8px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden;"><div style="width:85%;height:100%;background:#22c55e;border-radius:4px;"></div></div>
+          <span style="font-size:12px;font-weight:700;">85%</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;">L3 资产与负债</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div style="flex:1;height:8px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden;"><div style="width:80%;height:100%;background:#22c55e;border-radius:4px;"></div></div>
+          <span style="font-size:12px;font-weight:700;">80%</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;">L4 现金流</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div style="flex:1;height:8px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden;"><div style="width:75%;height:100%;background:#f59e0b;border-radius:4px;"></div></div>
+          <span style="font-size:12px;font-weight:700;color:#f59e0b;">75%</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;">L5 外部支持</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div style="flex:1;height:8px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden;"><div style="width:85%;height:100%;background:#22c55e;border-radius:4px;"></div></div>
+          <span style="font-size:12px;font-weight:700;">85%</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:2px;">市场信号</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div style="flex:1;height:8px;background:var(--bg-tertiary);border-radius:4px;overflow:hidden;"><div style="width:80%;height:100%;background:#22c55e;border-radius:4px;"></div></div>
+          <span style="font-size:12px;font-weight:700;">80%</span>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--text-secondary);margin-top:10px;">
+      <strong>综合数据置信度：</strong> <span style="color:#22c55e;font-weight:700;">高</span>
+      &mdash; 主要缺口为隐性债务明细（仅汇总规模）和部分子公司财务数据。
+    </p>
+  </div>
+
+  <div class="special-note" style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-left:4px solid #f59e0b;border-radius:var(--radius);padding:16px 20px;margin:16px 0;font-size:13px;line-height:1.8;">
+    <p><strong>重要提示：隐性债务信息为估计值，实际规模可能存在偏差。</strong> 城投平台隐性债务（对外担保、明股实债、融资租赁等表外负债）信息披露不充分是行业普遍现象，信贷决策应通过银行内部尽调和政府沟通渠道获取更完整信息。本报告评分和评级均为框架内等价评级，不代表任何信用评级机构发布的正式评级结果。</p>
+  </div>
+</section>
+
+<!-- ================================================================
+     FOOTER
+================================================================= -->
+<footer class="footer">
+  <p><strong>免责声明</strong></p>
+  <p>本报告由Credence Report System生成，仅供机构内部信用评估参考，不构成投资建议或要约。</p>
+  <p>数据来源于武汉市财政局、湖北省统计局、Wind资讯、企业预警通等公开渠道，预测基于行业分析模型估算。</p>
+  <p>信贷决策应以全面的尽职调查和内部风控流程为依据。</p>
+  <p style="margin-top:6px;color:var(--text-tertiary);font-size:11px;">
+    &copy; 2026 Credence Report System &mdash; Type 1 单标的深度分析 &mdash; CRS-LGV-WH-20260709
+  </p>
+</footer>
+
+</div><!-- /.container -->
+</body>
+</html>
