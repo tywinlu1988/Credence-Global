@@ -1,6 +1,6 @@
 # 固定收益信用分析引擎 — 架构总览
 
-**版本**: v0.7.0-release | **日期**: 2026-07-10
+**版本**: v0.7.0-alpha | **日期**: 2026-07-10
 
 ---
 
@@ -220,23 +220,23 @@ Indicator Score = f(Raw Value, Threshold, Direction)
 
 | 版本体系 | 适用范围 | 示例 | 说明 |
 |---|---|---|---|
-| **引擎版本** | 核心方法论文档 | v0.7.0-release | 反映引擎方法论的整体迭代阶段，所有核心方法论文档统一标注此版本 |
-| **审查报告版本** | 审计/自评/终审文档 | v1.0, v1.1 | 独立的审查报告版本体系，在文件头标注"对应引擎版本: v0.7.0-release" |
+| **引擎版本** | 核心方法论文档 | v0.7.0-alpha | 反映引擎方法论的整体迭代阶段，所有核心方法论文档统一标注此版本 |
+| **审查报告版本** | 审计/自评/终审文档 | v1.0, v1.1 | 独立的审查报告版本体系，在文件头标注"对应引擎版本: v0.7.0-alpha" |
 
 ### 8.2 核心方法论文档版本对应关系
 
 | 文档 | 当前版本 | 说明 |
 |---|---|---|
-| engine-overview.md | v0.7.0-release | 引擎架构总览 |
-| dual-track-methodology.md | v0.7.0-release | 双轨分析方法论 |
-| industry-framework.md | v0.7.0-release | 行业分类与分析框架 |
-| qualitative-analysis.md | v0.7.0-release | 定性分析方法论 |
-| quantitative-analysis.md | v0.7.0-release | 定量分析方法论 |
-| mosaic-engine.md | v0.7.0-release | 马赛克引擎 |
-| output-layered-framework.md | v0.7.0-release | 分层输出框架 |
-| contagion-matrix.md | v0.7.0-release | 13行业传染矩阵 |
-| concentration-framework.md | v0.7.0-release | 五维集中度分析框架 |
-| systemic-warning-framework.md | v0.7.0-release | 系统性预警框架 |
+| engine-overview.md | v0.7.0-alpha | 引擎架构总览 |
+| dual-track-methodology.md | v0.7.0-alpha | 双轨分析方法论 |
+| industry-framework.md | v0.7.0-alpha | 行业分类与分析框架 |
+| qualitative-analysis.md | v0.7.0-alpha | 定性分析方法论 |
+| quantitative-analysis.md | v0.7.0-alpha | 定量分析方法论 |
+| mosaic-engine.md | v0.7.0-alpha | 马赛克引擎 |
+| output-layered-framework.md | v0.7.0-alpha | 分层输出框架 |
+| contagion-matrix.md | v0.7.0-alpha | 13行业传染矩阵 |
+| concentration-framework.md | v0.7.0-alpha | 五维集中度分析框架 |
+| systemic-warning-framework.md | v0.7.0-alpha | 系统性预警框架 |
 
 ### 8.3 版本管理原则
 
