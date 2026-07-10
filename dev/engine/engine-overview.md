@@ -1,6 +1,6 @@
 # 固定收益信用分析引擎 — 架构总览
 
-**版本**: v0.5.4-alpha | **日期**: 2026-07-10
+**版本**: v0.7.0-release | **日期**: 2026-07-10
 
 ---
 
@@ -25,6 +25,9 @@
 | **non-credit-risk-overlay.md** | 市场/操作/声誉/战略/流动性风险叠加层 | 需要非信用风险评估 |
 | **false-positive-negative-testing.md** | 假阳性/假阴性测试方法 · 5案例实测 | 需要验证引擎准确性 |
 | **output-layered-framework.md** | L0信号卡+L1快照+L2深度 · 三层输出 · 工作流嵌入 | 需要产品输出规范 |
+| **contagion-matrix.md** | 13×13行业传染矩阵 · 传导强度 · 行业聚类 · 升级因子 | 需要评估跨行业传染风险 |
+| **concentration-framework.md** | 五维集中度分析 · 阈值体系 · 评级调整映射 · 压力测试 | 需要评估组合集中度风险 |
+| **systemic-warning-framework.md** | SRI信号聚合 · 四级温度计 · 历史回测 · 即时计算 | 需要系统性风险读数 |
 | **financial-analysis-audit.md** | 财务层10项标准差距审查 | 审查记录 |
 | **quantitative-audit.md** | 定量模块统计严谨性审查 | 审查记录 |
 | **rating-agency-benchmark-audit.md** | 评级机构方法论对标 | 审查记录 |
@@ -69,6 +72,13 @@
 ## 二、总体架构
 
 ```
+卷首: 系统智能层（第四层 ★新增）
+  ┌──────────────────────────────────────────────┐
+  │ 传染图谱 × 集中度仪表盘 × 预警温度计(SRI)  │
+  │ 跨行业传染   五维集中度    系统性风险指数   │
+  └────────────────────┬─────────────────────────┘
+                       │ 聚合单发行人分析结果
+                       ▼
 输入: 行业 + 企业 + 分析日期
         │
    ┌────┴────┐
@@ -94,13 +104,14 @@
   评级 + 信号 + 完备性报告
 ```
 
-### 三层架构说明
+### 四层架构说明
 
 | 层级 | 名称 | 功能 | 状态 |
 |---|---|---|---|
 | **第一层** | 马赛克引擎（Mode A） | 从非结构化公开数据中提取信号、拼图、评估完备性 | 已实现（v0.3.0） |
 | **第二层** | 双轨分析（轨道A + B） | 基本面金字塔评分 + 市场定价信号交叉验证 | 已实现（v0.1.0） |
-| **第三层** | 多利益方视角（M0-M6） | 覆盖信用审批、债券投资、承销、交易、组合风控等多种角色 | M0-M1已实现，M2-M6规划中 |
+| **第三层** | 多利益方视角（M0-M6） | 覆盖信用审批、债券投资、承销、交易、组合风控等多种角色 | M0-M5已实现，M6规划中 |
+| **第四层** | 系统智能层（集合层）★新增 | 传染图谱+集中度仪表盘+预警温度计，跨行业/跨发行人的系统性风险感知 | 已实现（v0.7.0） |
 
 ### 双轨并行结构
 
@@ -197,6 +208,7 @@ Indicator Score = f(Raw Value, Threshold, Direction)
 | 0.3.0 | 2026-07-08 | 马赛克引擎架构、多利益方覆盖、P0债券投资仪表盘、信号置信度/密度、完备性报告 |
 | 0.4.0 | 2026-07-08 | 评级粒度从6档扩展至12档（+/-子级）、EL预期损失整合层、中国市场PD参考校准 |
 | 0.5.4-alpha | 2026-07-10 | 一致性审计修复：术语统一、阈值对齐、版本号标准化、交叉引用补全 |
+| **0.7.0-release** | **2026-07-10** | **系统智能层发布：+传染矩阵、集中度框架、系统性预警框架。引擎架构升级至四层。13行业覆盖。M4组合风控完整实现。** |
 
 ---
 
@@ -208,20 +220,23 @@ Indicator Score = f(Raw Value, Threshold, Direction)
 
 | 版本体系 | 适用范围 | 示例 | 说明 |
 |---|---|---|---|
-| **引擎版本** | 核心方法论文档 | v0.5.4-alpha | 反映引擎方法论的整体迭代阶段，所有核心方法论文档统一标注此版本 |
-| **审查报告版本** | 审计/自评/终审文档 | v1.0, v1.1 | 独立的审查报告版本体系，在文件头标注"对应引擎版本: v0.5.4-alpha" |
+| **引擎版本** | 核心方法论文档 | v0.7.0-release | 反映引擎方法论的整体迭代阶段，所有核心方法论文档统一标注此版本 |
+| **审查报告版本** | 审计/自评/终审文档 | v1.0, v1.1 | 独立的审查报告版本体系，在文件头标注"对应引擎版本: v0.7.0-release" |
 
 ### 8.2 核心方法论文档版本对应关系
 
 | 文档 | 当前版本 | 说明 |
 |---|---|---|
-| engine-overview.md | v0.5.4-alpha | 引擎架构总览 |
-| dual-track-methodology.md | v0.4.0→v0.5.4-alpha | 双轨分析方法论 |
-| industry-framework.md | v0.5.4-alpha | 行业分类与分析框架 |
-| qualitative-analysis.md | v0.5.4-alpha | 定性分析方法论 |
-| quantitative-analysis.md | v0.5.4-alpha | 定量分析方法论 |
-| mosaic-engine.md | v0.5.4-alpha | 马赛克引擎 |
-| output-layered-framework.md | v0.1.0 | 分层输出框架（产品设计文档，独立版本） |
+| engine-overview.md | v0.7.0-release | 引擎架构总览 |
+| dual-track-methodology.md | v0.7.0-release | 双轨分析方法论 |
+| industry-framework.md | v0.7.0-release | 行业分类与分析框架 |
+| qualitative-analysis.md | v0.7.0-release | 定性分析方法论 |
+| quantitative-analysis.md | v0.7.0-release | 定量分析方法论 |
+| mosaic-engine.md | v0.7.0-release | 马赛克引擎 |
+| output-layered-framework.md | v0.7.0-release | 分层输出框架 |
+| contagion-matrix.md | v0.7.0-release | 13行业传染矩阵 |
+| concentration-framework.md | v0.7.0-release | 五维集中度分析框架 |
+| systemic-warning-framework.md | v0.7.0-release | 系统性预警框架 |
 
 ### 8.3 版本管理原则
 
@@ -240,3 +255,6 @@ Indicator Score = f(Raw Value, Threshold, Direction)
 - [行业分类与分析框架](industry-framework.md) — 十维评分、行业类型、七行业金字塔规格
 - [双轨分析方法论](dual-track-methodology.md) — 轨道A+轨道B、交叉对撞、评级映射、完整推理实例
 - [马赛克引擎](mosaic-engine.md) — 信号提取、拼图、完备性评估、Mode B接口定义
+- [13行业传染矩阵](contagion-matrix.md) — 13×13行业间传染路径、传导强度、行业聚类
+- [五维集中度分析框架](concentration-framework.md) — 行业/区域/评级/期限/融资渠道集中度评估
+- [系统性预警框架](systemic-warning-framework.md) — SRI信号聚合算法、四级温度计、历史回测
