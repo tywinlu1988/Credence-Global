@@ -144,18 +144,27 @@ def test_region_danger_band():
         top_channel_share=0.30,
     )
     assert region_score(metrics) == 9
+
+
+def test_concentration_weights_must_sum_to_one():
     metrics = ConcentrationMetrics(
-        hhi=500,
-        cr3=0.30,
-        cr5=0.50,
-        max1=0.15,
-        single_province_share=0.10,
-        weak_region_share=0.02,
-        aaa_share=0.20,
-        pseudo_high_rating_share=0.01,
-        maturity_12m_share=0.20,
-        single_month_peak=0.05,
+        hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
+        single_province_share=0.10, weak_region_share=0.02,
+        aaa_share=0.20, pseudo_high_rating_share=0.01,
+        maturity_12m_share=0.20, single_month_peak=0.05,
         top_channel_share=0.30,
     )
     with pytest.raises(ValueError):
         concentration_risk_score(metrics, weights=(0.25, 0.25, 0.25, 0.25, 0.10))
+
+
+def test_concentration_weights_must_have_length_five():
+    metrics = ConcentrationMetrics(
+        hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
+        single_province_share=0.10, weak_region_share=0.02,
+        aaa_share=0.20, pseudo_high_rating_share=0.01,
+        maturity_12m_share=0.20, single_month_peak=0.05,
+        top_channel_share=0.30,
+    )
+    with pytest.raises(ValueError):
+        concentration_risk_score(metrics, weights=(0.25, 0.25, 0.25, 0.25))

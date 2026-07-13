@@ -90,6 +90,8 @@ def concentration_risk_score(
     Default weights follow dev/engine/concentration-framework.md §8.2:
     industry 25%, region 20%, rating 20%, maturity 20%, channel 15%.
     """
+    if len(weights) != 5:
+        raise ValueError("weights must contain exactly 5 values")
     if abs(sum(weights) - 1.0) > 1e-6:
         raise ValueError("weights must sum to 1.0")
 

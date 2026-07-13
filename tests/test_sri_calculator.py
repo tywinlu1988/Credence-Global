@@ -1,3 +1,5 @@
+import pytest
+
 from src.sri_calculator import (
     IndustryInput,
     Outlook,
@@ -90,6 +92,24 @@ def test_sri_matches_2026q2_example():
 def test_sri_validates_weights():
     industries = [IndustryInput("a", 7.0, TrackBLevel.GREEN, Outlook.STABLE)]
     assert sri(industries, [1.0]) == 0.0
+
+
+def test_sri_rejects_mismatched_weights():
+    industries = [
+        IndustryInput("a", 7.0, TrackBLevel.GREEN, Outlook.STABLE),
+        IndustryInput("b", 7.0, TrackBLevel.GREEN, Outlook.STABLE),
+    ]
+    with pytest.raises(ValueError):
+        sri(industries, [1.0])
+
+
+def test_sri_rejects_weights_not_summing_to_one():
+    industries = [
+        IndustryInput("a", 7.0, TrackBLevel.GREEN, Outlook.STABLE),
+        IndustryInput("b", 7.0, TrackBLevel.GREEN, Outlook.STABLE),
+    ]
+    with pytest.raises(ValueError):
+        sri(industries, [0.5, 0.4])
 
 
 def test_thermometer():
