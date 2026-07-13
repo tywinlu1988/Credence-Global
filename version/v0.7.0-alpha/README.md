@@ -166,6 +166,7 @@
 | 组合集中度评估 | `engine/concentration-framework.md` |
 | 系统性风险指数 | `engine/systemic-warning-framework.md` |
 | AI Agent使用这套方法论 | `.claude/skills/fixed-income-credit-analysis/SKILL.md` |
+| 版本管理策略与发布流程 | `docs/VERSION-MANAGEMENT.md` |
 
 ---
 
