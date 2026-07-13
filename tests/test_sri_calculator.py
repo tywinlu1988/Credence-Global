@@ -5,6 +5,8 @@ from src.sri_calculator import (
     Outlook,
     TrackBLevel,
     industry_risk_score,
+    m2_background_downgrade,
+    m4_concentration_weight_adjustment,
     sri,
     thermometer_level,
 )
@@ -139,3 +141,16 @@ def test_thermometer_boundary_values():
     assert thermometer_level(0.5) == "watch"
     assert thermometer_level(1.0) == "alert"
     assert thermometer_level(1.8) == "danger"
+
+
+def test_m2_background_downgrade():
+    assert m2_background_downgrade(0.3) == 0.0
+    assert m2_background_downgrade(1.2) == 0.5
+    assert m2_background_downgrade(2.0) == 1.0
+
+
+def test_m4_weight_adjustment():
+    assert m4_concentration_weight_adjustment(0.3) == 0.9
+    assert m4_concentration_weight_adjustment(0.7) == 1.0
+    assert m4_concentration_weight_adjustment(1.2) == 1.1
+    assert m4_concentration_weight_adjustment(2.0) == 1.2

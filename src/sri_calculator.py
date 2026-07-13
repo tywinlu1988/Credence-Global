@@ -68,3 +68,23 @@ def thermometer_level(sri_value: float) -> str:
     if sri_value >= 0.5:
         return "watch"
     return "normal"
+
+
+def m2_background_downgrade(sri: float) -> float:
+    """Return notch downgrade for individual issuers based on systemic-warning-framework.md §M2."""
+    if sri >= 1.8:  # danger
+        return 1.0
+    if sri >= 1.0:  # alert
+        return 0.5
+    return 0.0
+
+
+def m4_concentration_weight_adjustment(sri: float) -> float:
+    """Return multiplicative adjustment for concentration score weights based on SRI."""
+    if sri >= 1.8:
+        return 1.2
+    if sri >= 1.0:
+        return 1.1
+    if sri >= 0.5:
+        return 1.0
+    return 0.9
