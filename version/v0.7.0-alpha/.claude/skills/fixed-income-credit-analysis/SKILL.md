@@ -3,13 +3,28 @@ name: fixed-income-credit-analysis
 description: Use when analyzing industries or companies for credit decisions in Chinese fixed income markets, building industry-specific analysis frameworks for bank lending or bond investment, evaluating corporate credit quality through a systematic dual-track methodology, constructing multi-dimensional investment dashboards from fragmented public data, or retroactively validating analytical frameworks against historical default events, evaluating cross-industry contagion and portfolio concentration risk through the v0.7.0-alpha system-intelligence layer
 ---
 
+## Invocation Protocol
+
+When this Skill is invoked:
+
+1. Read the canonical engine documents in this order:
+   - `dev/engine/engine-overview.md`
+   - `dev/engine/industry-framework.md`
+   - `dev/engine/dual-track-methodology.md`
+   - `dev/engine/mosaic-engine.md`
+   - plus any topic-specific doc named in the user request (e.g., `contagion-matrix.md`, `concentration-framework.md`, `systemic-warning-framework.md`).
+2. Use **only** thresholds, weights, rating mappings, and veto rules found in those documents.
+3. For every quantitative judgment, cite the source document and section.
+4. If a required threshold, weight, or mapping is missing from the engine documents, output `引擎未定义` and do not invent a value.
+5. Do not invoke Mode B or generate external-data values unless the user has explicitly provided a CSV upload, API endpoint, or MCP server. Treat Mode B fields as data gaps until then.
+
 # Fixed Income Credit Analysis Engine v0.7.0-alpha
 
 ## Overview
 
 A systematic methodology for evaluating corporate credit quality in China's fixed income markets. The engine operates in three layers: (1) a **Mosaic Engine** that assembles fragmented public data into coherent signals; (2) a **Dual-Track Engine** combining industry-specific multi-layer analysis pyramids with market-based pricing signals; and (3) a **System-Intelligence Layer** (v0.7.0-alpha) that models cross-industry contagion, portfolio concentration, and a market-wide Systemic Risk Index (SRI). Combines multi-stakeholder perspectives into a unified assessment framework.
 
-**Expanded capabilities (v0.4.0+):** LGD/recovery rate framework, external support assessment, structured outlook/monitoring system, LGV (local government financing vehicle / 城投债) framework, ESG + governance/fraud detection, non-credit risk overlay, financial bond framework, holding company framework, false positive/negative testing, and layered output system with graduated confidence levels.
+**Expanded capabilities (v0.4.0+):** LGD/recovery rate framework, external support assessment, structured outlook/monitoring system, LGFV（地方政府融资平台 / 城投债）framework, ESG + governance/fraud detection, non-credit risk overlay, financial bond framework, holding company framework, false positive/negative testing, and layered output system with graduated confidence levels.
 
 **Core principles:**
 1. Traditional financial analysis systematically fails in policy-driven, technology-barrier, and asset-lease industries. The heaviest credit factor is rarely on the balance sheet.
@@ -25,10 +40,12 @@ A systematic methodology for evaluating corporate credit quality in China's fixe
 - Assembling fragmented public data into a coherent credit assessment using mosaic theory
 - Retroactively validating analytical frameworks against historical defaults
 - Designing a commercial credit intelligence product
-- Evaluating LGFV (城投债) credit quality through the LGV framework
-- Conducting ESG/governance risk scans and fraud detection
-- Performing LGD/recovery rate analysis for default scenarios
-- Assessing external support (government, parent company) impact on creditworthiness
+- Evaluating LGFV (城投债) credit quality through the LGFV framework → read `dev/engine/lgv-framework.md`
+- Conducting ESG/governance risk scans and fraud detection → read `dev/engine/esg-framework.md` and `dev/engine/governance-fraud-risk.md`
+- Performing LGD/recovery rate analysis for default scenarios → read `dev/engine/lgd-recovery-framework.md`
+- Assessing external support (government, parent company) impact on creditworthiness → read `dev/engine/external-support-framework.md`
+- Evaluating financial bonds → read `dev/engine/financial-bond-framework.md`
+- Analyzing holding companies → read `dev/engine/holding-company-framework.md`
 - Assessing cross-industry contagion risk from a stressed issuer or sector
 - Evaluating portfolio concentration across industry, region, rating, tenor, and funding-channel dimensions
 - Computing the Systemic Risk Index (SRI) and interpreting the four-level thermometer
@@ -56,6 +73,20 @@ For each analysis dimension, compute signal density = obtained signals / expecte
 | 50-80% | Moderate | Medium confidence, score +/-1 interval |
 | 20-50% | Insufficient | Low confidence, directional only, mark "needs supplement" |
 | <20% | Severely lacking | Cannot score, mark "insufficient data" |
+
+### Mandatory Density Rules
+
+- If **any critical dimension** (L1 for the industry type, or any dimension the user explicitly asks about) has signal density **<20%**, you MUST NOT output a numeric score for that dimension. State `信息不足无法评估` and list the missing signals.
+- If the **weighted-average signal density across all scored dimensions** is **<50%**, you MUST NOT output a final letter rating. Output a qualitative directional assessment plus a prioritized gap list instead.
+- If density is 50-80%, you MAY output a rating but MUST label it as `中置信度` and widen the implied interval by ±1 notch.
+- The completeness report is mandatory for every analysis; omitting it is a protocol violation.
+
+Before finalizing any numeric rating, verify:
+1. Every dimension used in the score has a documented density.
+2. No critical dimension is below 20% density.
+3. The final rating maps to the official 12-notch table.
+4. Every veto condition has been explicitly checked.
+If any check fails, downgrade the rating or replace it with a directional statement.
 
 ### Data Gap-to-Risk Mapping
 
@@ -85,7 +116,7 @@ The system-intelligence layer aggregates individual issuer assessments into port
 ### Cross-Industry Contagion
 
 - **Contagion theory**: four contagion types (credit-chain, regional resonance, liquidity squeeze, confidence collapse) and seven standard transmission paths.
-- **Contagion matrix**: 13×13 industry intensity matrix with direction, confidence, and upgrade-factor linkage. See `references/contagion-matrix.md`.
+- **Contagion matrix**: 13×13 industry intensity matrix with direction, confidence, and upgrade-factor linkage. See `dev/engine/contagion-matrix.md`.
 - **Industry clustering**: based on six analytical paradigms. Industries in the same paradigm have higher innate contagion coupling.
 
 ### Five-Dimensional Concentration Framework
@@ -98,7 +129,7 @@ Concentration risk is scored across:
 4. **Tenor concentration** (12/24/36-month maturities, single-month peak)
 5. **Funding-channel concentration** (bank, bond, non-standard, leasing, equity)
 
-Default weights: industry 25%, region 20%, rating 20%, tenor 20%, funding channel 15%.
+Suggested default weights (adjustable per `concentration-framework.md` §8.4): industry 25%, region 20%, rating 20%, tenor 20%, funding channel 15%.
 
 ### Systemic Risk Index (SRI)
 
@@ -110,9 +141,11 @@ SRI = Σ(industry_risk_score × industry_weight_pct)
 - Levels: 🟢 normal (<0.5), 🟡 watch (0.5–1.0), 🟠 alert (1.0–1.8), 🔴 danger (≥1.8)
 - Inputs: Track-A industry score, Track-B market signal, outlook direction, and one-shot-veto triggers.
 
-For full specification see `references/systemic-warning-framework.md`.
+For full specification see `dev/engine/systemic-warning-framework.md`.
 
 ## Mode B: External Data Source Adapter (Placeholder)
+
+> **Mode B 护栏**：除非用户明确提供了 CSV 上传、API endpoint 或 MCP server，否则禁止调用 Mode B 接口，禁止生成外部数据值。在 Mode B 未激活时，所有 Mode B 字段应作为数据缺口处理。
 
 Standardized interface for users to connect their own data. Defined but not implemented.
 
@@ -123,7 +156,7 @@ Standardized interface for users to connect their own data. Defined but not impl
 
 **Connection methods (priority order):** CSV upload (P1) > REST API (P1) > MCP Server (P2) > Database (P3)
 
-Full architecture specification: `references/mosaic-engine-architecture.md`
+Full architecture specification: `dev/engine/mosaic-engine.md`
 
 ## Multi-Stakeholder Coverage
 
@@ -175,22 +208,25 @@ Each industry type has a different heaviest factor. Weights determined by 10-dim
 
 **NEV uses dual-track** (OEM survival model vs supply chain profit fortress model — completely separate frameworks).
 
-Each layer scores 0-10. Each layer has one-shot veto conditions (see `references/industry-pyramids.md`).
+Each layer scores 0-10. Each layer has one-shot veto conditions (see `dev/engine/industry-framework.md`).
 
-## Six Analytical Paradigms
+## Six Analytical Paradigms + LGFV Special Category
 
-Each industry maps to one of six paradigms that determine its dominant risk drivers and contagion exposure:
+本节介绍 **6 个分析范式 + 1 个特殊类别（LGFV）**：六个通用范式用于描述普通行业的信用传染结构，LGFV 因政府信用绑定机制特殊而单列，不强行归入六范式，但在传染矩阵中仍参与行业聚类分析。
 
-| Paradigm | Industries | Heaviest Factor | Key Contagion Path |
-|---|---|---|---|
-| Policy-Driven | Solar/PV, Semiconductor | Policy cycle | Same-region SOE, same-industry |
-| Tech-Barrier | High-end equipment, Biomedicine, Medical devices | Technology/IP | Supplier-customer chain, same funding channel |
-| Consolidation | New energy vehicles | Profit fortress | Same-industry, credit-chain |
-| Asset-Lease | Data centers | Client/lease quality | Supplier-customer chain, same funding channel |
-| Brand+Channel | Food & beverage, Textile & apparel | Brand equity | Confidence collapse, same-industry |
-| Network+Traffic | Transportation, Retail, Media/Internet | Network traffic | Supplier-customer chain, same funding channel |
+> **注意**：6 个分析范式是用于传染聚类和行业分组的概念工具；它们不同于 `industry-framework.md` 中定义的 4 个行业类型（用于设置金字塔权重）。一个行业可能同时满足多个范式特征，此时以 `industry-framework.md` 的行业类型作为金字塔权重依据，以范式作为传染分析依据。存在冲突时，使用 `industry-framework.md` §3.1 的优先级规则。
 
-See `references/industry-pyramids.md`, `references/paradigm-brand-channel.md`, and `references/paradigm-network-traffic.md` for detailed specs.
+| Paradigm | Primary Industries | Secondary Attributes | Heaviest Factor | Key Contagion Path |
+|---|---|---|---|---|
+| Policy-Driven | Solar/PV; Semiconductor (primary) | Semiconductor also Tech-Barrier | Policy/geopolitics cycle | Same-region SOE, same-industry |
+| Tech-Barrier | High-end equipment; Biomedicine (primary); Medical devices; NEV-Supply Chain | Biomedicine also Policy-Driven; NEV-Supply Chain also Profit Fortress | Technology/IP/registration | Supplier-customer chain, same funding channel |
+| Consolidation | NEV-OEM | — | Survival / profit fortress | Same-industry, credit-chain |
+| Asset-Lease | Data centers (IDC/colocation primary) | Cloud/telecom hybrid as Network+Traffic | Client/lease quality | Supplier-customer chain, same funding channel |
+| Brand+Channel | Food & beverage; Textile & apparel | — | Brand equity | Confidence collapse, same-industry |
+| Network+Traffic | Transportation; Retail; Media/Internet; Data centers (cloud/telecom hybrid) | — | Network traffic | Supplier-customer chain, same funding channel |
+| Special / Government Credit | LGFV | — | Regional fiscal health | Regional resonance, same funding channel |
+
+See `dev/engine/industry-framework.md`, `dev/engine/paradigm-brand-channel.md`, and `dev/engine/paradigm-network-traffic.md` for detailed specs.
 
 ## Ten-Dimension Industry Scoring (D1-D10)
 
@@ -292,26 +328,26 @@ Indicator Score = f(Raw Value, Threshold, Direction)
 
 ## Black-Swan Retrospective Validation
 
-Two-time-point methodology (T1: 17-18 months, T2: 4-5 months before default). All data must have been publicly available AS OF the analysis point. See `references/validation-cases.md`.
+Two-time-point methodology (T1: 17-18 months, T2: 4-5 months before default). All data must have been publicly available AS OF the analysis point. See `dev/engine/validation-methodology.md`.
 
 ## Validated Industries & Cases
 
 | Industry | Forward Test | Retrospective Test |
 |---|---|---|
-| Solar/PV | 完成 | 完成 |
+| Solar/PV | 完成 | — |
 | Semiconductor | 完成 | 完成 |
 | Biomedicine | 完成 | 完成 |
 | High-End Equipment | 完成 | 完成 |
 | Medical Devices | 完成 | 完成 |
 | NEV | 完成 | 完成 |
-| Data Center | 完成 | 完成 |
-| Coal/SOE (Yongmei) | 完成 | 完成 |
-| LGFV | 完成 | 完成 |
-| Food & Beverage | 完成 | — |
-| Textile & Apparel | 完成 | — |
-| Transportation | 完成 | — |
-| Retail | 完成 | — |
-| Media/Internet | 完成 | — |
+| Data Center | 完成 | — |
+| Coal/SOE (Yongmei) | — | 完成 |
+| LGFV | 框架覆盖 | 框架覆盖 |
+| Food & Beverage | 13-industry framework coverage | — |
+| Textile & Apparel | 13-industry framework coverage | — |
+| Transportation | 13-industry framework coverage | — |
+| Retail | 13-industry framework coverage | — |
+| Media/Internet | 13-industry framework coverage | — |
 
 ## Key Design Principles
 
@@ -327,23 +363,26 @@ Two-time-point methodology (T1: 17-18 months, T2: 4-5 months before default). Al
 
 ## Supporting Files
 
-- `references/industry-pyramids.md` — Complete pyramid specs for 7 industries
-- `references/validation-cases.md` — Detailed case data for 3 validated defaults
-- `references/mosaic-engine-architecture.md` — Full mosaic engine architecture specification
-- `references/non-credit-risk-overlay.md` — Non-credit risk overlay framework
-- `references/esg-framework.md` — ESG + governance/fraud detection framework
-- `references/financial-bond-framework.md` — Financial bond analysis framework
-- `references/holding-company-framework.md` — Holding company credit analysis framework
-- `references/lgv-framework.md` — LGFV (城投债) credit analysis framework
-- `references/false-positive-negative-testing.md` — False positive/negative testing methodology
-- `references/output-layered-framework.md` — Layered output system specification
+- `dev/engine/industry-framework.md` — Complete pyramid specs for 7 industries
+- `dev/engine/validation-methodology.md` — Detailed validation methodology and case data
+- `dev/engine/mosaic-engine.md` — Full mosaic engine architecture specification
+- `dev/engine/non-credit-risk-overlay.md` — Non-credit risk overlay framework
+- `dev/engine/esg-framework.md` — ESG + governance/fraud detection framework
+- `dev/engine/governance-fraud-risk.md` — Governance and fraud risk framework
+- `dev/engine/financial-bond-framework.md` — Financial bond analysis framework
+- `dev/engine/holding-company-framework.md` — Holding company credit analysis framework
+- `dev/engine/lgv-framework.md` — LGFV (城投债) credit analysis framework
+- `dev/engine/lgd-recovery-framework.md` — LGD/recovery rate framework
+- `dev/engine/external-support-framework.md` — External support assessment framework
+- `dev/engine/false-positive-negative-testing.md` — False positive/negative testing methodology
+- `dev/engine/output-layered-framework.md` — Layered output system specification
 - `templates/report-template.html` — HTML report template (dark theme)
-- `references/contagion-theory.md` — Contagion types, transmission paths, upgrade factors
-- `references/contagion-matrix.md` — 13×13 cross-industry contagion matrix
-- `references/concentration-framework.md` — Five-dimensional concentration framework
-- `references/systemic-warning-framework.md` — SRI algorithm and thermometer
-- `references/paradigm-brand-channel.md` — Brand+channel paradigm specification
-- `references/paradigm-network-traffic.md` — Network+traffic paradigm specification
+- `dev/engine/contagion-theory.md` — Contagion types, transmission paths, upgrade factors
+- `dev/engine/contagion-matrix.md` — 13×13 cross-industry contagion matrix
+- `dev/engine/concentration-framework.md` — Five-dimensional concentration framework
+- `dev/engine/systemic-warning-framework.md` — SRI algorithm and thermometer
+- `dev/engine/paradigm-brand-channel.md` — Brand+channel paradigm specification
+- `dev/engine/paradigm-network-traffic.md` — Network+traffic paradigm specification
 - `templates/template-type13.html` — Contagion report template
 - `templates/template-type14.html` — Concentration report template
 - `templates/template-type15.html` — Systemic warning report template
@@ -355,6 +394,6 @@ Two-time-point methodology (T1: 17-18 months, T2: 4-5 months before default). Al
 | 0.1.0 | 2026-07-07 | Initial release. 10-dim scoring, 4-layer pyramid, dual-track, 7 industries, solar forward-validated |
 | 0.2.0 | 2026-07-07 | Retrospective validation methodology. Yongmei (2 time points, 17-month) + Tsinghua Unigroup (17-month). Framework effective across risk genotypes. Semiconductor 5-layer pyramid. |
 | 0.3.0 | 2026-07-08 | Mosaic engine architecture (Mode A+B). Multi-stakeholder coverage map. P0 bond investment dashboard (relative value + terms + liquidity + event calendar). Signal confidence levels + signal density metrics. Data gap-to-risk mapping. Completeness reporting. External data source adapter interface (placeholder). |
-| 0.4.0-alpha | 2026-07-08 | LGD/recovery rate framework. External support assessment. Structured outlook/monitoring system. LGV (城投债) framework. ESG + governance/fraud detection. Non-credit risk overlay. Financial bond framework. Holding company framework. False positive/negative testing methodology. Layered output system. Multi-stakeholder coverage completed (P1/P2). All 8 industries fully validated. |
+| 0.4.0-alpha | 2026-07-08 | LGD/recovery rate framework. External support assessment. Structured outlook/monitoring system. LGFV（城投债）framework. ESG + governance/fraud detection. Non-credit risk overlay. Financial bond framework. Holding company framework. False positive/negative testing methodology. Layered output system. Multi-stakeholder coverage completed (P1/P2). All 8 industries fully validated. |
 | 0.5.0-release | 2026-07-09 | Release stabilization. Complete supporting documentation for all expanded capabilities. Production-ready layered output system. Full 8-industry, 30-document, 12-template coverage. |
 | 0.7.0-alpha | 2026-07-13 | System-intelligence layer: contagion theory/matrix, five-dimensional concentration framework, systemic warning (SRI), 13-industry coverage, six analytical paradigms. Skill synchronized with engine release. |
