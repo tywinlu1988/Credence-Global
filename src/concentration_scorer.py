@@ -3,6 +3,14 @@ from dataclasses import dataclass
 
 @dataclass
 class ConcentrationMetrics:
+    """Five-dimensional concentration metrics.
+
+    Note: this dataclass does not currently include an explicit portfolio
+    single-industry exposure share.  In ``rating_adjustment`` we proxy that
+    exposure with ``max1`` (largest single industry) and ``cr3`` (top-3
+    industry share) per dev/engine/concentration-framework.md §7.3.
+    """
+
     hhi: float
     cr3: float
     cr5: float
@@ -95,10 +103,8 @@ def _risk_level(score: int) -> str:
 def rating_adjustment(metrics: ConcentrationMetrics) -> dict:
     """Return rating adjustment in notches and flags per concentration-framework.md §7.
 
-    - green: 0
-    - yellow: -0.5
-    - orange: -1.0
-    - red: -1.0 plus potential BB cap trigger
+    Implements the non-linear multi-dimensional stacking table in §7.2 and the
+    threshold-based BB-cap trigger conditions in §7.3.
     """
     levels = {
         "industry": _risk_level(industry_score(metrics)),
@@ -107,20 +113,53 @@ def rating_adjustment(metrics: ConcentrationMetrics) -> dict:
         "maturity": _risk_level(maturity_score(metrics)),
         "channel": _risk_level(channel_score(metrics)),
     }
-    adjustment = 0.0
-    red_count = 0
-    orange_count = 0
-    for lvl in levels.values():
-        if lvl == "red":
-            adjustment -= 1.0
-            red_count += 1
-        elif lvl == "orange":
-            adjustment -= 1.0
-            orange_count += 1
-        elif lvl == "yellow":
-            adjustment -= 0.5
 
-    bb_cap_triggered = red_count >= 2 or (red_count >= 1 and orange_count >= 2)
+    red_count = sum(1 for lvl in levels.values() if lvl == "red")
+    orange_count = sum(1 for lvl in levels.values() if lvl == "orange")
+
+    # Non-linear stacking lookup per §7.2.
+    if red_count == 0:
+        if orange_count == 0:
+            adjustment = 0.0
+        elif orange_count == 1:
+            adjustment = -0.5
+        elif orange_count == 2:
+            adjustment = -1.0
+        elif orange_count == 3:
+            adjustment = -1.5
+        elif orange_count == 4:
+            adjustment = -2.0
+        else:  # 5 oranges
+            adjustment = -2.5
+    elif red_count == 1:
+        if orange_count == 0:
+            adjustment = -1.0
+        elif orange_count == 1:
+            adjustment = -1.5
+        else:
+            # Extend linearly beyond the documented 1-red+1-orange case:
+            # -0.5 per additional orange, capped at the 2-red value.
+            adjustment = max(-2.5, -1.5 - 0.5 * (orange_count - 1))
+    elif red_count == 2:
+        adjustment = -2.5
+    else:  # red_count >= 3
+        adjustment = -2.5
+
+    # Threshold-based BB-cap trigger per §7.3.
+    # Condition #1 (single industry >50% + downturn + super-spreader) is not
+    # directly observable because ConcentrationMetrics lacks an explicit
+    # single-industry share.  We use the following proxy:
+    single_industry_proxy = metrics.max1 >= 0.50 or metrics.cr3 >= 0.70
+
+    bb_cap_triggered = (
+        red_count >= 3
+        or single_industry_proxy
+        or metrics.weak_region_share > 0.35
+        or metrics.pseudo_high_rating_share > 0.40
+        or (metrics.maturity_12m_share > 0.70 and metrics.top_channel_share > 0.70)
+        or (metrics.top_channel_share > 0.90 and metrics.top_channel_is_contracting)
+    )
+
     return {
         "adjustment": adjustment,
         "levels": levels,

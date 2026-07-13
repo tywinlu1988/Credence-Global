@@ -184,46 +184,111 @@ def test_rating_adjustment_all_green():
     assert adj["bb_cap_triggered"] is False
 
 
-def test_rating_adjustment_extreme_concentration():
-    high = ConcentrationMetrics(
-        hhi=2600, cr3=0.85, cr5=0.92, max1=0.65,
-        single_province_share=0.50, weak_region_share=0.35,
-        aaa_share=0.75, pseudo_high_rating_share=0.35,
-        maturity_12m_share=0.75, single_month_peak=0.35,
-        top_channel_share=0.80, top_channel_is_contracting=True,
-    )
-    adj = rating_adjustment(high)
-    assert adj["adjustment"] <= -3.0
-    assert adj["bb_cap_triggered"] is True
-
-
-def test_rating_adjustment_one_red_triggers_no_bb_cap():
-    one_red = ConcentrationMetrics(
-        hhi=2600, cr3=0.85, cr5=0.92, max1=0.65,
-        single_province_share=0.10, weak_region_share=0.02,
-        aaa_share=0.20, pseudo_high_rating_share=0.01,
+def test_rating_adjustment_two_oranges():
+    metrics = ConcentrationMetrics(
+        hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
+        single_province_share=0.10, weak_region_share=0.25,
+        aaa_share=0.20, pseudo_high_rating_share=0.20,
         maturity_12m_share=0.20, single_month_peak=0.05,
         top_channel_share=0.30,
     )
-    adj = rating_adjustment(one_red)
-    assert adj["levels"]["industry"] == "red"
-    assert all(lvl == "green" for k, lvl in adj["levels"].items() if k != "industry")
+    adj = rating_adjustment(metrics)
+    assert adj["levels"]["region"] == "orange"
+    assert adj["levels"]["rating"] == "orange"
     assert adj["adjustment"] == -1.0
     assert adj["bb_cap_triggered"] is False
 
 
-def test_rating_adjustment_two_reds_triggers_bb_cap():
-    two_red = ConcentrationMetrics(
-        hhi=2600, cr3=0.85, cr5=0.92, max1=0.65,
-        single_province_share=0.50, weak_region_share=0.35,
+def test_rating_adjustment_one_red_one_orange():
+    # Industry red driven by HHI only, avoiding the single-industry proxy.
+    metrics = ConcentrationMetrics(
+        hhi=2600, cr3=0.55, cr5=0.65, max1=0.30,
+        single_province_share=0.10, weak_region_share=0.02,
+        aaa_share=0.20, pseudo_high_rating_share=0.20,
+        maturity_12m_share=0.20, single_month_peak=0.05,
+        top_channel_share=0.30,
+    )
+    adj = rating_adjustment(metrics)
+    assert adj["levels"]["industry"] == "red"
+    assert adj["levels"]["rating"] == "orange"
+    assert adj["adjustment"] == -1.5
+    assert adj["bb_cap_triggered"] is False
+
+
+def test_rating_adjustment_two_reds():
+    # Industry red via HHI; region red via single province (not weak region).
+    metrics = ConcentrationMetrics(
+        hhi=2600, cr3=0.55, cr5=0.65, max1=0.30,
+        single_province_share=0.50, weak_region_share=0.02,
         aaa_share=0.20, pseudo_high_rating_share=0.01,
         maturity_12m_share=0.20, single_month_peak=0.05,
         top_channel_share=0.30,
     )
-    adj = rating_adjustment(two_red)
+    adj = rating_adjustment(metrics)
     assert adj["levels"]["industry"] == "red"
     assert adj["levels"]["region"] == "red"
-    assert adj["adjustment"] == -2.0
+    assert adj["adjustment"] == -2.5
+    assert adj["bb_cap_triggered"] is False
+
+
+def test_rating_adjustment_three_reds():
+    metrics = ConcentrationMetrics(
+        hhi=2600, cr3=0.55, cr5=0.65, max1=0.30,
+        single_province_share=0.50, weak_region_share=0.02,
+        aaa_share=0.20, pseudo_high_rating_share=0.35,
+        maturity_12m_share=0.20, single_month_peak=0.05,
+        top_channel_share=0.30,
+    )
+    adj = rating_adjustment(metrics)
+    assert sum(1 for lvl in adj["levels"].values() if lvl == "red") == 3
+    assert adj["bb_cap_triggered"] is True
+
+
+def test_bb_cap_weak_region_threshold():
+    metrics = ConcentrationMetrics(
+        hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
+        single_province_share=0.10, weak_region_share=0.40,
+        aaa_share=0.20, pseudo_high_rating_share=0.01,
+        maturity_12m_share=0.20, single_month_peak=0.05,
+        top_channel_share=0.30,
+    )
+    adj = rating_adjustment(metrics)
+    assert adj["bb_cap_triggered"] is True
+
+
+def test_bb_cap_pseudo_high_rating_threshold():
+    metrics = ConcentrationMetrics(
+        hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
+        single_province_share=0.10, weak_region_share=0.02,
+        aaa_share=0.20, pseudo_high_rating_share=0.45,
+        maturity_12m_share=0.20, single_month_peak=0.05,
+        top_channel_share=0.30,
+    )
+    adj = rating_adjustment(metrics)
+    assert adj["bb_cap_triggered"] is True
+
+
+def test_bb_cap_maturity_channel_overlap():
+    metrics = ConcentrationMetrics(
+        hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
+        single_province_share=0.10, weak_region_share=0.02,
+        aaa_share=0.20, pseudo_high_rating_share=0.01,
+        maturity_12m_share=0.75, single_month_peak=0.05,
+        top_channel_share=0.75,
+    )
+    adj = rating_adjustment(metrics)
+    assert adj["bb_cap_triggered"] is True
+
+
+def test_bb_cap_channel_freeze_threshold():
+    metrics = ConcentrationMetrics(
+        hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
+        single_province_share=0.10, weak_region_share=0.02,
+        aaa_share=0.20, pseudo_high_rating_share=0.01,
+        maturity_12m_share=0.20, single_month_peak=0.05,
+        top_channel_share=0.95, top_channel_is_contracting=True,
+    )
+    adj = rating_adjustment(metrics)
     assert adj["bb_cap_triggered"] is True
 
 
