@@ -116,6 +116,34 @@ def test_check_sri_track_b_consistency_allows_single_rule(tmp_path, monkeypatch)
     assert cc.check_sri_track_b_consistency() == []
 
 
+def test_check_sri_track_b_consistency_flags_orange_contradiction(tmp_path, monkeypatch):
+    cc = _import_checker()
+    fake_engine = tmp_path / "engine"
+    fake_engine.mkdir()
+    (fake_engine / "systemic-warning-framework.md").write_text(
+        "trackB_penalty:\n  orange = 0.5 for elevated\n  orange = 1.0 for warning\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(cc, "ENGINE_DIR", fake_engine)
+    errors = cc.check_sri_track_b_consistency()
+    assert errors
+    assert any("orange penalty" in e for e in errors)
+
+
+def test_check_sri_track_b_consistency_flags_red_contradiction(tmp_path, monkeypatch):
+    cc = _import_checker()
+    fake_engine = tmp_path / "engine"
+    fake_engine.mkdir()
+    (fake_engine / "systemic-warning-framework.md").write_text(
+        "trackB_penalty:\n  red = 1.0 for severe\n  red = 1.5 for critical\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(cc, "ENGINE_DIR", fake_engine)
+    errors = cc.check_sri_track_b_consistency()
+    assert errors
+    assert any("red penalty" in e for e in errors)
+
+
 def test_check_skill_references_flags_stale_version(tmp_path, monkeypatch):
     cc = _import_checker()
     fake_engine = tmp_path / "engine"
@@ -181,8 +209,9 @@ def test_check_paradigm_coverage_accepts_judgmental_note(tmp_path, monkeypatch):
     fake_engine.mkdir()
     (fake_engine / "contagion-matrix.md").write_text(
         "### 1.2 范式映射表\n"
-        "| 序号 | 行业 | 范式归属 |\n|---|---|---|\n"
-        "| 1 | 食品饮料 | 范式E |\n"
+        "| 序号 | 行业 | 范式归属 | 典型主体 | 金融属性 | 传染烈度 |\n"
+        "|---|---|---|---|---|---|\n"
+        "| 1 | 食品饮料 | 品牌+渠道型 | B+/B/CCC | 低 | 高 |\n"
         "### 1.3\n",
         encoding="utf-8",
     )
@@ -192,3 +221,19 @@ def test_check_paradigm_coverage_accepts_judgmental_note(tmp_path, monkeypatch):
     )
     monkeypatch.setattr(cc, "ENGINE_DIR", fake_engine)
     assert cc.check_paradigm_coverage() == []
+
+
+def test_check_rating_map_consistency_accepts_legitimate_12_notch(tmp_path, monkeypatch):
+    cc = _import_checker()
+    fake_engine = tmp_path / "engine"
+    fake_engine.mkdir()
+    (fake_engine / "some-framework.md").write_text(
+        "## 评级档次\n"
+        "投资级包括 AA+/AA/AA- 和 BBB+/BBB/BBB- 等共12档。\n"
+        "| 评分范围 | 新评级 |\n"
+        "|---|---|\n"
+        "| 9.5 - 10.0 | AAA |\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(cc, "ENGINE_DIR", fake_engine)
+    assert cc.check_rating_map_consistency() == []

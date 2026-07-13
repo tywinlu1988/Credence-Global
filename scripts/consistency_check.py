@@ -88,6 +88,28 @@ YELLOW_0_PATTERNS = [
     re.compile(r"🟡.*\b0\s*分"),
 ]
 
+ORANGE_05_PATTERNS = [
+    re.compile(r"orange\s*=\s*0\.5", re.IGNORECASE),
+    re.compile(r"橙色.*0\.5\s*分?"),
+    re.compile(r"🟠.*0\.5\s*分?"),
+]
+ORANGE_10_PATTERNS = [
+    re.compile(r"orange\s*=\s*1\.0", re.IGNORECASE),
+    re.compile(r"橙色.*1\.0\s*分?"),
+    re.compile(r"🟠.*1\.0\s*分?"),
+]
+
+RED_10_PATTERNS = [
+    re.compile(r"red\s*=\s*1\.0", re.IGNORECASE),
+    re.compile(r"红色.*1\.0\s*分?"),
+    re.compile(r"🔴.*1\.0\s*分?"),
+]
+RED_15_PATTERNS = [
+    re.compile(r"red\s*=\s*1\.5", re.IGNORECASE),
+    re.compile(r"红色.*1\.5\s*分?"),
+    re.compile(r"🔴.*1\.5\s*分?"),
+]
+
 REFERENCE_TO_ENGINE_MAP = {
     "industry-pyramids.md": "industry-framework.md",
     "mosaic-engine-architecture.md": "mosaic-engine.md",
@@ -192,16 +214,21 @@ def check_rating_map_consistency() -> list[str]:
 
 
 def check_sri_track_b_consistency() -> list[str]:
-    """Flag contradictory textual descriptions of the Track-B yellow penalty."""
+    """Flag contradictory textual descriptions of Track-B penalties across yellow/orange/red."""
     path = ENGINE_DIR / "systemic-warning-framework.md"
     if not path.exists():
         return []
     text = path.read_text(encoding="utf-8")
-    has_yellow_05 = any(p.search(text) for p in YELLOW_05_PATTERNS)
-    has_yellow_0 = any(p.search(text) for p in YELLOW_0_PATTERNS)
-    if has_yellow_05 and has_yellow_0:
+    contradictions = []
+    if any(p.search(text) for p in YELLOW_05_PATTERNS) and any(p.search(text) for p in YELLOW_0_PATTERNS):
+        contradictions.append("yellow penalty as both 0.5 and 0")
+    if any(p.search(text) for p in ORANGE_05_PATTERNS) and any(p.search(text) for p in ORANGE_10_PATTERNS):
+        contradictions.append("orange penalty as both 0.5 and 1.0")
+    if any(p.search(text) for p in RED_10_PATTERNS) and any(p.search(text) for p in RED_15_PATTERNS):
+        contradictions.append("red penalty as both 1.0 and 1.5")
+    if contradictions:
         return [
-            f"SRI_TRACK_B: {path.relative_to(ENGINE_DIR)} describes yellow penalty as both 0.5 and 0"
+            f"SRI_TRACK_B: {path.relative_to(ENGINE_DIR)} describes " + " and ".join(contradictions)
         ]
     return []
 
