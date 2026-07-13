@@ -1,0 +1,62 @@
+from dataclasses import dataclass
+from enum import Enum
+
+
+class TrackBLevel(str, Enum):
+    GREEN = "green"
+    YELLOW = "yellow"
+    ORANGE = "orange"
+    RED = "red"
+
+
+class Outlook(str, Enum):
+    POSITIVE = "positive"
+    STABLE = "stable"
+    NEGATIVE = "negative"
+
+
+@dataclass
+class IndustryInput:
+    name: str
+    track_a_score: float  # 0-10
+    track_b_level: TrackBLevel
+    outlook: Outlook
+    veto_triggered: bool = False
+
+
+def industry_risk_score(ind: IndustryInput) -> float:
+    if ind.veto_triggered:
+        return 3.0
+
+    if ind.track_a_score < 3.0:
+        base = 3.0
+    elif ind.track_a_score < 5.0:
+        base = 2.0
+    elif ind.track_a_score < 6.0:
+        base = 1.0
+    else:
+        base = 0.0
+
+    outlook_penalty = 0.5 if ind.outlook == Outlook.NEGATIVE else 0.0
+    track_b_penalty = 0.5 if ind.track_b_level in (TrackBLevel.ORANGE, TrackBLevel.RED) else 0.0
+
+    return base + outlook_penalty + track_b_penalty
+
+
+def sri(industries: list[IndustryInput], weights: list[float]) -> float:
+    if len(industries) != len(weights):
+        raise ValueError("industries and weights must have same length")
+    if abs(sum(weights) - 1.0) > 1e-6:
+        raise ValueError("weights must sum to 1.0")
+
+    return sum(industry_risk_score(ind) * w for ind, w in zip(industries, weights))
+
+
+def thermometer_level(sri_value: float) -> str:
+    if sri_value >= 1.8:
+        return "danger"
+    if sri_value >= 1.0:
+        return "alert"
+    if sri_value >= 0.5:
+        return "watch"
+    return "normal"
