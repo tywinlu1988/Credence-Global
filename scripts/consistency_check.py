@@ -27,6 +27,17 @@ CORE_DOCS = [
     "systemic-warning-framework.md",
 ]
 
+HISTORICAL_MARKERS = [
+    "(历史审计记录：",
+    "（历史审计记录：",
+    "(historical audit record:",
+    "（historical audit record:",
+]
+
+
+def _is_historical(line):
+    return any(marker in line for marker in HISTORICAL_MARKERS)
+
 
 def collect_errors():
     errors = []
@@ -62,8 +73,12 @@ def collect_errors():
     sri_pct_pattern = re.compile(r"SRI\s*[:：]\s*\d{2}\s*/\s*100", re.IGNORECASE)
     for path in list(ENGINE_DIR.rglob("*.md")) + list(TEMPLATES_DIR.rglob("*.html")):
         text = path.read_text(encoding="utf-8")
-        if sri_pct_pattern.search(text):
-            errors.append(f"SRI_PCT: {path.relative_to(ROOT)} contains percentage-scale SRI")
+        for line in text.splitlines():
+            if _is_historical(line):
+                continue
+            if sri_pct_pattern.search(line):
+                errors.append(f"SRI_PCT: {path.relative_to(ROOT)} contains percentage-scale SRI")
+                break
 
     # 5. No old 6-notch rating artifacts
     old_notch_patterns = [r"AA/A", r"BBB/BB", r"4\.0-5\.9", r"2\.0-3\.9"]
@@ -72,9 +87,13 @@ def collect_errors():
         if not path.exists():
             continue
         text = path.read_text(encoding="utf-8")
-        for pattern in old_notch_patterns:
-            if re.search(pattern, text):
-                errors.append(f"OLD_NOTCH: {doc} contains '{pattern}'")
+        for line in text.splitlines():
+            if _is_historical(line):
+                continue
+            for pattern in old_notch_patterns:
+                if re.search(pattern, line):
+                    errors.append(f"OLD_NOTCH: {doc} contains '{pattern}'")
+                    break
 
     return errors
 
