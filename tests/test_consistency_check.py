@@ -1,3 +1,4 @@
+import re
 import subprocess
 import sys
 import tempfile
@@ -66,3 +67,128 @@ def test_old_notch_patterns_detect_artifacts():
     cc = _import_checker()
     sample = "旧 6 档体系（AAA/AA/A/BBB/BB/B/CCC/D）"
     assert any(p.search(sample) for p in cc.OLD_NOTCH_PATTERNS)
+
+
+def test_check_rating_map_consistency_flags_deviation(tmp_path, monkeypatch):
+    cc = _import_checker()
+    fake_engine = tmp_path / "engine"
+    fake_engine.mkdir()
+    (fake_engine / "dual-track-methodology.md").write_text(
+        "## 六、评级映射\n| 评分范围 | 新评级 |\n|---|---|\n| 9.5 - 10.0 | AAA |\n",
+        encoding="utf-8",
+    )
+    (fake_engine / "systemic-warning-framework.md").write_text(
+        "## 二、信号聚合\n| 评分区间 | 对应评级 |\n|---|---|\n| 9.0 - 10.0 | AAA |\n",
+        encoding="utf-8",
+    )
+    (fake_engine / "consistency-audit-v0.5.2.md").write_text(
+        "| 9.0 - 10.0 | AAA |\n", encoding="utf-8"
+    )
+    monkeypatch.setattr(cc, "ENGINE_DIR", fake_engine)
+    errors = cc.check_rating_map_consistency()
+    assert any("systemic-warning-framework.md" in e and "9-10" in e for e in errors)
+    assert not any("dual-track-methodology.md" in e for e in errors)
+    assert not any("consistency-audit" in e for e in errors)
+
+
+def test_check_sri_track_b_consistency_flags_contradiction(tmp_path, monkeypatch):
+    cc = _import_checker()
+    fake_engine = tmp_path / "engine"
+    fake_engine.mkdir()
+    (fake_engine / "systemic-warning-framework.md").write_text(
+        "trackB_penalty:\n  yellow = 0.5 for watch\n  yellow = 0 for calm\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(cc, "ENGINE_DIR", fake_engine)
+    errors = cc.check_sri_track_b_consistency()
+    assert errors
+    assert all("yellow penalty" in e for e in errors)
+
+
+def test_check_sri_track_b_consistency_allows_single_rule(tmp_path, monkeypatch):
+    cc = _import_checker()
+    fake_engine = tmp_path / "engine"
+    fake_engine.mkdir()
+    (fake_engine / "systemic-warning-framework.md").write_text(
+        "trackB_penalty:\n  yellow = 0 for calm\n", encoding="utf-8"
+    )
+    monkeypatch.setattr(cc, "ENGINE_DIR", fake_engine)
+    assert cc.check_sri_track_b_consistency() == []
+
+
+def test_check_skill_references_flags_stale_version(tmp_path, monkeypatch):
+    cc = _import_checker()
+    fake_engine = tmp_path / "engine"
+    fake_engine.mkdir()
+    (fake_engine / "industry-framework.md").write_text(
+        "**版本**: v0.7.0-alpha\n", encoding="utf-8"
+    )
+    fake_refs = tmp_path / "references"
+    fake_refs.mkdir()
+    (fake_refs / "industry-pyramids.md").write_text(
+        "**版本**: v0.6.9-alpha\n", encoding="utf-8"
+    )
+    monkeypatch.setattr(cc, "ENGINE_DIR", fake_engine)
+    monkeypatch.setattr(cc, "SKILL_REFERENCES_DIR", fake_refs)
+    errors = cc.check_skill_references()
+    assert any("industry-pyramids.md" in e and "v0.6.9-alpha" in e for e in errors)
+
+
+def test_check_skill_references_flags_missing_version(tmp_path, monkeypatch):
+    cc = _import_checker()
+    fake_engine = tmp_path / "engine"
+    fake_engine.mkdir()
+    (fake_engine / "mosaic-engine.md").write_text(
+        "**版本**: v0.7.0-alpha\n", encoding="utf-8"
+    )
+    fake_refs = tmp_path / "references"
+    fake_refs.mkdir()
+    (fake_refs / "mosaic-engine-architecture.md").write_text(
+        "# Mosaic engine\n", encoding="utf-8"
+    )
+    monkeypatch.setattr(cc, "ENGINE_DIR", fake_engine)
+    monkeypatch.setattr(cc, "SKILL_REFERENCES_DIR", fake_refs)
+    errors = cc.check_skill_references()
+    assert any("mosaic-engine-architecture.md" in e and "missing version header" in e for e in errors)
+
+
+def test_check_paradigm_coverage_flags_missing_industry(tmp_path, monkeypatch):
+    cc = _import_checker()
+    fake_engine = tmp_path / "engine"
+    fake_engine.mkdir()
+    (fake_engine / "contagion-matrix.md").write_text(
+        "### 1.2 范式映射表\n"
+        "| 序号 | 行业 | 范式归属 | 范式核心特征 | 金融属性 |\n"
+        "|---|---|---|---|---|\n"
+        "| 1 | 光伏/储能 | 范式A | ... | 中等 |\n"
+        "| 2 | 城投债(LGV) | 特殊 | ... | 极高 |\n"
+        "### 1.3 范式内聚类\n",
+        encoding="utf-8",
+    )
+    (fake_engine / "industry-framework.md").write_text(
+        "## 四、七行业金字塔规格\n### 4.1 光伏/储能\n| D1 | ... |\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(cc, "ENGINE_DIR", fake_engine)
+    errors = cc.check_paradigm_coverage()
+    assert any("城投债(LGV)" in e for e in errors)
+    assert not any("光伏/储能" in e for e in errors)
+
+
+def test_check_paradigm_coverage_accepts_judgmental_note(tmp_path, monkeypatch):
+    cc = _import_checker()
+    fake_engine = tmp_path / "engine"
+    fake_engine.mkdir()
+    (fake_engine / "contagion-matrix.md").write_text(
+        "### 1.2 范式映射表\n"
+        "| 序号 | 行业 | 范式归属 |\n|---|---|---|\n"
+        "| 1 | 食品饮料 | 范式E |\n"
+        "### 1.3\n",
+        encoding="utf-8",
+    )
+    (fake_engine / "industry-framework.md").write_text(
+        "## 范式边界说明\n食品饮料： judgmental assignment （品牌+渠道型范式）\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(cc, "ENGINE_DIR", fake_engine)
+    assert cc.check_paradigm_coverage() == []
