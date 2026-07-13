@@ -194,9 +194,9 @@ Each industry type has a different heaviest factor. Weights determined by 10-dim
 
 Each layer scores 0-10. Each layer has one-shot veto conditions (see `dev/engine/industry-framework.md`).
 
-## Six Analytical Paradigms
+## Six Analytical Paradigms + LGFV Special Category
 
-本框架包含 **6 个分析范式 + 1 个特殊类别（LGFV）**。LGFV 因政府信用绑定机制特殊，不强行归入六范式，但在传染矩阵中仍参与行业聚类分析。
+本节介绍 **6 个分析范式 + 1 个特殊类别（LGFV）**：六个通用范式用于描述普通行业的信用传染结构，LGFV 因政府信用绑定机制特殊而单列，不强行归入六范式，但在传染矩阵中仍参与行业聚类分析。
 
 > **注意**：6 个分析范式是用于传染聚类和行业分组的概念工具；它们不同于 `industry-framework.md` 中定义的 4 个行业类型（用于设置金字塔权重）。一个行业可能同时满足多个范式特征，此时以 `industry-framework.md` 的行业类型作为金字塔权重依据，以范式作为传染分析依据。存在冲突时，使用 `industry-framework.md` §3.1 的优先级规则。
 
