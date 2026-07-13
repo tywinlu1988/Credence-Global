@@ -148,12 +148,16 @@ def rating_adjustment(metrics: ConcentrationMetrics) -> dict:
     # Threshold-based BB-cap trigger per §7.3.
     # Condition #1 (single industry >50% + downturn + super-spreader) is not
     # directly observable because ConcentrationMetrics lacks an explicit
-    # single-industry share.  We use the following proxy:
-    single_industry_proxy = metrics.max1 >= 0.50 or metrics.cr3 >= 0.70
+    # single-industry share.  We proxy single-industry exposure with max1
+    # (largest single industry share) per the dataclass note above.
+    single_industry_proxy = metrics.max1 >= 0.50
 
     bb_cap_triggered = (
         red_count >= 3
         or single_industry_proxy
+        # Weak-region cap: the documented condition also requires
+        # "该区域内过去12个月有国企违约", which is not available in
+        # ConcentrationMetrics.
         or metrics.weak_region_share > 0.35
         or metrics.pseudo_high_rating_share > 0.40
         or (metrics.maturity_12m_share > 0.70 and metrics.top_channel_share > 0.70)
