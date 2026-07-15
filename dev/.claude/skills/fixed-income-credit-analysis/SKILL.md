@@ -28,7 +28,7 @@ A systematic methodology for evaluating corporate credit quality in China's fixe
 
 **Core principles:**
 1. Traditional financial analysis systematically fails in policy-driven, technology-barrier, and asset-lease industries. The heaviest credit factor is rarely on the balance sheet.
-2. External credit ratings consistently lag true credit deterioration by 17+ months across all validated cases.
+2. External credit ratings consistently lag true credit deterioration by 17+ months.
 3. **Mosaic theory:** Individual public data fragments are meaningless alone; assembled together they form coherent signals.
 4. **Information completeness theory:** Data gaps are not defects — they are risk signals. "We don't have this data" itself tells the user something meaningful.
 
@@ -326,36 +326,13 @@ Indicator Score = f(Raw Value, Threshold, Direction)
 | 1.0 - 1.9 | CCC | CCC | 极高风险 |
 | 0 - 0.9 | D | D | 违约/濒临 |
 
-## Black-Swan Retrospective Validation
-
-Two-time-point methodology (T1: 17-18 months, T2: 4-5 months before default). All data must have been publicly available AS OF the analysis point. See `dev/engine/validation-methodology.md`.
-
-## Validated Industries & Cases
-
-| Industry | Forward Test | Retrospective Test |
-|---|---|---|
-| Solar/PV | 完成 | — |
-| Semiconductor | 完成 | 完成 |
-| Biomedicine | 完成 | 完成 |
-| High-End Equipment | 完成 | 完成 |
-| Medical Devices | 完成 | 完成 |
-| NEV | 完成 | 完成 |
-| Data Center | 完成 | — |
-| Coal/SOE (Yongmei) | — | 完成 |
-| LGFV | 框架覆盖 | 框架覆盖 |
-| Food & Beverage | 13-industry framework coverage | — |
-| Textile & Apparel | 13-industry framework coverage | — |
-| Transportation | 13-industry framework coverage | — |
-| Retail | 13-industry framework coverage | — |
-| Media/Internet | 13-industry framework coverage | — |
-
 ## Key Design Principles
 
 1. Financial analysis is NEVER the heaviest layer. The heaviest factor is structural/external.
 2. Each industry has a different heaviest factor determined by 10-dimension scoring.
 3. Don't jump layers. L1 must pass before L2 is meaningful.
 4. L4 validates, never overrules. Poor financials with strong upper layers = may be investing through cycle. Strong financials with weak upper layers = MORE dangerous (peak cycle or fraud).
-5. Public data is sufficient. POC validated across 3 black-swan cases and 3 industries.
+5. Public data is sufficient across the 13 covered industries.
 6. Track B is independent, not subordinate. Divergence generates the most valuable questions.
 7. When tracks clash, prioritize auditable financial facts over external ratings.
 8. Data gaps are not defects — they are risk signals. Every analysis includes a completeness report.
@@ -374,7 +351,6 @@ Two-time-point methodology (T1: 17-18 months, T2: 4-5 months before default). Al
 - `dev/engine/lgv-framework.md` — LGFV (城投债) credit analysis framework
 - `dev/engine/lgd-recovery-framework.md` — LGD/recovery rate framework
 - `dev/engine/external-support-framework.md` — External support assessment framework
-- `dev/engine/false-positive-negative-testing.md` — False positive/negative testing methodology
 - `dev/engine/output-layered-framework.md` — Layered output system specification
 - `dev/templates/template-type1.html` — HTML report template (dark theme, Type 1 单标的深度分析)
 - `dev/engine/contagion-theory.md` — Contagion types, transmission paths, upgrade factors

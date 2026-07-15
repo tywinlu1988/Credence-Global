@@ -19,7 +19,7 @@
 ```
 dev/
 ├── README.md                                        ← 你在这里
-├── engine/                                          → 算法与方法论（26份现行文档）
+├── engine/                                          → 算法与方法论（25份现行文档）
 │   ├── engine-overview.md                          架构总览 · 文档导航
 │   ├── industry-framework.md                       行业分类（十维评分·13行业金字塔）
 │   ├── qualitative-analysis.md                     定性分析（信源·政策·马赛克·叙事）
@@ -38,7 +38,6 @@ dev/
 │   ├── financial-bond-framework.md                 金融债分析框架
 │   ├── holding-company-framework.md                控股公司信用分析框架
 │   ├── non-credit-risk-overlay.md                  非信用风险叠加层（市场/操作/声誉/战略/流动性）
-│   ├── false-positive-negative-testing.md          假阳性/假阴性测试（5案例实测）
 │   ├── output-layered-framework.md                 分层输出（L0信号卡+L1快照+L2深度+温度计卡片）
 │   ├── contagion-theory.md                         传染理论（四类型·七传导路径·升级因子）
 │   ├── contagion-matrix.md                         ⭐13×13行业传染矩阵（传导强度·行业聚类）
@@ -64,79 +63,29 @@ dev/
 │   ├── product-overview.md                         产品愿景 · 魔法体验 · 用户画像
 │   └── commercial-model.md                         商业化模型 · 买方模拟 · GTM策略
 │
-├── reports/                                         → 13行业信贷+系统智能+验证报告（共72份，15个子目录）
-│   ├── solar/                                      光伏/储能（11份）
-│   ├── semiconductor/                              半导体/集成电路（7份）
-│   ├── equipment/                                  高端装备（3份）
-│   ├── biomedicine/                                生物医药（3份）
-│   ├── medicaldevice/                              医疗器械（3份）
-│   ├── nev/                                        新能源汽车（4份）
-│   ├── datacenter/                                 数据中心（3份）
-│   ├── lgv/                                        城投债（6份）
-│   ├── textile-apparel/                            纺织服装（4份）
-│   ├── food-beverage/                              食品饮料（4份）
-│   ├── transportation/                             交通运输（4份）
-│   ├── retail/                                     零售（4份）
-│   ├── media-internet/                             传媒互联网（4份）
-│   ├── system-intelligence/                        ⭐系统智能（9份：4传染+3集中度+1预警+1验证统计）
-│   └── validation/                                 验证报告（3份）
-│
 └── .claude/skills/fixed-income-credit-analysis/     → AI技能包（模板统一引用 dev/templates/）
 ```
+
+> 能力验证证据（72 份测试报告等）存档于仓库根级 `../validation/`，为测试输出而非项目组成部分，永不进入版本快照。
 
 ---
 
 ## 当前进度
 
-### 方法论验证（13/13 行业完成）
-
-| 行业 | 验证类型 | 标杆 | 困境 | 区分度 |
-|---|---|---|---|---|
-| 光伏/储能 | 前瞻对比 | 隆基 7.00 (BBB+) | 一道新能 1.50 (CCC) | 5.50分 |
-| 半导体/集成电路 | 回溯验证 | 紫光集团（T-17月） | — | L5全部红色 |
-| 高端装备/工业母机 | 前瞻对比 | 科德数控 81.2% | 拓璞数控 36.6% | 11.15分 |
-| 生物医药/创新药 | 前瞻对比 | 百济神州 8.11 | 迈威生物 4.57 | 3.54分 |
-| 医疗器械 | 前瞻对比 | 迈瑞 7.88 (BBB+) | 万东 4.19 (B-) | 3.69分 |
-| 新能源汽车 | 前瞻对比 | 比亚迪 6.52 / CATL 8.77 | 零跑 5.21 / 欣旺达 3.66 | 20%/58% |
-| 数据中心/算力基建 | 前瞻对比 | 万国数据 7.46 | 世纪互联 5.36 | 2.10分 |
-| 城投债(LGV) | 框架验证 | 杭州LGV 6.70 | 黔城LGV 3.80 | 2.90分 |
-| 纺织服装 | 方法论+报告 | 安踏 | 困境标的 | 框架完成 |
-| 食品饮料 | 方法论+报告 | 茅台 | 困境标的 | 框架完成 |
-| 交通运输 | 方法论+报告 | 顺丰 | 困境标的 | 框架完成 |
-| 零售 | 方法论+报告 | 京东 | 困境标的 | 框架完成 |
-| 传媒互联网 | 方法论+报告 | 腾讯 | 困境标的 | 框架完成 |
-
 ### 系统智能层（v0.7.0 新增）
 
 | 模块 | 状态 | 核心文档 |
 |---|---|---|
-| 传染图谱 | ✅ 完成 | contagion-theory.md · contagion-matrix.md · 4份复盘报告 |
-| 集中度仪表盘 | ✅ 完成 | concentration-framework.md · 3份情景报告（Type 14） |
-| 系统性预警 | ✅ 完成 | systemic-warning-framework.md · 当前时点SRI读数（Type 15） |
+| 传染图谱 | ✅ 完成 | contagion-theory.md · contagion-matrix.md |
+| 集中度仪表盘 | ✅ 完成 | concentration-framework.md |
+| 系统性预警 | ✅ 完成 | systemic-warning-framework.md |
 | 温度计L0卡片 | ✅ 完成 | 集成至output-layered-framework.md §3.6 |
 
-### 报告与模板
+### 报告模板
 
 | 类型 | 数量 | 说明 |
 |---|---|---|
-| 行业信用报告 | 60份 · 13行业 × 多标的 | 覆盖全部13行业的详细信用分析报告（按行业子目录归类） |
-| 系统智能报告 | 8份（⭐标记） | 传染复盘4份 + 集中度情景3份 + 系统性警报1份 |
-| 验证报告 | 4份 | 永煤回溯 + 华晨多利益相关者 + 行业验证 + 引擎验证统计 |
 | 报告模板 | 15种（Type 1-Type 15） | `templates/` 单一事实源（template-base.css + type1-15.html） |
-
-合计 **72份报告**（60 行业 + 8 系统智能 + 4 验证），模板独立于报告计数。
-
-### 黑天鹅回溯验证（3/3 完成）
-
-| 案例 | 预警窗口 | 身份视角 |
-|---|---|---|
-| 永煤控股 | 17个月（双时点） | 信贷审批 |
-| 紫光集团 | 17个月 | 信贷审批 |
-| 华晨汽车 | 22个月 | 信贷+投资+交易/风控（三身份并行） |
-
-### 假阳性/假阴性测试（完成）
-
-完整引擎假阴性率 0%（5案例实测）· 治理/欺诈模块对欺诈型违约的识别起决定性作用
 
 ### 产品设计（完成）
 
@@ -152,9 +101,6 @@ dev/
 
 | 想了解... | 去看... |
 |---|---|
-| 72份报告总览（按15个子目录归类） | `reports/` |
-| 某行业信用报告（示例：光伏隆基） | `reports/solar/solar-longi-credit-report.html` |
-| 系统智能报告（示例：永煤传染复盘） | `reports/system-intelligence/contagion-yongmei-2020.html` |
 | 报告模板（Type 1-15 + 共享样式） | `templates/` |
 | 系统智能层总览 | `engine/systemic-warning-framework.md` + `engine/contagion-matrix.md` + `engine/concentration-framework.md` |
 | 产品愿景和魔法体验 | `product/product-overview.md` |
@@ -169,7 +115,6 @@ dev/
 | 城投债分析框架 | `engine/lgv-framework.md` |
 | LGD/回收率评估 | `engine/lgd-recovery-framework.md` |
 | 外部支持评估 | `engine/external-support-framework.md` |
-| 假阳性/假阴性测试结果 | `engine/false-positive-negative-testing.md` |
 | 传染矩阵与跨行业分析 | `engine/contagion-matrix.md` |
 | 组合集中度评估 | `engine/concentration-framework.md` |
 | 系统性风险指数 | `engine/systemic-warning-framework.md` |
