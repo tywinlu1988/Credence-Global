@@ -8,9 +8,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 ENGINE_DIR = ROOT / "dev" / "engine"
-TEMPLATES_DIR = ROOT / "dev" / "design" / "templates"
+TEMPLATES_DIR = ROOT / "dev" / "templates"
 SKILL_FILE = ROOT / "dev" / ".claude" / "skills" / "fixed-income-credit-analysis" / "SKILL.md"
 SKILL_REFERENCES_DIR = ROOT / "dev" / ".claude" / "skills" / "fixed-income-credit-analysis" / "references"
+SKILL_TEMPLATES_DIR = ROOT / "dev" / ".claude" / "skills" / "fixed-income-credit-analysis" / "templates"
 
 EXPECTED_VERSION = "v0.7.0-alpha"
 
@@ -34,7 +35,6 @@ CORE_DOCS = [
     "esg-framework.md",
     "governance-fraud-risk.md",
     "false-positive-negative-testing.md",
-    "final-review-2026-07-08.md",
     "outlook-monitoring-framework.md",
     "lgd-recovery-framework.md",
     "lgv-framework.md",
@@ -152,7 +152,13 @@ def check_links() -> list[str]:
         text = path.read_text(encoding="utf-8")
         for match in re.finditer(r"\[.*?\]\(([^)]+\.md)(?:#[^)]*)?\)", text):
             link = match.group(1)
-            target = ENGINE_DIR / link
+            # Resolve relative to the referencing file's own directory first
+            # (standard markdown semantics, so same-dir links inside audits/
+            # resolve), then fall back to the engine root for the bare sibling
+            # links authored when every doc lived flat under dev/engine/.
+            target = path.parent / link
+            if not target.exists():
+                target = ENGINE_DIR / link
             if not target.exists():
                 errors.append(f"BROKEN_LINK: {path.relative_to(ENGINE_DIR)} -> {link}")
     return errors
@@ -268,6 +274,16 @@ def check_skill_references() -> list[str]:
     return errors
 
 
+def check_skill_template_drift() -> list[str]:
+    """Templates are single-sourced under dev/templates/; the skill must not keep copies."""
+    if SKILL_TEMPLATES_DIR.exists():
+        return [
+            "SKILL_TEMPLATE_DRIFT: skill must not keep its own templates/ copies; "
+            "dev/templates/ is the single source"
+        ]
+    return []
+
+
 def _parse_contagion_industries(path: Path) -> list[str]:
     text = path.read_text(encoding="utf-8")
     start = text.find("### 1.2 范式映射表")
@@ -329,6 +345,7 @@ def collect_errors(only_links: bool = False) -> list[str]:
     errors.extend(check_sri_scale())
     errors.extend(check_rating_map())
     errors.extend(check_audit_versions())
+    errors.extend(check_skill_template_drift())
     return errors
 
 
