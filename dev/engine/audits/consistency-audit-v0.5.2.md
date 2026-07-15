@@ -246,7 +246,7 @@
 | R2-2 | `dual-track-methodology.md` §7.3 | 引用"第二节LGD五级分类体系" | `lgd-recovery-framework.md` 第二节标题"LGD五级分类体系" | ✅ 正确 |
 | R2-3 | `dual-track-methodology.md` §7.5 | 备注"（同7.5节）"——但实际在引用7.5节内部 | 自引用 | ✅ 正确 |
 | R2-4 | `dual-track-methodology.md` §9.3 | 引用"9.3节"场景H/I | 当前文档自身§9.3 | ✅ 正确 |
-| R2-5 | `dual-track-methodology.md` §7.7.6后 | 引用"[城投双轨框架](lgv-framework.md)" | `lgv-framework.md` 无章节号引用 | N/A（文件级引用） |
+| R2-5 | `dual-track-methodology.md` §7.7.6后 | 引用"城投双轨框架（lgv-framework.md，现 lgfv-framework.md）" | `lgv-framework.md` 无章节号引用 | N/A（文件级引用） |
 | R2-6 | `lgv-framework.md` §3.1 | 引用"external-support-framework.md 4.1节" | `external-support-framework.md` §4.1 是否为四维模型？需确认 | ⚠️ 待验证 |
 | R2-7 | `esg-framework.md` §1.3 步骤 3b/3c | 引用"操作风险评估"和"声誉风险评估" | `non-credit-risk-overlay.md` §四（操作风险）和 §五（声誉风险） | ✅ 正确 |
 

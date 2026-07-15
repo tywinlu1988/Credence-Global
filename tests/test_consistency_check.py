@@ -180,6 +180,14 @@ def test_check_skill_references_flags_missing_version(tmp_path, monkeypatch):
     assert any("mosaic-engine-architecture.md" in e and "missing version header" in e for e in errors)
 
 
+def test_skill_references_version_headers_in_sync():
+    """T4.1: every skill references/ file's version header matches its engine counterpart
+    on the real dev tree (checker SKILL_REFERENCES mechanism activated by references/)."""
+    cc = _import_checker()
+    errors = cc.check_skill_references()
+    assert errors == [], f"Skill reference version headers out of sync: {errors}"
+
+
 def test_check_paradigm_coverage_flags_missing_industry(tmp_path, monkeypatch):
     cc = _import_checker()
     fake_engine = tmp_path / "engine"

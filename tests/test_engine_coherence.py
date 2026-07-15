@@ -135,3 +135,45 @@ def test_skill_has_no_validation_result_sections():
     assert "Retrospective Test" not in skill, (
         "Skill contains a 'Retrospective Test' validation table header"
     )
+
+
+def test_skill_md_slimmed_and_retains_mandatory_guardrails():
+    """T4.2: SKILL.md is slimmed to <=150 lines while retaining the three mandatory
+    guardrails (Mandatory Density Rules / Mode B / one-shot veto)."""
+    skill = SKILL_FILE.read_text(encoding="utf-8")
+    line_count = len(skill.splitlines())
+    assert line_count <= 150, (
+        f"SKILL.md is {line_count} lines; must be <=150 after the navigator slim-down"
+    )
+    for keyword in ["Mandatory Density Rules", "Mode B", "一票否决"]:
+        assert keyword in skill, f"SKILL.md lost mandatory guardrail keyword: {keyword}"
+
+
+def test_invocation_protocol_is_path_sheet_driven():
+    """T4.3: the Invocation Protocol consumes the router's work-path sheet
+    (engine_reading_order) instead of a hardcoded fixed document list as its sole entry."""
+    skill = SKILL_FILE.read_text(encoding="utf-8")
+    assert "engine_reading_order" in skill, (
+        "Invocation Protocol must read per the path sheet's engine_reading_order"
+    )
+    assert "credit-analysis-router" in skill, (
+        "Invocation Protocol must reference the router skill for path-sheet handoff"
+    )
+    assert "Read the canonical engine documents in this order" not in skill, (
+        "Invocation Protocol still uses the fixed canonical-document list as its entry"
+    )
+
+
+def test_lgv_framework_renamed_to_lgfv():
+    """T4.4: LGV is unified to LGFV — the framework file is renamed and no current
+    doc references the retired filename."""
+    retired = "lgv" + "-framework.md"  # split so the repo-wide residual grep stays clean
+    assert (ENGINE_DIR / "lgfv-framework.md").exists(), (
+        "dev/engine/lgfv-framework.md must exist"
+    )
+    assert not (ENGINE_DIR / retired).exists(), (
+        f"dev/engine/{retired} must be renamed away"
+    )
+    for path in [SKILL_FILE, ENGINE_DIR / "engine-overview.md"]:
+        text = path.read_text(encoding="utf-8")
+        assert retired not in text, f"{path.name} still references {retired}"

@@ -32,7 +32,7 @@ dev/
 │   ├── lgd-recovery-framework.md                   LGD回收率（五级·抵押物·回收路径）
 │   ├── external-support-framework.md               外部支持（政府/集团/战投·能力vs意愿）
 │   ├── outlook-monitoring-framework.md             展望+监控（展望·观察名单·持续监控·迁移矩阵）
-│   ├── lgv-framework.md                            城投债（政府+平台双轨·四级分类）
+│   ├── lgfv-framework.md                           城投债（政府+平台双轨·四级分类）
 │   ├── governance-fraud-risk.md                    治理/欺诈风险（20+信号·逃废债检测）
 │   ├── esg-framework.md                            ESG + 治理/欺诈检测框架
 │   ├── financial-bond-framework.md                 金融债分析框架
@@ -112,7 +112,7 @@ dev/
 | 双轨框架+交叉对撞 | `engine/dual-track-methodology.md` |
 | 马赛克引擎+完备性评估 | `engine/mosaic-engine.md` |
 | 多利益相关者视角 | `engine/multi-stakeholder.md` |
-| 城投债分析框架 | `engine/lgv-framework.md` |
+| 城投债分析框架 | `engine/lgfv-framework.md` |
 | LGD/回收率评估 | `engine/lgd-recovery-framework.md` |
 | 外部支持评估 | `engine/external-support-framework.md` |
 | 传染矩阵与跨行业分析 | `engine/contagion-matrix.md` |
