@@ -135,6 +135,7 @@ dev/
 | v0.5.0-alpha | 2026-07-08 | 8行业验证全覆盖。三层输出体系。风险缓释建议。压力测试升级。引擎终审。8行业验证报告HTML。 |
 | **v0.7.0-alpha** | **2026-07-10** | **系统智能层发布：传染图谱（4份复盘+13×13矩阵+Type 13）·集中度仪表盘（五维框架+3份情景+Type 14）·系统性预警（SRI温度计+Type 15）。引擎架构升级至四层。M4组合风控完整实现。13行业全量覆盖。L0温度计卡片。15种报告模板体系。** |
 | **v0.7.1-alpha** | **2026-07-15** | **开发栈结构重整：模板单源化 `templates/`（Type 1-15 + template-base.css）、engine 26份现行+15份归档 `engine/audits/`、72份报告按15个子目录归类、design/data 归位、README 与磁盘现实严格对齐。** |
+| v0.7.1-alpha（快照重建） | 2026-07-15 | 验证产物分离：72 份测试报告与测试执行记录迁出至根级 validation/（非项目本体，永不入快照）；README/SKILL 移除验证结果表格与案例清单；engine 现行文档 25 份；v0.7.1 快照按新边界重建 |
 
 > **注**：v0.6.x系列为模块级预发布版本（contagion-matrix.md、concentration-framework.md、systemic-warning-framework.md 等独立发布），功能统一纳入 v0.7.0-alpha。
 
