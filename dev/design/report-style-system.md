@@ -318,32 +318,36 @@ tbody tr:hover { background: var(--bg-hover); }
 
 ## 六、代码组织
 
+> v0.7.1 起，模板作为单一事实源集中存放于顶层 `dev/templates/`；`design/` 仅保留本设计规格。
+
 ```
-design/
-├── report-style-system.md       ← 本文件（设计规格）
-├── templates/
-│   ├── template-base.css        基础色板+字体+布局（12种类型共享）
-│   ├── template-type1.html      单标的深度分析
-│   ├── template-type2.html      双标的前瞻对比
-│   ├── template-type3.html      黑天鹅回溯验证
-│   ├── template-type4.html      多身份并行评估
-│   ├── template-type5.html      债券投资仪表盘
-│   ├── template-type6.html      马赛克完备性报告
-│   ├── template-type7.html      行业方法论页
-│   ├── template-type8.html      债项LGD评估
-│   ├── template-type9.html      外部支持专项评估
-│   ├── template-type10.html     ESG+治理风险扫描
-│   ├── template-type11.html     压力测试报告
-│   └── template-type12.html     引擎验证统计
-└── components/
-    └── components.css            Card/Strip/Table/Metric/Timeline/Signal（独立CSS片段）
+dev/
+├── design/
+│   └── report-style-system.md   ← 本文件（设计规格）
+└── templates/                   ← 模板单一事实源（v0.7.1 起）
+    ├── template-base.css        基础色板+字体+布局（15种类型共享）
+    ├── template-type1.html      单标的深度分析
+    ├── template-type2.html      双标的前瞻对比
+    ├── template-type3.html      黑天鹅回溯验证
+    ├── template-type4.html      多身份并行评估
+    ├── template-type5.html      债券投资仪表盘
+    ├── template-type6.html      马赛克完备性报告
+    ├── template-type7.html      行业方法论页
+    ├── template-type8.html      债项LGD评估
+    ├── template-type9.html      外部支持专项评估
+    ├── template-type10.html     ESG+治理风险扫描
+    ├── template-type11.html     压力测试报告
+    ├── template-type12.html     引擎验证统计
+    ├── template-type13.html     传染分析报告
+    ├── template-type14.html     组合集中度报告
+    └── template-type15.html     系统性风险警报
 ```
 
 ### 文件使用方式
 
-- `template-base.css` 被所有12个模板引用（`<link rel="stylesheet">`）
+- `template-base.css` 被各模板引用（`<link rel="stylesheet">`，同目录相对路径 `template-base.css`）
 - 每个 `.html` 模板仅包含：特定于此类型的Hero渐变+Strip列数调整+特定内容结构
-- `components.css` 提供可复用的组件样式片段
+- 实例报告位于 `dev/reports/<子目录>/`，通过 `../../templates/template-base.css` 引用样式
 - 语义色变量和字体变量继承自 `template-base.css`
 
 ---
@@ -353,3 +357,4 @@ design/
 | 版本 | 日期 | 变更 |
 |---|---|---|
 | v1.0 | 2026-07-08 | 初始设计：色彩体系、字体排版、布局骨架、6组件、12报告类型 |
+| v1.1 | 2026-07-15 | 代码组织章节同步 v0.7.1 结构：模板迁至 `dev/templates/`（15 种类型），移除不存在的 components/ 目录 |
