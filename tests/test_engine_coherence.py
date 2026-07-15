@@ -115,11 +115,23 @@ def test_thermometer_full_band_definitions_present():
     assert "SRI ≥ 1.8" in text
 
 
-def test_skill_validation_table_matches_engine():
-    """The skill validation table must not overstate which cases are complete."""
+def test_skill_has_no_validation_result_sections():
+    """Validation results are test evidence, not skill documentation.
+
+    The skill documents engine capabilities. Validation outcome tables and case
+    lists are archived in the root-level ``validation/`` directory and must not
+    reappear as skill content.
+    """
     skill = SKILL_FILE.read_text(encoding="utf-8")
-    # Solar/PV forward validation is complete, but retrospective validation is
-    # intentionally not claimed in the engine validation methodology.
-    assert "Solar/PV | 完成 | 完成" not in skill, (
-        "Skill overstates Solar/PV retrospective validation as complete"
+    assert "## Validated Industries & Cases" not in skill, (
+        "Skill lists validated industries/cases; these belong to validation/, not the skill"
+    )
+    assert "## Black-Swan Retrospective Validation" not in skill, (
+        "Skill documents black-swan retrospective results; these belong to validation/, not the skill"
+    )
+    assert "Forward Test" not in skill, (
+        "Skill contains a 'Forward Test' validation table header"
+    )
+    assert "Retrospective Test" not in skill, (
+        "Skill contains a 'Retrospective Test' validation table header"
     )
