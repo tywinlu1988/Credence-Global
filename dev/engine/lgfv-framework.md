@@ -1,4 +1,4 @@
-# 城投债信用分析框架 — LGV（Local Government Vehicle）
+# 城投债信用分析框架 — LGFV（Local Government Financing Vehicle，原 LGV）
 
 **版本**: v0.7.1-release | **日期**: 2026-07-10
 **定位**: 第八个"准行业"分析框架 · 轨道A基本面分析的特殊行业模板 · 与external-support-framework.md联动
@@ -468,7 +468,7 @@
 
 本框架与external-support-framework.md的关系：
 
-| 本框架（lgv-framework.md） | external-support-framework.md | 关系 |
+| 本框架（lgfv-framework.md） | external-support-framework.md | 关系 |
 |---------------------------|------------------------------|------|
 | 第一轨：政府信用评估（3.1-3.5） | 第四章：政府支持能力评估（4.1-4.2） | 本框架是城投专属化版本——细化到区县级评估，增加土地财政依赖度分析 |
 | 第一轨：支持意愿（3.3） | 第五章：支持意愿评估（5.1-5.3） | 本框架增加了"平台整合类"和"区域传染类"信号——城投特有的支持意愿变化信号 |

@@ -36,7 +36,7 @@ CORE_DOCS = [
     "governance-fraud-risk.md",
     "outlook-monitoring-framework.md",
     "lgd-recovery-framework.md",
-    "lgv-framework.md",
+    "lgfv-framework.md",
 ]
 
 SRI_PCT_PATTERN = re.compile(r"SRI\s*[:：]\s*\d{2}\s*/\s*100", re.IGNORECASE)
@@ -113,6 +113,9 @@ REFERENCE_TO_ENGINE_MAP = {
     "industry-pyramids.md": "industry-framework.md",
     "mosaic-engine-architecture.md": "mosaic-engine.md",
     "validation-cases.md": "validation-methodology.md",
+    "industry-scoring.md": "industry-framework.md",
+    "system-intelligence.md": "systemic-warning-framework.md",
+    "stakeholder-paths.md": "multi-stakeholder.md",
 }
 VERSION_HEADER_RE = re.compile(r"\*\*(?:版本|对应引擎版本)\*\*\s*[:：]?\s*([^\s|]+)")
 
