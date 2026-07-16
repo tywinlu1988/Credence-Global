@@ -40,7 +40,6 @@ ENGINE_DIR = ROOT / "dev" / "engine"
 SKILLS_DIR = ROOT / "dev" / ".claude" / "skills"
 WALKTHROUGH = ROOT / "validation" / "docs" / "v0.8.0-end-to-end-walkthroughs.md"
 SNAPSHOT = ROOT / "version" / "v0.8.0-release"
-SNAPSHOT_ZIP = ROOT / "version" / "v0.8.0-release.zip"
 CONSISTENCY_CHECK = ROOT / "scripts" / "consistency_check.py"
 BUILD_DIST = ROOT / "scripts" / "build_dist.py"
 
@@ -252,7 +251,7 @@ def test_t11_4_version_promotion_consistent(cc):
 # T11.5 — snapshot integrity: installable agent package (no dead links)
 # --------------------------------------------------------------------------
 
-def test_t11_5_snapshot_integrity(cc, bd):
+def test_t11_5_snapshot_integrity(cc, bd, tmp_path):
     assert SNAPSHOT.is_dir(), f"snapshot missing: {SNAPSHOT}"
 
     # generated entry/install docs (single universal package, per-tool entries)
@@ -295,5 +294,17 @@ def test_t11_5_snapshot_integrity(cc, bd):
                 dead.append(f"{f.relative_to(SNAPSHOT)}: dev/ token")
     assert not dead, f"dead links in snapshot: {dead[:20]}"
 
-    # distribution zip generated alongside the dir
-    assert SNAPSHOT_ZIP.is_file(), f"snapshot zip missing: {SNAPSHOT_ZIP}"
+    # distribution packaging: the snapshot dir can be zipped into the release artifact
+    # (top-level v0.8.0-release/). The zip itself is NOT committed (*.zip is gitignored)
+    # — it is built on demand and attached to GitHub Releases, so we build it into a
+    # tmp dir here to verify the packaging path works on any clean clone.
+    import zipfile
+    tmp_zip = tmp_path / "release.zip"
+    files = sorted(p for p in SNAPSHOT.rglob("*") if p.is_file())
+    with zipfile.ZipFile(tmp_zip, "w", zipfile.ZIP_DEFLATED) as z:
+        for p in files:
+            z.write(p, f"v0.8.0-release/{p.relative_to(SNAPSHOT).as_posix()}")
+    with zipfile.ZipFile(tmp_zip) as z:
+        names = z.namelist()
+    assert names and all(n.startswith("v0.8.0-release/") for n in names)
+    assert sum(n.endswith("SKILL.md") for n in names) == len(FOUR_SKILLS)
