@@ -30,6 +30,7 @@
 | **systemic-warning-framework.md** | SRI信号聚合 · 四级温度计 · 历史回测 · 即时计算 | 需要系统性风险读数 |
 | **work-path-registry.md** | 工作路径注册表 · 角色×方向×深度×报告的路径定义 | 需要确认走哪条路径时查阅 |
 | **pipeline-contract.md** | 四段链 I/O 契约 · 四份产物 schema · 链式边（机器可读） | 需要确认阶段间传递什么产物时查阅 |
+| [pipeline.py](../../src/pipeline.py) | 四段链可执行编排器（v0.7.8）：解析阶段计划、接 WP-M4-01/WP-M4-03 两个编码引擎 | 需要以代码驱动四段链、对接已编码引擎时查阅 |
 | **audits/financial-analysis-audit.md** | 财务层10项标准差距审查 | 审查记录 |
 | **audits/quantitative-audit.md** | 定量模块统计严谨性审查 | 审查记录 |
 | **audits/rating-agency-benchmark-audit.md** | 评级机构方法论对标 | 审查记录 |
@@ -195,6 +196,7 @@ Indicator Score = f(Raw Value, Threshold, Direction)
 | 0.5.4-alpha | 2026-07-10 | 一致性审计修复：术语统一、阈值对齐、版本号标准化、交叉引用补全 |
 | **0.7.0-alpha** | **2026-07-10** | **系统智能层发布：+传染矩阵、集中度框架、系统性预警框架。引擎架构升级至四层。13行业覆盖。M4组合风控完整实现。** |
 | 0.7.7-alpha | 2026-07-16 | 四段链契约落地：新增 pipeline-contract.md（四份产物 schema + 链式边机器可读），report/qa 两阶段 skill 接入四段链 |
+| 0.7.8-alpha | 2026-07-16 | 可执行编排器 + 接编码引擎：新增 src/pipeline.py（从 pipeline-contract.md 读阶段定义、复用 path_sheet.py），接线 WP-M4-03(SRI)/WP-M4-01(集中度) 两个编码引擎，新增代码↔文档阈值对账桥与链式边端点校验 |
 
 ---
 

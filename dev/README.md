@@ -126,6 +126,7 @@ dev/
 | 报告设计样式体系 | `design/report-style-system.md` |
 | 任意 agent CLI 的通用入口（Claude Code/Codex/Cursor/Gemini/OpenCode） | `../AGENTS.md` |
 | 四段链产物契约（工作路径单/分析产物/交付单/质检裁决） | `engine/pipeline-contract.md` |
+| 可执行编排器（v0.7.8：以代码驱动四段链，接 WP-M4-01/WP-M4-03 两个编码引擎） | `../src/pipeline.py` |
 | AI Agent使用这套方法论（四段链：路由/分析/报告/质检） | `.claude/skills/` |
 | 版本管理策略与发布流程 | `../docs/VERSION-MANAGEMENT.md` |
 
