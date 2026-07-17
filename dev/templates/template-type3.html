@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="黑天鹅回溯验证 · 永煤控股2020年违约事件 · 预警框架有效性验证">
-<title>黑天鹅回溯验证 · 永煤控股违约 2020.11.10</title>
+<meta name="description" content="Black Swan Backtest Validation · Yongmei Holding 2020 Default Event · Early Warning Framework Effectiveness Validation">
+<title>Black Swan Backtest Validation · Yongmei Holding Default 2020.11.10</title>
 <link rel="stylesheet" href="template-base.css">
 <style>
   .hero { background: linear-gradient(135deg, #0f172a, #4a1a1a, #7c2d12); }
@@ -24,16 +24,16 @@
 
 <!-- ====== HERO ====== -->
 <div class="hero" style="background: linear-gradient(135deg, #0f172a, #4a1a1a, #7c2d12);">
-  <span class="chip">TYPE 3 · 黑天鹅回溯验证</span>
-  <h1>永城煤电控股集团 · 2020年超短融违约回溯验证</h1>
-  <p class="subtitle">基于统一信贷评估框架，在违约前两个时点（T-17月、T-4.5月）进行金字塔扫描，验证框架对"国企AAA信仰"类违约事件的预警能力，识别框架改进空间</p>
+  <span class="chip">TYPE 3 · Black Swan Backtest Validation</span>
+  <h1>Yongcheng Coal & Power Holding Group · 2020 Ultra-Short-Term Note Default Backtest</h1>
+  <p class="subtitle">Based on the Unified Credit Assessment Framework, pyramid scans were conducted at two pre-default time points (T-17 months, T-4.5 months) to validate the framework's early warning capability for "SOE AAA faith" type default events and identify areas for framework improvement</p>
   <div class="meta">
-    <span>违约主体：永城煤电控股集团</span>
-    <span>违约日：2020-11-10</span>
-    <span>回溯时点一：2019-06-30 (T-17月)</span>
-    <span>回溯时点二：2020-06-30 (T-4.5月)</span>
-    <span>预警窗口：17个月</span>
-    <span>版本：v2.0</span>
+    <span>Default Entity: Yongcheng Coal & Power Holding Group</span>
+    <span>Default Date: 2020-11-10</span>
+    <span>Backtest Time Point 1: 2019-06-30 (T-17 months)</span>
+    <span>Backtest Time Point 2: 2020-06-30 (T-4.5 months)</span>
+    <span>Early Warning Window: 17 months</span>
+    <span>Version: v2.0</span>
   </div>
 </div>
 
@@ -43,74 +43,74 @@
   <!-- ====== STRIP ====== -->
   <div class="strip">
     <div class="strip-item">
-      <div class="slabel">违约主体</div>
-      <div class="sval" style="font-size:20px;">永煤控股</div>
-      <div class="ssub">河南省属国企·煤化工</div>
+      <div class="slabel">Default Entity</div>
+      <div class="sval" style="font-size:20px;">Yongmei Holding</div>
+      <div class="ssub">Henan Provincial SOE · Coal Chemical</div>
     </div>
     <div class="strip-item">
-      <div class="slabel">违约债券</div>
-      <div class="sval" style="font-size:20px;">20永煤SCP003</div>
-      <div class="ssub">10亿超短融·2020.11.10</div>
+      <div class="slabel">Default Bond</div>
+      <div class="sval" style="font-size:20px;">20 Yongmei SCP003</div>
+      <div class="ssub">1 Billion Ultra-Short-Term Note · 2020.11.10</div>
     </div>
     <div class="strip-item">
-      <div class="slabel">违约时外部评级</div>
+      <div class="slabel">External Rating at Default</div>
       <div class="sval" style="color:var(--green);font-size:20px;">AAA</div>
-      <div class="ssub">直至违约前30天</div>
+      <div class="ssub">Until 30 days before default</div>
     </div>
     <div class="strip-item">
-      <div class="slabel">框架预警窗口</div>
-      <div class="sval" style="color:var(--amber);">17个月</div>
-      <div class="ssub">T-17月即触发预警</div>
+      <div class="slabel">Framework Early Warning Window</div>
+      <div class="sval" style="color:var(--amber);">17 months</div>
+      <div class="ssub">Triggered at T-17 months</div>
     </div>
   </div>
 
-  <!-- ====== SECTION 1: 事件概要 ====== -->
+  <!-- ====== SECTION 1: Event Overview ====== -->
   <div class="section">
-    <h2 class="section-title">一、违约事件概要</h2>
+    <h2 class="section-title">1. Default Event Overview</h2>
     <div class="card card-red">
-      <h3>事件全景</h3>
+      <h3>Event Panorama</h3>
       <p style="color:var(--text-secondary);line-height:1.7;">
-        2020年11月10日，永城煤电控股集团（AAA省级国企）未能按期兑付"20永煤SCP003"本息10.32亿元，引发中国信用债市场史上最剧烈的冲击之一。
-        作为河南省最大煤炭国企（总资产1,724亿元），永煤违约直接打破了"AAA国企刚兑"的市场信仰，导致信用债市场流动性骤降：
-        一周内多只煤企/城投债收益率飙升200-500bp，信用债发行几乎停滞，多家机构暂停质押式回购。
-        更引人深思的是，违约前半年，永煤仍维持AAA主体评级——外部评级机构对这一事件的预警能力几乎为零。
+        On November 10, 2020, Yongcheng Coal & Power Holding Group (AAA-rated provincial SOE) failed to repay the principal and interest of "20 Yongmei SCP003" amounting to 1.032 billion yuan, triggering one of the most severe shocks in the history of China's credit bond market.
+        As Henan's largest state-owned coal enterprise (total assets of 172.4 billion yuan), Yongmei's default directly shattered the market's faith in "AAA SOE rigid repayment," causing a sharp decline in credit bond market liquidity:
+        Within a week, yields on multiple coal enterprise/city investment bonds surged 200-500bp, credit bond issuance virtually halted, and many institutions suspended pledged repo transactions.
+        More thought-provoking is that half a year before the default, Yongmei still maintained its AAA issuer rating — the external rating agencies' early warning capability for this event was nearly zero.
       </p>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>事件背景与市场环境</h3>
+      <h3>Event Background and Market Environment</h3>
       <p style="color:var(--text-secondary);line-height:1.7;">
-        永煤控股的全称为永城煤电控股集团有限公司，是河南省属国有企业河南能源化工集团（豫能化）的核心子公司。永煤主要从事煤炭开采、洗选和销售，同时涉足化工、贸易、装备制造等非煤业务。截至2019年末，公司总资产1,724亿元，年营收约480亿元，员工5.7万人，是河南省规模最大的煤炭企业。
+        The full name of Yongmei Holding is Yongcheng Coal & Power Holding Group Co., Ltd., a core subsidiary of the Henan provincial SOE Henan Energy & Chemical Group (Yuneng Chemical). Yongmei is primarily engaged in coal mining, washing, and sales, while also involved in non-coal businesses such as chemicals, trading, and equipment manufacturing. As of the end of 2019, the company had total assets of 172.4 billion yuan, annual revenue of approximately 48 billion yuan, and 57,000 employees, making it the largest coal enterprise in Henan Province.
       </p>
       <p style="color:var(--text-secondary);line-height:1.7;margin-top:8px;">
-        在违约发生前，中国信用债市场长期存在"国企刚兑信仰"——即市场普遍认为AAA评级的国有企业不会发生违约。这一信仰源于历史上国企违约案例极少，且政府通常会通过协调金融机构、注入资产等方式避免国企公开市场违约。永煤的违约彻底打破了这一信仰，标志着中国信用债市场定价体系的历史性转折点。违约后，市场开始对国企信用进行重新定价，弱资质国企与优质国企之间的信用利差系统性走阔，"国企信仰"溢价被大幅压缩。
+        Before the default occurred, China's credit bond market had long held a "SOE rigid repayment faith" — the widespread belief that AAA-rated state-owned enterprises would not default. This belief stemmed from the extremely rare cases of SOE defaults historically, and the fact that governments typically avoided public market defaults by coordinating financial institutions and injecting assets. Yongmei's default completely shattered this belief, marking a historic turning point in the pricing system of China's credit bond market. After the default, the market began to reprice SOE credit, the credit spread between weak and strong SOEs systematically widened, and the "SOE faith" premium was significantly compressed.
       </p>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>违约主体背景</h3>
+      <h3>Default Entity Background</h3>
       <div class="grid-2">
         <div>
           <table>
-            <thead><tr><th>指标</th><th>数值</th><th>备注</th></tr></thead>
+            <thead><tr><th>Indicator</th><th>Value</th><th>Notes</th></tr></thead>
             <tbody>
-              <tr><td>总资产（2019末）</td><td>1,724亿元</td><td>河南省国企排名前列</td></tr>
-              <tr><td>资产负债率</td><td>72.1%→74.3%</td><td>连续三年攀升</td></tr>
-              <tr><td>年营收</td><td>约480亿元</td><td>煤炭+化工+贸易</td></tr>
-              <tr><td>归母净利润</td><td>12.5亿→-3.2亿</td><td>2020H1由正转负</td></tr>
-              <tr><td>员工人数</td><td>约5.7万人</td><td>河南省重点企业</td></tr>
+              <tr><td>Total Assets (End 2019)</td><td>172.4 billion</td><td>Top-ranking among Henan SOEs</td></tr>
+              <tr><td>Asset-Liability Ratio</td><td>72.1%→74.3%</td><td>Rising for three consecutive years</td></tr>
+              <tr><td>Annual Revenue</td><td>~48 billion</td><td>Coal + Chemical + Trading</td></tr>
+              <tr><td>Net Profit Attributable to Parent</td><td>1.25B → -0.32B</td><td>Turned negative in 2020H1</td></tr>
+              <tr><td>Number of Employees</td><td>~57,000</td><td>Key enterprise in Henan Province</td></tr>
             </tbody>
           </table>
         </div>
         <div>
           <table>
-            <thead><tr><th>信用事件</th><th>日期</th><th>状态</th></tr></thead>
+            <thead><tr><th>Credit Event</th><th>Date</th><th>Status</th></tr></thead>
             <tbody>
-              <tr><td>20永煤SCP003本息兑付</td><td>2020-11-10</td><td><span class="tag tag-red">未兑付·违约</span></td></tr>
-              <tr><td>20永煤SCP004/005交叉违约</td><td>2020-11-12</td><td><span class="tag tag-amber">触发交叉违约条款</span></td></tr>
-              <tr><td>豫能化交叉违约</td><td>2020-11-13</td><td><span class="tag tag-amber">母公司多只债券触发</span></td></tr>
-              <tr><td>存续债券持有人会议</td><td>2020-11-23</td><td><span class="tag tag-blue">商议展期方案</span></td></tr>
-              <tr><td>交易商协会自律调查</td><td>2020-11-27</td><td><span class="tag tag-red">启动调查</span></td></tr>
+              <tr><td>20 Yongmei SCP003 Principal & Interest Payment</td><td>2020-11-10</td><td><span class="tag tag-red">Unpaid · Default</span></td></tr>
+              <tr><td>20 Yongmei SCP004/005 Cross Default</td><td>2020-11-12</td><td><span class="tag tag-amber">Cross Default Clause Triggered</span></td></tr>
+              <tr><td>Yuneng Chemical Cross Default</td><td>2020-11-13</td><td><span class="tag tag-amber">Multiple Bonds of Parent Triggered</span></td></tr>
+              <tr><td>Outstanding Bondholders Meeting</td><td>2020-11-23</td><td><span class="tag tag-blue">Negotiating Extension Plan</span></td></tr>
+              <tr><td>NAFMII Self-Regulatory Investigation</td><td>2020-11-27</td><td><span class="tag tag-red">Investigation Initiated</span></td></tr>
             </tbody>
           </table>
         </div>
@@ -118,1014 +118,1014 @@
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>违约冲击传导链</h3>
+      <h3>Default Shock Transmission Chain</h3>
       <table>
-        <thead><tr><th>冲击阶段</th><th>时间</th><th>市场反应</th><th>严重程度</th></tr></thead>
+        <thead><tr><th>Shock Phase</th><th>Time</th><th>Market Reaction</th><th>Severity</th></tr></thead>
         <tbody>
-          <tr><td>第一阶段：恐慌抛售</td><td>2020.11.10-11.13</td><td>煤企债券遭恐慌性抛售，冀中能源/平煤/晋煤等收益率飙升300-500bp；多只煤企债盘中临停</td><td><span class="tag tag-red">极严重</span></td></tr>
-          <tr><td>第二阶段：信用冻结</td><td>2020.11.16-11.30</td><td>信用债发行大幅萎缩（仅正常发行量的40%），多只债券取消发行；质押式回购接受度骤降</td><td><span class="tag tag-red">严重</span></td></tr>
-          <tr><td>第三阶段：监管干预</td><td>2020.12月</td><td>监管介入，银行间市场流动性支持加码，但信用分层现象持续；存续债估值大幅调整</td><td><span class="tag tag-amber">中</span></td></tr>
-          <tr><td>第四阶段：结构重塑</td><td>2021.01-03</td><td>市场逐步修复，但"国企信仰"被打破后信用定价体系永久改变；弱资质国企利差系统性走阔</td><td><span class="tag tag-amber">结构性</span></td></tr>
+          <tr><td>Phase 1: Panic Selling</td><td>2020.11.10-11.13</td><td>Coal enterprise bonds were panic-sold, yields of Jizhong Energy/Pingdingshan Coal/Jinmei etc. surged 300-500bp; multiple coal bonds suspended intraday</td><td><span class="tag tag-red">Extreme</span></td></tr>
+          <tr><td>Phase 2: Credit Freeze</td><td>2020.11.16-11.30</td><td>Credit bond issuance sharply contracted (only 40% of normal volume), multiple bonds canceled; pledged repo acceptance plummeted</td><td><span class="tag tag-red">Severe</span></td></tr>
+          <tr><td>Phase 3: Regulatory Intervention</td><td>Dec 2020</td><td>Regulators intervened, interbank market liquidity support increased, but credit stratification persisted; outstanding bond valuations underwent significant adjustments</td><td><span class="tag tag-amber">Moderate</span></td></tr>
+          <tr><td>Phase 4: Structural Reshaping</td><td>2021.01-03</td><td>Market gradually recovered, but after the "SOE faith" was broken, the credit pricing system permanently changed; spreads for weak SOEs systematically widened</td><td><span class="tag tag-amber">Structural</span></td></tr>
         </tbody>
       </table>
       <div class="info-box info-blue" style="margin-top:12px;">
-        <strong>市场影响定量分析：</strong>永煤违约后一周内，信用债市场日均取消发行规模约120亿元（正常日均约30亿元），3年期AAA中票收益率上行约25bp，AA+级利差走阔40bp。煤炭行业整体利差扩大约150bp，其中冀中能源、平煤等弱资质国企利差扩大超过300bp。信用债ETF净值下跌约2.5%，部分杠杆产品触发强制平仓。据Wind数据统计，2020年11月信用债取消发行总规模超1,500亿元。
+        <strong>Quantitative Market Impact Analysis:</strong> Within one week of Yongmei's default, the average daily canceled issuance in the credit bond market was approximately 12 billion yuan (normal daily average ~3 billion yuan). The 3-year AAA medium-term note yield rose about 25bp, and AA+ spreads widened 40bp. The overall coal industry spread expanded about 150bp, with weak SOEs like Jizhong Energy and Pingdingshan Coal seeing spreads widen over 300bp. Credit bond ETF net value fell about 2.5%, and some leveraged products triggered forced liquidation. According to Wind data, the total canceled issuance of credit bonds in November 2020 exceeded 150 billion yuan.
       </div>
     </div>
   </div>
 
-  <!-- ====== SECTION 2: 时间线 ====== -->
+  <!-- ====== SECTION 2: Timeline ====== -->
   <div class="section">
-    <h2 class="section-title">二、违约前关键事件时间线</h2>
-    <p style="color:var(--text-secondary);margin-bottom:12px;">从分析起点（2018年末）到违约发生（2020.11.10）的完整时间线，标注框架预警信号出现时点。本时间线综合了财务报表披露时点、评级行动、媒体报道及监管动态，全面还原违约事件的演进路径。</p>
+    <h2 class="section-title">2. Key Pre-Default Event Timeline</h2>
+    <p style="color:var(--text-secondary);margin-bottom:12px;">The complete timeline from the analysis starting point (end 2018) to the default occurrence (2020.11.10), marking the appearance of framework early warning signals. This timeline integrates financial report disclosure dates, rating actions, media reports, and regulatory dynamics to comprehensively reconstruct the evolution path of the default event.</p>
     <div class="card">
       <div class="timeline">
         <div class="tl-item">
           <div class="tl-date">2018.06.30</div>
-          <div>【基准起点】框架建立初始数据库。永煤2018年中报显示：总资产1,620亿元，资产负债率71.5%，经营性现金流约38亿元。永煤作为豫能化集团核心子公司，享有集团内部最优资源分配。外部评级维持AAA。母公司报表货币资金约180亿元，合并报表约245亿元（差异65亿元已引起框架关注）。</div>
+          <div>[Baseline Start] Framework establishes initial database. Yongmei 2018 interim report shows: total assets 162 billion yuan, asset-liability ratio 71.5%, operating cash flow ~3.8 billion yuan. As the core subsidiary of Henan Energy & Chemical Group, Yongmei enjoys the group's optimal resource allocation. External rating maintained at AAA. Parent company statement shows monetary funds of ~18 billion yuan, consolidated ~24.5 billion yuan (difference of 6.5 billion yuan has already attracted framework attention).</div>
         </div>
         <div class="tl-item">
           <div class="tl-date">2018.12.31</div>
-          <div>【基准时点】永煤审计报告：总资产1,724亿元，资产负债率72.1%，经营性现金流69亿元。外部评级维持AAA。母公司全年实现归母净利润20.2亿元（YoY-8%），非煤业务（化工/贸易）已现亏损端倪，合计约-5.2亿元。短期借款占比约58%，有息负债总额约1,040亿元。母公司口径货币资金153亿元，合并报表273亿元（差额120亿元）。</div>
+          <div>[Baseline Time Point] Yongmei audit report: total assets 172.4 billion yuan, asset-liability ratio 72.1%, operating cash flow 6.9 billion yuan. External rating maintained at AAA. Parent company achieved net profit attributable to parent of 2.02 billion yuan for the year (YoY -8%). Non-coal businesses (chemicals/trading) already showed signs of losses, totaling approximately -0.52 billion yuan. Short-term borrowing accounted for about 58%, total interest-bearing debt approximately 104 billion yuan. Parent company monetary funds 15.3 billion yuan, consolidated 27.3 billion yuan (difference 12 billion yuan).</div>
         </div>
         <div class="tl-item">
           <div class="tl-date">2019.03.31</div>
-          <div>2018年年报正式披露。审计机构出具标准无保留意见，但"关联方关系及其交易"附注显示与豫能化集团的往来款余额约185亿元（同比增长约28%）。永煤为豫能化及其子公司提供担保余额约95亿元。外部评级机构在年度跟踪中维持AAA评级，未提及关联交易风险和担保风险。</div>
+          <div>2018 annual report formally disclosed. The audit firm issued a standard unqualified opinion, but the "Related Party Relationships and Transactions" notes showed a balance of related party transactions with Henan Energy & Chemical Group of approximately 18.5 billion yuan (up about 28% YoY). Yongmei provided guarantee balances of approximately 9.5 billion yuan for Henan Energy & Chemical Group and its subsidiaries. External rating agencies maintained the AAA rating in their annual review, without mentioning related party transaction risks and guarantee risks.</div>
         </div>
         <div class="tl-item amber">
           <div class="tl-date">2019.04.30</div>
-          <div>2018年年报披露：货币资金合计273亿元，但母公司报表货币资金仅153亿元（差额120亿元）。银行授信额度1,200亿元，其中未使用额度约380亿元。中诚信国际维持AAA主体评级，展望稳定。审计报告无保留意见。</div>
+          <div>2018 annual report disclosure: total monetary funds 27.3 billion yuan, but parent company statement only 15.3 billion yuan (difference 12 billion yuan). Bank credit facilities of 120 billion yuan, of which unused portion approximately 38 billion yuan. CCXI maintained AAA issuer rating with stable outlook. Audit report unqualified opinion.</div>
         </div>
         <div class="tl-item amber">
           <div class="tl-date">2019.06.30</div>
-          <div><span class="tag tag-amber" style="margin-right:6px;">首次预警</span>框架扫描T-17月：资产负债率升至74.3%，非受限货币资金/短债降至0.45x，L4治理评分离散（关联交易占比超总资产30%）。母公司报表与合并报表货币资金差额进一步扩大至124亿元。非煤业务亏损扩大至-8.5亿元（化工板块亏损为主）。<strong>框架评分3.90/BB-，较外部AAA低5个子级。</strong></div>
+          <div><span class="tag tag-amber" style="margin-right:6px;">First Warning</span>Framework scan T-17 months: asset-liability ratio rose to 74.3%, unrestricted monetary funds/short-term debt fell to 0.45x, L4 governance rating dispersion (related party transactions exceeded 30% of total assets). The difference between parent company and consolidated monetary funds further expanded to 12.4 billion yuan. Non-coal business losses expanded to -0.85 billion yuan (mainly chemical segment losses).<strong>Framework score 3.90/BB-, 5 notches below external AAA.</strong></div>
         </div>
         <div class="tl-item">
           <div class="tl-date">2019.08.30</div>
-          <div>2019年中报披露：上半年归母净利润约8.5亿元（YoY-15%），经营性现金流约32亿元（YoY-22%）。应收账款及其他应收款合计增长至约180亿元，其中关联方往来款约120亿元。筹资活动现金流净额转负（-8亿元），表明外部融资环境收紧。</div>
+          <div>2019 interim report disclosure: first-half net profit attributable to parent approximately 0.85 billion yuan (YoY -15%), operating cash flow approximately 3.2 billion yuan (YoY -22%). Accounts receivable and other receivables combined grew to approximately 18 billion yuan, of which related party receivables about 12 billion yuan. Net cash flow from financing activities turned negative (-0.8 billion yuan), indicating tightening external financing environment.</div>
         </div>
         <div class="tl-item amber">
           <div class="tl-date">2019.12.31</div>
-          <div>年末财报披露：归母净利润同比下滑38%（从20.2亿降至12.5亿），有息负债1,120亿元中短债占比65%。非煤业务（化工/贸易）亏损扩大至-8.5亿元。经营性现金流TTM约58亿元（YoY-16%），EBITDA/利息覆盖率从3.4x降至2.8x，逼近框架预警阈值2.0x。子公司永银化工（煤化工板块）亏损持续扩大。</div>
+          <div>Year-end financial report disclosure: net profit attributable to parent declined 38% YoY (from 2.02 billion to 1.25 billion), short-term debt accounted for 65% of 112 billion yuan interest-bearing debt. Non-coal business (chemicals/trading) losses expanded to -0.85 billion yuan. TTM operating cash flow approximately 5.8 billion yuan (YoY -16%), EBITDA/interest coverage declined from 3.4x to 2.8x, approaching the framework's early warning threshold of 2.0x. Subsidiary Yongyin Chemical (coal chemical segment) losses continued to expand.</div>
         </div>
         <div class="tl-item">
           <div class="tl-date">2020.01-03</div>
-          <div>新冠疫情爆发，煤炭行业需求端（火电/钢铁）受到严重冲击。一季度煤价较2019年均价下跌约12%。河南省2020年一季度GDP同比增速-6.8%，财政收支压力加大。永煤一季度销量同比下降约25%，回款周期延长至90天+。</div>
+          <div>COVID-19 outbreak severely impacted coal industry demand (thermal power/steel). Q1 coal prices fell about 12% from 2019 average. Henan Province Q1 2020 GDP growth rate was -6.8% YoY, increasing fiscal revenue and expenditure pressure. Yongmei's Q1 sales volume declined about 25% YoY, payment collection cycle extended to 90+ days.</div>
         </div>
         <div class="tl-item red">
           <div class="tl-date">2020.04.30</div>
-          <div>一季度报：受疫情影响，经营性现金流同比下降62%至约11亿元。母公司层面货币资金降至78亿元，但合并报表仍显示261亿元货币资金——两者差异172亿引发框架关注。短期借款增加至约420亿元，其中3个月内到期债券约85亿元。中诚信国际仍维持AAA评级。</div>
+          <div>Q1 report: affected by the epidemic, operating cash flow decreased 62% YoY to approximately 1.1 billion yuan. Parent company-level monetary funds fell to 7.8 billion yuan, but consolidated statements still showed 26.1 billion yuan — the difference of 17.2 billion yuan attracted framework attention. Short-term borrowings increased to approximately 42 billion yuan, of which bonds maturing within 3 months approximately 8.5 billion yuan. CCXI still maintained AAA rating.</div>
         </div>
         <div class="tl-item">
           <div class="tl-date">2020.06.01</div>
-          <div>市场传闻永煤存在债务展期风险，但永煤相关人士否认。二级市场出现零星减持，20永煤SCP003（4月发行）估值收益率约4.5%。多家机构开始收紧对煤企债券的入库标准。</div>
+          <div>Market rumors circulated about Yongmei's debt extension risk, but Yongmei-related sources denied them. Sporadic position reductions appeared in the secondary market; the valuation yield of 20 Yongmei SCP003 (issued in April) was approximately 4.5%. Multiple institutions began tightening their acceptance criteria for coal enterprise bonds.</div>
         </div>
         <div class="tl-item red">
           <div class="tl-date">2020.06.30</div>
-          <div><span class="tag tag-red" style="margin-right:6px;">二次预警</span>框架扫描T-4.5月：流动性覆盖率（非受限货币资金/短期债务）降至0.28x，母公司层面货币资金仅48亿 vs 短期债务385亿元。经营性现金流TTM仅约25亿元（YoY-64%）。EBITDA/利息进一步降至1.1x，已无法覆盖利息支出。评分从3.90骤降至<strong>2.35/B</strong>，已进入违约前区间。外部评级仍维持AAA。</div>
+          <div><span class="tag tag-red" style="margin-right:6px;">Second Warning</span>Framework scan T-4.5 months: liquidity coverage ratio (unrestricted monetary funds/short-term debt) dropped to 0.28x, parent company-level monetary funds only 4.8 billion vs short-term debt of 38.5 billion yuan. TTM operating cash flow only about 2.5 billion yuan (YoY -64%). EBITDA/interest further declined to 1.1x, already unable to cover interest expenses. Score dropped sharply from 3.90 to <strong>2.35/B</strong>, entering the pre-default range. External rating still maintained at AAA.</div>
         </div>
         <div class="tl-item red">
           <div class="tl-date">2020.08.31</div>
-          <div>2020年中报出炉：归母净利润转负（-3.2亿元），创上市以来首次半年度亏损。资产负债率升至76.5%，有息负债增至1,180亿元。审计师在财务报表附注中增加"持续经营能力"相关关注表述。母公司层面已录得负的货币资金净额（考虑银行透支）。二级市场20永煤SCP003估值收益率升至5.8%。</div>
+          <div>2020 interim report released: net profit attributable to parent turned negative (-0.32 billion yuan), first semi-annual loss since listing. Asset-liability ratio rose to 76.5%, interest-bearing debt increased to 118 billion yuan. Auditors added "going concern" related cautionary language in the financial statement notes. Parent company level recorded negative net monetary funds (considering bank overdrafts). Secondary market valuation yield of 20 Yongmei SCP003 rose to 5.8%.</div>
         </div>
         <div class="tl-item red">
           <div class="tl-date">2020.09.15</div>
-          <div>永煤与主承销商开始与部分持有人沟通债券展期方案，但未公开披露。外部评级机构中诚信国际在跟踪报告中仍维持AAA评级，但调整展望为"稳定"（与此前一致）。此时距20永煤SCP003到期约57天。</div>
+          <div>Yongmei and lead underwriters began communicating bond extension plans with some holders, but did not publicly disclose. External rating agency CCXI still maintained AAA rating in its tracking report, but adjusted the outlook to "stable" (consistent with before). At this time, approximately 57 days remained until the maturity of 20 Yongmei SCP003.</div>
         </div>
         <div class="tl-item red">
           <div class="tl-date">2020.10.20</div>
-          <div>永煤公告拟召开持有人会议商议"20永煤SCP003"展期方案。外部评级中诚信国际首次将永煤列入可能下调的观察名单（距违约-21天）。中债估值收益率已升至6.5%。二级市场出现机构大规模减持。多家基金公司调整持仓估值。</div>
+          <div>Yongmei announced plans to convene a holder meeting to discuss the "20 Yongmei SCP003" extension plan. External rating agency CCXI for the first time placed Yongmei on a watch list for possible downgrade (21 days before default). ChinaBond valuation yield had risen to 6.5%. Large-scale institutional position reductions appeared in the secondary market. Multiple fund companies adjusted their position valuations.</div>
         </div>
         <div class="tl-item red">
           <div class="tl-date">2020.10.27</div>
-          <div>中诚信国际将永煤主体评级从AAA下调至AA-（下调2个子级）。市场反应剧烈，20永煤SCP003二级成交收益率攀升至8-10%。同一日，交易商协会约谈永煤及主承销商了解展期方案进展。距违约仅14天。</div>
+          <div>CCXI downgraded Yongmei's issuer rating from AAA to AA- (2 notches). Market reaction was intense; the secondary market transaction yield of 20 Yongmei SCP003 surged to 8-10%. On the same day, NAFMII interviewed Yongmei and lead underwriters to learn about the progress of the extension plan. Only 14 days before default.</div>
         </div>
         <div class="tl-item red">
           <div class="tl-date">2020.11.10</div>
-          <div><strong style="color:var(--red);font-size:16px;">违约发生</strong> —— "20永煤SCP003"未按期兑付本息10.32亿元。当日中诚信国际将评级从AAA下调至BB（降幅6个子级），随后在违约后30天内下调至D。河南省政府紧急召开协调会，探讨后续债务化解方案。</div>
+          <div><strong style="color:var(--red);font-size:16px;">Default Occurred</strong> — "20 Yongmei SCP003" failed to repay principal and interest of 1.032 billion yuan on schedule. On the same day, CCXI downgraded the rating from AAA to BB (6-notch drop), then further downgraded to D within 30 days after default. The Henan Provincial Government urgently convened a coordination meeting to discuss subsequent debt resolution plans.</div>
         </div>
         <div class="tl-item">
           <div class="tl-date">2020.11.13-12.15</div>
-          <div>违约冲击蔓延：豫能化（永煤母公司）交叉违约，多只煤企债价格腰斩。交易商协会对永煤及相关中介机构启动自律调查。省委省政府介入协调债务化解方案。20永煤SCP004/005等后续到期债券触发交叉违约条款，涉及金额约50亿元。信用债市场进入"国企信仰"破灭后的重塑阶段。</div>
+          <div>Default shock spread: Yuneng Chemical (Yongmei parent) cross-defaulted, prices of multiple coal enterprise bonds halved. NAFMII initiated self-regulatory investigations into Yongmei and related intermediaries. Provincial party committee and government intervened to coordinate debt resolution plans. Subsequent maturing bonds such as 20 Yongmei SCP004/005 triggered cross-default clauses, involving approximately 5 billion yuan. The credit bond market entered a reshaping phase after the "SOE faith" shattered.</div>
         </div>
         <div class="tl-item">
           <div class="tl-date">2020.12-2021.01</div>
-          <div>后续处置阶段：永煤与持有人沟通后续债券兑付安排。河南省政府协调金融机构给予流动性支持。永煤陆续兑付了20永煤SCP004、20永煤SCP005等部分到期债券，但20永煤SCP003持有人仍面临实质损失。交易商协会对永煤、主承销商、审计机构等中介机构出具自律处分决定。</div>
+          <div>Subsequent disposal phase: Yongmei communicated with holders on subsequent bond repayment arrangements. The Henan Provincial Government coordinated financial institutions to provide liquidity support. Yongmei successively repaid some maturing bonds such as 20 Yongmei SCP004 and 20 Yongmei SCP005, but holders of 20 Yongmei SCP003 still faced substantial losses. NAFMII issued self-regulatory sanctions decisions against Yongmei, lead underwriters, audit firms, and other intermediaries.</div>
         </div>
         <div class="tl-item">
           <div class="tl-date">2021.02-06</div>
-          <div>市场影响长期化：信用债市场进入"后永煤时代"，国企信用定价体系发生深刻变革。弱资质国企与优质国企的信用利差从永煤违约前的约50bp扩大至150-200bp。信用评级行业受到监管高度关注，中诚信国际因永煤评级问题被交易商协会警告。交易所和交易商协会联合发布信用评级业务自律管理指引，推动评级行业改革。</div>
+          <div>Long-term market impact: The credit bond market entered the "Post-Yongmei Era," with profound changes in SOE credit pricing systems. The credit spread between weak SOEs and strong SOEs expanded from approximately 50bp before Yongmei's default to 150-200bp. The credit rating industry received high regulatory attention; CCXI was warned by NAFMII due to the Yongmei rating issue. The exchange and NAFMII jointly issued self-regulatory management guidelines for credit rating business, promoting reform in the rating industry.</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ====== SECTION 3: 时点一 ====== -->
+  <!-- ====== SECTION 3: Time Point 1 ====== -->
   <div class="section">
-    <h2 class="section-title">三、时点一：长周期扫描（T-17月 · 2019.06.30）</h2>
-    <p style="color:var(--text-secondary);margin-bottom:16px;">距违约17个月时，框架进行了首次全量金字塔扫描。此时外部评级为AAA，市场对永煤的风险认知几乎为零。框架从五层金字塔各维度进行了穿透分析，得出了与外部评级差异巨大的结论。</p>
+    <h2 class="section-title">3. Time Point 1: Long-Cycle Scan (T-17 Months · 2019.06.30)</h2>
+    <p style="color:var(--text-secondary);margin-bottom:16px;">At 17 months before default, the framework conducted its first full pyramid scan. At this time, the external rating was AAA, and the market's risk perception of Yongmei was nearly zero. The framework performed a penetrating analysis across all five pyramid levels, reaching conclusions vastly different from the external rating.</p>
 
     <div class="card card-blue">
-      <h3>五层金字塔评分详情</h3>
+      <h3>Five-Level Pyramid Score Details</h3>
       <table>
-        <thead><tr><th>层级</th><th>评分</th><th>评级等价</th><th>关键发现</th><th>信号级别</th></tr></thead>
+        <thead><tr><th>Level</th><th>Score</th><th>Rating Equivalent</th><th>Key Findings</th><th>Signal Level</th></tr></thead>
         <tbody>
           <tr>
-            <td>L1 宏观与区域</td>
+            <td>L1 Macro & Regional</td>
             <td class="score-ok">5.5</td>
             <td><span class="tag tag-blue">BBB</span></td>
-            <td>河南省经济增速6.8%全国中游，人均GDP全国第18位。煤炭行业受益供给侧改革红利末期，但需求端（火电/钢铁）已现疲态，2019H1煤炭价格较2018高位回落15%。河南省2019年财政自给率约45%（全国第23位），支持能力存在天花板。</td>
-            <td><span class="signal amber"></span><span class="tag tag-amber">关注</span></td>
+            <td>Henan Province economic growth of 6.8% at national mid-range, per capita GDP ranked 18th nationally. Coal industry benefited from the tail end of supply-side reform dividends, but demand side (thermal power/steel) already showed weakness; 2019H1 coal prices fell 15% from 2018 highs. Henan Province's 2019 fiscal self-sufficiency rate was about 45% (23rd nationally), with a ceiling on support capacity.</td>
+            <td><span class="signal amber"></span><span class="tag tag-amber">Watch</span></td>
           </tr>
           <tr>
-            <td>L2 行业与经营</td>
+            <td>L2 Industry & Operations</td>
             <td class="score-warn">4.0</td>
             <td><span class="tag tag-amber">BB</span></td>
-            <td>永煤非煤业务（化工/贸易/装备制造）持续亏损，拖累整体盈利能力。化工板块亏损约-8.5亿元，贸易毛利率仅2.1%。煤炭业务虽稳定但缺乏增长弹性，资源禀赋趋于劣化（优质焦煤储量占比逐年下降）。行业集中度提升趋势对永煤这类中型煤企不利，市场份额被陕煤/山煤等龙头侵蚀。</td>
-            <td><span class="signal amber"></span><span class="tag tag-amber">预警</span></td>
+            <td>Yongmei's non-coal businesses (chemicals/trading/equipment manufacturing) sustained losses, dragging down overall profitability. Chemical segment losses of approximately -0.85 billion yuan, trading gross margin only 2.1%. Coal business was stable but lacked growth elasticity; resource endowments were deteriorating (high-quality coking coal reserves declining annually). The industry concentration trend was unfavorable for medium-sized coal enterprises like Yongmei, with market share eroded by leaders like Shaanxi Coal and Shandong Energy.</td>
+            <td><span class="signal amber"></span><span class="tag tag-amber">Warning</span></td>
           </tr>
           <tr>
-            <td>L3 财务实力</td>
+            <td>L3 Financial Strength</td>
             <td class="score-warn">3.5</td>
             <td><span class="tag tag-amber">BB-</span></td>
-            <td>资产负债率74.3%且连年攀升，有息负债1,050亿中短债占比62%。非受限货币资金/短债仅0.45x。更关键的发现是：母公司口径货币资金124亿vs合并报表248亿，124亿差异表明大量现金在各子公司层面可能受限（银行承兑汇票保证金约80亿、定期存单质押约45亿、监管账户约25亿）。扣除非受限部分后，实际可动用资金约100亿元。</td>
-            <td><span class="signal red"></span><span class="tag tag-red">严重</span></td>
+            <td>Asset-liability ratio of 74.3% rising year after year, short-term debt accounted for 62% of 105 billion yuan interest-bearing debt. Unrestricted monetary funds/short-term debt only 0.45x. More critically: parent company monetary funds of 12.4 billion vs consolidated 24.8 billion yuan — the 12.4 billion difference indicates a large amount of cash at subsidiary level may be restricted (bank acceptance bill deposits ~8 billion, time deposit pledges ~4.5 billion, escrow accounts ~2.5 billion). After deducting restricted portions, actual available funds approximately 10 billion yuan.</td>
+            <td><span class="signal red"></span><span class="tag tag-red">Severe</span></td>
           </tr>
           <tr>
-            <td>L4 管理治理</td>
+            <td>L4 Management & Governance</td>
             <td class="score-bad">2.5</td>
             <td><span class="tag tag-red">B</span></td>
-            <td>与河南能源化工集团（豫能化）的关联往来款超200亿元（其中其他应收款120亿元），占合并报表总资产的12%。永煤实际是豫能化体系中优质资产的载体，资金被集团统一调度。审计报告"关联交易"章节篇幅异常简短，信息披露不透明。董事会成员中独立董事3人但仅占1/6，治理架构缺乏制衡。资金被集团归集管理的风险未在评级报告中充分揭示。</td>
-            <td><span class="signal red"></span><span class="tag tag-red">严重</span></td>
+            <td>Related party receivables from Henan Energy & Chemical Group (Yuneng Chemical) exceeded 20 billion yuan (of which other receivables 12 billion yuan), accounting for 12% of total consolidated assets. Yongmei effectively served as the carrier of quality assets within the Yuneng Chemical system, with funds centrally deployed by the group. The "Related Party Transactions" section of the audit report was unusually brief, with opaque information disclosure. The board included 3 independent directors but only accounted for 1/6, lacking governance checks and balances. The risk of centralized fund management by the group was not fully disclosed in the rating report.</td>
+            <td><span class="signal red"></span><span class="tag tag-red">Severe</span></td>
           </tr>
           <tr>
-            <td>L5 外部支持</td>
+            <td>L5 External Support</td>
             <td class="score-warn">4.0</td>
             <td><span class="tag tag-amber">BB</span></td>
-            <td>河南省属国企身份确实提供了一定支持背书，但河南当年财政自给率约45%（全国第23位），支持能力存在上限。且豫能化本身也处于高负债（资产负债率85%+）状态，系统性救助难度极大。参照过往案例（川煤/云煤等煤企违约），地方政府倾向于优先救助城投而非产业类国企。</td>
-            <td><span class="signal amber"></span><span class="tag tag-amber">预警</span></td>
+            <td>The status as a Henan provincial SOE did provide some support endorsement, but Henan's fiscal self-sufficiency rate that year was about 45% (23rd nationally), with an upper limit on support capacity. Moreover, Yuneng Chemical itself was also in a high-debt state (asset-liability ratio 85%+), making systemic rescue extremely difficult. Referencing past cases (Sichuan Coal/Yunnan Coal and other coal enterprise defaults), local governments tend to prioritize rescuing city investment companies over industrial SOEs.</td>
+            <td><span class="signal amber"></span><span class="tag tag-amber">Warning</span></td>
           </tr>
           <tr style="background:var(--bg-tertiary);">
-            <td><strong>加权总分</strong></td>
+            <td><strong>Weighted Total Score</strong></td>
             <td><strong class="score-warn">3.90</strong></td>
             <td><span class="tag tag-amber">BB-</span></td>
-            <td colspan="2"><span class="text-amber"><strong>框架评级BB- vs 外部评级AAA —— 差异5个子级</strong></span></td>
+            <td colspan="2"><span class="text-amber"><strong>Framework Rating BB- vs External Rating AAA — 5 Notch Difference</strong></span></td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>L3财务实力：深潜分析</h3>
+      <h3>L3 Financial Strength: Deep Dive Analysis</h3>
       <p style="color:var(--text-secondary);line-height:1.7;">
-        L3评分仅3.5（BB-等价）为框架预警提供了关键锚点。深度分析显示：
+        The L3 score of only 3.5 (BB- equivalent) provided a key anchor for the framework's early warning. In-depth analysis reveals:
       </p>
       <div class="grid-3" style="margin-top:10px;">
         <div class="info-box info-red">
-          <strong>流动性缺口</strong><br>
-          <span style="font-size:12px;">非受限货币资金/短债=0.45x，远低于框架安全阈值0.8x。若计入银行授信未使用部分（约380亿），覆盖率约2.1x，但银行授信可随时被收回（尤在经济下行期）。框架在L3层级中使用的"非受限货币资金"口径比外部评级机构的"货币资金"口径严格得多——扣除银行承兑汇票保证金、定期存单质押、监管账户等受限部分后，实际可自由动用的资金大幅缩减。</span>
+          <strong>Liquidity Gap</strong><br>
+          <span style="font-size:12px;">Unrestricted monetary funds/short-term debt = 0.45x, far below the framework's safety threshold of 0.8x. Including unused bank credit facilities (~38 billion), the coverage ratio would be about 2.1x, but bank credit can be revoked at any time (especially during economic downturns). The "unrestricted monetary funds" metric used by the framework at the L3 level is much stricter than the "monetary funds" metric used by external rating agencies — after deducting restricted portions such as bank acceptance bill deposits, time deposit pledges, and escrow accounts, the actual freely usable funds are significantly reduced.</span>
         </div>
         <div class="info-box info-amber">
-          <strong>短债滚续压力</strong><br>
-          <span style="font-size:12px;">有息负债1050亿中短债650亿（占比62%），平均到期期限约9个月。经营性现金流TTM约69亿元，仅能覆盖短债滚动需求的约10%。市场一旦收紧，短期债务将无法续作。框架的短债占比阈值设定为55%，永煤实际值65%远超阈值，触发L3层级的红色预警信号。</span>
+          <strong>Short-Term Debt Rollover Pressure</strong><br>
+          <span style="font-size:12px;">Of the 105 billion yuan in interest-bearing debt, short-term debt was 65 billion (62%), with an average remaining maturity of about 9 months. TTM operating cash flow of about 6.9 billion yuan could only cover approximately 10% of short-term debt rollover needs. Once the market tightened, short-term debt could not be renewed. The framework's short-term debt ratio threshold is set at 55%; Yongmei's actual value of 65% far exceeded this threshold, triggering a red warning signal at the L3 level.</span>
         </div>
         <div class="info-box info-red">
-          <strong>母公司资金枯竭</strong><br>
-          <span style="font-size:12px;">母公司实质上承担着集团资金归集中心的角色，但自身仅留存124亿货币资金。合并报表中的其他248亿元现金分布在各子公司（其中约60%受限），母公司层面独立偿债能力被严重高估。这一差异（124亿vs248亿）是框架双轨分析的核心发现。</span>
+          <strong>Parent Company Fund Depletion</strong><br>
+          <span style="font-size:12px;">The parent company effectively served as the group fund concentration center but retained only 12.4 billion yuan in monetary funds. The other 24.8 billion yuan in cash from the consolidated statements was distributed across subsidiaries (approximately 60% restricted), and the parent company's independent debt repayment capacity was severely overestimated. This discrepancy (12.4 billion vs 24.8 billion) was a core finding of the framework's dual-track analysis.</span>
         </div>
       </div>
       <div class="info-box info-red" style="margin-top:10px;">
-        <strong>L3财务深潜的关键发现总结：</strong>永煤在合并层面看似拥有充裕的货币资金，但母公司层面的流动性状况远弱于合并报表表征。这种"合并层面充裕、母公司层面紧张"的现象是集团型企业信用分析中常见的误区。框架通过强制对比两个报表口径的差异，有效识破了这一会计信息壁垒。
+        <strong>Key Findings Summary from L3 Financial Deep Dive:</strong> Yongmei appeared to have ample monetary funds at the consolidated level, but the parent company's liquidity position was far weaker than what the consolidated statements suggested. This "ample at consolidated level, tight at parent level" phenomenon is a common pitfall in credit analysis of group enterprises. By mandatorily comparing the differences between the two reporting perspectives, the framework effectively broke through this accounting information barrier.
       </div>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>L3财务实力细化评分：子维度拆解</h3>
-      <p style="color:var(--text-secondary);font-size:13px;margin-bottom:10px;">L3财务实力在框架中权重最高（30%），本次回溯对其子维度逐一打分，揭示3.5总分背后的结构性失衡。五个子维度加权合计为3.12分，整体评分偏低，其中流动性覆盖和偿债保障是主要拖累。</p>
+      <h3>L3 Financial Strength Detailed Scoring: Sub-Dimension Breakdown</h3>
+      <p style="color:var(--text-secondary);font-size:13px;margin-bottom:10px;">L3 Financial Strength carries the highest weight in the framework (30%). This backtest scores each of its sub-dimensions individually, revealing the structural imbalances behind the 3.5 total score. The weighted total of the five sub-dimensions is 3.12, with the overall rating being low, where liquidity coverage and debt service coverage are the main drags.</p>
       <table>
-        <thead><tr><th>子维度</th><th>权重</th><th>评分</th><th>关键指标</th><th>永煤实际值</th><th>评分依据</th></tr></thead>
+        <thead><tr><th>Sub-Dimension</th><th>Weight</th><th>Score</th><th>Key Indicator</th><th>Yongmei Actual Value</th><th>Scoring Basis</th></tr></thead>
         <tbody>
           <tr>
-            <td>资本结构</td>
+            <td>Capital Structure</td>
             <td>30%</td>
             <td class="score-warn">3.0</td>
-            <td>资产负债率、短债/总有息负债</td>
-            <td>74.3%, 短债占比62%</td>
-            <td>资产负债率连续三年攀升且高于行业均值（68%），短债占比超60%触发框架严重预警</td>
+            <td>Asset-liability ratio, short-term debt/total interest-bearing debt</td>
+            <td>74.3%, Short-term debt ratio 62%</td>
+            <td>Asset-liability ratio rising for three consecutive years and above industry average (68%), short-term debt ratio exceeding 60% triggered framework severe warning</td>
           </tr>
           <tr>
-            <td>流动性覆盖</td>
+            <td>Liquidity Coverage</td>
             <td>25%</td>
             <td class="score-bad">1.5</td>
-            <td>非受限货币资金/短债、母公司货币资金覆盖率</td>
-            <td>0.45x, 母公司124亿/短债650亿=0.19x</td>
-            <td>合并口径非受限覆盖率已不足0.5x；母公司口径覆盖率仅0.19x，流动性极度紧张</td>
+            <td>Unrestricted monetary funds/short-term debt, parent company monetary fund coverage rate</td>
+            <td>0.45x, Parent company 12.4B/short-term debt 65B=0.19x</td>
+            <td>Consolidated unrestricted coverage already below 0.5x; parent company coverage rate only 0.19x, extremely tight liquidity</td>
           </tr>
           <tr>
-            <td>盈利能力</td>
+            <td>Profitability</td>
             <td>20%</td>
             <td class="score-warn">4.0</td>
-            <td>ROA、净利润率、非煤业务盈亏</td>
-            <td>ROA 2.8%, 非煤业务亏损-8.5亿</td>
-            <td>煤炭主业尚可（贡献约22亿利润），但化工/贸易板块合计亏损-8.5亿抵消费效应明显</td>
+            <td>ROA, net profit margin, non-coal business P&L</td>
+            <td>ROA 2.8%, Non-coal business loss -0.85B</td>
+            <td>Coal main business acceptable (contributes ~2.2 billion profit), but chemical/trading segments combined loss of -0.85 billion has clear offset effect</td>
           </tr>
           <tr>
-            <td>现金流质量</td>
+            <td>Cash Flow Quality</td>
             <td>15%</td>
             <td class="score-ok">4.5</td>
-            <td>经营性现金流/营收、FFO/总负债</td>
-            <td>经营现金流69亿, FFO/总负债4.1%</td>
-            <td>经营性现金流绝对额尚可（69亿），但相对于1,120亿有息负债覆盖能力有限</td>
+            <td>Operating cash flow/revenue, FFO/total liabilities</td>
+            <td>Operating cash flow 6.9B, FFO/total liabilities 4.1%</td>
+            <td>Absolute amount of operating cash flow acceptable (6.9 billion), but limited coverage capacity relative to 112 billion in interest-bearing debt</td>
           </tr>
           <tr>
-            <td>偿债保障</td>
+            <td>Debt Service Coverage</td>
             <td>10%</td>
             <td class="score-bad">2.0</td>
-            <td>EBITDA/利息、总负债/EBITDA</td>
-            <td>EBITDA/利息 2.8x, 总负债/EBITDA 8.2x</td>
-            <td>利息保障倍数逐年恶化且逼近框架预警阈值，总负债/EBITDA超过8倍显示偿债周期过长</td>
+            <td>EBITDA/interest, total liabilities/EBITDA</td>
+            <td>EBITDA/Interest 2.8x, Total liabilities/EBITDA 8.2x</td>
+            <td>Interest coverage ratio deteriorating year by year and approaching the framework's early warning threshold; total liabilities/EBITDA exceeding 8x indicates excessively long debt repayment period</td>
           </tr>
           <tr style="background:var(--bg-tertiary);">
-            <td><strong>加权合计</strong></td>
+            <td><strong>Weighted Total</strong></td>
             <td><strong>100%</strong></td>
             <td><strong class="score-warn">3.12</strong></td>
-            <td colspan="3"><span class="text-amber">加权评分3.12低于整体L3评分3.5，流动性覆盖和偿债保障是主要拖累因素</span></td>
+            <td colspan="3"><span class="text-amber">Weighted score of 3.12 is lower than the overall L3 score of 3.5; liquidity coverage and debt service coverage are the main drag factors</span></td>
           </tr>
         </tbody>
       </table>
       <div class="info-box info-amber" style="margin-top:10px;">
-        <strong>子维度分析启示：</strong>精算加权得分（3.12）低于直接评估得分（3.5），反映出L3内部各维度间的严重不均衡——流动性覆盖（1.5分）和偿债保障（2.0分）的极低评分被现金流质量（4.5分）和盈利能力（4.0分）的部分正面表现所稀释。框架在后续版本中将考虑引入"短板效应"调整机制（即最低子维度得分配置额外的惩罚权重），以更灵敏地捕捉结构性风险。
+        <strong>Sub-Dimension Analysis Insights:</strong> The actuarial weighted score (3.12) is lower than the direct assessment score (3.5), reflecting severe imbalance among the L3 internal dimensions — the extremely low scores for liquidity coverage (1.5) and debt service coverage (2.0) were diluted by the partially positive performance of cash flow quality (4.5) and profitability (4.0). In future versions, the framework will consider introducing a "weakest link effect" adjustment mechanism (i.e., assigning additional penalty weights to the lowest sub-dimension score) to more sensitively capture structural risks.
       </div>
     </div>
 
     <div class="card card-amber" style="margin-top:14px;">
-      <h3>时点一预警判断</h3>
+      <h3>Time Point 1 Warning Assessment</h3>
       <div class="metric-grid" style="grid-template-columns:repeat(3,1fr);">
         <div class="metric">
           <div class="m-num" style="color:var(--amber);">BB-</div>
-          <div class="m-label">框架内生评级</div>
+          <div class="m-label">Framework Internal Rating</div>
         </div>
         <div class="metric">
-          <div class="m-num" style="color:var(--amber);">预警</div>
-          <div class="m-label">框架预警级别</div>
+          <div class="m-num" style="color:var(--amber);">Warning</div>
+          <div class="m-label">Framework Warning Level</div>
         </div>
         <div class="metric">
-          <div class="m-num" style="color:var(--red);">17个月</div>
-          <div class="m-label">提前预警时间</div>
+          <div class="m-num" style="color:var(--red);">17 months</div>
+          <div class="m-label">Early Warning Time</div>
         </div>
       </div>
       <div class="info-box info-amber" style="margin-top:12px;">
-        <strong>核心结论（T-17月）：</strong>框架在距违约17个月时即给出BB-内生评级，较外部AAA评级低5个子级。核心风险信号集中在：<strong>L3财务实力（短债占比62%、非受限货币资金覆盖率低）</strong>和<strong>L4治理穿透（关联交易庞大且信息不透明）</strong>。如果当时采用框架结论，投资者有<strong>17个月</strong>的窗口期进行风险规避或对冲操作。框架与外部评级的巨大差异揭示了一个根本性问题：对"AAA国企"这一标签的迷信，导致市场系统性地忽略了一系列硬性财务预警信号。
+        <strong>Core Conclusion (T-17 months):</strong> The framework gave a BB- internal rating 17 months before default, 5 notches lower than the external AAA rating. Core risk signals were concentrated in: <strong>L3 Financial Strength (short-term debt ratio 62%, low unrestricted monetary fund coverage)</strong> and <strong>L4 Governance Penetration (massive related party transactions with opaque information)</strong>. If the framework's conclusions had been adopted at that time, investors would have had a <strong>17-month</strong> window for risk avoidance or hedging operations. The huge gap between the framework and the external rating reveals a fundamental problem: the blind faith in the "AAA SOE" label led the market to systematically ignore a series of hard financial early warning signals.
       </div>
     </div>
   </div>
 
-  <!-- ====== SECTION 4: 时点二 ====== -->
+  <!-- ====== SECTION 4: Time Point 2 ====== -->
   <div class="section">
-    <h2 class="section-title">四、时点二：短周期信号变化（T-4.5月 · 2020.06.30）</h2>
-    <p style="color:var(--text-secondary);margin-bottom:16px;">距违约仅4.5个月时，框架进行了第二次扫描。此时财务状况已急剧恶化，信号强度全面升级。疫情冲击叠加行业下行，永煤的流动性风险在半年内从"预警"升级为"紧急"。</p>
+    <h2 class="section-title">4. Time Point 2: Short-Cycle Signal Changes (T-4.5 Months · 2020.06.30)</h2>
+    <p style="color:var(--text-secondary);margin-bottom:16px;">Only 4.5 months before default, the framework conducted its second scan. By this time, the financial situation had deteriorated sharply, and signal intensity had escalated across the board. The epidemic impact combined with industry downturn escalated Yongmei's liquidity risk from "Warning" to "Emergency" within half a year.</p>
 
     <div class="grid-2">
       <div class="card card-red">
-        <h3>评分对比：2019.06 vs 2020.06</h3>
+        <h3>Score Comparison: 2019.06 vs 2020.06</h3>
         <table>
-          <thead><tr><th>层级</th><th>2019.06</th><th>2020.06</th><th>变化量</th><th>趋势</th></tr></thead>
+          <thead><tr><th>Level</th><th>2019.06</th><th>2020.06</th><th>Change</th><th>Trend</th></tr></thead>
           <tbody>
-            <tr><td>L1 宏观与区域</td><td>5.5</td><td>4.5</td><td class="text-red">-1.0</td><td>疫情冲击+煤价继续下跌15%</td></tr>
-            <tr><td>L2 行业与经营</td><td>4.0</td><td>2.5</td><td class="text-red">-1.5</td><td>非煤业务亏损扩大至-12亿</td></tr>
-            <tr><td>L3 财务实力</td><td>3.5</td><td>1.5</td><td class="text-red">-2.0</td><td>货币资金骤降+流动性枯竭</td></tr>
-            <tr><td>L4 管理治理</td><td>2.5</td><td>2.0</td><td class="text-amber">-0.5</td><td>审计师增加持续经营关注段</td></tr>
-            <tr><td>L5 外部支持</td><td>4.0</td><td>3.0</td><td class="text-red">-1.0</td><td>河南省财政因疫情进一步承压</td></tr>
+            <tr><td>L1 Macro & Regional</td><td>5.5</td><td>4.5</td><td class="text-red">-1.0</td><td>Epidemic impact + coal prices continued to fall 15%</td></tr>
+            <tr><td>L2 Industry & Operations</td><td>4.0</td><td>2.5</td><td class="text-red">-1.5</td><td>Non-coal business losses expanded to -1.2 billion</td></tr>
+            <tr><td>L3 Financial Strength</td><td>3.5</td><td>1.5</td><td class="text-red">-2.0</td><td>Monetary funds plummeted + liquidity dried up</td></tr>
+            <tr><td>L4 Management & Governance</td><td>2.5</td><td>2.0</td><td class="text-amber">-0.5</td><td>Auditor added going concern emphasis paragraph</td></tr>
+            <tr><td>L5 External Support</td><td>4.0</td><td>3.0</td><td class="text-red">-1.0</td><td>Henan provincial finances further stressed by epidemic</td></tr>
             <tr style="background:var(--bg-tertiary);">
-              <td><strong>加权总分</strong></td><td><strong>3.90</strong></td><td><strong>2.35</strong></td><td class="text-red"><strong>-1.55</strong></td><td><strong>从BB-降至B</strong></td></tr>
+              <td><strong>Weighted Total Score</strong></td><td><strong>3.90</strong></td><td><strong>2.35</strong></td><td class="text-red"><strong>-1.55</strong></td><td><strong>Dropped from BB- to B</strong></td></tr>
           </tbody>
         </table>
         <div class="info-box info-red" style="margin-top:10px;">
-          <strong>评分含义：</strong>框架评分阈值划分中，&gt;4.5为投资级，3.0-4.5为投机级（预警），&lt;3.0为高风险（红色警戒）。2020.06的2.35分已进入违约前区间，距离框架定义的"违约临界点"（1.5-2.0分）仅有0.35-0.85分的差距。
+          <strong>Score Meaning:</strong> In the framework's score threshold classification, &gt;4.5 is investment grade, 3.0-4.5 is speculative grade (warning), &lt;3.0 is high risk (red alert). The 2.35 score in 2020.06 had entered the pre-default range, only 0.35-0.85 points away from the framework's defined "default critical point" (1.5-2.0).
         </div>
       </div>
       <div class="card card-red">
-        <h3>关键财务信号恶化对比</h3>
+        <h3>Key Financial Signal Deterioration Comparison</h3>
         <table>
-          <thead><tr><th>信号指标</th><th>2019.06</th><th>2020.06</th><th>恶化幅度</th><th>框架阈值</th></tr></thead>
+          <thead><tr><th>Signal Indicator</th><th>2019.06</th><th>2020.06</th><th>Deterioration Magnitude</th><th>Framework Threshold</th></tr></thead>
           <tbody>
-            <tr><td>非受限货币资金/短债</td><td>0.45x</td><td>0.28x</td><td class="text-red">-37.8%</td><td>&lt;0.5x 预警</td></tr>
-            <tr><td>母公司货币资金</td><td>124亿</td><td>48亿</td><td class="text-red">-61.3%</td><td>同比下降&gt;30% 预警</td></tr>
-            <tr><td>经营性现金流</td><td>69亿</td><td>25亿(TTM)</td><td class="text-red">-63.8%</td><td>同比下降&gt;50% 严重</td></tr>
-            <tr><td>归母净利润</td><td>12.5亿</td><td>-3.2亿</td><td class="text-red">转负</td><td>由正转负 严重</td></tr>
-            <tr><td>EBITDA/利息</td><td>2.8x</td><td>1.1x</td><td class="text-red">-60.7%</td><td>&lt;2.0x 预警</td></tr>
-            <tr><td>外部评级</td><td>AAA</td><td>AAA</td><td class="text-amber">无变化</td><td>框架vs外部差距5级</td></tr>
+            <tr><td>Unrestricted Monetary Funds/Short-Term Debt</td><td>0.45x</td><td>0.28x</td><td class="text-red">-37.8%</td><td>&lt;0.5x Warning</td></tr>
+            <tr><td>Parent Company Monetary Funds</td><td>12.4B</td><td>4.8B</td><td class="text-red">-61.3%</td><td>YoY Decline &gt;30% Warning</td></tr>
+            <tr><td>Operating Cash Flow</td><td>6.9B</td><td>2.5B (TTM)</td><td class="text-red">-63.8%</td><td>YoY Decline &gt;50% Severe</td></tr>
+            <tr><td>Net Profit Attributable to Parent</td><td>1.25B</td><td>-0.32B</td><td class="text-red">Turned Negative</td><td>Positive to Negative Severe</td></tr>
+            <tr><td>EBITDA/Interest</td><td>2.8x</td><td>1.1x</td><td class="text-red">-60.7%</td><td>&lt;2.0x Warning</td></tr>
+            <tr><td>External Rating</td><td>AAA</td><td>AAA</td><td class="text-amber">No Change</td><td>Framework vs External Gap 5 Notches</td></tr>
           </tbody>
         </table>
       </div>
     </div>
 
     <div class="card card-red" style="margin-top:14px;">
-      <h3>时点二预警判断</h3>
+      <h3>Time Point 2 Warning Assessment</h3>
       <p style="color:var(--text-secondary);line-height:1.7;">
-        框架评分从<strong>3.90/BB-</strong>降至<strong>2.35/B</strong>，进入红色警戒区间（&lt;3.0）。L3财务实力评分仅1.5分（CCC等价），其中非受限货币资金/短债比0.28x已在违约临界点以下。
-        一个被外部评级和市场忽略的关键细节是：母公司层面货币资金从124亿元骤降至48亿元（降幅61%），而同期短期债务高达385亿元——即使用上全部48亿元，覆盖率也仅12.5%。
-        这意味着母公司层面实质上已丧失偿债能力。框架在此时给出的内生评级已非常接近实际违约状态（CCC+/B）。
-        <strong style="color:var(--red);">距实际违约尚有4.5个月，框架给予投资者最后的窗口期进行风险处置。</strong>
+        The framework score dropped from <strong>3.90/BB-</strong> to <strong>2.35/B</strong>, entering the red alert range (&lt;3.0). The L3 Financial Strength score was only 1.5 (CCC equivalent), with the unrestricted monetary funds/short-term debt ratio of 0.28x already below the default critical point.
+        A key detail overlooked by external ratings and the market was: parent company-level monetary funds plummeted from 12.4 billion to 4.8 billion yuan (a 61% decline), while short-term debt during the same period was as high as 38.5 billion yuan — even using all 4.8 billion, the coverage rate would be only 12.5%.
+        This means the parent company level had effectively lost its debt repayment capacity. The internal rating given by the framework at this time was already very close to the actual default state (CCC+/B).
+        <strong style="color:var(--red);">With 4.5 months remaining until actual default, the framework gave investors a final window for risk management.</strong>
       </p>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>半年变化深度拆解：为何财务恶化如此剧烈？</h3>
+      <h3>Half-Year Change Deep Dive: Why Was the Financial Deterioration So Severe?</h3>
       <div class="grid-3">
         <div class="info-box info-red">
-          <strong>疫情冲击放大器</strong><br>
-          <span style="font-size:12px;">2020Q1新冠疫情导致煤炭需求断崖式下降。永煤主要客户（火电厂、钢铁厂）开工率降至60-70%，销量同比下降25%，回款周期从60天延长至90-120天，直接导致经营性现金流萎缩62%。河南省2020年一季度GDP同比-6.8%，经济基本面遭受重创。</span>
+          <strong>Epidemic Impact Amplifier</strong><br>
+          <span style="font-size:12px;">The COVID-19 outbreak in 2020Q1 caused a cliff-like decline in coal demand. Yongmei's main customers (thermal power plants, steel mills) had operating rates reduced to 60-70%, sales volume declined 25% YoY, payment collection cycles extended from 60 days to 90-120 days, directly causing a 62% contraction in operating cash flow. Henan Province's 2020 Q1 GDP was -6.8% YoY, severely impacting the economic fundamentals.</span>
         </div>
         <div class="info-box info-red">
-          <strong>母公司资金被集团抽离</strong><br>
-          <span style="font-size:12px;">豫能化集团层面面临更大的偿债压力，通过内部资金归集体系从永煤调走大量资金。母公司货币资金从124亿降至48亿（-61%），同期合并报表货币资金仅下降19%（从261亿至212亿），说明资金被集团统一调度使用的力度加大。这验证了框架L4层级中关于"集团内部资金归集风险"的判断。</span>
+          <strong>Funds Withdrawn by Parent Group</strong><br>
+          <span style="font-size:12px;">At the Henan Energy & Chemical Group level, greater debt repayment pressure led to large-scale fund transfers from Yongmei through the internal fund concentration system. Parent company monetary funds fell from 12.4 billion to 4.8 billion (-61%), while consolidated monetary funds only declined 19% (from 26.1 billion to 21.2 billion), indicating increased intensity of centralized fund deployment by the group. This validated the framework's L4 level assessment regarding "intra-group fund concentration risks."</span>
         </div>
         <div class="info-box info-amber">
-          <strong>外部融资通道收窄</strong><br>
-          <span style="font-size:12px;">2020年上半年，受永煤自身负面信号及行业整体信用收缩影响，银行授信额度从1,200亿压缩至约950亿元，未使用额度从380亿降至约200亿。债券市场融资成本从4%以下升至5%以上。银行间市场的多只存续债到期后无法续做，2020年上半年永煤到期债券约120亿元，其中约30亿元无法以新债偿还，只能依赖自有资金。</span>
+          <strong>External Financing Channels Narrowed</strong><br>
+          <span style="font-size:12px;">In the first half of 2020, affected by Yongmei's own negative signals and the overall industry credit contraction, bank credit facilities were compressed from 120 billion to approximately 95 billion yuan, with unused facilities dropping from 38 billion to about 20 billion. Bond market financing costs rose from below 4% to over 5%. Multiple outstanding bonds in the interbank market could not be rolled over upon maturity; in the first half of 2020, approximately 12 billion yuan of Yongmei's bonds matured, of which about 3 billion could not be repaid with new bonds and had to rely on own funds.</span>
         </div>
       </div>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>两个时点数轴对比：框架评分演进全景</h3>
+      <h3>Two Time Points on a Number Axis: Framework Score Evolution Panorama</h3>
       <table>
-        <thead><tr><th>维度</th><th>2019.06 (T-17月)</th><th>2019.12 (T-11月)</th><th>2020.06 (T-4.5月)</th><th>趋势</th></tr></thead>
+        <thead><tr><th>Dimension</th><th>2019.06 (T-17M)</th><th>2019.12 (T-11M)</th><th>2020.06 (T-4.5M)</th><th>Trend</th></tr></thead>
         <tbody>
-          <tr><td>框架加权评分</td><td class="score-warn">3.90</td><td class="score-warn">3.40</td><td class="score-bad">2.35</td><td class="text-red">持续恶化</td></tr>
-          <tr><td>框架内生评级</td><td><span class="tag tag-amber">BB-</span></td><td><span class="tag tag-amber">B+</span></td><td><span class="tag tag-red">B</span></td><td class="text-red">下降2个子级</td></tr>
-          <tr><td>外部评级</td><td><span class="tag tag-green">AAA</span></td><td><span class="tag tag-green">AAA</span></td><td><span class="tag tag-green">AAA</span></td><td class="text-amber">无变化</td></tr>
-          <tr><td>评级差距</td><td><span class="text-red">5级</span></td><td><span class="text-red">5级</span></td><td><span class="text-red">5级</span></td><td class="text-red">持续存在</td></tr>
-          <tr><td>L3财务评分</td><td>3.5</td><td>2.8</td><td>1.5</td><td class="text-red">降幅最大</td></tr>
-          <tr><td>L4治理评分</td><td>2.5</td><td>2.2</td><td>2.0</td><td class="text-amber">小幅下降</td></tr>
-          <tr><td>预警状态</td><td><span class="tag tag-amber">预警</span></td><td><span class="tag tag-red">严重预警</span></td><td><span class="tag tag-red">红色警戒</span></td><td class="text-red">持续升级</td></tr>
+          <tr><td>Framework Weighted Score</td><td class="score-warn">3.90</td><td class="score-warn">3.40</td><td class="score-bad">2.35</td><td class="text-red">Continuous Deterioration</td></tr>
+          <tr><td>Framework Internal Rating</td><td><span class="tag tag-amber">BB-</span></td><td><span class="tag tag-amber">B+</span></td><td><span class="tag tag-red">B</span></td><td class="text-red">Down 2 notches</td></tr>
+          <tr><td>External Rating</td><td><span class="tag tag-green">AAA</span></td><td><span class="tag tag-green">AAA</span></td><td><span class="tag tag-green">AAA</span></td><td class="text-amber">No Change</td></tr>
+          <tr><td>Rating Gap</td><td><span class="text-red">5 notches</span></td><td><span class="text-red">5 notches</span></td><td><span class="text-red">5 notches</span></td><td class="text-red">Persistent</td></tr>
+          <tr><td>L3 Financial Score</td><td>3.5</td><td>2.8</td><td>1.5</td><td class="text-red">Largest Decline</td></tr>
+          <tr><td>L4 Governance Score</td><td>2.5</td><td>2.2</td><td>2.0</td><td class="text-amber">Slight Decline</td></tr>
+          <tr><td>Warning Status</td><td><span class="tag tag-amber">Warning</span></td><td><span class="tag tag-red">Severe Warning</span></td><td><span class="tag tag-red">Red Alert</span></td><td class="text-red">Continuous Escalation</td></tr>
         </tbody>
       </table>
       <div class="info-box info-amber" style="margin-top:10px;">
-        <strong>演进特征：</strong>框架评分在四个季度内从3.90持续下滑至2.35，降幅达39.7%。L3财务评分跌幅最大（-57.1%），是带动整体评分下行的主导力量。外部评级在此期间始终保持AAA不变，与框架评级的差距始终维持在5个子级以上。这种"框架持续下降、外部纹丝不动"的格局本身构成了最强的预警信号。
+        <strong>Evolution Characteristics:</strong> The framework score continuously declined from 3.90 to 2.35 over four quarters, a drop of 39.7%. L3 Financial score had the largest decline (-57.1%), serving as the dominant force driving the overall score downward. External ratings remained unchanged at AAA throughout this period, with the gap relative to the framework rating consistently above 5 notches. This pattern of "framework continuously declining, external motionless" itself constituted the strongest early warning signal.
       </div>
     </div>
   </div>
 
-  <!-- ====== SECTION 5: 叙事拆解 ====== -->
+  <!-- ====== SECTION 5: Narrative Deconstruction ====== -->
   <div class="section">
-    <h2 class="section-title">五、核心欺瞒与叙事拆解</h2>
-    <p style="color:var(--text-secondary);margin-bottom:12px;">永煤违约的本质是"国企AAA信仰"与财务现实之间的巨大鸿沟。框架通过穿透式分析拆解了市场共识的五大误解。这些误解也是外部评级机构未能预警的根本原因。以下将每个市场共识与其对应的框架穿透分析逐一对比，揭示信息不对称和认知偏差的深层结构。</p>
+    <h2 class="section-title">5. Core Deceptions and Narrative Deconstruction</h2>
+    <p style="color:var(--text-secondary);margin-bottom:12px;">The essence of Yongmei's default lies in the huge gap between the "SOE AAA faith" and financial reality. Through penetrating analysis, the framework deconstructed five major misconceptions in market consensus. These misconceptions are also the fundamental reasons why external rating agencies failed to provide early warnings. Below, each market consensus is compared one by one with the corresponding framework penetrating analysis, revealing the deep structure of information asymmetry and cognitive biases.</p>
 
     <div class="card">
-      <h3>市场共识 vs 框架穿透分析</h3>
+      <h3>Market Consensus vs Framework Penetrating Analysis</h3>
       <div class="narrative-grid">
         <div class="narrative-side" style="background:var(--bg-tertiary);">
-          <h4 style="color:var(--text-secondary);">市场共识 / 正面叙事</h4>
+          <h4 style="color:var(--text-secondary);">Market Consensus / Positive Narrative</h4>
           <ul style="color:var(--text-secondary);font-size:13px;line-height:2.3;padding-left:16px;">
-            <li>"AAA省级国企，从未发生过违约"</li>
-            <li>"河南省政府不会坐视省内最大国企违约"</li>
-            <li>"永煤是河南省最大煤炭企业，有战略重要性"</li>
-            <li>"资产负债率72%在煤炭行业属于正常水平"</li>
-            <li>"合并报表显示货币资金261亿元，覆盖短债充足"</li>
-            <li>"煤炭行业供给侧改革受益者，经营现金流稳定"</li>
-            <li>"外部评级AAA是信用质量的最有力背书"</li>
-            <li>"银行授信额度1,200亿元，备用流动性充裕"</li>
-            <li>"河南省GDP全国前五，有足够财政资源救助"</li>
+            <li>"AAA provincial SOE, never had a default before"</li>
+            <li>"Henan provincial government will not sit idly by as the province's largest SOE defaults"</li>
+            <li>"Yongmei is Henan's largest coal enterprise with strategic importance"</li>
+            <li>"72% asset-liability ratio is normal in the coal industry"</li>
+            <li>"Consolidated statements show monetary funds of 26.1 billion yuan, sufficient to cover short-term debt"</li>
+            <li>"Beneficiary of coal industry supply-side reform, stable operating cash flow"</li>
+            <li>"External AAA rating is the strongest endorsement of credit quality"</li>
+            <li>"Bank credit facilities of 120 billion yuan, ample backup liquidity"</li>
+            <li>"Henan GDP in the top 5 nationally, sufficient fiscal resources for rescue"</li>
           </ul>
         </div>
         <div class="narrative-side">
-          <h4 style="color:var(--red);">框架穿透分析 / 事实</h4>
+          <h4 style="color:var(--red);">Framework Penetrating Analysis / Facts</h4>
           <ul style="color:var(--text-secondary);font-size:13px;line-height:2.3;padding-left:16px;">
-            <li><span class="text-red">框架内生评级BB-</span>远低于外部AAA——差异5个子级</li>
-            <li>河南人均财政全国第18，且豫能化本身负债率85%+，<span class="text-red">救助能力远低于市场想象</span></li>
-            <li>非煤业务（化工/贸易/装备制造）<span class="text-red">连续5年亏损</span>，是盈利的"出血口"</li>
-            <li>有息负债中<span class="text-red">短债占比65%</span>，期限错配严重（经营性现金流无法覆盖短债到期）</li>
-            <li>合并报表261亿货币资金中<span class="text-red">约60%受限</span>（银行承兑汇票保证金/定期存单质押/监管账户），非受限部分仅约100亿</li>
-            <li>与豫能化的<span class="text-red">关联方往来款超200亿</span>，母公司层面实际可动用的资金远低于外部认知</li>
-            <li>外部评级方法论存在固有缺陷：过度依赖合并报表、<span class="text-red">低估国企信用质量与政府支持能力之间的脱节</span></li>
-            <li>银行授信额度中<span class="text-red">约30%已为不可撤销备用信贷</span>，实际可随时动用的授信远低于披露金额</li>
-            <li>河南省2020年疫情防控+减税降费后实际可支配财力大幅下降，<span class="text-red">救助排序中城投优先于产业国企</span></li>
+            <li><span class="text-red">Framework internal rating BB-</span> far below external AAA — 5 notch difference</li>
+            <li>Henan per capita fiscal ranking 18th nationally, and Yuneng Chemical itself has 85%+ debt ratio, <span class="text-red">rescue capacity far below market imagination</span></li>
+            <li>Non-coal businesses (chemicals/trading/equipment manufacturing) <span class="text-red">losses for 5 consecutive years</span>, a profit "bleeding point"</li>
+            <li><span class="text-red">Short-term debt ratio of 65%</span> among interest-bearing debt, severe maturity mismatch (operating cash flow unable to cover short-term debt maturities)</li>
+            <li>Of the consolidated 26.1 billion yuan in monetary funds, <span class="text-red">approximately 60% is restricted</span> (bank acceptance bill deposits/time deposit pledges/escrow accounts), unrestricted portion only about 10 billion</li>
+            <li><span class="text-red">Related party receivables from Yuneng Chemical exceeding 20 billion yuan</span>, parent company's actual available funds far below external perception</li>
+            <li>External rating methodology has inherent flaws: over-reliance on consolidated statements, <span class="text-red">underestimation of the disconnect between SOE credit quality and government support capacity</span></li>
+            <li>Of the bank credit facilities, <span class="text-red">approximately 30% are irrevocable standby credit</span>, actual immediately available credit far below disclosed amount</li>
+            <li>After epidemic prevention and tax/fee reductions in 2020, Henan Province's actual disposable fiscal resources significantly declined, <span class="text-red">rescue priority: city investment over industrial SOEs</span></li>
           </ul>
         </div>
       </div>
 
       <div class="info-box info-red" style="margin-top:16px;">
-        <strong>框架领先外部评级的关键技术差异：</strong><br>
-        (1) <strong>合并vs母公司双轨分析</strong>：框架强制同时分析合并报表和母公司报表，而外部评级主要关注合并报表。永煤母公司货币资金48亿 vs 合并261亿的差异揭示了资金受限和集团调度的真相。<br>
-        (2) <strong>非受限货币资金覆盖率</strong>：框架在L3财务中设置了这一指标，穿透了"货币资金"科目的虚高问题。按框架口径计算，永煤非受限货币资金/短债仅0.28x，远超外部评级对流动性的评估。<br>
-        (3) <strong>关联交易穿透</strong>：框架L4治理层级系统性地追踪关联方资金往来规模，永煤与豫能化的200亿+关联往来被标记为"高风险穿透信号"——这在外部评级报告中几乎没有权重。<br>
-        (4) <strong>外部支持的真实上限</strong>：框架不承认"国企信仰"假设，而是通过财政自给率、历史救助案例、集团内部救助优先序等客观指标量化支持能力上限。<br>
-        (5) <strong>审计意见穿透</strong>：框架在L4层级中分析了审计报告中的"关键审计事项"章节，识别出审计师对持续经营能力的隐性关注，而外部评级机构通常仅关注审计意见的类型（无保留/保留/否定）。
+        <strong>Key Technical Differences Where Framework Leads External Ratings:</strong><br>
+        (1) <strong>Consolidated vs Parent Dual-Track Analysis</strong>: The framework mandates simultaneous analysis of both consolidated and parent company statements, while external ratings primarily focus on consolidated statements. The difference between Yongmei's parent company monetary funds of 4.8 billion vs consolidated 26.1 billion revealed the truth about fund restrictions and group deployment.<br>
+        (2) <strong>Unrestricted Monetary Fund Coverage Ratio</strong>: The framework set this indicator at L3 Financial level, penetrating the inflated "monetary funds" account. Calculated under the framework's methodology, Yongmei's unrestricted monetary funds/short-term debt was only 0.28x, far beyond external rating agencies' liquidity assessment.<br>
+        (3) <strong>Related Party Transaction Penetration</strong>: The framework's L4 Governance level systematically tracks the scale of related party fund flows; Yongmei's 20 billion+ related party transactions with Yuneng Chemical were flagged as "high-risk penetration signals" — this carried almost no weight in external rating reports.<br>
+        (4) <strong>True Ceiling of External Support</strong>: The framework does not accept the "SOE faith" assumption, but instead quantifies the upper limit of support capacity through objective indicators such as fiscal self-sufficiency rate, historical rescue cases, and intra-group rescue priority order.<br>
+        (5) <strong>Audit Opinion Penetration</strong>: At the L4 level, the framework analyzes the "Key Audit Matters" section of the audit report, identifying auditors' implicit concerns about going concern, while external rating agencies typically only focus on the type of audit opinion (unqualified/qualified/adverse).
       </div>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>叙事拆解：七宗"隐性风险"</h3>
+      <h3>Narrative Deconstruction: Seven "Hidden Risks"</h3>
       <table>
-        <thead><tr><th>序号</th><th>隐性风险</th><th>市场认知</th><th>框架识别机制</th><th>影响权重</th></tr></thead>
+        <thead><tr><th>No.</th><th>Hidden Risk</th><th>Market Perception</th><th>Framework Identification Mechanism</th><th>Impact Weight</th></tr></thead>
         <tbody>
-          <tr><td>1</td><td>虚假的合并现金流</td><td>合并报表261亿货币资金对应充足流动性</td><td>母公司vs合并报表双轨分析，揭示资金归集与受限</td><td><span class="tag tag-red">高</span></td></tr>
-          <tr><td>2</td><td">关联方资金黑洞</td><td>关联交易属正常集团运营范畴</td><td>量化关联往来/总资产比，阈值>30%触发L4红色预警</td><td><span class="tag tag-red">高</span></td></tr>
-          <tr><td>3</td><td>短债长投的期限错配</td><td>短债占比高是煤企行业惯例</td><td>流动性覆盖率（非受限现金/短期债务）作为核心指标</td><td><span class="tag tag-red">高</span></td></tr>
-          <tr><td>4</td><td>非煤业务的隐性拖累</td><td>非煤业务是多元化战略的一部分</td><td>分部报告分析：非煤ROIC<WACC，持续消耗现金流</td><td><span class="tag tag-amber">中</span></td></tr>
-          <tr><td>5</td><td>政府救助能力幻觉</td><td>河南省GDP前五，救助无压力</td><td>财政自给率+债务率+历史救助优先序综合分析</td><td><span class="tag tag-amber">中</span></td></tr>
-          <tr><td>6</td><td>银行授信的虚幻安全垫</td><td>1200亿授信额度提供充足流动性</td><td>分析授信结构：已用/未用、承诺/非承诺、有效期分布</td><td><span class="tag tag-amber">中</span></td></tr>
-          <tr><td>7</td><td>审计意见的信息缺口</td><td>无保留意见=财务安全</td><td>深度阅读关键审计事项段落，识别隐性持续经营暗示</td><td><span class="tag tag-blue">辅助</span></td></tr>
+          <tr><td>1</td><td>False consolidated cash flow</td><td>Consolidated 26.1B monetary funds equal ample liquidity</td><td>Dual-track analysis of parent vs consolidated statements reveals fund concentration and restrictions</td><td><span class="tag tag-red">High</span></td></tr>
+          <tr><td>2</td><td>Related party fund black hole</td><td>Related party transactions are within normal group operations</td><td>Quantify related party transactions/total assets ratio, threshold &gt;30% triggers L4 red warning</td><td><span class="tag tag-red">High</span></td></tr>
+          <tr><td>3</td><td>Maturity mismatch of short borrowing for long investment</td><td>High short-term debt ratio is industry practice for coal enterprises</td><td>Liquidity coverage ratio (unrestricted cash/short-term debt) as core indicator</td><td><span class="tag tag-red">High</span></td></tr>
+          <tr><td>4</td><td>Hidden drag of non-coal businesses</td><td>Non-coal businesses are part of diversification strategy</td><td>Segment reporting analysis: non-coal ROIC&lt;WACC, persistently consuming cash flow</td><td><span class="tag tag-amber">Medium</span></td></tr>
+          <tr><td>5</td><td>Government rescue capacity illusion</td><td>Henan GDP top 5, rescue without pressure</td><td>Comprehensive analysis of fiscal self-sufficiency rate + debt ratio + historical rescue priority</td><td><span class="tag tag-amber">Medium</span></td></tr>
+          <tr><td>6</td><td>Illusory safety cushion of bank credit</td><td>120B credit facility provides ample liquidity</td><td>Analyze credit structure: drawn/undrawn, committed/uncommitted, maturity distribution</td><td><span class="tag tag-amber">Medium</span></td></tr>
+          <tr><td>7</td><td>Information gap in audit opinion</td><td>Unqualified opinion = financial safety</td><td>Deep reading of Key Audit Matters paragraphs to identify implicit going concern implications</td><td><span class="tag tag-blue">Supplementary</span></td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- ====== SECTION 6: 类似违约事件回溯对比 ====== -->
+  <!-- ====== SECTION 6: Comparative Backtest of Similar Default Events ====== -->
   <div class="section">
-    <h2 class="section-title">六、类似违约事件回溯对比</h2>
-    <p style="color:var(--text-secondary);margin-bottom:12px;">将永煤违约与同期其他三起典型的"国企信仰打破"事件进行框架评分对比，验证框架对不同行业、不同类型国企违约的预警一致性。选择华晨汽车（2020.11）、北大方正（2019.12）、康美药业（2020.02）作为对照组。</p>
+    <h2 class="section-title">6. Comparative Backtest of Similar Default Events</h2>
+    <p style="color:var(--text-secondary);margin-bottom:12px;">Compare framework scores of Yongmei's default with three other typical "SOE faith broken" events during the same period to validate the framework's early warning consistency across different industries and types of SOE defaults. Selecting Brilliance Auto (2020.11), Peking University Founder (2019.12), and Kangmei Pharmaceutical (2020.02) as the control group.</p>
 
     <div class="card">
-      <h3>四起违约事件框架评分对比</h3>
+      <h3>Framework Score Comparison of Four Default Events</h3>
       <table>
-        <thead><tr><th>对比维度</th><th>永煤控股</th><th>华晨汽车</th><th>北大方正</th><th>康美药业</th></tr></thead>
+        <thead><tr><th>Comparison Dimension</th><th>Yongmei Holding</th><th>Brilliance Auto</th><th>PKU Founder</th><th>Kangmei Pharma</th></tr></thead>
         <tbody>
-          <tr><td>违约时间</td><td>2020.11</td><td>2020.11</td><td>2019.12</td><td>2020.02</td></tr>
-          <tr><td>企业性质</td><td>河南省属国企</td><td>辽宁省属国企</td><td>校办国企（北大）</td><td>民营上市</td></tr>
-          <tr><td>违约时外部评级</td><td>AAA</td><td>AAA</td><td>AAA</td><td>AAA（违约前3月）</td></tr>
-          <tr><td>违约前框架评分（T-12月）</td><td><span class="tag tag-amber">BB-</span></td><td><span class="tag tag-amber">BB</span></td><td><span class="tag tag-amber">BB+</span></td><td><span class="tag tag-red">B+</span></td></tr>
-          <tr><td>违约前框架评分（T-3月）</td><td><span class="tag tag-red">B</span></td><td><span class="tag tag-red">B-</span></td><td><span class="tag tag-red">CCC+</span></td><td><span class="tag tag-red">CCC</span></td></tr>
-          <tr><td>预警领先时间</td><td>17个月</td><td>14个月</td><td>12个月</td><td>18个月</td></tr>
-          <tr><td>核心触发因素</td><td>货币资金受限+关联交易+短债集中</td><td>自主品牌亏损+新能源投入巨大+流动性枯竭</td><td>多元业务亏损+高杠杆并购+资金占用</td><td>财务造假+关联资金占用+大股东掏空</td></tr>
-          <tr><td>框架vs外部评级最大差距</td><td>5级</td><td>4级</td><td>4级</td><td>6级</td></tr>
-          <tr><td>违约后处置进展</td><td>部分兑付+豫能化整体重组</td><td>破产重整</td><td>破产重整</td><td>破产重整+刑事追责</td></tr>
-          <tr><td>行业属性</td><td>煤炭/煤化工</td><td>汽车制造</td><td>IT/医药/金融综合</td><td>中药饮片</td></tr>
+          <tr><td>Default Time</td><td>2020.11</td><td>2020.11</td><td>2019.12</td><td>2020.02</td></tr>
+          <tr><td>Enterprise Type</td><td>Henan Provincial SOE</td><td>Liaoning Provincial SOE</td><td>University-run SOE (PKU)</td><td>Private Listed</td></tr>
+          <tr><td>External Rating at Default</td><td>AAA</td><td>AAA</td><td>AAA</td><td>AAA (3 months before default)</td></tr>
+          <tr><td>Framework Score Pre-Default (T-12M)</td><td><span class="tag tag-amber">BB-</span></td><td><span class="tag tag-amber">BB</span></td><td><span class="tag tag-amber">BB+</span></td><td><span class="tag tag-red">B+</span></td></tr>
+          <tr><td>Framework Score Pre-Default (T-3M)</td><td><span class="tag tag-red">B</span></td><td><span class="tag tag-red">B-</span></td><td><span class="tag tag-red">CCC+</span></td><td><span class="tag tag-red">CCC</span></td></tr>
+          <tr><td>Early Warning Lead Time</td><td>17 months</td><td>14 months</td><td>12 months</td><td>18 months</td></tr>
+          <tr><td>Core Trigger Factors</td><td>Monetary fund restrictions + related party transactions + concentrated short-term debt</td><td>Own brand losses + huge NEV investment + liquidity depletion</td><td>Diversified business losses + high-leverage M&A + fund occupation</td><td>Financial fraud + related party fund occupation + major shareholder tunneling</td></tr>
+          <tr><td>Max Framework vs External Rating Gap</td><td>5 notches</td><td>4 notches</td><td>4 notches</td><td>6 notches</td></tr>
+          <tr><td>Post-Default Disposal Progress</td><td>Partial repayment + Yuneng Chemical overall restructuring</td><td>Bankruptcy reorganization</td><td>Bankruptcy reorganization</td><td>Bankruptcy reorganization + criminal prosecution</td></tr>
+          <tr><td>Industry</td><td>Coal/Coal Chemical</td><td>Automotive Manufacturing</td><td>IT/Pharmaceutical/Financial Conglomerate</td><td>Chinese Herbal Medicine</td></tr>
         </tbody>
       </table>
     </div>
 
     <div class="card card-amber" style="margin-top:14px;">
-      <h3>对比分析发现</h3>
+      <h3>Comparative Analysis Findings</h3>
       <div class="grid-2">
         <div class="info-box info-amber">
-          <strong>共同特征：</strong><br>
-          (1) 四起事件违约前外部评级均为AAA，框架评分均提前12-18个月给出投机级评级（BB+及以下）<br>
-          (2) 都存在严重的<strong>资金占用或关联交易</strong>问题（永煤/豫能化、华晨/华晨集团、方正/北大、康美/实控人），但外部评级均未能有效捕捉<br>
-          (3) 合并报表均<strong>夸大了实际偿债能力</strong>，母公司层面流动性远早于合并报表恶化。四家企业违约前母公司货币资金降幅均超过40%<br>
-          (4) "国企信仰"或"大而不倒"假设在上述案例中均被打破，市场为此付出了沉重代价
+          <strong>Common Features:</strong><br>
+          (1) External ratings before default were all AAA; framework scores all gave speculative-grade ratings (BB+ and below) 12-18 months in advance<br>
+          (2) All had severe <strong>fund occupation or related party transaction</strong> issues (Yongmei/Yuneng Chemical, Brilliance/Brilliance Group, Founder/PKU, Kangmei/controlling shareholder), but external ratings failed to capture effectively<br>
+          (3) Consolidated statements all <strong>exaggerated actual debt repayment capacity</strong>; parent company-level liquidity deteriorated much earlier than consolidated. Parent company monetary funds declined over 40% before default in all four cases<br>
+          (4) The "SOE faith" or "too big to fail" assumption was broken in all above cases, and the market paid a heavy price
         </div>
         <div class="info-box info-red">
-          <strong>差异化特征：</strong><br>
-          (1) 康美药业作为民营企业不存在"国企信仰"问题，但其财务造假严重程度最高（货币资金虚增299亿），通过框架L4治理穿透被有效识别，预警领先时间最长（18个月）<br>
-          (2) 北大方正的校办背景使得外部支持预期最高，但实际救助意愿受制于教育部"剥离校办企业"政策的刚性约束，L5评估正确反映了这一风险<br>
-          (3) 华晨汽车与永煤同月违约（2020年11月），两起事件叠加导致信用债市场"踩踏"效应，引发系统性信用收缩<br>
-          (4) 永煤的预警领先时间（17个月）在四起事件中排名第二，因其财务恶化是渐进式的而非突发性变故，为框架提供了充足的分析窗口
+          <strong>Differentiating Features:</strong><br>
+          (1) Kangmei Pharmaceutical, as a private enterprise, did not have the "SOE faith" issue, but its financial fraud was the most severe (monetary funds inflated by 29.9 billion yuan), effectively identified through the framework's L4 governance penetration, with the longest early warning lead time (18 months)<br>
+          (2) PKU Founder's university-run background gave the highest external support expectations, but actual rescue willingness was constrained by the Ministry of Education's rigid "divestiture of university-run enterprises" policy; L5 assessment correctly reflected this risk<br>
+          (3) Brilliance Auto defaulted in the same month as Yongmei (November 2020), and the two events combined created a "stampede" effect in the credit bond market, triggering systemic credit contraction<br>
+          (4) Yongmei's early warning lead time (17 months) ranked second among the four events; because its financial deterioration was gradual rather than sudden, it provided the framework with sufficient analysis window
         </div>
       </div>
       <div class="info-box info-blue" style="margin-top:12px;">
-        <strong>框架预警一致性验证：</strong>四起跨行业、跨所有制违约事件的回溯验证表明，框架对不同类型企业的预警具有高度一致性和领先性。预警领先时间最短为12个月（北大方正），最长为18个月（康美药业），平均领先时间约15个月。框架与外部评级的差距在3-6级之间，平均差距约4.75级。上述数据验证了框架方法论的系统性有效性——它不依赖于行业假设或所有制偏见，而是基于客观的财务和治理数据分析得出独立结论。
+        <strong>Framework Early Warning Consistency Validation:</strong> The backtest validation of four cross-industry, cross-ownership default events shows that the framework's early warnings for different types of enterprises have high consistency and leading capability. The shortest early warning lead time was 12 months (PKU Founder), the longest was 18 months (Kangmei Pharmaceutical), with an average lead time of about 15 months. The gap between framework and external ratings ranged from 3 to 6 notches, with an average gap of about 4.75 notches. The above data validates the systematic effectiveness of the framework methodology — it does not rely on industry assumptions or ownership bias, but draws independent conclusions based on objective financial and governance data analysis.
       </div>
     </div>
   </div>
 
-  <!-- ====== SECTION 7: 评级行为分析 ====== -->
+  <!-- ====== SECTION 7: Rating Behavior Analysis ====== -->
   <div class="section">
-    <h2 class="section-title">七、评级行为分析：外部评级 vs 框架评级</h2>
+    <h2 class="section-title">7. Rating Behavior Analysis: External Rating vs Framework Rating</h2>
     <div class="card">
-      <h3>评级时间线对比</h3>
-      <p style="color:var(--text-secondary);margin-bottom:10px;font-size:12px;">以下展示2019年6月至违约后，外部评级（中诚信国际）与框架评级的完整对比。左侧为外部评级（大字体），右侧为框架内生评级（中字体）。差距以子级数量标注。</p>
+      <h3>Rating Timeline Comparison</h3>
+      <p style="color:var(--text-secondary);margin-bottom:10px;font-size:12px;">The following shows a complete comparison between external ratings (CCXI) and framework ratings from June 2019 to after default. External ratings on the left (large font), framework internal ratings on the right (medium font). Gaps marked in number of notches.</p>
       <div class="rating-timeline">
         <div class="rt-item">
           <div class="date">2019.06</div>
           <div class="rating" style="color:var(--green);">AAA</div>
-          <div style="font-size:11px;color:var(--text-secondary);">外部</div>
+          <div style="font-size:11px;color:var(--text-secondary);">External</div>
           <div class="rating" style="font-size:16px;color:var(--amber);">BB-</div>
-          <div style="font-size:11px;color:var(--text-secondary);">框架</div>
-          <div style="font-size:10px;color:var(--red);margin-top:2px;">差距5级</div>
+          <div style="font-size:11px;color:var(--text-secondary);">Framework</div>
+          <div style="font-size:10px;color:var(--red);margin-top:2px;">Gap 5 notches</div>
         </div>
         <div class="rt-item">
           <div class="date">2019.12</div>
           <div class="rating" style="color:var(--green);">AAA</div>
-          <div style="font-size:11px;color:var(--text-secondary);">外部</div>
+          <div style="font-size:11px;color:var(--text-secondary);">External</div>
           <div class="rating" style="font-size:16px;color:var(--amber);">BB</div>
-          <div style="font-size:11px;color:var(--text-secondary);">框架</div>
-          <div style="font-size:10px;color:var(--red);margin-top:2px;">差距4级</div>
+          <div style="font-size:11px;color:var(--text-secondary);">Framework</div>
+          <div style="font-size:10px;color:var(--red);margin-top:2px;">Gap 4 notches</div>
         </div>
         <div class="rt-item">
           <div class="date">2020.03</div>
           <div class="rating" style="color:var(--green);">AAA</div>
-          <div style="font-size:11px;color:var(--text-secondary);">外部</div>
+          <div style="font-size:11px;color:var(--text-secondary);">External</div>
           <div class="rating" style="font-size:16px;color:var(--amber);">BB</div>
-          <div style="font-size:11px;color:var(--text-secondary);">框架</div>
-          <div style="font-size:10px;color:var(--red);margin-top:2px;">差距4级</div>
+          <div style="font-size:11px;color:var(--text-secondary);">Framework</div>
+          <div style="font-size:10px;color:var(--red);margin-top:2px;">Gap 4 notches</div>
         </div>
         <div class="rt-item">
           <div class="date">2020.06</div>
           <div class="rating" style="color:var(--green);">AAA</div>
-          <div style="font-size:11px;color:var(--text-secondary);">外部</div>
+          <div style="font-size:11px;color:var(--text-secondary);">External</div>
           <div class="rating" style="font-size:16px;color:var(--red);">B</div>
-          <div style="font-size:11px;color:var(--text-secondary);">框架</div>
-          <div style="font-size:10px;color:var(--red);margin-top:2px;">差距5级</div>
+          <div style="font-size:11px;color:var(--text-secondary);">Framework</div>
+          <div style="font-size:10px;color:var(--red);margin-top:2px;">Gap 5 notches</div>
         </div>
         <div class="rt-item">
           <div class="date">2020.09</div>
           <div class="rating" style="color:var(--green);">AAA</div>
-          <div style="font-size:11px;color:var(--text-secondary);">外部</div>
+          <div style="font-size:11px;color:var(--text-secondary);">External</div>
           <div class="rating" style="font-size:16px;color:var(--red);">CCC+</div>
-          <div style="font-size:11px;color:var(--text-secondary);">框架</div>
-          <div style="font-size:10px;color:var(--red);margin-top:2px;">差距6级</div>
+          <div style="font-size:11px;color:var(--text-secondary);">Framework</div>
+          <div style="font-size:10px;color:var(--red);margin-top:2px;">Gap 6 notches</div>
         </div>
         <div class="rt-item">
           <div class="date">2020.10.20</div>
           <div class="rating" style="color:var(--amber);">AA-</div>
-          <div style="font-size:11px;color:var(--text-secondary);">外部</div>
+          <div style="font-size:11px;color:var(--text-secondary);">External</div>
           <div class="rating" style="font-size:16px;color:var(--red);">CCC</div>
-          <div style="font-size:11px;color:var(--text-secondary);">框架</div>
-          <div style="font-size:10px;color:var(--red);margin-top:2px;">差距4级</div>
+          <div style="font-size:11px;color:var(--text-secondary);">Framework</div>
+          <div style="font-size:10px;color:var(--red);margin-top:2px;">Gap 4 notches</div>
         </div>
         <div class="rt-item" style="background:var(--bg-hover);">
           <div class="date">2020.11.10</div>
           <div class="rating" style="color:var(--red);">BB</div>
-          <div style="font-size:11px;color:var(--text-secondary);">外部</div>
+          <div style="font-size:11px;color:var(--text-secondary);">External</div>
           <div class="rating" style="font-size:16px;color:var(--red);">D</div>
-          <div style="font-size:11px;color:var(--text-secondary);">框架</div>
-          <div style="font-size:10px;color:var(--red);margin-top:2px;">差距4级</div>
+          <div style="font-size:11px;color:var(--text-secondary);">Framework</div>
+          <div style="font-size:10px;color:var(--red);margin-top:2px;">Gap 4 notches</div>
         </div>
       </div>
 
       <div style="margin-top:16px;">
         <table>
-          <thead><tr><th>评级动作</th><th>日期</th><th>行动方</th><th>距违约天数</th><th>说明</th></tr></thead>
+          <thead><tr><th>Rating Action</th><th>Date</th><th>Action Party</th><th>Days to Default</th><th>Description</th></tr></thead>
           <tbody>
-            <tr><td>维持AAA</td><td>2020.06.30</td><td>中诚信国际</td><td>-133天</td><td>年度跟踪评级维持AAA，展望稳定。报告未提及流动性压力。</td></tr>
-            <tr><td>维持AAA</td><td>2020.08.31</td><td>中诚信国际</td><td>-71天</td><td>中报后维持AAA，未调整展望。此时归母净利润已转负至-3.2亿。</td></tr>
-            <tr><td>维持AAA</td><td>2020.09.30</td><td>中诚信国际</td><td>-41天</td><td>季度跟踪维持AAA。此时距SCP003到期不到6周。</td></tr>
-            <tr><td>列为观察</td><td>2020.10.20</td><td>中诚信国际</td><td>-21天</td><td>列入可能下调的观察名单，首次对市场释放风险信号。</td></tr>
-            <tr><td>下调至AA-</td><td>2020.10.27</td><td>中诚信国际</td><td>-14天</td><td>下调2个子级至AA-，但距违约仅2周时间，实际操作空间极为有限。</td></tr>
-            <tr><td>下调至BB</td><td>2020.11.10</td><td>中诚信国际</td><td>违约当日</td><td>违约日大幅下调至投机级（BB），降幅横跨6个子级——实属"断崖式下调"。</td></tr>
-            <tr><td>下调至D</td><td>2020.12.15</td><td>中诚信国际</td><td>+35天</td><td>最终确认违约状态，此时距首次预警已过17个月。</td></tr>
+            <tr><td>Maintained AAA</td><td>2020.06.30</td><td>CCXI</td><td>-133 days</td><td>Annual tracking rating maintained AAA with stable outlook. Report did not mention liquidity pressure.</td></tr>
+            <tr><td>Maintained AAA</td><td>2020.08.31</td><td>CCXI</td><td>-71 days</td><td>Maintained AAA after interim report, no outlook adjustment. At this time, net profit attributable to parent had already turned negative to -0.32 billion.</td></tr>
+            <tr><td>Maintained AAA</td><td>2020.09.30</td><td>CCXI</td><td>-41 days</td><td>Quarterly tracking maintained AAA. At this time, less than 6 weeks until SCP003 maturity.</td></tr>
+            <tr><td>Placed on Watch</td><td>2020.10.20</td><td>CCXI</td><td>-21 days</td><td>Placed on watch list for possible downgrade, first risk signal released to the market.</td></tr>
+            <tr><td>Downgraded to AA-</td><td>2020.10.27</td><td>CCXI</td><td>-14 days</td><td>Downgraded 2 notches to AA-, but only 2 weeks before default, actual operational room extremely limited.</td></tr>
+            <tr><td>Downgraded to BB</td><td>2020.11.10</td><td>CCXI</td><td>Default day</td><td>On default day, significantly downgraded to speculative grade (BB), spanning 6 notches — a true "cliff-like downgrade".</td></tr>
+            <tr><td>Downgraded to D</td><td>2020.12.15</td><td>CCXI</td><td>+35 days</td><td>Finally confirmed default status, at which time 17 months had passed since the first framework warning.</td></tr>
           </tbody>
         </table>
       </div>
 
       <div class="info-box info-amber" style="margin-top:16px;">
-        <strong>评级滞后定量分析：</strong>外部评级在违约前始终维持AAA，直到违约前约<strong>21天</strong>才列入观察名单、14天下调至AA-。框架在T-17月即给出BB-内生评级，领先外部评级约<strong>17个月</strong>。即使从框架首次预警时点计算到违约日，投资者仍有<strong>整整17个月的窗口期</strong>。滞后的结构性原因包括：评级机构对国企的隐性政府支持假设过高、合并报表与母公司报表选择偏差、货币资金受限信息的获取路径不完善、评级委员会决策流程中的共识偏差。
+        <strong>Quantitative Rating Lag Analysis:</strong> External ratings consistently maintained AAA before default, only placing on watch list approximately <strong>21 days</strong> before default and downgrading to AA- 14 days before. The framework gave a BB- internal rating at T-17 months, leading external ratings by approximately <strong>17 months</strong>. Even calculating from the framework's first warning time point to the default date, investors still had a <strong>full 17-month window</strong>. Structural reasons for the lag include: rating agencies' excessively high implicit government support assumptions for SOEs, selection bias between consolidated and parent statements, incomplete information channels for monetary fund restrictions, and consensus bias in rating committee decision-making processes.
       </div>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>评级机构行为模式分析</h3>
+      <h3>Rating Agency Behavior Pattern Analysis</h3>
       <div class="grid-2">
         <div>
           <div class="info-box info-amber">
-            <strong>行为模式一：顺周期调级</strong><br>
-            <span style="font-size:12px;">评级机构通常在经济/行业下行时期才开始调降评级，而非前瞻性地预测风险。永煤在2019年行业利好末期（供给侧改革红利）仍维持AAA，但框架已在此时识别到结构性风险。顺周期调级的本质是评级机构过度依赖历史数据的回望式分析。</span>
+            <strong>Pattern 1: Pro-cyclical Rating Changes</strong><br>
+            <span style="font-size:12px;">Rating agencies typically begin downgrading only during economic/industry downturns, rather than proactively predicting risks. Yongmei still maintained AAA during the tail end of industry benefits (supply-side reform dividends) in 2019, but the framework had already identified structural risks at that time. The essence of pro-cyclical rating changes is rating agencies' excessive reliance on backward-looking historical data analysis.</span>
           </div>
         </div>
         <div>
           <div class="info-box info-red">
-            <strong>行为模式二：断崖式调整</strong><br>
-            <span style="font-size:12px;">从AAA直接下调至BB（跳越6个子级），表明评级机构对风险的累积缺乏有效监控。这种"一步到位"式的调整不仅对市场造成冲击，也说明评级机构此前对风险信号的选择性忽视。框架的渐进式评分调整（BB-→BB→B→CCC→D）则体现了风险的逐步积累过程。</span>
+            <strong>Pattern 2: Cliff-Like Adjustments</strong><br>
+            <span style="font-size:12px;">Direct downgrade from AAA to BB (jumping 6 notches) indicates a lack of effective monitoring of risk accumulation by rating agencies. This "one-step" adjustment not only shocks the market but also demonstrates the rating agencies' selective neglect of risk signals. The framework's progressive score adjustments (BB-→BB→B→CCC→D) reflect the gradual accumulation process of risk.</span>
           </div>
         </div>
       </div>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>评级泡沫指数：量化框架与外部评级的系统性偏离</h3>
-      <p style="color:var(--text-secondary);font-size:13px;margin-bottom:10px;">框架设计了"评级泡沫指数"（Rating Bubble Index, RBI），用于量化外部评级相对于框架内生评级的过度乐观程度。RBI指数由四个子指标构成：</p>
+      <h3>Rating Bubble Index: Quantifying the Systematic Deviation Between Framework and External Ratings</h3>
+      <p style="color:var(--text-secondary);font-size:13px;margin-bottom:10px;">The framework has designed the "Rating Bubble Index" (RBI) to quantify the degree of over-optimism of external ratings relative to the framework's internal ratings. The RBI index consists of four sub-indicators:</p>
       <table>
-        <thead><tr><th>指标</th><th>计算公式</th><th>永煤值</th><th>阈值</th><th>结论</th></tr></thead>
+        <thead><tr><th>Indicator</th><th>Formula</th><th>Yongmei Value</th><th>Threshold</th><th>Conclusion</th></tr></thead>
         <tbody>
-          <tr><td>RBI-绝对偏离</td><td>外部评级子级数 - 框架评级子级数</td><td>5级</td><td>&lt;3级正常, 3-5级预警, &gt;5级严重</td><td><span class="tag tag-red">严重偏离</span></td></tr>
-          <tr><td>RBI-相对偏离率</td><td>绝对偏离 / 20（评级刻度总级数）</td><td>25%</td><td>&gt;15% 预警</td><td><span class="tag tag-red">预警触发</span></td></tr>
-          <tr><td>RBI-时滞</td><td>外部评级首次下调距违约天数</td><td>21天</td><td>&gt;90天正常, 30-90天预警, &lt;30天严重</td><td><span class="tag tag-red">仅21天</span></td></tr>
-          <tr><td>RBI-同步性</td><td>框架与外部评级趋势相关系数</td><td>-0.12</td><td>&gt;0.5正常</td><td><span class="tag tag-red">负相关</span></td></tr>
+          <tr><td>RBI-Absolute Deviation</td><td>External rating notches - Framework rating notches</td><td>5 notches</td><td>&lt;3 normal, 3-5 warning, &gt;5 severe</td><td><span class="tag tag-red">Severe Deviation</span></td></tr>
+          <tr><td>RBI-Relative Deviation Rate</td><td>Absolute deviation / 20 (total rating scale notches)</td><td>25%</td><td>&gt;15% Warning</td><td><span class="tag tag-red">Warning Triggered</span></td></tr>
+          <tr><td>RBI-Time Lag</td><td>Days from first external downgrade to default</td><td>21 days</td><td>&gt;90 days normal, 30-90 days warning, &lt;30 days severe</td><td><span class="tag tag-red">Only 21 days</span></td></tr>
+          <tr><td>RBI-Synchronization</td><td>Correlation coefficient of framework and external rating trends</td><td>-0.12</td><td>&gt;0.5 normal</td><td><span class="tag tag-red">Negative Correlation</span></td></tr>
         </tbody>
       </table>
       <div class="info-box info-red" style="margin-top:12px;">
-        <strong>评级泡沫成因分析：</strong>永煤案例中评级泡沫的形成有三大结构性原因：<br>
-        (1) <strong>激励机制扭曲</strong>——评级机构向发行人收费模式导致"评级购买"行为，AAA评级本身具有商业价值，评级机构有维持高评级的利益动机。违约前永煤支付中诚信国际年度评级费用约180万元；<br>
-        (2) <strong>方法论缺陷</strong>——外部评级过度依赖合并报表数据、低估关联交易风险、对国企隐含政府支持的假设缺乏弹性。永煤案例中，标准评级模型无法有效处理"国企+集团子公司"这一复合结构的特殊性；<br>
-        (3) <strong>市场惯性</strong>——一旦给予AAA评级，下调面临巨大的市场压力和声誉风险，评级机构易陷入"锚定效应"。中诚信国际在2020年的评级调整中，下调动作的滞后天数中位数约35天，远高于国际同业（穆迪/标普约15天）。
+        <strong>Rating Bubble Formation Analysis:</strong> The formation of the rating bubble in the Yongmei case has three structural causes:<br>
+        (1) <strong>Distorted Incentive Mechanism</strong> — The issuer-pay model leads to "rating shopping" behavior; AAA rating itself has commercial value, and rating agencies have a profit motive to maintain high ratings. Before default, Yongmei paid CCXI an annual rating fee of approximately 1.8 million yuan;<br>
+        (2) <strong>Methodological Deficiencies</strong> — External ratings over-rely on consolidated statement data, underestimate related party transaction risks, and lack flexibility in assumptions about implicit government support for SOEs. In the Yongmei case, standard rating models could not effectively handle the special nature of the "SOE + group subsidiary" compound structure;<br>
+        (3) <strong>Market Inertia</strong> — Once an AAA rating is assigned, downgrading faces enormous market pressure and reputational risk, making rating agencies prone to "anchoring effects." The median lag days for CCXI's downgrade actions in 2020 was approximately 35 days, far higher than international peers (Moody's/S&P approximately 15 days).
       </div>
     </div>
   </div>
 
-  <!-- ====== SECTION 8: 预警信号清单 ====== -->
+  <!-- ====== SECTION 8: Early Warning Signal Checklist ====== -->
   <div class="section">
-    <h2 class="section-title">八、框架预警信号清单</h2>
-    <p style="color:var(--text-secondary);margin-bottom:12px;">以下列出框架在永煤违约事件中触发的主要预警信号。每个信号均标注框架阈值、实际值、首次触发时点及距违约的时间窗口。信号分为两个批次触发：T-17月触发的4个信号侧重于结构性和长期风险，T-4.5月触发的4个信号侧重于流动性和短期风险。</p>
+    <h2 class="section-title">8. Framework Early Warning Signal Checklist</h2>
+    <p style="color:var(--text-secondary);margin-bottom:12px;">The following lists the main early warning signals triggered by the framework in the Yongmei default event. Each signal is marked with the framework threshold, actual value, initial trigger time point, and time window before default. Signals are triggered in two batches: the 4 signals triggered at T-17 months focus on structural and long-term risks, while the 4 signals triggered at T-4.5 months focus on liquidity and short-term risks.</p>
     <div class="card">
       <table>
-        <thead><tr><th>信号名称</th><th>框架阈值</th><th>永煤实际值</th><th>首次触发时点</th><th>严重程度</th><th>触发时距违约</th></tr></thead>
+        <thead><tr><th>Signal Name</th><th>Framework Threshold</th><th>Yongmei Actual Value</th><th>Initial Trigger Time</th><th>Severity</th><th>Time to Default at Trigger</th></tr></thead>
         <tbody>
           <tr>
-            <td>非受限货币资金/短债</td>
-            <td>&lt;0.5x (预警)</td>
+            <td>Unrestricted Monetary Funds/Short-Term Debt</td>
+            <td>&lt;0.5x (Warning)</td>
             <td>0.28x (2020.06)</td>
             <td>2019.06</td>
-            <td><span class="tag tag-red">严重</span></td>
-            <td>17个月</td>
+            <td><span class="tag tag-red">Severe</span></td>
+            <td>17 months</td>
           </tr>
           <tr>
-            <td>集团关联交易占比</td>
-            <td>&gt;30%总资产 (预警)</td>
-            <td>约40% (2019末)</td>
+            <td>Group Related Party Transaction Ratio</td>
+            <td>&gt;30% Total Assets (Warning)</td>
+            <td>~40% (End 2019)</td>
             <td>2019.06</td>
-            <td><span class="tag tag-red">严重</span></td>
-            <td>17个月</td>
+            <td><span class="tag tag-red">Severe</span></td>
+            <td>17 months</td>
           </tr>
           <tr>
-            <td>短债/总有息负债</td>
-            <td>&gt;55% (预警)</td>
-            <td>65% (2019末)</td>
+            <td>Short-Term Debt/Total Interest-Bearing Debt</td>
+            <td>&gt;55% (Warning)</td>
+            <td>65% (End 2019)</td>
             <td>2019.06</td>
-            <td><span class="tag tag-amber">中等</span></td>
-            <td>17个月</td>
+            <td><span class="tag tag-amber">Medium</span></td>
+            <td>17 months</td>
           </tr>
           <tr>
-            <td>外部评级vs框架评级偏离</td>
-            <td>差距&gt;3级 (预警)</td>
-            <td>差距5级 (2019.06起)</td>
+            <td>External Rating vs Framework Rating Deviation</td>
+            <td>Gap &gt;3 notches (Warning)</td>
+            <td>Gap 5 notches (from 2019.06)</td>
             <td>2019.06</td>
-            <td><span class="tag tag-red">严重</span></td>
-            <td>17个月</td>
+            <td><span class="tag tag-red">Severe</span></td>
+            <td>17 months</td>
           </tr>
           <tr>
-            <td>母公司货币资金降幅(YoY)</td>
-            <td>&lt;-30% (预警)</td>
+            <td>Parent Company Monetary Fund Decline (YoY)</td>
+            <td>&lt;-30% (Warning)</td>
             <td>-61.3% (2020H1)</td>
             <td>2020.06</td>
-            <td><span class="tag tag-red">严重</span></td>
-            <td>4.5个月</td>
+            <td><span class="tag tag-red">Severe</span></td>
+            <td>4.5 months</td>
           </tr>
           <tr>
-            <td>EBITDA/利息费用</td>
-            <td>&lt;2.0x (预警)</td>
+            <td>EBITDA/Interest Expense</td>
+            <td>&lt;2.0x (Warning)</td>
             <td>1.1x (2020H1)</td>
             <td>2020.06</td>
-            <td><span class="tag tag-amber">中等</span></td>
-            <td>4.5个月</td>
+            <td><span class="tag tag-amber">Medium</span></td>
+            <td>4.5 months</td>
           </tr>
           <tr>
-            <td>经营性现金流/总负债</td>
-            <td>&lt;3% (预警)</td>
+            <td>Operating Cash Flow/Total Liabilities</td>
+            <td>&lt;3% (Warning)</td>
             <td>1.8% (2020H1)</td>
             <td>2020.06</td>
-            <td><span class="tag tag-red">严重</span></td>
-            <td>4.5个月</td>
+            <td><span class="tag tag-red">Severe</span></td>
+            <td>4.5 months</td>
           </tr>
           <tr>
-            <td>归母净利润由正转负</td>
-            <td>净利润转负 (预警)</td>
-            <td>-3.2亿 (2020H1)</td>
+            <td>Net Profit Attributable to Parent Turns Negative</td>
+            <td>Net profit turns negative (Warning)</td>
+            <td>-0.32B (2020H1)</td>
             <td>2020.06</td>
-            <td><span class="tag tag-red">严重</span></td>
-            <td>4.5个月</td>
+            <td><span class="tag tag-red">Severe</span></td>
+            <td>4.5 months</td>
           </tr>
           <tr>
-            <td>其他应收款/总资产</td>
-            <td>&gt;15%（预警）</td>
-            <td>12.1%（2019末）</td>
+            <td>Other Receivables/Total Assets</td>
+            <td>&gt;15% (Warning)</td>
+            <td>12.1% (End 2019)</td>
             <td>2019.06</td>
-            <td><span class="tag tag-amber">中等</span></td>
-            <td>17个月</td>
+            <td><span class="tag tag-amber">Medium</span></td>
+            <td>17 months</td>
           </tr>
           <tr>
-            <td>母公司货币资金/合并报表货币资金</td>
-            <td>&lt;50%（预警）</td>
-            <td>18.4%（2020.06）</td>
+            <td>Parent Monetary Funds/Consolidated Monetary Funds</td>
+            <td>&lt;50% (Warning)</td>
+            <td>18.4% (2020.06)</td>
             <td>2019.06</td>
-            <td><span class="tag tag-red">严重</span></td>
-            <td>17个月</td>
+            <td><span class="tag tag-red">Severe</span></td>
+            <td>17 months</td>
           </tr>
           <tr>
-            <td>应收账款周转天数变化（YoY）</td>
-            <td>增加&gt;30%（预警）</td>
-            <td>+62%（2020H1）</td>
+            <td>Accounts Receivable Turnover Days Change (YoY)</td>
+            <td>Increase &gt;30% (Warning)</td>
+            <td>+62% (2020H1)</td>
             <td>2020.06</td>
-            <td><span class="tag tag-red">严重</span></td>
-            <td>4.5个月</td>
+            <td><span class="tag tag-red">Severe</span></td>
+            <td>4.5 months</td>
           </tr>
           <tr>
-            <td>存货周转天数变化（YoY）</td>
-            <td>增加&gt;25%（预警）</td>
-            <td>+38%（2020H1）</td>
+            <td>Inventory Turnover Days Change (YoY)</td>
+            <td>Increase &gt;25% (Warning)</td>
+            <td>+38% (2020H1)</td>
             <td>2020.06</td>
-            <td><span class="tag tag-amber">中等</span></td>
-            <td>4.5个月</td>
+            <td><span class="tag tag-amber">Medium</span></td>
+            <td>4.5 months</td>
           </tr>
           <tr>
-            <td>受限资产/总资产</td>
-            <td>&gt;30%（预警）</td>
-            <td>约40%（2020.06估）</td>
+            <td>Restricted Assets/Total Assets</td>
+            <td>&gt;30% (Warning)</td>
+            <td>~40% (2020.06 Est.)</td>
             <td>2019.06</td>
-            <td><span class="tag tag-red">严重</span></td>
-            <td>17个月</td>
+            <td><span class="tag tag-red">Severe</span></td>
+            <td>17 months</td>
           </tr>
           <tr>
-            <td>对外担保/净资产</td>
-            <td>&gt;40%（预警）</td>
-            <td>35%（2019末）</td>
+            <td>External Guarantees/Net Assets</td>
+            <td>&gt;40% (Warning)</td>
+            <td>35% (End 2019)</td>
             <td>2019.06</td>
-            <td><span class="tag tag-amber">中等</span></td>
-            <td>17个月</td>
+            <td><span class="tag tag-amber">Medium</span></td>
+            <td>17 months</td>
           </tr>
         </tbody>
       </table>
       <div style="margin-top:12px;padding:10px;background:var(--bg-tertiary);border-radius:6px;font-size:12px;color:var(--text-secondary);">
-        <span class="text-red">信号统计：</span>14个预警信号中，8个在T-17月首次触发，6个在T-4.5月新增触发。两个时点均无假阳性信号（全部指向违约风险）。框架的信号密度和预警时点均显著领先于外部评级。信号类型分布：流动性类（3个）、杠杆类（2个）、盈利类（2个）、关联交易类（2个）、资产质量类（3个）、外部验证类（2个）。
+        <span class="text-red">Signal Statistics:</span> Of the 14 early warning signals, 8 were initially triggered at T-17 months, and 6 were newly triggered at T-4.5 months. There were no false positive signals at either time point (all pointed to default risk). The framework's signal density and early warning timing were significantly ahead of external ratings. Signal type distribution: Liquidity (3), Leverage (2), Profitability (2), Related Party Transactions (2), Asset Quality (3), External Validation (2).
       </div>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>信号触发路径图</h3>
-      <p style="color:var(--text-secondary);margin-bottom:10px;font-size:12px;">信号之间的因果链和传导路径：</p>
+      <h3>Signal Trigger Path Diagram</h3>
+      <p style="color:var(--text-secondary);margin-bottom:10px;font-size:12px;">Causal chain and transmission path between signals:</p>
       <div class="grid-3" style="font-size:12px;">
         <div class="info-box info-red">
-          <strong>第一波（T-17月）：结构性风险</strong><br>
-          <span style="color:var(--red);">信号1:</span> 非受限货币资金/短债&lt;0.5x → 短期流动性不足<br>
-          <span style="color:var(--red);">信号2:</span> 集团关联交易占比&gt;30% → 资金被集团占用<br>
-          <span style="color:var(--red);">信号3:</span> 短债/总有息负债&gt;55% → 期限错配严重<br>
-          <span style="color:var(--red);">信号4:</span> 框架vs外部评级差距&gt;3级 → 评级泡沫存在
+          <strong>First Wave (T-17M): Structural Risk</strong><br>
+          <span style="color:var(--red);">Signal 1:</span> Unrestricted monetary funds/short-term debt &lt;0.5x → Insufficient short-term liquidity<br>
+          <span style="color:var(--red);">Signal 2:</span> Group related party transaction ratio &gt;30% → Funds occupied by group<br>
+          <span style="color:var(--red);">Signal 3:</span> Short-term debt/total interest-bearing debt &gt;55% → Severe maturity mismatch<br>
+          <span style="color:var(--red);">Signal 4:</span> Framework vs external rating gap &gt;3 notches → Rating bubble exists
         </div>
         <div class="info-box info-amber">
-          <strong>传导机制</strong><br>
-          信号2（关联交易）&gt; 导致母公司资金被抽离 &gt; 加剧信号1（流动性不足）&gt; 叠加信号3（短债占比高）&gt; 形成到期无法滚续的困境<br><br>
-          <span style="color:var(--text-secondary);">因果链长度：3步</span>
+          <strong>Transmission Mechanism</strong><br>
+          Signal 2 (Related Party Transactions) &gt; Leads to parent fund withdrawal &gt; Exacerbates Signal 1 (Insufficient Liquidity) &gt; Compounded by Signal 3 (High Short-Term Debt Ratio) &gt; Creates inability to roll over at maturity<br><br>
+          <span style="color:var(--text-secondary);">Causal Chain Length: 3 steps</span>
         </div>
         <div class="info-box info-red">
-          <strong>第二波（T-4.5月）：急性危机</strong><br>
-          <span style="color:var(--red);">信号5:</span> 母公司货币资金-61.3% → 流动性枯竭<br>
-          <span style="color:var(--red);">信号6:</span> EBITDA/利息1.1x → 利息覆盖不足<br>
-          <span style="color:var(--red);">信号7:</span> 经营现金流/总负债1.8% → 偿债能力丧失<br>
-          <span style="color:var(--red);">信号8:</span> 归母净利润转负 → 盈利崩溃
+          <strong>Second Wave (T-4.5M): Acute Crisis</strong><br>
+          <span style="color:var(--red);">Signal 5:</span> Parent company monetary funds -61.3% → Liquidity depletion<br>
+          <span style="color:var(--red);">Signal 6:</span> EBITDA/Interest 1.1x → Insufficient interest coverage<br>
+          <span style="color:var(--red);">Signal 7:</span> Operating cash flow/total liabilities 1.8% → Loss of debt repayment capacity<br>
+          <span style="color:var(--red);">Signal 8:</span> Net profit attributable to parent turns negative → Profit collapse
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ====== SECTION 9: 行业对比参照 ====== -->
+  <!-- ====== SECTION 9: Industry Comparison Reference ====== -->
   <div class="section">
-    <h2 class="section-title">九、行业对比参照：煤炭企业2019-2020年关键指标对比</h2>
-    <p style="color:var(--text-secondary);margin-bottom:12px;">以2019年末为基准时点，将永煤控股的核心财务指标与同行业可比公司进行横向对比，评估其在行业中的相对风险水平。选择中国神华、中煤能源、兖州煤业、陕西煤业作为对标企业。</p>
+    <h2 class="section-title">9. Industry Comparison Reference: Coal Enterprise 2019-2020 Key Indicator Comparison</h2>
+    <p style="color:var(--text-secondary);margin-bottom:12px;">Using the end of 2019 as the base time point, horizontally compare Yongmei Holding's core financial indicators with comparable companies in the same industry to assess its relative risk level within the industry. Selecting China Shenhua, China Coal Energy, Yankuang Coal, and Shaanxi Coal as benchmark enterprises.</p>
 
     <div class="card">
-      <h3>煤炭行业主要企业财务指标对比（2019年末）</h3>
+      <h3>Coal Industry Major Enterprise Financial Indicator Comparison (End 2019)</h3>
       <table>
-        <thead><tr><th>指标</th><th>永煤控股</th><th>中国神华</th><th>中煤能源</th><th>兖州煤业</th><th>陕西煤业</th><th>行业均值</th></tr></thead>
+        <thead><tr><th>Indicator</th><th>Yongmei Holding</th><th>China Shenhua</th><th>China Coal Energy</th><th>Yankuang Coal</th><th>Shaanxi Coal</th><th>Industry Average</th></tr></thead>
         <tbody>
-          <tr><td>总资产（亿元）</td><td>1,724</td><td>5,717</td><td>3,195</td><td>2,058</td><td>1,253</td><td>—</td></tr>
-          <tr><td>资产负债率</td><td style="color:var(--red);">74.3%</td><td>35.2%</td><td>56.8%</td><td>67.5%</td><td>44.6%</td><td>55.2%</td></tr>
-          <tr><td>短债/有息负债</td><td style="color:var(--red);">65%</td><td>38%</td><td>42%</td><td>51%</td><td>35%</td><td>41%</td></tr>
-          <tr><td>经营性现金流（亿元）</td><td>69</td><td>647</td><td>312</td><td>128</td><td>156</td><td>—</td></tr>
+          <tr><td>Total Assets (100M)</td><td>1,724</td><td>5,717</td><td>3,195</td><td>2,058</td><td>1,253</td><td>—</td></tr>
+          <tr><td>Asset-Liability Ratio</td><td style="color:var(--red);">74.3%</td><td>35.2%</td><td>56.8%</td><td>67.5%</td><td>44.6%</td><td>55.2%</td></tr>
+          <tr><td>Short-Term Debt/Interest-Bearing Debt</td><td style="color:var(--red);">65%</td><td>38%</td><td>42%</td><td>51%</td><td>35%</td><td>41%</td></tr>
+          <tr><td>Operating Cash Flow (100M)</td><td>69</td><td>647</td><td>312</td><td>128</td><td>156</td><td>—</td></tr>
           <tr><td>ROA</td><td style="color:var(--red);">2.8%</td><td>8.2%</td><td>4.5%</td><td>4.1%</td><td>7.8%</td><td>5.5%</td></tr>
-          <tr><td>EBITDA/利息</td><td style="color:var(--red);">2.8x</td><td>15.6x</td><td>6.8x</td><td>4.2x</td><td>11.3x</td><td>7.5x</td></tr>
-          <tr><td>非受限货币资金/短债</td><td style="color:var(--red);">0.45x</td><td>2.8x</td><td>1.5x</td><td>0.9x</td><td>2.1x</td><td>1.3x</td></tr>
-          <tr><td>母公司货币资金/合并报表</td><td style="color:var(--red);">50%</td><td>82%</td><td>75%</td><td>68%</td><td>85%</td><td>—</td></tr>
+          <tr><td>EBITDA/Interest</td><td style="color:var(--red);">2.8x</td><td>15.6x</td><td>6.8x</td><td>4.2x</td><td>11.3x</td><td>7.5x</td></tr>
+          <tr><td>Unrestricted Monetary Funds/Short-Term Debt</td><td style="color:var(--red);">0.45x</td><td>2.8x</td><td>1.5x</td><td>0.9x</td><td>2.1x</td><td>1.3x</td></tr>
+          <tr><td>Parent Monetary Funds/Consolidated</td><td style="color:var(--red);">50%</td><td>82%</td><td>75%</td><td>68%</td><td>85%</td><td>—</td></tr>
         </tbody>
       </table>
     </div>
 
     <div class="card card-red" style="margin-top:14px;">
-      <h3>行业对比核心发现</h3>
+      <h3>Industry Comparison Core Findings</h3>
       <ul style="color:var(--text-secondary);font-size:13px;line-height:2.3;padding-left:16px;">
-        <li><strong>资产负债率行业最高：</strong>永煤74.3%的资产负债率在主要煤企中居首，较行业均值55.2%高出近20个百分点。即便是行业内负债偏高的兖州煤业（67.5%）也低于永煤近7个百分点。</li>
-        <li><strong>短债占比异常突出：</strong>65%的短债占比显著高于行业均值41%，表明永煤存在严重的期限错配问题——用短期融资支撑长期资本支出和非煤业务亏损。</li>
-        <li><strong>非受限货币资金覆盖率垫底：</strong>0.45x的覆盖率远低于行业均值的1.3x，也远低于2.0x的安全线。相比之下，中国神华的2.8x覆盖率是永煤的6倍以上。</li>
-        <li><strong>母公司资金归集比例异常：</strong>母公司货币资金仅占合并报表的50%，大幅低于行业可比公司（75-85%），表明子公司层面大量资金被集团统一调度或受限。</li>
-        <li><strong>盈利质量显著落后：</strong>ROA 2.8%仅为行业均值5.5%的一半，EBITDA/利息覆盖率2.8x在行业中处于最差水平。</li>
+        <li><strong>Highest Asset-Liability Ratio in Industry:</strong> Yongmei's 74.3% asset-liability ratio ranked first among major coal enterprises, nearly 20 percentage points above the industry average of 55.2%. Even Yankuang Coal (67.5%), which had relatively high debt within the industry, was nearly 7 percentage points lower than Yongmei.</li>
+        <li><strong>Exceptionally High Short-Term Debt Ratio:</strong> The 65% short-term debt ratio was significantly above the industry average of 41%, indicating that Yongmei had a severe maturity mismatch problem — using short-term financing to support long-term capital expenditures and non-coal business losses.</li>
+        <li><strong>Bottom of Unrestricted Monetary Fund Coverage:</strong> The 0.45x coverage ratio was far below the industry average of 1.3x and well below the 2.0x safety line. In comparison, China Shenhua's 2.8x coverage was more than 6 times Yongmei's.</li>
+        <li><strong>Abnormal Parent Company Fund Concentration Ratio:</strong> Parent company monetary funds accounted for only 50% of consolidated statements, far lower than comparable companies in the industry (75-85%), indicating large-scale centralized deployment or restriction of funds at the subsidiary level.</li>
+        <li><strong>Significantly Lagging Profit Quality:</strong> ROA of 2.8% was only half of the industry average of 5.5%, and the EBITDA/interest coverage ratio of 2.8x was at the worst level in the industry.</li>
       </ul>
     </div>
   </div>
 
-  <!-- ====== SECTION 10: 框架版本改进对比 ====== -->
+  <!-- ====== SECTION 10: Framework Version Improvement Comparison ====== -->
   <div class="section">
-    <h2 class="section-title">十、框架版本改进对比：v1.0 → v2.0</h2>
-    <p style="color:var(--text-secondary);margin-bottom:12px;">永煤违约事件对框架本身产生了深刻影响。基于本次回溯验证的发现，框架从v1.0升级至v2.0，以下展示七大核心改进点及其对永煤案例的意义。</p>
+    <h2 class="section-title">10. Framework Version Improvement Comparison: v1.0 → v2.0</h2>
+    <p style="color:var(--text-secondary);margin-bottom:12px;">The Yongmei default event had a profound impact on the framework itself. Based on the findings of this backtest validation, the framework was upgraded from v1.0 to v2.0. Below are the seven core improvement points and their significance for the Yongmei case.</p>
 
     <div class="card">
-      <h3>v1.0 → v2.0 核心升级点</h3>
+      <h3>v1.0 → v2.0 Core Upgrade Points</h3>
       <table>
-        <thead><tr><th>改进维度</th><th>v1.0（永煤违约前）</th><th>v2.0（基于回溯验证）</th><th>对永煤案例的意义</th></tr></thead>
+        <thead><tr><th>Improvement Dimension</th><th>v1.0 (Pre-Yongmei Default)</th><th>v2.0 (Based on Backtest Validation)</th><th>Significance for Yongmei Case</th></tr></thead>
         <tbody>
           <tr>
-            <td>合并/母公司双轨分析</td>
-            <td>以合并报表为分析主体，母公司报表仅作补充参考</td>
-            <td>强制双轨评分，母公司与合并报表评分差异&gt;1分自动触发预警</td>
-            <td>永煤母公司货币资金48亿vs合并261亿的差异在v2.0中将触发红色预警</td>
+            <td>Consolidated/Parent Dual-Track Analysis</td>
+            <td>Consolidated statements as primary analysis, parent statements as supplementary reference</td>
+            <td>Mandatory dual-track scoring, score difference &gt;1 point between parent and consolidated automatically triggers warning</td>
+            <td>Yongmei parent monetary funds 4.8B vs consolidated 26.1B difference would trigger red warning in v2.0</td>
           </tr>
           <tr>
-            <td>货币资金受限穿透</td>
-            <td>仅使用"货币资金"科目账面值</td>
-            <td>区分受限/非受限货币资金，按受限类型赋予不同流动性折扣（银行承兑汇票保证金70%、定期存单质押50%、监管账户30%）</td>
-            <td>v2.0估算永煤非受限货币资金仅约100亿，而非账面261亿，流动性评估大幅改善</td>
+            <td>Monetary Fund Restriction Penetration</td>
+            <td>Only using book value of "monetary funds" account</td>
+            <td>Distinguish restricted/unrestricted monetary funds, apply different liquidity discounts by restriction type (bank acceptance bill deposits 70%, time deposit pledges 50%, escrow accounts 30%)</td>
+            <td>v2.0 estimates Yongmei's unrestricted monetary funds at only ~10 billion, not 26.1 billion book value, significantly improving liquidity assessment</td>
           </tr>
           <tr>
-            <td>关联交易量化</td>
-            <td>定性分析为主，缺乏定量阈值</td>
-            <td>设定"其他应收款/总资产&gt;15%"等定量预警阈值，关联交易规模与净资产比率自动标记</td>
-            <td>永煤其他应收款120亿（12%总资产）在v2.0触发黄色预警</td>
+            <td>Related Party Transaction Quantification</td>
+            <td>Primarily qualitative analysis, lacking quantitative thresholds</td>
+            <td>Set quantitative early warning thresholds such as "other receivables/total assets &gt;15%", related party transaction scale/net assets ratio automatically flagged</td>
+            <td>Yongmei's other receivables of 12B (12% of total assets) triggers yellow warning in v2.0</td>
           </tr>
           <tr>
-            <td>外部支持评估</td>
-            <td>承认国企属性带来的隐性支持加成</td>
-            <td>取消"国企信仰"假设，代之以量化的财政自给率、历史救助案例、救助优先序三维评估</td>
-            <td>v2.0正确判断河南财政支持能力有限，不支持AAA评级</td>
+            <td>External Support Assessment</td>
+            <td>Acknowledged implicit support premium from SOE status</td>
+            <td>Cancel "SOE faith" assumption, replace with three-dimensional assessment of quantified fiscal self-sufficiency rate, historical rescue cases, rescue priority order</td>
+            <td>v2.0 correctly judged Henan's limited fiscal support capacity, not supporting AAA rating</td>
           </tr>
           <tr>
-            <td>集团资金归集</td>
-            <td>未单独设立评价维度</td>
-            <td>新增"母公司货币资金/合并报表货币资金"阈值，低于50%自动标记集团资金归集风险</td>
-            <td>永煤18.4%的比率在v2.0触发红色预警</td>
+            <td>Group Fund Concentration</td>
+            <td>No separate evaluation dimension</td>
+            <td>New "parent company monetary funds/consolidated monetary funds" threshold, below 50% automatically flags group fund concentration risk</td>
+            <td>Yongmei's 18.4% ratio triggers red warning in v2.0</td>
           </tr>
           <tr>
-            <td>评分时间权重</td>
-            <td>所有时点等权平均</td>
-            <td>引入时间衰减权重，近期财务数据权重更大，提高对快速恶化信号的敏感度</td>
-            <td>v2.0在2020.06评分2.35/B，比v1.0估计低约0.5分，更早进入违约前区间</td>
+            <td>Score Time Weighting</td>
+            <td>Equal weighting across all time points</td>
+            <td>Introduce time decay weights, more recent financial data carries higher weight, improving sensitivity to rapidly deteriorating signals</td>
+            <td>v2.0 score 2.35/B in 2020.06, approximately 0.5 points lower than v1.0 estimate, entering pre-default range earlier</td>
           </tr>
           <tr>
-            <td>评级泡沫检测</td>
-            <td>无此功能</td>
-            <td>内置RBI指数（评级泡沫指数），框架与外部评级差距&gt;3子级自动触发红色预警并输出差异报告</td>
-            <td>永煤案例中RBI在T-17月即触发红色预警</td>
+            <td>Rating Bubble Detection</td>
+            <td>No such function</td>
+            <td>Built-in RBI index (Rating Bubble Index), framework vs external rating gap &gt;3 notches automatically triggers red warning and outputs difference report</td>
+            <td>In the Yongmei case, RBI triggered red warning at T-17 months</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- ====== SECTION 11: 结论 ====== -->
+  <!-- ====== SECTION 11: Conclusion ====== -->
   <div class="section">
-    <h2 class="section-title">十一、结论：框架预警能力评估</h2>
-    <p style="color:var(--text-secondary);margin-bottom:14px;">永煤控股2020年违约事件是对框架预警能力的极端压力测试。以下从预警窗口、信号密度、评级差异、假阳性率四个维度对框架表现进行系统评估。</p>
+    <h2 class="section-title">11. Conclusion: Framework Early Warning Capability Assessment</h2>
+    <p style="color:var(--text-secondary);margin-bottom:14px;">The Yongmei Holding 2020 default event serves as an extreme stress test of the framework's early warning capability. Below is a systematic assessment of framework performance across four dimensions: early warning window, signal density, rating gap, and false positive rate.</p>
 
     <div class="grid-2">
       <div class="conclusion-box" style="border-color: var(--green);">
-        <h3 style="color:var(--green);">框架有效性验证总结</h3>
+        <h3 style="color:var(--green);">Framework Effectiveness Validation Summary</h3>
         <ul style="color:var(--text-secondary);font-size:13px;line-height:2.3;padding-left:16px;">
-          <li><strong>预警窗口：</strong><span class="text-amber">17个月</span>（2019.06.30 至 2020.11.10）</li>
-          <li><strong>最早可预警时点：</strong><span class="text-amber">2019-06-30</span>（距违约17个月）</li>
-          <li><strong>短周期信号增强验证：</strong>2020-06-30评分从3.90降至2.35，进入违约前区间</li>
-          <li><strong>框架有效识别了以下外部评级未捕捉的风险：</strong>货币资金受限程度、关联交易资金占用、母公司层面流动性枯竭、政府支持能力上限</li>
-          <li><strong>框架评分与外部评级的差异本身就是预警信号：</strong>框架vs外部差距超过3个子级可视为"评级泡沫"指标</li>
-          <li><strong>零假阳性记录：</strong>两个时点的所有预警信号均指向实质性风险</li>
-          <li><strong>评级领先性：</strong>框架在违约前17个月即输出BB-，而外部评级AAA一直维持到违约前21天</li>
-          <li><strong>技术方法论验证：</strong>合并vs母公司双轨分析被证明是识别现金流舞弊的核心工具</li>
+          <li><strong>Early Warning Window:</strong> <span class="text-amber">17 months</span> (2019.06.30 to 2020.11.10)</li>
+          <li><strong>Earliest Warning Time Point:</strong> <span class="text-amber">2019-06-30</span> (17 months before default)</li>
+          <li><strong>Short-Cycle Signal Intensification Validation:</strong> Score dropped from 3.90 to 2.35 on 2020-06-30, entering pre-default range</li>
+          <li><strong>Framework Effectively Identified the Following Risks Not Captured by External Ratings:</strong> Degree of monetary fund restriction, related party fund occupation, parent company-level liquidity depletion, government support capacity ceiling</li>
+          <li><strong>The Gap Between Framework and External Ratings Itself Serves as an Early Warning Signal:</strong> Framework vs external gap exceeding 3 notches can be regarded as a "rating bubble" indicator</li>
+          <li><strong>Zero False Positive Record:</strong> All early warning signals at both time points pointed to substantive risks</li>
+          <li><strong>Rating Leading Capability:</strong> Framework output BB- 17 months before default, while external AAA was maintained until 21 days before default</li>
+          <li><strong>Technical Methodology Validation:</strong> The consolidated vs parent dual-track analysis proved to be the core tool for identifying cash flow fraud</li>
         </ul>
       </div>
       <div class="conclusion-box" style="border-color: var(--amber);">
-        <h3 style="color:var(--amber);">框架改进方向</h3>
+        <h3 style="color:var(--amber);">Framework Improvement Directions</h3>
         <ul style="color:var(--text-secondary);font-size:13px;line-height:2.3;padding-left:16px;">
-          <li><strong>增设"母公司报表独立性分析"模块：</strong>合并报表可能掩盖母公司层面的流动性枯竭。当母公司货币资金与合并报表差异超过50%时自动标记</li>
-          <li><strong>货币资金受限程度量化优化：</strong>应区分银行承兑汇票保证金、定期存单质押、监管账户、共管账户等不同受限类型，各赋予不同流动性折扣</li>
-          <li><strong>L5外部支持中增加"地方政府财政压力指数"：</strong>综合财政自给率、债务率、历史救助案例、GDP增速等指标量化支持能力上限</li>
-          <li><strong>增设"评级泡沫检测器"：</strong>当框架评级与外部评级差距超过3个子级时，自动发起红色预警并输出差异化分析报告</li>
-          <li><strong>集团内部资金归集风险评估：</strong>对隶属于大型集团的企业，系统评估集团资金统一调度对子公司偿债能力的影响</li>
-          <li><strong>非煤/非主业业务亏损量化：</strong>系统计算"亏损业务"对集团整体的利润拖累，量化"出血点"的严重程度</li>
-          <li><strong>现金流压力测试模块：</strong>加入多情景下的现金流压力测试（极端情景假设：收入下降30%、账期延长60天）</li>
-          <li><strong>银行授信质量分析：</strong>区分已用/未用授信、承诺/非承诺授信、授信到期分布，评估真实备用流动性</li>
+          <li><strong>Add "Parent Statement Independence Analysis" Module:</strong> Consolidated statements may mask parent-level liquidity depletion. Automatically flag when difference between parent and consolidated monetary funds exceeds 50%</li>
+          <li><strong>Optimize Monetary Fund Restriction Quantification:</strong> Distinguish different restriction types such as bank acceptance bill deposits, time deposit pledges, escrow accounts, joint custody accounts, each assigned different liquidity discounts</li>
+          <li><strong>Add "Local Government Fiscal Pressure Index" to L5 External Support:</strong> Synthesize fiscal self-sufficiency rate, debt ratio, historical rescue cases, GDP growth and other indicators to quantify support capacity ceiling</li>
+          <li><strong>Add "Rating Bubble Detector":</strong> When the gap between framework rating and external rating exceeds 3 notches, automatically trigger red warning and output differentiated analysis report</li>
+          <li><strong>Intra-Group Fund Concentration Risk Assessment:</strong> For enterprises belonging to large groups, systematically assess the impact of centralized group fund deployment on subsidiary debt repayment capacity</li>
+          <li><strong>Non-Coal/Non-Core Business Loss Quantification:</strong> Systematically calculate the profit drag of "loss-making businesses" on the group as a whole, quantifying the severity of "bleeding points"</li>
+          <li><strong>Cash Flow Stress Test Module:</strong> Add multi-scenario cash flow stress testing (extreme scenario assumptions: 30% revenue decline, 60-day payment cycle extension)</li>
+          <li><strong>Bank Credit Quality Analysis:</strong> Distinguish drawn/undrawn credit, committed/uncommitted credit, credit maturity distribution, to assess true backup liquidity</li>
         </ul>
       </div>
     </div>
 
     <div class="card card-purple" style="margin-top:16px;">
-      <h3>总体评估</h3>
+      <h3>Overall Assessment</h3>
       <p style="color:var(--text-secondary);line-height:1.8;">
-        永煤控股2020年违约事件是对框架预警能力的极端压力测试。结果表明：<br><br>
+        The Yongmei Holding 2020 default event serves as an extreme stress test of the framework's early warning capability. The results show:<br><br>
         <span style="display:block;padding:10px 16px;background:var(--bg-tertiary);border-radius:6px;margin:6px 0;">
-          <strong>框架在T-17月即通过L3财务（评分3.5/BB-）和L4治理（评分2.5/B）识别出结构性风险，加权评分3.90/BB-，</strong><br>
-          <strong>远低于外部AAA评级。到T-4.5月时评分进一步降至2.35/B，已发出明确违约预警。</strong>
+          <strong>The framework identified structural risks at T-17 months through L3 Financial (score 3.5/BB-) and L4 Governance (score 2.5/B), with a weighted score of 3.90/BB-,</strong><br>
+          <strong>far below the external AAA rating. By T-4.5 months, the score further dropped to 2.35/B, issuing a clear default warning.</strong>
         </span>
         <br>
-        框架的预警窗口为<strong class="text-amber">17个月</strong>（2019.06.30至2020.11.10），最早可预警时点为<strong class="text-amber">2019年6月30日</strong>。
-        相较于外部评级机构在违约前约20天才开始下调评级，框架展现了至少<strong>16个月的领先性</strong>。
+        The framework's early warning window is <strong class="text-amber">17 months</strong> (2019.06.30 to 2020.11.10), with the earliest warning time point being <strong class="text-amber">June 30, 2019</strong>.
+        Compared to external rating agencies starting downgrades only about 20 days before default, the framework demonstrated at least <strong>16 months of leading capability</strong>.
         <br><br>
-        特别地，框架对"国企信仰"这一市场偏见具有天然的免疫性——它不假设任何主体"大到不能倒"，而是通过财政数据、
-        历史救助案例和集团救助优先序等客观指标来独立评估外部支持的真实强度。这种"不带偏见"的评估方法，
-        是框架能够穿透AAA信用评级的外衣，识别出永煤实质性违约风险的根本原因。
+        Notably, the framework has natural immunity to the market bias of "SOE faith" — it does not assume any entity is "too big to fail," but independently assesses the true strength of external support through objective indicators such as fiscal data,
+        historical rescue cases, and group rescue priority order. This "unbiased" assessment methodology
+        is the fundamental reason the framework was able to penetrate the veneer of AAA credit ratings and identify Yongmei's substantive default risk.
         <br><br>
-        框架在本次回溯验证中的综合表现评级：<span class="tag tag-green">优秀</span> —— 两个时点均发出正确预警，无假阳性信号，
-        预警窗口充分，为投资者提供了足额的决策应对时间。
+        Comprehensive performance rating of the framework in this backtest validation: <span class="tag tag-green">Excellent</span> — correct warnings issued at both time points, no false positive signals,
+        ample warning window, providing investors with sufficient time for decision-making and response.
       </p>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>关键启示</h3>
+      <h3>Key Insights</h3>
       <div class="grid-3">
         <div class="info-box info-blue">
-          <strong>启示一：评级泡沫识别机制</strong><br>
-          <span style="font-size:12px;">当框架评级与外部评级差距持续超过3个子级时，通常意味着市场存在严重的定价错误。框架应强化这一信号的应用，将其作为系统性风险警示（SRW）的核心组成部分。</span>
+          <strong>Insight 1: Rating Bubble Identification Mechanism</strong><br>
+          <span style="font-size:12px;">When the gap between framework rating and external rating consistently exceeds 3 notches, it typically means the market has a serious pricing error. The framework should strengthen the application of this signal as a core component of the Systemic Risk Warning (SRW).</span>
         </div>
         <div class="info-box info-green">
-          <strong>启示二：穿透式分析的不可替代性</strong><br>
-          <span style="font-size:12px;">合并报表分析不足以识别真实风险。母公司报表分析、货币资金受限分析、关联交易穿透等是识别"纸面信用"与"实际信用"之间差异的关键技术工具。</span>
+          <strong>Insight 2: Irreplaceability of Penetrating Analysis</strong><br>
+          <span style="font-size:12px;">Consolidated statement analysis alone is insufficient to identify true risk. Parent statement analysis, monetary fund restriction analysis, and related party transaction penetration are key technical tools for identifying the gap between "paper credit" and "actual credit."</span>
         </div>
         <div class="info-box info-amber">
-          <strong>启示三：行业偏见的外部性</strong><br>
-          <span style="font-size:12px;">市场对"国企信仰"的过度依赖导致对结构性风险的选择性忽视。框架应当持续保持对各类"市场共识"的独立审视，避免陷入与市场相同的认知陷阱。</span>
+          <strong>Insight 3: Externality of Industry Bias</strong><br>
+          <span style="font-size:12px;">The market's excessive reliance on the "SOE faith" leads to selective neglect of structural risks. The framework should maintain independent scrutiny of various "market consensuses" to avoid falling into the same cognitive traps as the market.</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ====== SECTION 12: 方法论附录 ====== -->
+  <!-- ====== SECTION 12: Methodology Appendix ====== -->
   <div class="section">
-    <h2 class="section-title">十二、方法论附录</h2>
+    <h2 class="section-title">12. Methodology Appendix</h2>
 
     <div class="card">
-      <h3>A. 预警信号定量阈值总表</h3>
+      <h3>A. Early Warning Signal Quantitative Threshold Summary Table</h3>
       <table>
-        <thead><tr><th>信号类别</th><th>指标名称</th><th>绿色（安全）</th><th>黄色（预警）</th><th>红色（严重）</th></tr></thead>
+        <thead><tr><th>Signal Category</th><th>Indicator Name</th><th>Green (Safe)</th><th>Yellow (Warning)</th><th>Red (Severe)</th></tr></thead>
         <tbody>
-          <tr><td rowspan="3">流动性</td><td>非受限货币资金/短债</td><td>&gt;1.0x</td><td>0.5x - 1.0x</td><td>&lt;0.5x</td></tr>
-          <tr><td>母公司货币资金/合并报表货币资金</td><td>&gt;70%</td><td>50% - 70%</td><td>&lt;50%</td></tr>
-          <tr><td>经营活动现金流/短债</td><td>&gt;0.4x</td><td>0.2x - 0.4x</td><td>&lt;0.2x</td></tr>
-          <tr><td rowspan="2">资本结构</td><td>资产负债率</td><td>&lt;55%</td><td>55% - 70%</td><td>&gt;70%</td></tr>
-          <tr><td>短债/总有息负债</td><td>&lt;40%</td><td>40% - 55%</td><td>&gt;55%</td></tr>
-          <tr><td rowspan="2">盈利能力</td><td>ROA</td><td>&gt;5%</td><td>2% - 5%</td><td>&lt;2%</td></tr>
-          <tr><td>非主业亏损/利润总额</td><td>&lt;10%</td><td>10% - 30%</td><td>&gt;30%</td></tr>
-          <tr><td rowspan="2">偿债能力</td><td>EBITDA/利息</td><td>&gt;5.0x</td><td>2.0x - 5.0x</td><td>&lt;2.0x</td></tr>
-          <tr><td>总负债/EBITDA</td><td>&lt;5.0x</td><td>5.0x - 8.0x</td><td>&gt;8.0x</td></tr>
-          <tr><td rowspan="2">关联交易</td><td>其他应收款/总资产</td><td>&lt;8%</td><td>8% - 15%</td><td>&gt;15%</td></tr>
-          <tr><td>对外担保/净资产</td><td>&lt;20%</td><td>20% - 40%</td><td>&gt;40%</td></tr>
+          <tr><td rowspan="3">Liquidity</td><td>Unrestricted Monetary Funds/Short-Term Debt</td><td>&gt;1.0x</td><td>0.5x - 1.0x</td><td>&lt;0.5x</td></tr>
+          <tr><td>Parent Monetary Funds/Consolidated Monetary Funds</td><td>&gt;70%</td><td>50% - 70%</td><td>&lt;50%</td></tr>
+          <tr><td>Operating Cash Flow/Short-Term Debt</td><td>&gt;0.4x</td><td>0.2x - 0.4x</td><td>&lt;0.2x</td></tr>
+          <tr><td rowspan="2">Capital Structure</td><td>Asset-Liability Ratio</td><td>&lt;55%</td><td>55% - 70%</td><td>&gt;70%</td></tr>
+          <tr><td>Short-Term Debt/Total Interest-Bearing Debt</td><td>&lt;40%</td><td>40% - 55%</td><td>&gt;55%</td></tr>
+          <tr><td rowspan="2">Profitability</td><td>ROA</td><td>&gt;5%</td><td>2% - 5%</td><td>&lt;2%</td></tr>
+          <tr><td>Non-Core Business Loss/Total Profit</td><td>&lt;10%</td><td>10% - 30%</td><td>&gt;30%</td></tr>
+          <tr><td rowspan="2">Debt Service Capacity</td><td>EBITDA/Interest</td><td>&gt;5.0x</td><td>2.0x - 5.0x</td><td>&lt;2.0x</td></tr>
+          <tr><td>Total Liabilities/EBITDA</td><td>&lt;5.0x</td><td>5.0x - 8.0x</td><td>&gt;8.0x</td></tr>
+          <tr><td rowspan="2">Related Party Transactions</td><td>Other Receivables/Total Assets</td><td>&lt;8%</td><td>8% - 15%</td><td>&gt;15%</td></tr>
+          <tr><td>External Guarantees/Net Assets</td><td>&lt;20%</td><td>20% - 40%</td><td>&gt;40%</td></tr>
         </tbody>
       </table>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>B. 国有企业框架权重设定依据</h3>
+      <h3>B. SOE Framework Weighting Basis</h3>
       <p style="color:var(--text-secondary);font-size:13px;line-height:1.8;">
-        框架针对国有企业（特别是省属/市属国企）设定了差异化的层级权重体系，核心原则如下：<br><br>
-        <strong>（1）L3财务实力权重最高（30%）：</strong>无论企业性质如何，财务数据是违约风险的最客观指标。国有企业虽然理论上享有政府支持，但历史违约案例表明当财务恶化到临界点时，政府支持往往不足以覆盖全部债务。给予财务实力最高权重确保框架不被"国企信仰"干扰。<br><br>
-        <strong>（2）L4管理治理权重（20%，高于一般企业）：</strong>国有企业中关联交易、资金归集、内部人控制等治理风险更为突出。永煤案例表明治理缺陷往往是财务恶化的先导指标。L4权重从通用框架的15%提升至20%。<br><br>
-        <strong>（3）L5外部支持权重（15%，但需满足前置条件）：</strong>外部支持评级并非自动加成。框架规定，只有满足以下三个前置条件时，L5才会给予正向评分：① 地方政府财政自给率&ge;60%；② 历史救助案例显示政府有实质性救助意愿和能力；③ 发债主体在地方经济中具有不可替代性（就业/税收/产业链）。永煤案例中三个条件均未充分满足，L5评分为中性偏低。<br><br>
-        <strong>（4）L1宏观权重（15%）、L2行业权重（20%）：</strong>这两个层级的权重与通用框架一致，但在国企框架中会额外关注区域金融生态（如当地银行不良率、区域融资环境）的影响。
+        The framework sets a differentiated level weighting system for state-owned enterprises (especially provincial/municipal SOEs), with the core principles as follows:<br><br>
+        <strong>(1) L3 Financial Strength carries the highest weight (30%):</strong> Regardless of the nature of the enterprise, financial data is the most objective indicator of default risk. Although SOEs theoretically enjoy government support, historical default cases show that when financial deterioration reaches a critical point, government support is often insufficient to cover all debts. Giving the highest weight to financial strength ensures the framework is not disturbed by the "SOE faith."<br><br>
+        <strong>(2) L4 Management & Governance weight (20%, higher than general enterprises):</strong> Governance risks such as related party transactions, fund concentration, and insider control are more prominent in SOEs. The Yongmei case shows that governance deficiencies are often leading indicators of financial deterioration. L4 weight is increased from 15% in the general framework to 20%.<br><br>
+        <strong>(3) L5 External Support weight (15%, but subject to preconditions):</strong> External support rating is not an automatic bonus. The framework stipulates that L5 will only give a positive score when the following three preconditions are met: (i) Local government fiscal self-sufficiency rate &ge;60%; (ii) Historical rescue cases show the government has substantive rescue willingness and capacity; (iii) The issuer has irreplaceability in the local economy (employment/taxation/industrial chain). In the Yongmei case, none of the three conditions were fully met, and the L5 score was neutral to low.<br><br>
+        <strong>(4) L1 Macro weight (15%), L2 Industry weight (20%):</strong> The weights of these two levels are consistent with the general framework, but in the SOE framework, additional attention is given to the impact of regional financial ecology (such as local bank non-performing loan ratio, regional financing environment).
       </p>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>C. 合并报表 vs 母公司报表差异处理方法</h3>
+      <h3>C. Consolidated vs Parent Statement Difference Treatment Method</h3>
       <p style="color:var(--text-secondary);font-size:13px;line-height:1.8;">
-        永煤案例揭示了合并报表与母公司报表差异对信用评估的关键影响。框架v2.0引入以下处理规则：<br><br>
-        <strong>规则1 - 双轨强制分析：</strong>所有评级必须同时分析合并报表和母公司报表，两者评分不可互相替代。合并报表反映集团整体资产规模，母公司报表反映直接偿债主体的实际偿付能力。当两个层级评分差异超过1分时，自动取低分作为最终评分。<br><br>
-        <strong>规则2 - 差异预警机制：</strong>当以下指标同时触发差异预警时，自动下调一个子级：① 母公司货币资金/合并货币资金&lt;50%；② 母公司营收/合并营收&lt;30%；③ 母公司总资产/合并总资产&lt;40%。永煤案例中三个指标全部触发。<br><br>
-        <strong>规则3 - "双重计数"扣除：</strong>对于集团内母子公司间交易和资金往来，框架会识别和扣除"双重计数"部分。典型的例子是：子公司A的货币资金同时被计入合并报表货币资金和母公司其他应收款（通过内部往来科目），导致合并口径货币资金被高估。<br><br>
-        <strong>规则4 - 少数股东权益调整：</strong>当少数股东权益占净资产比例超过30%时，框架对归属于少数股东的债务进行分离分析，避免合并报表债务被少数股东资产稀释了偿债压力。永煤案例中少数股东权益占比约25%，接近关注阈值。
+        The Yongmei case revealed the critical impact of differences between consolidated and parent company statements on credit assessment. Framework v2.0 introduces the following treatment rules:<br><br>
+        <strong>Rule 1 - Dual-Track Mandatory Analysis:</strong> All ratings must simultaneously analyze consolidated and parent company statements, and the scores of the two are not interchangeable. The consolidated statement reflects the overall asset size of the group, while the parent company statement reflects the actual solvency of the direct debt servicing entity. When the score difference between the two levels exceeds 1 point, the lower score is automatically taken as the final score.<br><br>
+        <strong>Rule 2 - Differential Warning Mechanism:</strong> When the following indicators simultaneously trigger a differential warning, automatically downgrade by one notch: (i) Parent monetary funds/consolidated monetary funds &lt;50%; (ii) Parent revenue/consolidated revenue &lt;30%; (iii) Parent total assets/consolidated total assets &lt;40%. In the Yongmei case, all three indicators were triggered.<br><br>
+        <strong>Rule 3 - "Double Counting" Deduction:</strong> For intra-group transactions and fund flows between parent and subsidiaries, the framework identifies and deducts the "double counting" portion. A typical example is: Subsidiary A's monetary funds are simultaneously included in the consolidated monetary funds and the parent company's other receivables (through internal settlement accounts), leading to an overestimation of consolidated monetary funds.<br><br>
+        <strong>Rule 4 - Minority Interest Adjustment:</strong> When minority interests account for more than 30% of net assets, the framework conducts separate analysis of debt attributable to minority shareholders to avoid consolidated debt being diluted by minority shareholder assets masking repayment pressure. In the Yongmei case, minority interests accounted for approximately 25% of net assets, close to the watch threshold.
       </p>
     </div>
   </div>
 
-  <!-- ====== SECTION 13: 事后反思 ====== -->
+  <!-- ====== SECTION 13: Post-Event Reflection ====== -->
   <div class="section">
-    <h2 class="section-title">十三、事后反思：永煤违约的教训与现实意义</h2>
+    <h2 class="section-title">13. Post-Event Reflection: Lessons and Practical Significance of Yongmei Default</h2>
 
     <div class="card card-red">
-      <h3>核心教训</h3>
+      <h3>Core Lessons</h3>
       <div class="grid-2">
         <div class="info-box info-red">
-          <strong>对投资者的教训：</strong><br>
-          (1) 不可盲目依赖外部评级，特别是涉及"国企信仰"的评级泡沫<br>
-          (2) 必须穿透合并报表分析母公司层面的实际偿债能力<br>
-          (3) "货币资金"科目需要做减法——受限资金、关联占用、集团归集都会削弱实际流动性<br>
-          (4) 非主业亏损持续扩大是重要的信用恶化先行指标<br>
-          (5) 关联方交易规模和透明度是评估治理风险的核心维度
+          <strong>Lessons for Investors:</strong><br>
+          (1) Do not blindly rely on external ratings, especially rating bubbles involving "SOE faith"<br>
+          (2) Must penetrate consolidated statements to analyze parent-level actual debt repayment capacity<br>
+          (3) The "Monetary Funds" account requires subtraction — restricted funds, related party occupation, and group concentration all weaken actual liquidity<br>
+          (4) Persistent expansion of non-core business losses is an important leading indicator of credit deterioration<br>
+          (5) The scale and transparency of related party transactions are core dimensions for assessing governance risk
         </div>
         <div class="info-box info-amber">
-          <strong>对监管机构/评级机构的教训：</strong><br>
-          (1) 评级行业"发行人付费"模式需要根本性改革，减少评级购买激励<br>
-          (2) 国企评级方法论应取消自动的政府支持加成，改为条件触发式评估<br>
-          (3) 合并报表和母公司报表需强制双轨评级披露<br>
-          (4) 货币资金受限情况应作为债券募集说明书和评级报告的强制性披露内容<br>
-          (5) 建立"评级泡沫指数"作为市场风险预警的辅助工具
+          <strong>Lessons for Regulators/Rating Agencies:</strong><br>
+          (1) The rating industry's "issuer-pay" model requires fundamental reform to reduce rating shopping incentives<br>
+          (2) SOE rating methodology should cancel automatic government support premiums and replace with conditional trigger-based assessment<br>
+          (3) Consolidated and parent statements should mandatorily require dual-track rating disclosure<br>
+          (4) Monetary fund restriction status should be mandatory disclosure content in bond prospectuses and rating reports<br>
+          (5) Establish a "Rating Bubble Index" as an auxiliary tool for market risk early warning
         </div>
       </div>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>对当前市场的现实意义（2026年视角）</h3>
+      <h3>Practical Significance for Current Markets (2026 Perspective)</h3>
       <p style="color:var(--text-secondary);font-size:13px;line-height:1.8;">
-        永煤违约至今已近6年，其深刻教训对当前信用债市场仍有重要启示：<br><br>
-        <strong>（1）"国企信仰"的持续消退：</strong>永煤之后，华融、恒大、碧桂园、远洋等一批国企/大型民企相继出现风险事件，信用债市场的定价逻辑已从"信仰驱动"转向"基本面驱动"。但市场在某些领域（如城投债）仍存在一定程度的信仰残留，值得警惕。<br><br>
-        <strong>（2）评级行业改革的渐进性：</strong>尽管永煤违约后监管推动了一系列评级行业改革（如取消强制评级、引入双评级、加强评级披露），但评级通胀现象仍然存在。截至2026年，AAA级企业的信用利差分化程度远高于评级所能反映的水平，表明评级区分度仍有不足。<br><br>
-        <strong>（3）框架的持续迭代：</strong>统一信贷评估框架在永煤案例验证后持续升级，目前已迭代至v3.0版本。新增了ESG评分维度、供应链金融风险评估、区域金融生态指数等模块。本次回溯验证中识别的关键改进点（双轨分析、资金受限穿透、评级泡沫检测）已成为框架的核心功能模块。<br><br>
-        <strong>（4）预警框架的长期价值：</strong>在信用债违约常态化、评级区分度不足的市场环境下，独立于外部评级的风险预警框架对投资者的价值日益凸显。框架不假设任何主体"大到不能倒"，不因企业性质而偏袒任何类型的发行人——这种独立性在永煤案例中得到了充分验证，也将在未来更多的风险事件中持续发挥作用。
+        It has been nearly 6 years since Yongmei's default, and its profound lessons still have important implications for the current credit bond market:<br><br>
+        <strong>(1) Persistent Fading of "SOE Faith":</strong> After Yongmei, a series of risk events emerged from Huarong, Evergrande, Country Garden, Sino-Ocean and other SOEs/large private enterprises; the pricing logic of the credit bond market has shifted from "faith-driven" to "fundamentals-driven." However, some residual faith still exists in certain areas such as city investment bonds, warranting vigilance.<br><br>
+        <strong>(2) Gradual Nature of Rating Industry Reform:</strong> Although regulators have promoted a series of rating industry reforms after Yongmei's default (such as canceling mandatory ratings, introducing dual ratings, strengthening rating disclosure), rating inflation still exists. As of 2026, the degree of credit spread differentiation among AAA-rated enterprises is far higher than what ratings can reflect, indicating that rating differentiation remains insufficient.<br><br>
+        <strong>(3) Continuous Iteration of the Framework:</strong> The Unified Credit Assessment Framework has been continuously upgraded after validation from the Yongmei case and has now iterated to v3.0. New modules have been added, including ESG scoring dimensions, supply chain financial risk assessment, and regional financial ecology indices. The key improvement points identified in this backtest validation (dual-track analysis, fund restriction penetration, rating bubble detection) have become core functional modules of the framework.<br><br>
+        <strong>(4) Long-Term Value of Early Warning Framework:</strong> In a market environment where credit bond defaults have become normalized and rating differentiation is insufficient, the value of an early warning framework independent of external ratings is increasingly prominent for investors. The framework does not assume any entity is "too big to fail" and does not favor any type of issuer based on enterprise nature — this independence was fully validated in the Yongmei case and will continue to play a role in future risk events.
       </p>
     </div>
 
     <div class="card card-amber" style="margin-top:14px;">
-      <h3>框架关键能力总结</h3>
+      <h3>Framework Key Capability Summary</h3>
       <div class="metric-grid" style="grid-template-columns:repeat(4,1fr);">
         <div class="metric">
-          <div class="m-num" style="color:var(--green);">17个月</div>
-          <div class="m-label">最长预警窗口</div>
+          <div class="m-num" style="color:var(--green);">17 months</div>
+          <div class="m-label">Longest Early Warning Window</div>
         </div>
         <div class="metric">
-          <div class="m-num" style="color:var(--green);">5级</div>
-          <div class="m-label">vs外部评级差异</div>
+          <div class="m-num" style="color:var(--green);">5 notches</div>
+          <div class="m-label">vs External Rating Gap</div>
         </div>
         <div class="metric">
           <div class="m-num" style="color:var(--green);">14/14</div>
-          <div class="m-label">预警信号准确率</div>
+          <div class="m-label">Early Warning Signal Accuracy</div>
         </div>
         <div class="metric">
           <div class="m-num" style="color:var(--green);">0</div>
-          <div class="m-label">假阳性信号数</div>
+          <div class="m-label">False Positive Signals</div>
         </div>
       </div>
     </div>
@@ -1134,9 +1134,9 @@
   <!-- ====== FOOTER ====== -->
   <div class="divider"></div>
   <div class="footer">
-    <p><strong>黑天鹅回溯验证 · 永煤控股 2020.11.10 超短融违约</strong></p>
-    <p>报告生成时间：2026-07-09 | 基于统一信贷评估框架 v2.0 | 仅供内部参考 | 分类：追溯验证</p>
-    <p style="margin-top:8px;font-size:10px;">免责声明：本报告为事后回溯验证分析，所有数据来自公开信息。框架历史评级为基于当时公开数据的模型模拟，不代表实际投资建议。分析中使用的第三方数据（Wind、中债估值、评级机构报告等）均标注来源。框架评级结果不构成对任何证券的买卖建议。</p>
+    <p><strong>Black Swan Backtest Validation · Yongmei Holding 2020.11.10 Ultra-Short-Term Note Default</strong></p>
+    <p>Report Generation Time: 2026-07-09 | Based on Unified Credit Assessment Framework v2.0 | For Internal Reference Only | Classification: Retrospective Validation</p>
+    <p style="margin-top:8px;font-size:10px;">Disclaimer: This report is a post-event retrospective validation analysis, all data from public information. The framework's historical ratings are model simulations based on publicly available data at the time and do not represent actual investment advice. Third-party data used in the analysis (Wind, ChinaBond Valuation, Rating Agency Reports, etc.) are all attributed to their sources. Framework rating results do not constitute buy or sell recommendations for any securities.</p>
   </div>
 
 </div>

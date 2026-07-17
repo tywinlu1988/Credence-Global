@@ -1,644 +1,644 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>马赛克完备性报告 · 隆基绿能 · v0.3.0</title>
+  <title>Mosaic Completeness Report · LONGi Green Energy · v0.3.0</title>
   <link rel="stylesheet" href="template-base.css">
 </head>
 <body>
 
 <!-- ==================== HERO ==================== -->
 <div class="hero" style="background: linear-gradient(135deg, #0f172a, #312e81);">
-  <span class="chip">马赛克完备性报告 · TYPE 6</span>
-  <h1>隆基绿能 · 马赛克v0.3.0</h1>
-  <p class="subtitle">信号密度 82% · 已提取 47 个信号 · 覆盖 7 个分析维度</p>
+  <span class="chip">Mosaic Completeness Report · TYPE 6</span>
+  <h1>LONGi Green Energy · Mosaic v0.3.0</h1>
+  <p class="subtitle">Signal Density 82% · 47 Signals Extracted · 7 Dimensions Covered</p>
   <div class="meta">
-    <span>分析对象: 隆基绿能 (601012)</span>
-    <span>马赛克版本: v0.3.0</span>
-    <span>信号总数: 47</span>
-    <span>信号密度: 82%</span>
-    <span>数据截止: 2026-07-09</span>
+    <span>Subject: LONGi Green Energy (601012)</span>
+    <span>Mosaic Version: v0.3.0</span>
+    <span>Total Signals: 47</span>
+    <span>Signal Density: 82%</span>
+    <span>Data Cutoff: 2026-07-09</span>
   </div>
 </div>
 
 <div class="container">
 
-<!-- ==================== 1. 信号密度总览 ==================== -->
+<!-- ==================== 1. SIGNAL DENSITY OVERVIEW ==================== -->
 <div class="section">
-  <h2 class="section-title">信号密度总览</h2>
-  <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 13px;">各维度信号密度反映数据覆盖的完备程度，密度越高表示该维度碎片越充分。</p>
+  <h2 class="section-title">Signal Density Overview</h2>
+  <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 13px;">Signal density by dimension reflects the completeness of data coverage; higher density indicates more thorough fragment coverage for that dimension.</p>
 
   <div class="metric-grid">
     <div class="metric">
       <div class="m-num"><span class="text-green">85%</span></div>
-      <div class="m-label">财务表现 · 12/14 信号</div>
+      <div class="m-label">Financial Performance · 12/14 Signals</div>
     </div>
     <div class="metric">
       <div class="m-num"><span class="text-blue">78%</span></div>
-      <div class="m-label">运营能力 · 8/10 信号</div>
+      <div class="m-label">Operational Capability · 8/10 Signals</div>
     </div>
     <div class="metric">
       <div class="m-num"><span class="text-blue">72%</span></div>
-      <div class="m-label">公司治理 · 6/8 信号</div>
+      <div class="m-label">Corporate Governance · 6/8 Signals</div>
     </div>
     <div class="metric">
       <div class="m-num"><span class="text-green">90%</span></div>
-      <div class="m-label">市场地位 · 9/10 信号</div>
+      <div class="m-label">Market Position · 9/10 Signals</div>
     </div>
     <div class="metric">
       <div class="m-num"><span class="text-amber">68%</span></div>
-      <div class="m-label">供应链 · 5/7 信号</div>
+      <div class="m-label">Supply Chain · 5/7 Signals</div>
     </div>
     <div class="metric">
       <div class="m-num"><span class="text-green">88%</span></div>
-      <div class="m-label">技术研发 · 5/6 信号</div>
+      <div class="m-label">Technology &amp; R&amp;D · 5/6 Signals</div>
     </div>
     <div class="metric">
       <div class="m-num"><span class="text-blue">76%</span></div>
-      <div class="m-label">ESG 合规 · 4/5 信号</div>
+      <div class="m-label">ESG Compliance · 4/5 Signals</div>
     </div>
   </div>
   <div class="card">
     <table>
       <thead>
         <tr>
-          <th>分析维度</th>
-          <th>信号密度</th>
-          <th>已提取信号</th>
-          <th>预期信号</th>
-          <th>覆盖状态</th>
+          <th>Dimension</th>
+          <th>Signal Density</th>
+          <th>Signals Extracted</th>
+          <th>Expected Signals</th>
+          <th>Coverage Status</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>财务表现</td>
+          <td>Financial Performance</td>
           <td class="rt"><span class="score-good">85%</span></td>
           <td class="ct">12</td>
           <td class="ct">14</td>
-          <td><span class="tag tag-green">充分</span></td>
+          <td><span class="tag tag-green">Full</span></td>
         </tr>
         <tr>
-          <td>运营能力</td>
+          <td>Operational Capability</td>
           <td class="rt"><span class="score-ok">78%</span></td>
           <td class="ct">8</td>
           <td class="ct">10</td>
-          <td><span class="tag tag-blue">良好</span></td>
+          <td><span class="tag tag-blue">Good</span></td>
         </tr>
         <tr>
-          <td>公司治理</td>
+          <td>Corporate Governance</td>
           <td class="rt"><span class="score-ok">72%</span></td>
           <td class="ct">6</td>
           <td class="ct">8</td>
-          <td><span class="tag tag-blue">良好</span></td>
+          <td><span class="tag tag-blue">Good</span></td>
         </tr>
         <tr>
-          <td>市场地位</td>
+          <td>Market Position</td>
           <td class="rt"><span class="score-good">90%</span></td>
           <td class="ct">9</td>
           <td class="ct">10</td>
-          <td><span class="tag tag-green">充分</span></td>
+          <td><span class="tag tag-green">Full</span></td>
         </tr>
         <tr>
-          <td>供应链</td>
+          <td>Supply Chain</td>
           <td class="rt"><span class="score-warn">68%</span></td>
           <td class="ct">5</td>
           <td class="ct">7</td>
-          <td><span class="tag tag-amber">待补充</span></td>
+          <td><span class="tag tag-amber">Pending</span></td>
         </tr>
         <tr>
-          <td>技术研发</td>
+          <td>Technology &amp; R&amp;D</td>
           <td class="rt"><span class="score-good">88%</span></td>
           <td class="ct">5</td>
           <td class="ct">6</td>
-          <td><span class="tag tag-green">充分</span></td>
+          <td><span class="tag tag-green">Full</span></td>
         </tr>
         <tr>
-          <td>ESG 与合规</td>
+          <td>ESG &amp; Compliance</td>
           <td class="rt"><span class="score-ok">76%</span></td>
           <td class="ct">4</td>
           <td class="ct">5</td>
-          <td><span class="tag tag-blue">良好</span></td>
+          <td><span class="tag tag-blue">Good</span></td>
         </tr>
       </tbody>
     </table>
   </div>
   <div class="info-box info-blue">
-    <strong>密度解读：</strong>整体信号密度 82%，处于良好水平。供应链维度（68%）为最薄弱环节，主要由于海外硅料供应商数据披露不足。市场地位维度（90%）覆盖最充分，得益于公开市场数据和行业报告的丰富来源。
+    <strong>Density Interpretation:</strong> Overall signal density is 82%, at a good level. The supply chain dimension (68%) is the weakest link, mainly due to insufficient data disclosure from overseas polysilicon suppliers. The market position dimension (90%) has the most complete coverage, benefiting from rich sources of public market data and industry reports.
   </div>
 </div>
 
-<!-- ==================== 2. 信号清单 ==================== -->
+<!-- ==================== 2. SIGNAL INVENTORY ==================== -->
 <div class="section">
-  <h2 class="section-title">已提取信号清单 <span class="tag tag-purple">共47条</span></h2>
+  <h2 class="section-title">Extracted Signal Inventory <span class="tag tag-purple">47 Total</span></h2>
 
-  <h3 style="color: var(--text-secondary); font-size: 13px; margin: 12px 0 8px;">2.1 财务表现维度</h3>
+  <h3 style="color: var(--text-secondary); font-size: 13px; margin: 12px 0 8px;">2.1 Financial Performance</h3>
   <div class="card card-blue">
     <table>
       <thead>
         <tr>
           <th style="width: 40px;">#</th>
-          <th>信号</th>
-          <th style="width: 60px;">层级</th>
-          <th style="width: 60px;">方向</th>
-          <th style="width: 70px;">强度</th>
-          <th>信源</th>
+          <th>Signal</th>
+          <th style="width: 60px;">Level</th>
+          <th style="width: 60px;">Sentiment</th>
+          <th style="width: 70px;">Strength</th>
+          <th>Source</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td class="ct">F1</td>
-          <td>营收连续三年 CAGR 超过 25%，但增速从 2024 年开始放缓至 12%</td>
+          <td>Revenue CAGR exceeded 25% for three consecutive years, but growth slowed to 12% starting from 2024</td>
           <td><span class="tag tag-green">L1</span></td>
-          <td><span class="signal signal-amber"></span>中性偏正</td>
-          <td><span class="score-ok">中</span></td>
-          <td>年报·2024A·2025A·2026Q1</td>
+          <td><span class="signal signal-amber"></span>Slightly Positive</td>
+          <td><span class="score-ok">Medium</span></td>
+          <td>Annual Report · 2024A · 2025A · 2026Q1</td>
         </tr>
         <tr>
           <td class="ct">F2</td>
-          <td>毛利率从 28.3% 收窄至 22.1%，主因硅料价格波动及竞争加剧</td>
+          <td>Gross margin narrowed from 28.3% to 22.1%, mainly due to polysilicon price volatility and intensified competition</td>
           <td><span class="tag tag-green">L1</span></td>
-          <td><span class="signal signal-red"></span>负面</td>
-          <td><span class="score-good">强</span></td>
-          <td>年报·行业报告·中国光伏协会</td>
+          <td><span class="signal signal-red"></span>Negative</td>
+          <td><span class="score-good">Strong</span></td>
+          <td>Annual Report · Industry Report · CPIA</td>
         </tr>
         <tr>
           <td class="ct">F3</td>
-          <td>资产负债率 55.8%，较上年下降 3.2pp，财务杠杆优化</td>
+          <td>Debt-to-asset ratio of 55.8%, down 3.2pp YoY, financial leverage improved</td>
           <td><span class="tag tag-green">L1</span></td>
-          <td><span class="signal signal-green"></span>正面</td>
-          <td><span class="score-ok">中</span></td>
-          <td>年报·2025A</td>
+          <td><span class="signal signal-green"></span>Positive</td>
+          <td><span class="score-ok">Medium</span></td>
+          <td>Annual Report · 2025A</td>
         </tr>
         <tr>
           <td class="ct">F4</td>
-          <td>经营活动现金流 / 营收比率 0.12，低于行业均值 0.18</td>
+          <td>Operating cash flow / revenue ratio of 0.12, below industry average of 0.18</td>
           <td><span class="tag tag-amber">L2</span></td>
-          <td><span class="signal signal-red"></span>负面</td>
-          <td><span class="score-warn">弱</span></td>
-          <td>年报·行业对比数据·Wind</td>
+          <td><span class="signal signal-red"></span>Negative</td>
+          <td><span class="score-warn">Weak</span></td>
+          <td>Annual Report · Industry Comparison Data · Wind</td>
         </tr>
         <tr>
           <td class="ct">F5</td>
-          <td>应收账款周转天数从 45 天延长至 58 天，回款能力下降</td>
+          <td>Accounts receivable turnover days extended from 45 to 58 days, collection efficiency declined</td>
           <td><span class="tag tag-amber">L2</span></td>
-          <td><span class="signal signal-red"></span>负面</td>
-          <td><span class="score-ok">中</span></td>
-          <td>年报·2025A·应收账款账龄表</td>
+          <td><span class="signal signal-red"></span>Negative</td>
+          <td><span class="score-ok">Medium</span></td>
+          <td>Annual Report · 2025A · AR Aging Schedule</td>
         </tr>
         <tr>
           <td class="ct">F6</td>
-          <td>ROE 14.5%，连续两年高于 WACC（9.8%），股东价值创造</td>
+          <td>ROE 14.5%, exceeding WACC (9.8%) for two consecutive years, shareholder value creation</td>
           <td><span class="tag tag-green">L1</span></td>
-          <td><span class="signal signal-green"></span>正面</td>
-          <td><span class="score-ok">中</span></td>
-          <td>年报·分析师测算</td>
+          <td><span class="signal signal-green"></span>Positive</td>
+          <td><span class="score-ok">Medium</span></td>
+          <td>Annual Report · Analyst Estimates</td>
         </tr>
         <tr>
           <td class="ct">F7</td>
-          <td>短期借款占比升至 38%，债务结构短期化风险</td>
+          <td>Short-term borrowing ratio rose to 38%, debt structure short-term risk</td>
           <td><span class="tag tag-amber">L2</span></td>
-          <td><span class="signal signal-red"></span>负面</td>
-          <td><span class="score-warn">弱</span></td>
-          <td>年报附注·2025A</td>
+          <td><span class="signal signal-red"></span>Negative</td>
+          <td><span class="score-warn">Weak</span></td>
+          <td>Annual Report Notes · 2025A</td>
         </tr>
         <tr>
           <td class="ct">F8</td>
-          <td>研发费用资本化率 15.6%，处于行业中等水平</td>
+          <td>R&amp;D expense capitalization rate of 15.6%, at industry average level</td>
           <td><span class="tag tag-red">L3</span></td>
-          <td><span class="signal signal-amber"></span>中性</td>
-          <td><span class="score-warn">弱</span></td>
-          <td>年报附注·招股书对比</td>
+          <td><span class="signal signal-amber"></span>Neutral</td>
+          <td><span class="score-warn">Weak</span></td>
+          <td>Annual Report Notes · Prospectus Comparison</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <h3 style="color: var(--text-secondary); font-size: 13px; margin: 12px 0 8px;">2.2 运营能力维度</h3>
+  <h3 style="color: var(--text-secondary); font-size: 13px; margin: 12px 0 8px;">2.2 Operational Capability</h3>
   <div class="card card-blue">
     <table>
       <thead>
         <tr>
           <th style="width: 40px;">#</th>
-          <th>信号</th>
-          <th style="width: 60px;">层级</th>
-          <th style="width: 60px;">方向</th>
-          <th style="width: 70px;">强度</th>
-          <th>信源</th>
+          <th>Signal</th>
+          <th style="width: 60px;">Level</th>
+          <th style="width: 60px;">Sentiment</th>
+          <th style="width: 70px;">Strength</th>
+          <th>Source</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td class="ct">O1</td>
-          <td>全球组件出货量 86GW，连续三年全球第一</td>
+          <td>Global module shipments of 86GW, ranked first globally for three consecutive years</td>
           <td><span class="tag tag-green">L1</span></td>
-          <td><span class="signal signal-green"></span>正面</td>
-          <td><span class="score-good">强</span></td>
-          <td>年度报告·PVInsights·BNEF</td>
+          <td><span class="signal signal-green"></span>Positive</td>
+          <td><span class="score-good">Strong</span></td>
+          <td>Annual Report · PVInsights · BNEF</td>
         </tr>
         <tr>
           <td class="ct">O2</td>
-          <td>越南/马来西亚工厂产能利用率 72%，低于国内 89%</td>
+          <td>Vietnam/Malaysia plant capacity utilization at 72%, below domestic rate of 89%</td>
           <td><span class="tag tag-amber">L2</span></td>
-          <td><span class="signal signal-amber"></span>中性偏正</td>
-          <td><span class="score-ok">中</span></td>
-          <td>产能公告·实地调研纪要</td>
+          <td><span class="signal signal-amber"></span>Slightly Positive</td>
+          <td><span class="score-ok">Medium</span></td>
+          <td>Capacity Announcement · Field Research Minutes</td>
         </tr>
         <tr>
           <td class="ct">O3</td>
-          <td>分布式业务收入占比从 18% 提升至 27%，渠道下沉效果显著</td>
+          <td>Distributed business revenue share increased from 18% to 27%, channel expansion showing results</td>
           <td><span class="tag tag-green">L1</span></td>
-          <td><span class="signal signal-green"></span>正面</td>
-          <td><span class="score-ok">中</span></td>
-          <td>业绩说明会·经销商调研</td>
+          <td><span class="signal signal-green"></span>Positive</td>
+          <td><span class="score-ok">Medium</span></td>
+          <td>Performance Briefing · Dealer Survey</td>
         </tr>
         <tr>
           <td class="ct">O4</td>
-          <td>库存周转天数 62 天，较行业平均 55 天偏长</td>
+          <td>Inventory turnover days of 62 days, longer than industry average of 55 days</td>
           <td><span class="tag tag-green">L1</span></td>
-          <td><span class="signal signal-red"></span>负面</td>
-          <td><span class="score-warn">弱</span></td>
-          <td>年报·行业协会数据</td>
+          <td><span class="signal signal-red"></span>Negative</td>
+          <td><span class="score-warn">Weak</span></td>
+          <td>Annual Report · Industry Association Data</td>
         </tr>
         <tr>
           <td class="ct">O5</td>
-          <td>员工人均创收 385 万元，高于行业均值 312 万元</td>
+          <td>Revenue per employee of RMB 3.85M, higher than industry average of RMB 3.12M</td>
           <td><span class="tag tag-amber">L2</span></td>
-          <td><span class="signal signal-green"></span>正面</td>
-          <td><span class="score-warn">弱</span></td>
-          <td>年报·社会责任报告</td>
+          <td><span class="signal signal-green"></span>Positive</td>
+          <td><span class="score-warn">Weak</span></td>
+          <td>Annual Report · CSR Report</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <h3 style="color: var(--text-secondary); font-size: 13px; margin: 12px 0 8px;">2.3 公司治理维度</h3>
+  <h3 style="color: var(--text-secondary); font-size: 13px; margin: 12px 0 8px;">2.3 Corporate Governance</h3>
   <div class="card card-blue">
     <table>
       <thead>
         <tr>
           <th style="width: 40px;">#</th>
-          <th>信号</th>
-          <th style="width: 60px;">层级</th>
-          <th style="width: 60px;">方向</th>
-          <th style="width: 70px;">强度</th>
-          <th>信源</th>
+          <th>Signal</th>
+          <th style="width: 60px;">Level</th>
+          <th style="width: 60px;">Sentiment</th>
+          <th style="width: 70px;">Strength</th>
+          <th>Source</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td class="ct">G1</td>
-          <td>董事会 9 席位中独立董事 4 人，占比 44.4%，符合监管要求</td>
+          <td>Board has 4 independent directors out of 9 seats (44.4%), meeting regulatory requirements</td>
           <td><span class="tag tag-green">L1</span></td>
-          <td><span class="signal signal-green"></span>正面</td>
-          <td><span class="score-ok">中</span></td>
-          <td>公司章程·2025年报</td>
+          <td><span class="signal signal-green"></span>Positive</td>
+          <td><span class="score-ok">Medium</span></td>
+          <td>Articles of Association · 2025 Annual Report</td>
         </tr>
         <tr>
           <td class="ct">G2</td>
-          <td>实际控制人持股 36.8%，股权集中度偏高</td>
+          <td>Controlling shareholder holds 36.8%, ownership concentration is relatively high</td>
           <td><span class="tag tag-amber">L2</span></td>
-          <td><span class="signal signal-amber"></span>中性偏负</td>
-          <td><span class="score-ok">中</span></td>
-          <td>股东名册·权益变动公告</td>
+          <td><span class="signal signal-amber"></span>Slightly Negative</td>
+          <td><span class="score-ok">Medium</span></td>
+          <td>Shareholder Register · Equity Change Announcement</td>
         </tr>
         <tr>
           <td class="ct">G3</td>
-          <td>关联交易占比 12.3%，主要为设备采购框架协议</td>
+          <td>Related party transactions account for 12.3%, mainly equipment procurement framework agreements</td>
           <td><span class="tag tag-amber">L2</span></td>
-          <td><span class="signal signal-amber"></span>中性</td>
-          <td><span class="score-warn">弱</span></td>
-          <td>关联交易公告·审计报告</td>
+          <td><span class="signal signal-amber"></span>Neutral</td>
+          <td><span class="score-warn">Weak</span></td>
+          <td>Related Party Transaction Announcement · Audit Report</td>
         </tr>
         <tr>
           <td class="ct">G4</td>
-          <td>近三年高管减持总额 4.2 亿元，但均提前披露计划</td>
+          <td>Total executive share reduction amounted to RMB 420M over the past three years, but all reductions were pre-disclosed</td>
           <td><span class="tag tag-red">L3</span></td>
-          <td><span class="signal signal-amber"></span>中性偏负</td>
-          <td><span class="score-warn">弱</span></td>
-          <td>交易所减持公告</td>
+          <td><span class="signal signal-amber"></span>Slightly Negative</td>
+          <td><span class="score-warn">Weak</span></td>
+          <td>Exchange Reduction Announcement</td>
         </tr>
         <tr>
           <td class="ct">G5</td>
-          <td>年报审计意见无保留，但关键审计事项涉及收入确认</td>
+          <td>Annual audit opinion is unqualified, but key audit matters involve revenue recognition</td>
           <td><span class="tag tag-green">L1</span></td>
-          <td><span class="signal signal-amber"></span>中性</td>
-          <td><span class="score-warn">弱</span></td>
-          <td>审计报告·安永华明</td>
+          <td><span class="signal signal-amber"></span>Neutral</td>
+          <td><span class="score-warn">Weak</span></td>
+          <td>Audit Report · Ernst &amp; Young Hua Ming</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <h3 style="color: var(--text-secondary); font-size: 13px; margin: 12px 0 8px;">2.4 市场地位维度</h3>
+  <h3 style="color: var(--text-secondary); font-size: 13px; margin: 12px 0 8px;">2.4 Market Position</h3>
   <div class="card card-blue">
     <table>
       <thead>
         <tr>
           <th style="width: 40px;">#</th>
-          <th>信号</th>
-          <th style="width: 60px;">层级</th>
-          <th style="width: 60px;">方向</th>
-          <th style="width: 70px;">强度</th>
-          <th>信源</th>
+          <th>Signal</th>
+          <th style="width: 60px;">Level</th>
+          <th style="width: 60px;">Sentiment</th>
+          <th style="width: 70px;">Strength</th>
+          <th>Source</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td class="ct">M1</td>
-          <td>全球组件市占率 18.5%，第二名为 12.3%，竞争优势明显</td>
+          <td>Global module market share of 18.5%, second place at 12.3%, clear competitive advantage</td>
           <td><span class="tag tag-green">L1</span></td>
-          <td><span class="signal signal-green"></span>正面</td>
-          <td><span class="score-good">强</span></td>
-          <td>BNEF·PVInsights·公司公告</td>
+          <td><span class="signal signal-green"></span>Positive</td>
+          <td><span class="score-good">Strong</span></td>
+          <td>BNEF · PVInsights · Company Announcements</td>
         </tr>
         <tr>
           <td class="ct">M2</td>
-          <td>品牌价值连续四年入选 Interbrand 中国品牌 50 强</td>
+          <td>Brand value selected in Interbrand China Top 50 Brands for four consecutive years</td>
           <td><span class="tag tag-amber">L2</span></td>
-          <td><span class="signal signal-green"></span>正面</td>
-          <td><span class="score-warn">弱</span></td>
-          <td>Interbrand 报告</td>
+          <td><span class="signal signal-green"></span>Positive</td>
+          <td><span class="score-warn">Weak</span></td>
+          <td>Interbrand Report</td>
         </tr>
         <tr>
           <td class="ct">M3</td>
-          <td>欧洲市场收入同比增长 34%，受益于 REpowerEU 政策红利</td>
+          <td>European market revenue grew 34% YoY, benefiting from REPowerEU policy dividends</td>
           <td><span class="tag tag-green">L1</span></td>
-          <td><span class="signal signal-green"></span>正面</td>
-          <td><span class="score-ok">中</span></td>
-          <td>区域收入报告·海关出口数据</td>
+          <td><span class="signal signal-green"></span>Positive</td>
+          <td><span class="score-ok">Medium</span></td>
+          <td>Regional Revenue Report · Customs Export Data</td>
         </tr>
         <tr>
           <td class="ct">M4</td>
-          <td>美国市场受 UFLPA 影响，出货量同比下降 15%</td>
+          <td>US market affected by UFLPA, shipments down 15% YoY</td>
           <td><span class="tag tag-green">L1</span></td>
-          <td><span class="signal signal-red"></span>负面</td>
-          <td><span class="score-ok">中</span></td>
-          <td>海关数据·公司业绩会·律所分析</td>
+          <td><span class="signal signal-red"></span>Negative</td>
+          <td><span class="score-ok">Medium</span></td>
+          <td>Customs Data · Company Earnings Call · Law Firm Analysis</td>
         </tr>
         <tr>
           <td class="ct">M5</td>
-          <td>TOPCon 新产品市占率快速提升至 12%，技术迭代顺利</td>
+          <td>TOPCon new product market share rapidly increased to 12%, technology iteration progressing smoothly</td>
           <td><span class="tag tag-amber">L2</span></td>
-          <td><span class="signal signal-green"></span>正面</td>
-          <td><span class="score-ok">中</span></td>
-          <td>行业展会报告·产品发布会</td>
+          <td><span class="signal signal-green"></span>Positive</td>
+          <td><span class="score-ok">Medium</span></td>
+          <td>Industry Exhibition Report · Product Launch</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <h3 style="color: var(--text-secondary); font-size: 13px; margin: 12px 0 8px;">2.5 供应链维度</h3>
+  <h3 style="color: var(--text-secondary); font-size: 13px; margin: 12px 0 8px;">2.5 Supply Chain</h3>
   <div class="card card-blue">
     <table>
       <thead>
         <tr>
           <th style="width: 40px;">#</th>
-          <th>信号</th>
-          <th style="width: 60px;">层级</th>
-          <th style="width: 60px;">方向</th>
-          <th style="width: 70px;">强度</th>
-          <th>信源</th>
+          <th>Signal</th>
+          <th style="width: 60px;">Level</th>
+          <th style="width: 60px;">Sentiment</th>
+          <th style="width: 70px;">Strength</th>
+          <th>Source</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td class="ct">S1</td>
-          <td>多晶硅长协覆盖率 85%，保障原材料供应稳定性</td>
+          <td>Polysilicon long-term contract coverage ratio of 85%, ensuring raw material supply stability</td>
           <td><span class="tag tag-green">L1</span></td>
-          <td><span class="signal signal-green"></span>正面</td>
-          <td><span class="score-ok">中</span></td>
-          <td>长协公告·供应商调研</td>
+          <td><span class="signal signal-green"></span>Positive</td>
+          <td><span class="score-ok">Medium</span></td>
+          <td>Long-term Contract Announcement · Supplier Survey</td>
         </tr>
         <tr>
           <td class="ct">S2</td>
-          <td>海外硅料供应商占比 35%，地缘政治风险敞口</td>
+          <td>Overseas polysilicon suppliers account for 35%, geopolitical risk exposure</td>
           <td><span class="tag tag-amber">L2</span></td>
-          <td><span class="signal signal-red"></span>负面</td>
-          <td><span class="score-warn">弱</span></td>
-          <td>供应链披露报告</td>
+          <td><span class="signal signal-red"></span>Negative</td>
+          <td><span class="score-warn">Weak</span></td>
+          <td>Supply Chain Disclosure Report</td>
         </tr>
         <tr>
           <td class="ct">S3</td>
-          <td>物流成本占收入比从 4.2% 升至 5.8%，受红海航线影响</td>
+          <td>Logistics cost as a percentage of revenue rose from 4.2% to 5.8%, affected by Red Sea shipping routes</td>
           <td><span class="tag tag-red">L3</span></td>
-          <td><span class="signal signal-red"></span>负面</td>
-          <td><span class="score-warn">弱</span></td>
-          <td>物流公告·运费指数</td>
+          <td><span class="signal signal-red"></span>Negative</td>
+          <td><span class="score-warn">Weak</span></td>
+          <td>Logistics Announcement · Freight Index</td>
         </tr>
         <tr>
           <td class="ct">S4</td>
-          <td>供应商集中度 CR5 为 38%，处于合理可控范围</td>
+          <td>Supplier concentration CR5 at 38%, within reasonable and controllable range</td>
           <td><span class="tag tag-amber">L2</span></td>
-          <td><span class="signal signal-green"></span>正面</td>
-          <td><span class="score-warn">弱</span></td>
-          <td>供应链审计报告</td>
+          <td><span class="signal signal-green"></span>Positive</td>
+          <td><span class="score-warn">Weak</span></td>
+          <td>Supply Chain Audit Report</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <h3 style="color: var(--text-secondary); font-size: 13px; margin: 12px 0 8px;">2.6 技术研发维度</h3>
+  <h3 style="color: var(--text-secondary); font-size: 13px; margin: 12px 0 8px;">2.6 Technology &amp; R&amp;D</h3>
   <div class="card card-blue">
     <table>
       <thead>
         <tr>
           <th style="width: 40px;">#</th>
-          <th>信号</th>
-          <th style="width: 60px;">层级</th>
-          <th style="width: 60px;">方向</th>
-          <th style="width: 70px;">强度</th>
-          <th>信源</th>
+          <th>Signal</th>
+          <th style="width: 60px;">Level</th>
+          <th style="width: 60px;">Sentiment</th>
+          <th style="width: 70px;">Strength</th>
+          <th>Source</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td class="ct">T1</td>
-          <td>累计授权专利 3,286 项，2025 年新增 527 项</td>
+          <td>Cumulative authorized patents of 3,286, with 527 newly added in 2025</td>
           <td><span class="tag tag-green">L1</span></td>
-          <td><span class="signal signal-green"></span>正面</td>
-          <td><span class="score-good">强</span></td>
-          <td>专利数据库·知识产权年报</td>
+          <td><span class="signal signal-green"></span>Positive</td>
+          <td><span class="score-good">Strong</span></td>
+          <td>Patent Database · IP Annual Report</td>
         </tr>
         <tr>
           <td class="ct">T2</td>
-          <td>研发投入占比营收 5.8%，高于行业平均 4.2%</td>
+          <td>R&amp;D spending as percentage of revenue at 5.8%, higher than industry average of 4.2%</td>
           <td><span class="tag tag-green">L1</span></td>
-          <td><span class="signal signal-green"></span>正面</td>
-          <td><span class="score-ok">中</span></td>
-          <td>年报·研发项目清单</td>
+          <td><span class="signal signal-green"></span>Positive</td>
+          <td><span class="score-ok">Medium</span></td>
+          <td>Annual Report · R&amp;D Project List</td>
         </tr>
         <tr>
           <td class="ct">T3</td>
-          <td>HBC 电池实验室效率突破 27.3%，创造世界纪录</td>
+          <td>HBC cell lab efficiency reached 27.3%, setting a world record</td>
           <td><span class="tag tag-amber">L2</span></td>
-          <td><span class="signal signal-green"></span>正面</td>
-          <td><span class="score-ok">中</span></td>
-          <td>NREL 认证·公司公告·Nature Energy</td>
+          <td><span class="signal signal-green"></span>Positive</td>
+          <td><span class="score-ok">Medium</span></td>
+          <td>NREL Certification · Company Announcement · Nature Energy</td>
         </tr>
         <tr>
           <td class="ct">T4</td>
-          <td>钙钛矿叠层项目尚处中试阶段，预计 2027 年量产</td>
+          <td>Perovskite tandem project still in pilot stage, mass production expected in 2027</td>
           <td><span class="tag tag-amber">L2</span></td>
-          <td><span class="signal signal-amber"></span>中性偏正</td>
-          <td><span class="score-warn">弱</span></td>
-          <td>中试报告·技术路线图</td>
+          <td><span class="signal signal-amber"></span>Slightly Positive</td>
+          <td><span class="score-warn">Weak</span></td>
+          <td>Pilot Report · Technology Roadmap</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <h3 style="color: var(--text-secondary); font-size: 13px; margin: 12px 0 8px;">2.7 ESG 与合规维度</h3>
+  <h3 style="color: var(--text-secondary); font-size: 13px; margin: 12px 0 8px;">2.7 ESG &amp; Compliance</h3>
   <div class="card card-blue">
     <table>
       <thead>
         <tr>
           <th style="width: 40px;">#</th>
-          <th>信号</th>
-          <th style="width: 60px;">层级</th>
-          <th style="width: 60px;">方向</th>
-          <th style="width: 70px;">强度</th>
-          <th>信源</th>
+          <th>Signal</th>
+          <th style="width: 60px;">Level</th>
+          <th style="width: 60px;">Sentiment</th>
+          <th style="width: 70px;">Strength</th>
+          <th>Source</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td class="ct">E1</td>
-          <td>MSCI ESG 评级 AA，位列全球光伏企业前 10%</td>
+          <td>MSCI ESG Rating AA, ranked in the top 10% of global PV companies</td>
           <td><span class="tag tag-green">L1</span></td>
-          <td><span class="signal signal-green"></span>正面</td>
-          <td><span class="score-good">强</span></td>
+          <td><span class="signal signal-green"></span>Positive</td>
+          <td><span class="score-good">Strong</span></td>
           <td>MSCI · Sustainalytics · CDP</td>
         </tr>
         <tr>
           <td class="ct">E2</td>
-          <td>范围一 + 范围二碳排放较上年下降 12.6%，绿电占比 46%</td>
+          <td>Scope 1 + Scope 2 carbon emissions down 12.6% YoY, green electricity ratio at 46%</td>
           <td><span class="tag tag-amber">L2</span></td>
-          <td><span class="signal signal-green"></span>正面</td>
-          <td><span class="score-ok">中</span></td>
-          <td>ESG 报告·碳足迹核查</td>
+          <td><span class="signal signal-green"></span>Positive</td>
+          <td><span class="score-ok">Medium</span></td>
+          <td>ESG Report · Carbon Footprint Verification</td>
         </tr>
         <tr>
           <td class="ct">E3</td>
-          <td>无重大环境处罚记录，但部分生产基地存在废水排放超标预警</td>
+          <td>No major environmental penalties, but some production bases have wastewater discharge exceedance warnings</td>
           <td><span class="tag tag-amber">L2</span></td>
-          <td><span class="signal signal-amber"></span>中性偏负</td>
-          <td><span class="score-warn">弱</span></td>
-          <td>环境信息公开平台·地方环保局</td>
+          <td><span class="signal signal-amber"></span>Slightly Negative</td>
+          <td><span class="score-warn">Weak</span></td>
+          <td>Environmental Information Disclosure Platform · Local EPB</td>
         </tr>
         <tr>
           <td class="ct">E4</td>
-          <td>员工流失率 12.8%，高于制造业均值 10.2%</td>
+          <td>Employee turnover rate of 12.8%, higher than manufacturing average of 10.2%</td>
           <td><span class="tag tag-red">L3</span></td>
-          <td><span class="signal signal-red"></span>负面</td>
-          <td><span class="score-warn">弱</span></td>
-          <td>ESG 报告·员工满意度调查</td>
+          <td><span class="signal signal-red"></span>Negative</td>
+          <td><span class="score-warn">Weak</span></td>
+          <td>ESG Report · Employee Satisfaction Survey</td>
         </tr>
       </tbody>
     </table>
   </div>
 </div>
 
-<!-- ==================== 3. 马赛克拼图过程 ==================== -->
+<!-- ==================== 3. MOSAIC ASSEMBLY PROCESS ==================== -->
 <div class="section">
-  <h2 class="section-title">马赛克拼图过程 <span class="tag tag-purple">碎片 → 信号聚合</span></h2>
-  <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 13px;">从底层碎片出发，经过多级聚合形成可用的投资信号。以下展示每条信号的拼图路径。</p>
+  <h2 class="section-title">Mosaic Assembly Process <span class="tag tag-purple">Fragment &rarr; Signal Aggregation</span></h2>
+  <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 13px;">Starting from underlying fragments, investment signals are formed through multi-level aggregation. The assembly path for each signal is shown below.</p>
 
   <div class="card card-purple">
     <table>
       <thead>
         <tr>
-          <th style="width: 40px;">信号</th>
-          <th>碎片来源</th>
-          <th>聚合层级路径</th>
-          <th>证据强度</th>
+          <th style="width: 40px;">Signal</th>
+          <th>Fragment Sources</th>
+          <th>Aggregation Level Path</th>
+          <th>Evidence Strength</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td class="ct"><strong>F1</strong></td>
-          <td>年报财务数据·季度业绩快报·分析师模型测算·行业增速对比</td>
-          <td><span class="tag tag-green">碎片</span> &rarr; <span class="tag tag-blue">特征</span> &rarr; <span class="tag tag-purple">模式</span> &rarr; <span class="tag tag-green">信号</span></td>
-          <td><span class="score-ok">中等（4源交叉验证）</span></td>
+          <td>Annual Report Financial Data · Quarterly Performance Release · Analyst Model Estimates · Industry Growth Comparison</td>
+          <td><span class="tag tag-green">Fragment</span> &rarr; <span class="tag tag-blue">Feature</span> &rarr; <span class="tag tag-purple">Pattern</span> &rarr; <span class="tag tag-green">Signal</span></td>
+          <td><span class="score-ok">Medium (4-source cross-validation)</span></td>
         </tr>
         <tr>
           <td class="ct"><strong>F2</strong></td>
-          <td>财报附注·成本拆分数据·硅料现货价格·竞品毛利率对比</td>
-          <td><span class="tag tag-green">碎片</span> &rarr; <span class="tag tag-blue">特征</span> &rarr; <span class="tag tag-blue">模式</span> &rarr; <span class="tag tag-purple">信号</span></td>
-          <td><span class="score-good">高（5源交叉验证+量化确认）</span></td>
+          <td>Financial Report Notes · Cost Breakdown Data · Polysilicon Spot Price · Peer Gross Margin Comparison</td>
+          <td><span class="tag tag-green">Fragment</span> &rarr; <span class="tag tag-blue">Feature</span> &rarr; <span class="tag tag-blue">Pattern</span> &rarr; <span class="tag tag-purple">Signal</span></td>
+          <td><span class="score-good">High (5-source cross-validation + quantitative confirmation)</span></td>
         </tr>
         <tr>
           <td class="ct"><strong>M4</strong></td>
-          <td>美国海关扣押记录·律所合规备忘录·客户流失数据·替代物流方案</td>
-          <td><span class="tag tag-green">碎片</span> &rarr; <span class="tag tag-purple">特征</span> &rarr; <span class="tag tag-purple">模式</span> &rarr; <span class="tag tag-green">信号</span></td>
-          <td><span class="score-good">高（4源交叉验证+量化确认）</span></td>
+          <td>US Customs Seizure Records · Law Firm Compliance Memo · Customer Loss Data · Alternative Logistics Plan</td>
+          <td><span class="tag tag-green">Fragment</span> &rarr; <span class="tag tag-purple">Feature</span> &rarr; <span class="tag tag-purple">Pattern</span> &rarr; <span class="tag tag-green">Signal</span></td>
+          <td><span class="score-good">High (4-source cross-validation + quantitative confirmation)</span></td>
         </tr>
         <tr>
           <td class="ct"><strong>O1</strong></td>
-          <td>第三方出货量报告·海关出口数据·公司公告·行业汇总</td>
-          <td><span class="tag tag-green">碎片</span> &rarr; <span class="tag tag-blue">特征</span> &rarr; <span class="tag tag-green">信号</span></td>
-          <td><span class="score-good">高（4源验证+第三方确认）</span></td>
+          <td>Third-Party Shipment Report · Customs Export Data · Company Announcement · Industry Summary</td>
+          <td><span class="tag tag-green">Fragment</span> &rarr; <span class="tag tag-blue">Feature</span> &rarr; <span class="tag tag-green">Signal</span></td>
+          <td><span class="score-good">High (4-source validation + third-party confirmation)</span></td>
         </tr>
         <tr>
           <td class="ct"><strong>G2</strong></td>
-          <td>股东名册·权益变动公告·董事会简历·一致行动协议</td>
-          <td><span class="tag tag-green">碎片</span> &rarr; <span class="tag tag-purple">特征</span> &rarr; <span class="tag tag-amber">模式</span> &rarr; <span class="tag tag-purple">信号</span></td>
-          <td><span class="score-ok">中等（3源交叉验证）</span></td>
+          <td>Shareholder Register · Equity Change Announcement · Board Resumes · Concert Party Agreement</td>
+          <td><span class="tag tag-green">Fragment</span> &rarr; <span class="tag tag-purple">Feature</span> &rarr; <span class="tag tag-amber">Pattern</span> &rarr; <span class="tag tag-purple">Signal</span></td>
+          <td><span class="score-ok">Medium (3-source cross-validation)</span></td>
         </tr>
         <tr>
           <td class="ct"><strong>T1</strong></td>
-          <td>国家知识产权局数据库·公司IP公告·行业专利分析报告</td>
-          <td><span class="tag tag-green">碎片</span> &rarr; <span class="tag tag-blue">特征</span> &rarr; <span class="tag tag-green">信号</span></td>
-          <td><span class="score-good">高（3源验证+公开数据库）</span></td>
+          <td>CNIPA Database · Company IP Announcement · Industry Patent Analysis Report</td>
+          <td><span class="tag tag-green">Fragment</span> &rarr; <span class="tag tag-blue">Feature</span> &rarr; <span class="tag tag-green">Signal</span></td>
+          <td><span class="score-good">High (3-source validation + public database)</span></td>
         </tr>
         <tr>
           <td class="ct"><strong>S2</strong></td>
-          <td>供应商名单·地缘政治风险报告·替代供应商谈判纪要</td>
-          <td><span class="tag tag-green">碎片</span> &rarr; <span class="tag tag-amber">特征</span> &rarr; <span class="tag tag-amber">信号</span></td>
-          <td><span class="score-warn">低（仅2源，部分推断）</span></td>
+          <td>Supplier List · Geopolitical Risk Report · Alternative Supplier Negotiation Minutes</td>
+          <td><span class="tag tag-green">Fragment</span> &rarr; <span class="tag tag-amber">Feature</span> &rarr; <span class="tag tag-amber">Signal</span></td>
+          <td><span class="score-warn">Low (2 sources only, partially inferred)</span></td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <div class="info-box info-purple">
-    <strong>聚合质量评估：</strong>47 条信号中，33 条（70.2%）经过至少 3 个独立碎片源交叉验证，达到"高"证据强度；10 条（21.3%）为"中等"强度；4 条（8.5%）为"低"强度，主要分布在供应链和治理子维度。整体拼图质量良好，低强度信号已标记需补充验证。
+    <strong>Aggregation Quality Assessment:</strong> Of the 47 signals, 33 (70.2%) have been cross-validated by at least 3 independent fragment sources, achieving "High" evidence strength; 10 (21.3%) are "Medium" strength; 4 (8.5%) are "Low" strength, mainly in the supply chain and governance sub-dimensions. Overall mosaic quality is good; low-strength signals have been flagged for supplementary verification.
   </div>
 </div>
 
-<!-- ==================== 3b. 信号维度分布 ==================== -->
+<!-- ==================== 3b. SIGNAL DIMENSION DISTRIBUTION ==================== -->
 <div class="section">
-  <h2 class="section-title">信号维度交叉分布</h2>
-  <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 13px;">按信号层级、方向和强度的交叉分布矩阵。</p>
+  <h2 class="section-title">Signal Cross-Dimension Distribution</h2>
+  <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 13px;">Cross-distribution matrix by signal level, sentiment, and strength.</p>
 
   <div class="grid-2">
     <div class="card card-blue">
-      <h3>层级分布</h3>
+      <h3>Level Distribution</h3>
       <table>
         <thead>
           <tr>
-            <th>层级</th>
-            <th>含义</th>
-            <th class="ct">数量</th>
-            <th class="ct">占比</th>
+            <th>Level</th>
+            <th>Description</th>
+            <th class="ct">Count</th>
+            <th class="ct">Share</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td><span class="tag tag-green">L1</span></td>
-            <td>直接可验证信号（财报、公告、第三方）</td>
+            <td>Directly Verifiable Signals (Financial Reports, Announcements, Third Parties)</td>
             <td class="ct">22</td>
             <td class="ct">46.8%</td>
           </tr>
           <tr>
             <td><span class="tag tag-amber">L2</span></td>
-            <td>间接推断信号（分析、调研、模型）</td>
+            <td>Indirect Inference Signals (Analysis, Research, Models)</td>
             <td class="ct">20</td>
             <td class="ct">42.6%</td>
           </tr>
           <tr>
             <td><span class="tag tag-red">L3</span></td>
-            <td>弱信号（碎片拼接、推论、预判）</td>
+            <td>Weak Signals (Fragment Assembly, Inference, Projection)</td>
             <td class="ct">5</td>
             <td class="ct">10.6%</td>
           </tr>
@@ -646,28 +646,28 @@
       </table>
     </div>
     <div class="card card-blue">
-      <h3>方向分布</h3>
+      <h3>Sentiment Distribution</h3>
       <table>
         <thead>
           <tr>
-            <th>方向</th>
-            <th class="ct">数量</th>
-            <th class="ct">占比</th>
+            <th>Sentiment</th>
+            <th class="ct">Count</th>
+            <th class="ct">Share</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><span class="signal signal-green"></span> 正面信号</td>
+            <td><span class="signal signal-green"></span> Positive</td>
             <td class="ct">21</td>
             <td class="ct">44.7%</td>
           </tr>
           <tr>
-            <td><span class="signal signal-amber"></span> 中性信号</td>
+            <td><span class="signal signal-amber"></span> Neutral</td>
             <td class="ct">15</td>
             <td class="ct">31.9%</td>
           </tr>
           <tr>
-            <td><span class="signal signal-red"></span> 负面信号</td>
+            <td><span class="signal signal-red"></span> Negative</td>
             <td class="ct">11</td>
             <td class="ct">23.4%</td>
           </tr>
@@ -677,226 +677,226 @@
   </div>
 
   <div class="card card-blue">
-    <h3>强度分布</h3>
+    <h3>Strength Distribution</h3>
     <table>
       <thead>
         <tr>
-          <th>强度</th>
-          <th class="ct">数量</th>
-          <th class="ct">占比</th>
-          <th>说明</th>
+          <th>Strength</th>
+          <th class="ct">Count</th>
+          <th class="ct">Share</th>
+          <th>Description</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><span class="score-good">强</span></td>
+          <td><span class="score-good">Strong</span></td>
           <td class="ct">11</td>
           <td class="ct">23.4%</td>
-          <td>3+ 独立源交叉验证，数据可量化，无重大分歧</td>
+          <td>3+ independent source cross-validation, quantifiable data, no major divergence</td>
         </tr>
         <tr>
-          <td><span class="score-ok">中</span></td>
+          <td><span class="score-ok">Medium</span></td>
           <td class="ct">22</td>
           <td class="ct">46.8%</td>
-          <td>2-3 源交叉验证，或有部分假设成分</td>
+          <td>2-3 source cross-validation, may contain some assumptions</td>
         </tr>
         <tr>
-          <td><span class="score-warn">弱</span></td>
+          <td><span class="score-warn">Weak</span></td>
           <td class="ct">14</td>
           <td class="ct">29.8%</td>
-          <td>1-2 源，推断成分较高，需进一步确认</td>
+          <td>1-2 sources, higher inference component, requires further confirmation</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <div class="info-box info-blue">
-    <strong>分布解读：</strong>信号分布整体健康。L1 层级占比 46.8%，说明近半数信号基于可直接验证的事实数据。正面信号（44.7%）多于负面信号（23.4%），与隆基绿能当前的行业领先地位一致。弱强度信号占比 29.8% 偏高，主要集中于供应链和治理维度，需要在下一轮碎片收集中重点加强。
+    <strong>Distribution Analysis:</strong> Signal distribution is generally healthy. L1 level accounts for 46.8%, indicating nearly half of signals are based on directly verifiable factual data. Positive signals (44.7%) outnumber negative signals (23.4%), consistent with LONGi's current industry-leading position. Weak strength signals at 29.8% are relatively high, mainly concentrated in the supply chain and governance dimensions, requiring focused reinforcement in the next round of fragment collection.
   </div>
 </div>
 
-<!-- ==================== 4. 缺口清单 ==================== -->
+<!-- ==================== 4. GAP LIST ==================== -->
 <div class="section">
-  <h2 class="section-title">数据缺口清单 <span class="tag tag-amber">共12项</span></h2>
-  <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 13px;">按优先级排列的缺失数据项，以及缺口可能引发的风险偏移。</p>
+  <h2 class="section-title">Data Gap List <span class="tag tag-amber">12 Items</span></h2>
+  <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 13px;">Missing data items ranked by priority, along with potential risk biases arising from gaps.</p>
 
   <div class="card card-amber">
     <table>
       <thead>
         <tr>
           <th style="width: 32px;">#</th>
-          <th>缺口描述</th>
-          <th style="width: 50px;">优先级</th>
-          <th style="width: 50px;">所属维度</th>
-          <th style="width: 60px;">影响信号数</th>
-          <th>风险映射</th>
+          <th>Gap Description</th>
+          <th style="width: 50px;">Priority</th>
+          <th style="width: 50px;">Dimension</th>
+          <th style="width: 60px;">Signals Affected</th>
+          <th>Risk Mapping</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td class="ct">1</td>
-          <td>海外子公司完整财务报表（越南、马来西亚）</td>
+          <td>Complete financial statements of overseas subsidiaries (Vietnam, Malaysia)</td>
           <td><span class="tag tag-red">P0</span></td>
-          <td>财务</td>
+          <td>Financial</td>
           <td class="ct">3</td>
-          <td>利润转移风险 / 税务合规争议</td>
+          <td>Profit Transfer Risk / Tax Compliance Disputes</td>
         </tr>
         <tr>
           <td class="ct">2</td>
-          <td>美国 UFLPA 合规审计的详细法律分析报告</td>
+          <td>Detailed legal analysis report on US UFLPA compliance audit</td>
           <td><span class="tag tag-red">P0</span></td>
-          <td>市场</td>
+          <td>Market</td>
           <td class="ct">2</td>
-          <td>美国市场准入风险 / 收入损失</td>
+          <td>US Market Access Risk / Revenue Loss</td>
         </tr>
         <tr>
           <td class="ct">3</td>
-          <td>核心供应商（硅料）ESG 审计报告</td>
+          <td>ESG audit report of core suppliers (polysilicon)</td>
           <td><span class="tag tag-amber">P1</span></td>
-          <td>供应链</td>
+          <td>Supply Chain</td>
           <td class="ct">2</td>
-          <td>供应链中断风险 / 声誉连带</td>
+          <td>Supply Chain Disruption Risk / Reputational Contagion</td>
         </tr>
         <tr>
           <td class="ct">4</td>
-          <td>钙钛矿叠层中试线产能爬坡详细时间表</td>
+          <td>Detailed ramp-up timeline for perovskite tandem pilot production line</td>
           <td><span class="tag tag-amber">P1</span></td>
-          <td>技术</td>
+          <td>Technology</td>
           <td class="ct">1</td>
-          <td>技术路线切换延迟风险</td>
+          <td>Technology Roadmap Transition Delay Risk</td>
         </tr>
         <tr>
           <td class="ct">5</td>
-          <td>前五大客户明细及合同续约情况</td>
+          <td>Top five customer details and contract renewal status</td>
           <td><span class="tag tag-amber">P1</span></td>
-          <td>市场</td>
+          <td>Market</td>
           <td class="ct">2</td>
-          <td>客户集中度 / 收入可持续风险</td>
+          <td>Customer Concentration / Revenue Sustainability Risk</td>
         </tr>
         <tr>
           <td class="ct">6</td>
-          <td>上海证券交易所年报问询函回复完整附件</td>
+          <td>Complete attachments to Shanghai Stock Exchange annual report inquiry letter response</td>
           <td><span class="tag tag-amber">P1</span></td>
-          <td>治理</td>
+          <td>Governance</td>
           <td class="ct">1</td>
-          <td>信息披露 / 监管关注风险</td>
+          <td>Information Disclosure / Regulatory Scrutiny Risk</td>
         </tr>
         <tr>
           <td class="ct">7</td>
-          <td>分红政策及未来股东回报规划详细文件</td>
+          <td>Detailed documents on dividend policy and future shareholder return plan</td>
           <td><span class="tag tag-blue">P2</span></td>
-          <td>治理</td>
+          <td>Governance</td>
           <td class="ct">1</td>
-          <td>股东回报预期偏差风险</td>
+          <td>Shareholder Return Expectation Deviation Risk</td>
         </tr>
         <tr>
           <td class="ct">8</td>
-          <td>高管薪酬与绩效挂钩的具体考核指标</td>
+          <td>Specific performance metrics linking executive compensation to performance</td>
           <td><span class="tag tag-blue">P2</span></td>
-          <td>治理</td>
+          <td>Governance</td>
           <td class="ct">1</td>
-          <td>代理人问题 / 激励错配风险</td>
+          <td>Principal-Agent Problem / Incentive Mismatch Risk</td>
         </tr>
         <tr>
           <td class="ct">9</td>
-          <td>生产基地碳排放监测第三方核证报告</td>
+          <td>Third-party verified carbon emission monitoring report for production bases</td>
           <td><span class="tag tag-blue">P2</span></td>
           <td>ESG</td>
           <td class="ct">1</td>
-          <td>碳关税合规风险</td>
+          <td>Carbon Tariff Compliance Risk</td>
         </tr>
         <tr>
           <td class="ct">10</td>
-          <td>分布式经销商退出率及渠道健康度调研</td>
+          <td>Distributed dealer churn rate and channel health survey</td>
           <td><span class="tag tag-green">P3</span></td>
-          <td>运营</td>
+          <td>Operations</td>
           <td class="ct">1</td>
-          <td>渠道稳定性风险</td>
+          <td>Channel Stability Risk</td>
         </tr>
         <tr>
           <td class="ct">11</td>
-          <td>行业技术路线专利交叉许可协议细节</td>
+          <td>Industry technology roadmap patent cross-licensing agreement details</td>
           <td><span class="tag tag-green">P3</span></td>
-          <td>技术</td>
+          <td>Technology</td>
           <td class="ct">1</td>
-          <td>技术壁垒 / 诉讼风险</td>
+          <td>Technology Barrier / Litigation Risk</td>
         </tr>
         <tr>
           <td class="ct">12</td>
-          <td>员工股权激励解锁条件及进度跟踪</td>
+          <td>Employee equity incentive vesting conditions and progress tracking</td>
           <td><span class="tag tag-green">P3</span></td>
-          <td>治理</td>
+          <td>Governance</td>
           <td class="ct">1</td>
-          <td>人才留存风险</td>
+          <td>Talent Retention Risk</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <div class="info-box info-red">
-    <strong>缺口警示：</strong>P0 级缺口（海外子公司财务 + UFLPA 合规）直接影响 5 条关键信号的完整度。若此两项缺口无法填补，信号密度将从 82% 降至 71%，综合置信度下调 8-12 个百分点。建议优先启动海外信息收集和法务尽调。
+    <strong>Gap Warning:</strong> P0-level gaps (overseas subsidiary financials + UFLPA compliance) directly affect the completeness of 5 key signals. If these two gaps cannot be filled, signal density would drop from 82% to 71%, and composite confidence would decrease by 8-12 percentage points. It is recommended to prioritize overseas information collection and legal due diligence.
   </div>
 </div>
 
-<!-- ==================== 5. 综合置信度 ==================== -->
+<!-- ==================== 5. COMPOSITE CONFIDENCE ==================== -->
 <div class="section">
-  <h2 class="section-title">综合置信度评估</h2>
+  <h2 class="section-title">Composite Confidence Assessment</h2>
 
   <div class="strip cols-5">
     <div class="strip-item">
-      <div class="slabel">信号密度</div>
+      <div class="slabel">Signal Density</div>
       <div class="sval"><span class="text-blue">82%</span></div>
-      <div class="ssub">覆盖 7/8 维度</div>
+      <div class="ssub">7/8 Dimensions Covered</div>
     </div>
     <div class="strip-item">
-      <div class="slabel">平均证据强度</div>
+      <div class="slabel">Avg. Evidence Strength</div>
       <div class="sval"><span class="score-ok">2.8/4</span></div>
-      <div class="ssub">中等偏上</div>
+      <div class="ssub">Above Average</div>
     </div>
     <div class="strip-item">
-      <div class="slabel">缺口影响率</div>
+      <div class="slabel">Gap Impact Rate</div>
       <div class="sval"><span class="text-amber">18%</span></div>
-      <div class="ssub">12项缺口</div>
+      <div class="ssub">12 Gaps</div>
     </div>
     <div class="strip-item">
-      <div class="slabel">交叉验证率</div>
+      <div class="slabel">Cross-Validation Rate</div>
       <div class="sval"><span class="text-green">70%</span></div>
-      <div class="ssub">33条 >= 3源</div>
+      <div class="ssub">33 Signals &gt;= 3 Sources</div>
     </div>
     <div class="strip-item">
-      <div class="slabel">综合置信度</div>
+      <div class="slabel">Composite Confidence</div>
       <div class="sval"><span class="text-green">74%</span></div>
-      <div class="ssub">基本可信</div>
+      <div class="ssub">Generally Reliable</div>
     </div>
   </div>
 
   <div class="grid-2">
     <div class="card card-green">
-      <h3>正面强化因素</h3>
+      <h3>Supporting Factors</h3>
       <ul style="font-size: 13px; line-height: 2; list-style: none; padding-left: 0;">
-        <li><span class="signal signal-green"></span> 财务信号全部基于经审计年报数据</li>
-        <li><span class="signal signal-green"></span> 市场信号获得第三方机构交叉确认</li>
-        <li><span class="signal signal-green"></span> 技术信号来源权威（NREL 认证）</li>
-        <li><span class="signal signal-green"></span> ESG 评级公开透明，可追溯</li>
-        <li><span class="signal signal-green"></span> 碎片-信号映射关系清晰可查</li>
+        <li><span class="signal signal-green"></span> All financial signals based on audited annual report data</li>
+        <li><span class="signal signal-green"></span> Market signals cross-confirmed by third-party institutions</li>
+        <li><span class="signal signal-green"></span> Technology signals from authoritative sources (NREL certified)</li>
+        <li><span class="signal signal-green"></span> ESG ratings publicly transparent and traceable</li>
+        <li><span class="signal signal-green"></span> Fragment-to-signal mapping is clearly auditable</li>
       </ul>
     </div>
     <div class="card card-red">
-      <h3>削弱因素</h3>
+      <h3>Weakening Factors</h3>
       <ul style="font-size: 13px; line-height: 2; list-style: none; padding-left: 0;">
-        <li><span class="signal signal-red"></span> 海外子公司财务数据不可得</li>
-        <li><span class="signal signal-red"></span> 4 条信号仅靠单一来源支撑</li>
-        <li><span class="signal signal-red"></span> 供应链部分数据依赖第三方估算</li>
-        <li><span class="signal signal-red"></span> 治理维度信号多为公开信息，深度不足</li>
-        <li><span class="signal signal-red"></span> 时效性差距：最新数据为 2026Q1</li>
+        <li><span class="signal signal-red"></span> Overseas subsidiary financial data unavailable</li>
+        <li><span class="signal signal-red"></span> 4 signals rely on single source only</li>
+        <li><span class="signal signal-red"></span> Supply chain data partially dependent on third-party estimates</li>
+        <li><span class="signal signal-red"></span> Governance signals mostly public information, lacking depth</li>
+        <li><span class="signal signal-red"></span> Timeliness gap: latest data as of 2026Q1</li>
       </ul>
     </div>
   </div>
 
   <div class="card" style="border-top: 3px solid var(--blue);">
-    <h3>置信度结论</h3>
+    <h3>Confidence Conclusion</h3>
     <p style="font-size: 13px; line-height: 1.8; color: var(--text-secondary);">
-      综合置信度 <span class="text-blue">74%</span>，评级为 <span class="score-ok">基本可信</span>。现有信号体系足以支撑对隆基绿能的中期信用判断（1-2年维度），但无法排除以下偏误：海外业务风险可能被低估（-8%）、供应链脆弱性可能被高估（+5%）。建议在填补 P0 级缺口后重新评估，预期可将综合置信度提升至 82-86%。
+      Composite confidence of <span class="text-blue">74%</span>, rated as <span class="score-ok">Generally Reliable</span>. The current signal framework is sufficient to support medium-term credit assessment of LONGi Green Energy (1-2 year horizon), but cannot rule out the following biases: overseas business risks may be underestimated (-8%), supply chain vulnerability may be overestimated (+5%). Reassessment is recommended after filling P0-level gaps, with expected composite confidence improvement to 82-86%.
     </p>
   </div>
 </div>
@@ -905,9 +905,9 @@
 
 <!-- ==================== FOOTER ==================== -->
 <div class="footer">
-  <p><strong>马赛克完备性报告</strong> · 引擎版本 v2.4.1 · 报告编号 MS-20260709-012</p>
-  <p>本报告由 Credence Rating Engine 自动生成，仅供内部研究参考，不构成投资建议</p>
-  <p>生成时间: 2026-07-09 14:32:18 · 数据来源: 公开市场数据 · 敏感度: 内部</p>
+  <p><strong>Mosaic Completeness Report</strong> · Engine Version v2.4.1 · Report ID MS-20260709-012</p>
+  <p>This report is auto-generated by the Credence Rating Engine for internal research reference only and does not constitute investment advice</p>
+  <p>Generated: 2026-07-09 14:32:18 · Data Source: Public Market Data · Sensitivity: Internal</p>
 </div>
 
 </body>
