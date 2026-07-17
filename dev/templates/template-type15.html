@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <!-- @template: dev/templates/template-type15.html -->
 <!-- @engine-version: v0.8.4-release -->
-<html lang="zh-CN">
-<!-- 实例报告: systemic-warning-2026q2.html -->
+<html lang="en">
+<!-- Sample Report: systemic-warning-2026q2.html -->
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="系统性风险警报报告模板 Type 15 · SRI指数·温度计·红色行业清单·传染风险TOP5·集中度警示·与前季度对比·行动建议·系统风控智能层">
-<title>系统性风险警报报告 · Type 15 模板</title>
+<meta name="description" content="Systemic Risk Alert Report Template Type 15 · SRI Index · Thermometer · Red Industry List · Top 5 Contagion Risks · Concentration Warning · Quarter-over-Quarter Comparison · Action Recommendations · Systemic Risk Control Intelligence Layer">
+<title>Systemic Risk Alert Report · Type 15 Template</title>
 <link rel="stylesheet" href="template-base.css">
 <style>
 .hero { background: linear-gradient(135deg, #0f172a, #4a1a1a, #991b1b); }
@@ -85,20 +85,20 @@
 <body>
 
 <!-- ================================================================ -->
-<!-- HERO — 深红危机预警主题渐变 -->
+<!-- HERO -- Dark Red Crisis Warning Theme Gradient -->
 <!-- ================================================================ -->
 <div class="hero">
-  <span class="chip">系统性风险警报报告 · TYPE 15</span>
-  <h1>{报告标题——系统性风险警报报告}</h1>
+  <span class="chip">Systemic Risk Alert Report · TYPE 15</span>
+  <h1>{report_title_systemic_risk_alert}</h1>
   <p class="subtitle">
-    SRI系统性风险指数 · 温度计四级判定 · 红色行业清单 · 传染风险TOP5 · 集中度警示 · 与前季度对比 · 行动建议
+    SRI Systemic Risk Index · Four-Level Thermometer Classification · Red Industry List · Top 5 Contagion Risks · Concentration Warning · Quarter-over-Quarter Comparison · Action Recommendations
   </p>
   <div class="meta">
-    <span>分析时点：{分析时点}</span>
-    <span>SRI指数：{SRI读数}</span>
-    <span>温度计等级：{温度计等级}</span>
-    <span>红色行业数：{红色行业数}个</span>
-    <span>报告版本：v0.8.4-release · Type 15 系统性风险警报</span>
+    <span>Analysis Date: {analysis_date}</span>
+    <span>SRI Index: {sri_reading}</span>
+    <span>Thermometer Level: {thermometer_level}</span>
+    <span>Number of Red Industries: {red_industry_count}</span>
+    <span>Report Version: v0.8.4-release · Type 15 Systemic Risk Alert</span>
   </div>
 </div>
 
@@ -108,56 +108,56 @@
 <div class="container">
 
   <!-- ================================================================ -->
-  <!-- STRIP — 4列核心指标 -->
+  <!-- STRIP -- 4-Column Core Metrics -->
   <!-- ================================================================ -->
   <div class="strip cols-4">
     <div class="strip-item">
-      <div class="slabel">SRI系统性风险指数</div>
-      <div class="sval" style="color:var(--red);">{SRI读数}</div>
-      <div class="ssub">0-3+范围 · 越高风险越大</div>
+      <div class="slabel">SRI Systemic Risk Index</div>
+      <div class="sval" style="color:var(--red);">{sri_reading}</div>
+      <div class="ssub">Range 0-3+ · Higher means greater risk</div>
     </div>
     <div class="strip-item">
-      <div class="slabel">温度计等级</div>
-      <div class="sval" style="color:var(--{温度计颜色});">{温度计等级}</div>
-      <div class="ssub">{温度计等级名称} · SRI {SRI范围}</div>
+      <div class="slabel">Thermometer Level</div>
+      <div class="sval" style="color:var(--{thermometer_color});">{thermometer_level}</div>
+      <div class="ssub">{thermometer_level_name} · SRI {sri_range}</div>
     </div>
     <div class="strip-item">
-      <div class="slabel">红色行业数</div>
-      <div class="sval" style="color:var(--red);">{红色行业数}个</div>
-      <div class="ssub">风险得分≥2.0的行业数量</div>
+      <div class="slabel">Number of Red Industries</div>
+      <div class="sval" style="color:var(--red);">{red_industry_count}</div>
+      <div class="ssub">Industries with Risk Score &ge; 2.0</div>
     </div>
     <div class="strip-item">
-      <div class="slabel">趋势( vs 上季度 )</div>
-      <div class="sval" style="color:var(--{趋势颜色});">{趋势箭头} {SRI变化值}</div>
-      <div class="ssub">较上季度SRI变化</div>
+      <div class="slabel">Trend (vs Previous Quarter)</div>
+      <div class="sval" style="color:var(--{trend_color});">{trend_arrow} {sri_change}</div>
+      <div class="ssub">Change from Previous Quarter SRI</div>
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- SECTION 1 — 温度计可视化 -->
+  <!-- SECTION 1 — Thermometer Visualization -->
   <!-- ================================================================ -->
   <div class="section">
     <h2 class="section-title">
       <span class="signal" style="background:var(--red);"></span>
-      一、温度计可视化
+      1. Thermometer Visualization
     </h2>
     <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
-      温度计将SRI读数映射为四级颜色区间，直观展示当前系统性风险等级。
-      各级阈值为：🟢正常(SRI&lt;0.5) · 🟡关注(0.5≤SRI&lt;1.0) · 🟠警惕(1.0≤SRI&lt;1.8) · 🔴危险(SRI≥1.8)。
+      The thermometer maps the SRI reading to a four-level color scale, visualizing the current systemic risk level.
+      The thresholds are: 🟢 Normal (SRI&lt;0.5) · 🟡 Watch (0.5&le;SRI&lt;1.0) · 🟠 Caution (1.0&le;SRI&lt;1.8) · 🔴 Danger (SRI&ge;1.8).
     </p>
 
     <div class="card">
       <div class="thermometer-wrapper">
-        <div class="thermometer-icon">{温度计图标字符}</div>
+        <div class="thermometer-icon">{thermometer_icon_char}</div>
         <div class="thermometer-scale">
           <div class="thermo-track">
-            <div class="thermo-segment green">正常</div>
-            <div class="thermo-segment yellow">关注</div>
-            <div class="thermo-segment orange">警惕</div>
-            <div class="thermo-segment red">危险</div>
+            <div class="thermo-segment green">Normal</div>
+            <div class="thermo-segment yellow">Watch</div>
+            <div class="thermo-segment orange">Caution</div>
+            <div class="thermo-segment red">Danger</div>
           </div>
           <div class="thermo-marker">
-            <span class="arrow" style="left:{SRI百分比位置}%;color:var(--{温度计颜色});">▼</span>
+            <span class="arrow" style="left:{sri_pct_position}%;color:var(--{thermometer_color});">▼</span>
           </div>
           <div class="thermo-labels">
             <span>0</span>
@@ -167,1356 +167,1356 @@
             <span>4.0</span>
           </div>
           <div class="thermo-current-label">
-            <span style="color:var(--{温度计颜色});">当前 SRI = <span class="sri-val">{SRI读数}</span></span>
+            <span style="color:var(--{thermometer_color});">Current SRI = <span class="sri-val">{sri_reading}</span></span>
             <span style="color:var(--text-tertiary);font-size:13px;font-weight:400;display:block;margin-top:4px;">
-              处于{温度计等级名称}区间{与阈值边界关系描述}
+              In the {thermometer_level_name} range{threshold_relationship_desc}
             </span>
           </div>
         </div>
       </div>
       <div style="display:flex;gap:16px;justify-content:center;font-size:12px;margin-top:8px;">
-        <span><span class="signal-dot green"></span>SRI&lt;0.5 正常</span>
-        <span><span class="signal-dot amber"></span>0.5≤SRI&lt;1.0 关注</span>
-        <span><span class="signal-dot" style="background:#ea580c;"></span>1.0≤SRI&lt;1.8 警惕</span>
-        <span><span class="signal-dot red"></span>SRI≥1.8 危险</span>
+        <span><span class="signal-dot green"></span>SRI&lt;0.5 Normal</span>
+        <span><span class="signal-dot amber"></span>0.5&le;SRI&lt;1.0 Watch</span>
+        <span><span class="signal-dot" style="background:#ea580c;"></span>1.0&le;SRI&lt;1.8 Caution</span>
+        <span><span class="signal-dot red"></span>SRI&ge;1.8 Danger</span>
       </div>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>温度计等级定义与当前匹配</h3>
+      <h3>Thermometer Level Definitions & Current Match</h3>
       <table>
         <thead>
           <tr>
-            <th>等级</th>
-            <th>SRI范围</th>
-            <th>颜色</th>
-            <th>含义</th>
-            <th>当前匹配</th>
+            <th>Level</th>
+            <th>SRI Range</th>
+            <th>Color</th>
+            <th>Meaning</th>
+            <th>Current Match</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>正常</td>
+            <td>Normal</td>
             <td>SRI &lt; 0.5</td>
             <td><span class="signal-dot green"></span> 🟢</td>
-            <td>&lt;20%行业同时红色·或&gt;70%行业绿色</td>
-            <td>{当前正常匹配状态}</td>
+            <td>&lt;20% industries red simultaneously · or &gt;70% industries green</td>
+            <td>{current_normal_match}</td>
           </tr>
           <tr>
-            <td>关注</td>
-            <td>0.5 ≤ SRI &lt; 1.0</td>
+            <td>Watch</td>
+            <td>0.5 &le; SRI &lt; 1.0</td>
             <td><span class="signal-dot amber"></span> 🟡</td>
-            <td>20-30%行业同时红色·或2-3个行业信号重叠</td>
-            <td><span class="warn-badge amber">{当前关注匹配状态}</span></td>
+            <td>20-30% industries red simultaneously · or 2-3 overlapping industry signals</td>
+            <td><span class="warn-badge amber">{current_watch_match}</span></td>
           </tr>
           <tr>
-            <td>警惕</td>
-            <td>1.0 ≤ SRI &lt; 1.8</td>
+            <td>Caution</td>
+            <td>1.0 &le; SRI &lt; 1.8</td>
             <td><span class="signal-dot" style="background:#ea580c;"></span> 🟠</td>
-            <td>30-50%行业同时红色·或高传染行业出问题</td>
-            <td>{当前警惕匹配状态}</td>
+            <td>30-50% industries red simultaneously · or high-contagion industries in trouble</td>
+            <td>{current_caution_match}</td>
           </tr>
           <tr>
-            <td>危险</td>
-            <td>SRI ≥ 1.8</td>
+            <td>Danger</td>
+            <td>SRI &ge; 1.8</td>
             <td><span class="signal-dot red"></span> 🔴</td>
-            <td>&gt;50%行业同时红色·或多个高传染行业同时触发</td>
-            <td>{当前危险匹配状态}</td>
+            <td>&gt;50% industries red simultaneously · or multiple high-contagion industries triggered simultaneously</td>
+            <td>{current_danger_match}</td>
           </tr>
         </tbody>
       </table>
-      <div class="info-box info-{温度计信息类型}" style="margin-top:10px;">
-        <strong>温度计解读：</strong>{温度计详细解读——当前SRI读数对应的温度等级含义、主要风险贡献因素、以及与历史关键节点的对比定位。}
+      <div class="info-box info-{thermometer_info_type}" style="margin-top:10px;">
+        <strong>Thermometer Interpretation:</strong>{thermometer_detail}
       </div>
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- SECTION 2 — 红色行业清单 -->
+  <!-- SECTION 2 — Red Industry List -->
   <!-- ================================================================ -->
   <div class="section">
     <h2 class="section-title">
       <span class="signal" style="background:var(--red);"></span>
-      二、红色行业清单
+      2. Red Industry List
     </h2>
     <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
-      风险得分≥2.0的行业列表（触发红色信号），逐行业标注触发因子、核心矛盾及对SRI的贡献。
-      红色行业是系统性风险的主要贡献者，需重点监控其传染链和集中度敞口。
+      List of industries with risk score &ge; 2.0 (triggering red signal), with trigger factors, core issues, and contribution to SRI noted per industry.
+      Red industries are the main contributors to systemic risk and require focused monitoring of their contagion chains and concentration exposure.
     </p>
 
     <div class="red-industry-card">
-      <span class="industry-tag">红色行业 #1 · 风险得分：{红色行业1风险得分}</span>
-      <h4>{红色行业1名称}</h4>
+      <span class="industry-tag">Red Industry #1 · Risk Score: {red_industry_1_risk_score}</span>
+      <h4>{red_industry_1_name}</h4>
       <p class="industry-desc">
-        <strong>轨道A评分：</strong>{红色行业1轨道A评分}<br>
-        <strong>展望方向：</strong>{红色行业1展望}<br>
-        <strong>轨道B信号：</strong>{红色行业1轨道B信号}<br>
-        <strong>一票否决触发：</strong>{红色行业1一票否决状态}<br>
-        <strong>核心矛盾：</strong>{红色行业1核心矛盾描述}<br>
-        <strong>SRI贡献：</strong>{红色行业1SRI贡献值}（占SRI比重{红色行业1贡献占比}%）<br>
-        <strong>传染链风险：</strong>{红色行业1传染链描述}
+        <strong>Track-A Rating:</strong>{red_industry_1_track_a_rating}<br>
+        <strong>Outlook Direction:</strong>{red_industry_1_outlook}<br>
+        <strong>Track-B Signal:</strong>{red_industry_1_track_b_signal}<br>
+        <strong>Veto Triggered:</strong>{red_industry_1_veto_status}<br>
+        <strong>Core Issue:</strong>{red_industry_1_core_issue_desc}<br>
+        <strong>SRI Contribution:</strong>{red_industry_1_sri_contribution} (Share of SRI {red_industry_1_contribution_pct}%)<br>
+        <strong>Contagion Risk:</strong>{red_industry_1_contagion_chain_desc}
       </p>
       <div class="warning-tier" style="margin-top:8px;">
-        <span class="warn-badge red">基准分：{红色行业1基准分}</span>
-        <span class="warn-badge amber">展望惩罚：{红色行业1展望惩罚}</span>
-        <span class="warn-badge amber">轨道B惩罚：{红色行业1轨道B惩罚}</span>
-        <span class="warn-badge red">总风险得分：{红色行业1总得分}</span>
+        <span class="warn-badge red">Base Score: {red_industry_1_base_score}</span>
+        <span class="warn-badge amber">Outlook Penalty: {red_industry_1_outlook_penalty}</span>
+        <span class="warn-badge amber">Track-B Penalty: {red_industry_1_track_b_penalty}</span>
+        <span class="warn-badge red">Total Risk Score: {red_industry_1_total_score}</span>
       </div>
     </div>
 
     <div class="red-industry-card">
-      <span class="industry-tag">红色行业 #2 · 风险得分：{红色行业2风险得分}</span>
-      <h4>{红色行业2名称}</h4>
+      <span class="industry-tag">Red Industry #2 · Risk Score: {red_industry_2_risk_score}</span>
+      <h4>{red_industry_2_name}</h4>
       <p class="industry-desc">
-        <strong>轨道A评分：</strong>{红色行业2轨道A评分}<br>
-        <strong>展望方向：</strong>{红色行业2展望}<br>
-        <strong>轨道B信号：</strong>{红色行业2轨道B信号}<br>
-        <strong>一票否决触发：</strong>{红色行业2一票否决状态}<br>
-        <strong>核心矛盾：</strong>{红色行业2核心矛盾描述}<br>
-        <strong>SRI贡献：</strong>{红色行业2SRI贡献值}（占SRI比重{红色行业2贡献占比}%）<br>
-        <strong>传染链风险：</strong>{红色行业2传染链描述}
+        <strong>Track-A Rating:</strong>{red_industry_2_track_a_rating}<br>
+        <strong>Outlook Direction:</strong>{red_industry_2_outlook}<br>
+        <strong>Track-B Signal:</strong>{red_industry_2_track_b_signal}<br>
+        <strong>Veto Triggered:</strong>{red_industry_2_veto_status}<br>
+        <strong>Core Issue:</strong>{red_industry_2_core_issue_desc}<br>
+        <strong>SRI Contribution:</strong>{red_industry_2_sri_contribution} (Share of SRI {red_industry_2_contribution_pct}%)<br>
+        <strong>Contagion Risk:</strong>{red_industry_2_contagion_chain_desc}
       </p>
       <div class="warning-tier" style="margin-top:8px;">
-        <span class="warn-badge red">基准分：{红色行业2基准分}</span>
-        <span class="warn-badge amber">展望惩罚：{红色行业2展望惩罚}</span>
-        <span class="warn-badge amber">轨道B惩罚：{红色行业2轨道B惩罚}</span>
-        <span class="warn-badge red">总风险得分：{红色行业2总得分}</span>
+        <span class="warn-badge red">Base Score: {red_industry_2_base_score}</span>
+        <span class="warn-badge amber">Outlook Penalty: {red_industry_2_outlook_penalty}</span>
+        <span class="warn-badge amber">Track-B Penalty: {red_industry_2_track_b_penalty}</span>
+        <span class="warn-badge red">Total Risk Score: {red_industry_2_total_score}</span>
       </div>
     </div>
 
     <div class="red-industry-card">
-      <span class="industry-tag">红色行业 #3 · 风险得分：{红色行业3风险得分}</span>
-      <h4>{红色行业3名称}</h4>
+      <span class="industry-tag">Red Industry #3 · Risk Score: {red_industry_3_risk_score}</span>
+      <h4>{red_industry_3_name}</h4>
       <p class="industry-desc">
-        <strong>轨道A评分：</strong>{红色行业3轨道A评分}<br>
-        <strong>展望方向：</strong>{红色行业3展望}<br>
-        <strong>轨道B信号：</strong>{红色行业3轨道B信号}<br>
-        <strong>一票否决触发：</strong>{红色行业3一票否决状态}<br>
-        <strong>核心矛盾：</strong>{红色行业3核心矛盾描述}<br>
-        <strong>SRI贡献：</strong>{红色行业3SRI贡献值}（占SRI比重{红色行业3贡献占比}%）<br>
-        <strong>传染链风险：</strong>{红色行业3传染链描述}
+        <strong>Track-A Rating:</strong>{red_industry_3_track_a_rating}<br>
+        <strong>Outlook Direction:</strong>{red_industry_3_outlook}<br>
+        <strong>Track-B Signal:</strong>{red_industry_3_track_b_signal}<br>
+        <strong>Veto Triggered:</strong>{red_industry_3_veto_status}<br>
+        <strong>Core Issue:</strong>{red_industry_3_core_issue_desc}<br>
+        <strong>SRI Contribution:</strong>{red_industry_3_sri_contribution} (Share of SRI {red_industry_3_contribution_pct}%)<br>
+        <strong>Contagion Risk:</strong>{red_industry_3_contagion_chain_desc}
       </p>
       <div class="warning-tier" style="margin-top:8px;">
-        <span class="warn-badge red">基准分：{红色行业3基准分}</span>
-        <span class="warn-badge amber">展望惩罚：{红色行业3展望惩罚}</span>
-        <span class="warn-badge amber">轨道B惩罚：{红色行业3轨道B惩罚}</span>
-        <span class="warn-badge red">总风险得分：{红色行业3总得分}</span>
+        <span class="warn-badge red">Base Score: {red_industry_3_base_score}</span>
+        <span class="warn-badge amber">Outlook Penalty: {red_industry_3_outlook_penalty}</span>
+        <span class="warn-badge amber">Track-B Penalty: {red_industry_3_track_b_penalty}</span>
+        <span class="warn-badge red">Total Risk Score: {red_industry_3_total_score}</span>
       </div>
     </div>
 
     <div class="red-industry-card">
-      <span class="industry-tag">红色行业 #4 · 风险得分：{红色行业4风险得分}</span>
-      <h4>{红色行业4名称}</h4>
+      <span class="industry-tag">Red Industry #4 · Risk Score: {red_industry_4_risk_score}</span>
+      <h4>{red_industry_4_name}</h4>
       <p class="industry-desc">
-        <strong>轨道A评分：</strong>{红色行业4轨道A评分}<br>
-        <strong>展望方向：</strong>{红色行业4展望}<br>
-        <strong>轨道B信号：</strong>{红色行业4轨道B信号}<br>
-        <strong>一票否决触发：</strong>{红色行业4一票否决状态}<br>
-        <strong>核心矛盾：</strong>{红色行业4核心矛盾描述}<br>
-        <strong>SRI贡献：</strong>{红色行业4SRI贡献值}（占SRI比重{红色行业4贡献占比}%）<br>
-        <strong>传染链风险：</strong>{红色行业4传染链描述}
+        <strong>Track-A Rating:</strong>{red_industry_4_track_a_rating}<br>
+        <strong>Outlook Direction:</strong>{red_industry_4_outlook}<br>
+        <strong>Track-B Signal:</strong>{red_industry_4_track_b_signal}<br>
+        <strong>Veto Triggered:</strong>{red_industry_4_veto_status}<br>
+        <strong>Core Issue:</strong>{red_industry_4_core_issue_desc}<br>
+        <strong>SRI Contribution:</strong>{red_industry_4_sri_contribution} (Share of SRI {red_industry_4_contribution_pct}%)<br>
+        <strong>Contagion Risk:</strong>{red_industry_4_contagion_chain_desc}
       </p>
       <div class="warning-tier" style="margin-top:8px;">
-        <span class="warn-badge red">基准分：{红色行业4基准分}</span>
-        <span class="warn-badge amber">展望惩罚：{红色行业4展望惩罚}</span>
-        <span class="warn-badge amber">轨道B惩罚：{红色行业4轨道B惩罚}</span>
-        <span class="warn-badge red">总风险得分：{红色行业4总得分}</span>
+        <span class="warn-badge red">Base Score: {red_industry_4_base_score}</span>
+        <span class="warn-badge amber">Outlook Penalty: {red_industry_4_outlook_penalty}</span>
+        <span class="warn-badge amber">Track-B Penalty: {red_industry_4_track_b_penalty}</span>
+        <span class="warn-badge red">Total Risk Score: {red_industry_4_total_score}</span>
       </div>
     </div>
 
     <div class="red-industry-card">
-      <span class="industry-tag">红色行业 #5 · 风险得分：{红色行业5风险得分}</span>
-      <h4>{红色行业5名称}</h4>
+      <span class="industry-tag">Red Industry #5 · Risk Score: {red_industry_5_risk_score}</span>
+      <h4>{red_industry_5_name}</h4>
       <p class="industry-desc">
-        <strong>轨道A评分：</strong>{红色行业5轨道A评分}<br>
-        <strong>展望方向：</strong>{红色行业5展望}<br>
-        <strong>轨道B信号：</strong>{红色行业5轨道B信号}<br>
-        <strong>一票否决触发：</strong>{红色行业5一票否决状态}<br>
-        <strong>核心矛盾：</strong>{红色行业5核心矛盾描述}<br>
-        <strong>SRI贡献：</strong>{红色行业5SRI贡献值}（占SRI比重{红色行业5贡献占比}%）<br>
-        <strong>传染链风险：</strong>{红色行业5传染链描述}
+        <strong>Track-A Rating:</strong>{red_industry_5_track_a_rating}<br>
+        <strong>Outlook Direction:</strong>{red_industry_5_outlook}<br>
+        <strong>Track-B Signal:</strong>{red_industry_5_track_b_signal}<br>
+        <strong>Veto Triggered:</strong>{red_industry_5_veto_status}<br>
+        <strong>Core Issue:</strong>{red_industry_5_core_issue_desc}<br>
+        <strong>SRI Contribution:</strong>{red_industry_5_sri_contribution} (Share of SRI {red_industry_5_contribution_pct}%)<br>
+        <strong>Contagion Risk:</strong>{red_industry_5_contagion_chain_desc}
       </p>
       <div class="warning-tier" style="margin-top:8px;">
-        <span class="warn-badge red">基准分：{红色行业5基准分}</span>
-        <span class="warn-badge amber">展望惩罚：{红色行业5展望惩罚}</span>
-        <span class="warn-badge amber">轨道B惩罚：{红色行业5轨道B惩罚}</span>
-        <span class="warn-badge red">总风险得分：{红色行业5总得分}</span>
+        <span class="warn-badge red">Base Score: {red_industry_5_base_score}</span>
+        <span class="warn-badge amber">Outlook Penalty: {red_industry_5_outlook_penalty}</span>
+        <span class="warn-badge amber">Track-B Penalty: {red_industry_5_track_b_penalty}</span>
+        <span class="warn-badge red">Total Risk Score: {red_industry_5_total_score}</span>
       </div>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>红色行业汇总表</h3>
+      <h3>Red Industry Summary Table</h3>
       <table>
         <thead>
           <tr>
-            <th>行业</th>
-            <th>风险得分</th>
-            <th>轨道A评分</th>
-            <th>展望</th>
-            <th>轨道B</th>
-            <th>一票否决</th>
-            <th>SRI贡献</th>
-            <th>数据来源</th>
+            <th>Industry</th>
+            <th>Risk Score</th>
+            <th>Track-A Rating</th>
+            <th>Outlook</th>
+            <th>Track-B</th>
+            <th>Veto</th>
+            <th>SRI Contribution</th>
+            <th>Data Source</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>{红色行业1名称}</td>
-            <td><span class="tag tag-red">{红色行业1风险得分}</span></td>
-            <td>{红色行业1轨道A评分}</td>
-            <td><span class="tag tag-red">{红色行业1展望}</span></td>
-            <td><span class="tag tag-red">{红色行业1轨道B}</span></td>
-            <td><span class="tag tag-{红色行业1否决标签}">{红色行业1一票否决}</span></td>
-            <td class="text-red">{红色行业1SRI贡献}</td>
-            <td>{红色行业1数据来源}</td>
+            <td>{red_industry_1_name}</td>
+            <td><span class="tag tag-red">{red_industry_1_risk_score}</span></td>
+            <td>{red_industry_1_track_a_rating}</td>
+            <td><span class="tag tag-red">{red_industry_1_outlook}</span></td>
+            <td><span class="tag tag-red">{red_industry_1_track_b}</span></td>
+            <td><span class="tag tag-{red_industry_1_veto_tag}">{red_industry_1_veto}</span></td>
+            <td class="text-red">{red_industry_1_sri_contribution_value}</td>
+            <td>{red_industry_1_data_source}</td>
           </tr>
           <tr>
-            <td>{红色行业2名称}</td>
-            <td><span class="tag tag-red">{红色行业2风险得分}</span></td>
-            <td>{红色行业2轨道A评分}</td>
-            <td><span class="tag tag-red">{红色行业2展望}</span></td>
-            <td><span class="tag tag-red">{红色行业2轨道B}</span></td>
-            <td><span class="tag tag-{红色行业2否决标签}">{红色行业2一票否决}</span></td>
-            <td class="text-red">{红色行业2SRI贡献}</td>
-            <td>{红色行业2数据来源}</td>
+            <td>{red_industry_2_name}</td>
+            <td><span class="tag tag-red">{red_industry_2_risk_score}</span></td>
+            <td>{red_industry_2_track_a_rating}</td>
+            <td><span class="tag tag-red">{red_industry_2_outlook}</span></td>
+            <td><span class="tag tag-red">{red_industry_2_track_b}</span></td>
+            <td><span class="tag tag-{red_industry_2_veto_tag}">{red_industry_2_veto}</span></td>
+            <td class="text-red">{red_industry_2_sri_contribution_value}</td>
+            <td>{red_industry_2_data_source}</td>
           </tr>
           <tr>
-            <td>{红色行业3名称}</td>
-            <td><span class="tag tag-red">{红色行业3风险得分}</span></td>
-            <td>{红色行业3轨道A评分}</td>
-            <td><span class="tag tag-red">{红色行业3展望}</span></td>
-            <td><span class="tag tag-red">{红色行业3轨道B}</span></td>
-            <td><span class="tag tag-{红色行业3否决标签}">{红色行业3一票否决}</span></td>
-            <td class="text-red">{红色行业3SRI贡献}</td>
-            <td>{红色行业3数据来源}</td>
+            <td>{red_industry_3_name}</td>
+            <td><span class="tag tag-red">{red_industry_3_risk_score}</span></td>
+            <td>{red_industry_3_track_a_rating}</td>
+            <td><span class="tag tag-red">{red_industry_3_outlook}</span></td>
+            <td><span class="tag tag-red">{red_industry_3_track_b}</span></td>
+            <td><span class="tag tag-{red_industry_3_veto_tag}">{red_industry_3_veto}</span></td>
+            <td class="text-red">{red_industry_3_sri_contribution_value}</td>
+            <td>{red_industry_3_data_source}</td>
           </tr>
           <tr>
-            <td>{红色行业4名称}</td>
-            <td><span class="tag tag-red">{红色行业4风险得分}</span></td>
-            <td>{红色行业4轨道A评分}</td>
-            <td><span class="tag tag-red">{红色行业4展望}</span></td>
-            <td><span class="tag tag-red">{红色行业4轨道B}</span></td>
-            <td><span class="tag tag-{红色行业4否决标签}">{红色行业4一票否决}</span></td>
-            <td class="text-red">{红色行业4SRI贡献}</td>
-            <td>{红色行业4数据来源}</td>
+            <td>{red_industry_4_name}</td>
+            <td><span class="tag tag-red">{red_industry_4_risk_score}</span></td>
+            <td>{red_industry_4_track_a_rating}</td>
+            <td><span class="tag tag-red">{red_industry_4_outlook}</span></td>
+            <td><span class="tag tag-red">{red_industry_4_track_b}</span></td>
+            <td><span class="tag tag-{red_industry_4_veto_tag}">{red_industry_4_veto}</span></td>
+            <td class="text-red">{red_industry_4_sri_contribution_value}</td>
+            <td>{red_industry_4_data_source}</td>
           </tr>
           <tr>
-            <td>{红色行业5名称}</td>
-            <td><span class="tag tag-red">{红色行业5风险得分}</span></td>
-            <td>{红色行业5轨道A评分}</td>
-            <td><span class="tag tag-red">{红色行业5展望}</span></td>
-            <td><span class="tag tag-red">{红色行业5轨道B}</span></td>
-            <td><span class="tag tag-{红色行业5否决标签}">{红色行业5一票否决}</span></td>
-            <td class="text-red">{红色行业5SRI贡献}</td>
-            <td>{红色行业5数据来源}</td>
+            <td>{red_industry_5_name}</td>
+            <td><span class="tag tag-red">{red_industry_5_risk_score}</span></td>
+            <td>{red_industry_5_track_a_rating}</td>
+            <td><span class="tag tag-red">{red_industry_5_outlook}</span></td>
+            <td><span class="tag tag-red">{red_industry_5_track_b}</span></td>
+            <td><span class="tag tag-{red_industry_5_veto_tag}">{red_industry_5_veto}</span></td>
+            <td class="text-red">{red_industry_5_sri_contribution_value}</td>
+            <td>{red_industry_5_data_source}</td>
           </tr>
         </tbody>
       </table>
       <div class="info-box info-red" style="margin-top:10px;">
-        <strong>红色行业综合评估：</strong>{红色行业综合评估——当前红色行业的共同特征、是否有集群化的风险聚集、红色行业在传染矩阵中的分布特征、以及如果再多{触发阈值差值}个行业同时转红则温度计将升级的临界判断。}
+        <strong>Red Industry Overview:</strong>{red_industry_overview}
       </div>
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- SECTION 3 — 传染风险TOP5 -->
+  <!-- SECTION 3 — Top 5 Contagion Risks -->
   <!-- ================================================================ -->
   <div class="section">
     <h2 class="section-title">
       <span class="signal" style="background:var(--purple);"></span>
-      三、传染风险TOP5
+      3. Top 5 Contagion Risks
     </h2>
     <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
-      基于传染矩阵（contagion-matrix.md）的强度数据，识别当前环境下风险最高的传染链。
-      排序依据：传染强度 × 源头行业风险得分 × 目标行业脆弱度。强度数据引用自传染矩阵的行业间关联评分（1-5级）。
+      Based on the contagion matrix (contagion-matrix.md) strength data, identifies the highest-risk contagion chains under the current environment.
+      Ranking basis: Contagion Strength &times; Source Industry Risk Score &times; Target Industry Vulnerability. Strength data references inter-industry correlation scores (Level 1-5) from the contagion matrix.
     </p>
 
     <div class="contagion-chain-card">
-      <span class="chain-tag">传染链 #1 · 传染强度：{传染链1强度}/5</span>
-      <h4>{传染链1名称}</h4>
+      <span class="chain-tag">Contagion Chain #1 · Contagion Strength: {contagion_chain_1_strength}/5</span>
+      <h4>{contagion_chain_1_name}</h4>
       <p class="chain-desc">
-        <strong>路径：</strong>{传染链1路径}<br>
-        <strong>传染类型：</strong>{传染链1类型}<br>
-        <strong>传染矩阵引用：</strong>{传染链1矩阵引用}<br>
-        <strong>源头行业风险得分：</strong>{传染链1源头得分}<br>
-        <strong>目标行业脆弱度：</strong>{传染链1目标脆弱度}<br>
-        <strong>升级因子触发状态：</strong>{传染链1升级因子状态}<br>
-        <strong>潜在影响量级：</strong>{传染链1影响量级}
+        <strong>Path:</strong>{contagion_chain_1_path}<br>
+        <strong>Contagion Type:</strong>{contagion_chain_1_type}<br>
+        <strong>Contagion Matrix Reference:</strong>{contagion_chain_1_matrix_reference}<br>
+        <strong>Source Industry Risk Score:</strong>{contagion_chain_1_source_score}<br>
+        <strong>Target Industry Vulnerability:</strong>{contagion_chain_1_target_vulnerability}<br>
+        <strong>Escalation Factor Trigger Status:</strong>{contagion_chain_1_escalation_factor_status}<br>
+        <strong>Potential Impact Magnitude:</strong>{contagion_chain_1_impact_magnitude}
       </p>
       <div class="warning-tier" style="margin-top:8px;">
-        <span class="warn-badge red">强度 {传染链1强度}/5</span>
-        <span class="warn-badge amber">源头风险 {传染链1源头等级}</span>
-        <span class="warn-badge amber">目标脆弱 {传染链1目标等级}</span>
-        <span class="warn-badge red">综合评级：{传染链1综合评级}</span>
+        <span class="warn-badge red">Strength {contagion_chain_1_strength}/5</span>
+        <span class="warn-badge amber">Source Risk {contagion_chain_1_source_level}</span>
+        <span class="warn-badge amber">Target Vulnerability {contagion_chain_1_target_level}</span>
+        <span class="warn-badge red">Composite Rating: {contagion_chain_1_composite_rating}</span>
       </div>
     </div>
 
     <div class="contagion-chain-card">
-      <span class="chain-tag">传染链 #2 · 传染强度：{传染链2强度}/5</span>
-      <h4>{传染链2名称}</h4>
+      <span class="chain-tag">Contagion Chain #2 · Contagion Strength: {contagion_chain_2_strength}/5</span>
+      <h4>{contagion_chain_2_name}</h4>
       <p class="chain-desc">
-        <strong>路径：</strong>{传染链2路径}<br>
-        <strong>传染类型：</strong>{传染链2类型}<br>
-        <strong>传染矩阵引用：</strong>{传染链2矩阵引用}<br>
-        <strong>源头行业风险得分：</strong>{传染链2源头得分}<br>
-        <strong>目标行业脆弱度：</strong>{传染链2目标脆弱度}<br>
-        <strong>升级因子触发状态：</strong>{传染链2升级因子状态}<br>
-        <strong>潜在影响量级：</strong>{传染链2影响量级}
+        <strong>Path:</strong>{contagion_chain_2_path}<br>
+        <strong>Contagion Type:</strong>{contagion_chain_2_type}<br>
+        <strong>Contagion Matrix Reference:</strong>{contagion_chain_2_matrix_reference}<br>
+        <strong>Source Industry Risk Score:</strong>{contagion_chain_2_source_score}<br>
+        <strong>Target Industry Vulnerability:</strong>{contagion_chain_2_target_vulnerability}<br>
+        <strong>Escalation Factor Trigger Status:</strong>{contagion_chain_2_escalation_factor_status}<br>
+        <strong>Potential Impact Magnitude:</strong>{contagion_chain_2_impact_magnitude}
       </p>
       <div class="warning-tier" style="margin-top:8px;">
-        <span class="warn-badge red">强度 {传染链2强度}/5</span>
-        <span class="warn-badge amber">源头风险 {传染链2源头等级}</span>
-        <span class="warn-badge amber">目标脆弱 {传染链2目标等级}</span>
-        <span class="warn-badge red">综合评级：{传染链2综合评级}</span>
+        <span class="warn-badge red">Strength {contagion_chain_2_strength}/5</span>
+        <span class="warn-badge amber">Source Risk {contagion_chain_2_source_level}</span>
+        <span class="warn-badge amber">Target Vulnerability {contagion_chain_2_target_level}</span>
+        <span class="warn-badge red">Composite Rating: {contagion_chain_2_composite_rating}</span>
       </div>
     </div>
 
     <div class="contagion-chain-card">
-      <span class="chain-tag">传染链 #3 · 传染强度：{传染链3强度}/5</span>
-      <h4>{传染链3名称}</h4>
+      <span class="chain-tag">Contagion Chain #3 · Contagion Strength: {contagion_chain_3_strength}/5</span>
+      <h4>{contagion_chain_3_name}</h4>
       <p class="chain-desc">
-        <strong>路径：</strong>{传染链3路径}<br>
-        <strong>传染类型：</strong>{传染链3类型}<br>
-        <strong>传染矩阵引用：</strong>{传染链3矩阵引用}<br>
-        <strong>源头行业风险得分：</strong>{传染链3源头得分}<br>
-        <strong>目标行业脆弱度：</strong>{传染链3目标脆弱度}<br>
-        <strong>升级因子触发状态：</strong>{传染链3升级因子状态}<br>
-        <strong>潜在影响量级：</strong>{传染链3影响量级}
+        <strong>Path:</strong>{contagion_chain_3_path}<br>
+        <strong>Contagion Type:</strong>{contagion_chain_3_type}<br>
+        <strong>Contagion Matrix Reference:</strong>{contagion_chain_3_matrix_reference}<br>
+        <strong>Source Industry Risk Score:</strong>{contagion_chain_3_source_score}<br>
+        <strong>Target Industry Vulnerability:</strong>{contagion_chain_3_target_vulnerability}<br>
+        <strong>Escalation Factor Trigger Status:</strong>{contagion_chain_3_escalation_factor_status}<br>
+        <strong>Potential Impact Magnitude:</strong>{contagion_chain_3_impact_magnitude}
       </p>
       <div class="warning-tier" style="margin-top:8px;">
-        <span class="warn-badge red">强度 {传染链3强度}/5</span>
-        <span class="warn-badge amber">源头风险 {传染链3源头等级}</span>
-        <span class="warn-badge amber">目标脆弱 {传染链3目标等级}</span>
-        <span class="warn-badge red">综合评级：{传染链3综合评级}</span>
+        <span class="warn-badge red">Strength {contagion_chain_3_strength}/5</span>
+        <span class="warn-badge amber">Source Risk {contagion_chain_3_source_level}</span>
+        <span class="warn-badge amber">Target Vulnerability {contagion_chain_3_target_level}</span>
+        <span class="warn-badge red">Composite Rating: {contagion_chain_3_composite_rating}</span>
       </div>
     </div>
 
     <div class="contagion-chain-card">
-      <span class="chain-tag">传染链 #4 · 传染强度：{传染链4强度}/5</span>
-      <h4>{传染链4名称}</h4>
+      <span class="chain-tag">Contagion Chain #4 · Contagion Strength: {contagion_chain_4_strength}/5</span>
+      <h4>{contagion_chain_4_name}</h4>
       <p class="chain-desc">
-        <strong>路径：</strong>{传染链4路径}<br>
-        <strong>传染类型：</strong>{传染链4类型}<br>
-        <strong>传染矩阵引用：</strong>{传染链4矩阵引用}<br>
-        <strong>源头行业风险得分：</strong>{传染链4源头得分}<br>
-        <strong>目标行业脆弱度：</strong>{传染链4目标脆弱度}<br>
-        <strong>升级因子触发状态：</strong>{传染链4升级因子状态}<br>
-        <strong>潜在影响量级：</strong>{传染链4影响量级}
+        <strong>Path:</strong>{contagion_chain_4_path}<br>
+        <strong>Contagion Type:</strong>{contagion_chain_4_type}<br>
+        <strong>Contagion Matrix Reference:</strong>{contagion_chain_4_matrix_reference}<br>
+        <strong>Source Industry Risk Score:</strong>{contagion_chain_4_source_score}<br>
+        <strong>Target Industry Vulnerability:</strong>{contagion_chain_4_target_vulnerability}<br>
+        <strong>Escalation Factor Trigger Status:</strong>{contagion_chain_4_escalation_factor_status}<br>
+        <strong>Potential Impact Magnitude:</strong>{contagion_chain_4_impact_magnitude}
       </p>
       <div class="warning-tier" style="margin-top:8px;">
-        <span class="warn-badge red">强度 {传染链4强度}/5</span>
-        <span class="warn-badge amber">源头风险 {传染链4源头等级}</span>
-        <span class="warn-badge amber">目标脆弱 {传染链4目标等级}</span>
-        <span class="warn-badge red">综合评级：{传染链4综合评级}</span>
+        <span class="warn-badge red">Strength {contagion_chain_4_strength}/5</span>
+        <span class="warn-badge amber">Source Risk {contagion_chain_4_source_level}</span>
+        <span class="warn-badge amber">Target Vulnerability {contagion_chain_4_target_level}</span>
+        <span class="warn-badge red">Composite Rating: {contagion_chain_4_composite_rating}</span>
       </div>
     </div>
 
     <div class="contagion-chain-card">
-      <span class="chain-tag">传染链 #5 · 传染强度：{传染链5强度}/5</span>
-      <h4>{传染链5名称}</h4>
+      <span class="chain-tag">Contagion Chain #5 · Contagion Strength: {contagion_chain_5_strength}/5</span>
+      <h4>{contagion_chain_5_name}</h4>
       <p class="chain-desc">
-        <strong>路径：</strong>{传染链5路径}<br>
-        <strong>传染类型：</strong>{传染链5类型}<br>
-        <strong>传染矩阵引用：</strong>{传染链5矩阵引用}<br>
-        <strong>源头行业风险得分：</strong>{传染链5源头得分}<br>
-        <strong>目标行业脆弱度：</strong>{传染链5目标脆弱度}<br>
-        <strong>升级因子触发状态：</strong>{传染链5升级因子状态}<br>
-        <strong>潜在影响量级：</strong>{传染链5影响量级}
+        <strong>Path:</strong>{contagion_chain_5_path}<br>
+        <strong>Contagion Type:</strong>{contagion_chain_5_type}<br>
+        <strong>Contagion Matrix Reference:</strong>{contagion_chain_5_matrix_reference}<br>
+        <strong>Source Industry Risk Score:</strong>{contagion_chain_5_source_score}<br>
+        <strong>Target Industry Vulnerability:</strong>{contagion_chain_5_target_vulnerability}<br>
+        <strong>Escalation Factor Trigger Status:</strong>{contagion_chain_5_escalation_factor_status}<br>
+        <strong>Potential Impact Magnitude:</strong>{contagion_chain_5_impact_magnitude}
       </p>
       <div class="warning-tier" style="margin-top:8px;">
-        <span class="warn-badge red">强度 {传染链5强度}/5</span>
-        <span class="warn-badge amber">源头风险 {传染链5源头等级}</span>
-        <span class="warn-badge amber">目标脆弱 {传染链5目标等级}</span>
-        <span class="warn-badge red">综合评级：{传染链5综合评级}</span>
+        <span class="warn-badge red">Strength {contagion_chain_5_strength}/5</span>
+        <span class="warn-badge amber">Source Risk {contagion_chain_5_source_level}</span>
+        <span class="warn-badge amber">Target Vulnerability {contagion_chain_5_target_level}</span>
+        <span class="warn-badge red">Composite Rating: {contagion_chain_5_composite_rating}</span>
       </div>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>传染风险摘要</h3>
+      <h3>Contagion Risk Summary</h3>
       <table>
         <thead>
           <tr>
-            <th>排名</th>
-            <th>传染链</th>
-            <th>传染强度</th>
-            <th>传染类型</th>
-            <th>综合警示</th>
+            <th>Rank</th>
+            <th>Contagion Chain</th>
+            <th>Contagion Strength</th>
+            <th>Contagion Type</th>
+            <th>Composite Alert</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>1</td>
-            <td>{传染链1名称}</td>
-            <td><span class="tag tag-red">{传染链1强度}/5</span></td>
-            <td>{传染链1类型}</td>
-            <td><span class="tag tag-red">{传染链1综合评级}</span></td>
+            <td>{contagion_chain_1_name}</td>
+            <td><span class="tag tag-red">{contagion_chain_1_strength}/5</span></td>
+            <td>{contagion_chain_1_type}</td>
+            <td><span class="tag tag-red">{contagion_chain_1_composite_rating}</span></td>
           </tr>
           <tr>
             <td>2</td>
-            <td>{传染链2名称}</td>
-            <td><span class="tag tag-red">{传染链2强度}/5</span></td>
-            <td>{传染链2类型}</td>
-            <td><span class="tag tag-red">{传染链2综合评级}</span></td>
+            <td>{contagion_chain_2_name}</td>
+            <td><span class="tag tag-red">{contagion_chain_2_strength}/5</span></td>
+            <td>{contagion_chain_2_type}</td>
+            <td><span class="tag tag-red">{contagion_chain_2_composite_rating}</span></td>
           </tr>
           <tr>
             <td>3</td>
-            <td>{传染链3名称}</td>
-            <td><span class="tag tag-amber">{传染链3强度}/5</span></td>
-            <td>{传染链3类型}</td>
-            <td><span class="tag tag-amber">{传染链3综合评级}</span></td>
+            <td>{contagion_chain_3_name}</td>
+            <td><span class="tag tag-amber">{contagion_chain_3_strength}/5</span></td>
+            <td>{contagion_chain_3_type}</td>
+            <td><span class="tag tag-amber">{contagion_chain_3_composite_rating}</span></td>
           </tr>
           <tr>
             <td>4</td>
-            <td>{传染链4名称}</td>
-            <td><span class="tag tag-amber">{传染链4强度}/5</span></td>
-            <td>{传染链4类型}</td>
-            <td><span class="tag tag-amber">{传染链4综合评级}</span></td>
+            <td>{contagion_chain_4_name}</td>
+            <td><span class="tag tag-amber">{contagion_chain_4_strength}/5</span></td>
+            <td>{contagion_chain_4_type}</td>
+            <td><span class="tag tag-amber">{contagion_chain_4_composite_rating}</span></td>
           </tr>
           <tr>
             <td>5</td>
-            <td>{传染链5名称}</td>
-            <td><span class="tag tag-amber">{传染链5强度}/5</span></td>
-            <td>{传染链5类型}</td>
-            <td><span class="tag tag-amber">{传染链5综合评级}</span></td>
+            <td>{contagion_chain_5_name}</td>
+            <td><span class="tag tag-amber">{contagion_chain_5_strength}/5</span></td>
+            <td>{contagion_chain_5_type}</td>
+            <td><span class="tag tag-amber">{contagion_chain_5_composite_rating}</span></td>
           </tr>
         </tbody>
       </table>
       <div class="info-box info-purple" style="margin-top:10px;">
-        <strong>传染风险综合评估：</strong>{传染风险综合评估——传染链之间的交叉放大效应、是否有多条传染链共享同一关键节点（关键节点识别）、在当前SRI温度下传染矩阵升级因子的协同状态、以及最需要关注的{关注传染链数}条传染链的组合风险。}
+        <strong>Contagion Risk Overview:</strong>{contagion_risk_overview}
       </div>
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- SECTION 4 — 集中度警示 -->
+  <!-- SECTION 4 — Concentration Warning -->
   <!-- ================================================================ -->
   <div class="section">
     <h2 class="section-title">
       <span class="signal" style="background:var(--amber);"></span>
-      四、集中度警示
+      4. Concentration Warning
     </h2>
     <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
-      在当前系统性风险环境下，识别哪些集中度风险维度最具威胁性。
-      结合行业集中度、区域集中度、评级集中度、期限集中度和融资渠道集中度的交叉分析，
-      标注需要立即关注的高集中度敞口。
+      Identifies which concentration risk dimensions are most threatening under the current systemic risk environment.
+      Cross-analysis of industry concentration, regional concentration, rating concentration, maturity concentration, and funding channel concentration,
+      highlighting high-concentration exposures requiring immediate attention.
     </p>
 
     <div class="concentration-warn-card">
-      <span class="cw-tag">集中度风险 #1 · 优先级 P0</span>
-      <h4>{集中度风险1名称}</h4>
+      <span class="cw-tag">Concentration Risk #1 · Priority P0</span>
+      <h4>{concentration_risk_1_name}</h4>
       <p class="cw-desc">
-        <strong>集中度维度：</strong>{集中度风险1维度}<br>
-        <strong>当前敞口水平：</strong>{集中度风险1当前敞口}<br>
-        <strong>阈值位置：</strong>{集中度风险1阈值位置}<br>
-        <strong>与SRI的关联：</strong>{集中度风险1与SRI关联}<br>
-        <strong>传染放大效应：</strong>{集中度风险1传染放大描述}<br>
-        <strong>建议监控指标：</strong>{集中度风险1监控指标}
+        <strong>Concentration Dimension:</strong>{concentration_risk_1_dimension}<br>
+        <strong>Current Exposure Level:</strong>{concentration_risk_1_exposure}<br>
+        <strong>Threshold Position:</strong>{concentration_risk_1_threshold}<br>
+        <strong>Correlation with SRI:</strong>{concentration_risk_1_sri_correlation}<br>
+        <strong>Contagion Amplification Effect:</strong>{concentration_risk_1_contagion_amplification}<br>
+        <strong>Recommended Monitoring Metrics:</strong>{concentration_risk_1_monitoring_metrics}
       </p>
       <div class="warning-tier" style="margin-top:8px;">
-        <span class="warn-badge red">影响量级：{集中度风险1量级}</span>
-        <span class="warn-badge amber">触发概率：{集中度风险1概率}</span>
-        <span class="warn-badge red">优先级 P0</span>
+        <span class="warn-badge red">Impact Magnitude: {concentration_risk_1_magnitude}</span>
+        <span class="warn-badge amber">Trigger Probability: {concentration_risk_1_probability}</span>
+        <span class="warn-badge red">Priority P0</span>
       </div>
     </div>
 
     <div class="concentration-warn-card">
-      <span class="cw-tag">集中度风险 #2 · 优先级 P1</span>
-      <h4>{集中度风险2名称}</h4>
+      <span class="cw-tag">Concentration Risk #2 · Priority P1</span>
+      <h4>{concentration_risk_2_name}</h4>
       <p class="cw-desc">
-        <strong>集中度维度：</strong>{集中度风险2维度}<br>
-        <strong>当前敞口水平：</strong>{集中度风险2当前敞口}<br>
-        <strong>阈值位置：</strong>{集中度风险2阈值位置}<br>
-        <strong>与SRI的关联：</strong>{集中度风险2与SRI关联}<br>
-        <strong>传染放大效应：</strong>{集中度风险2传染放大描述}<br>
-        <strong>建议监控指标：</strong>{集中度风险2监控指标}
+        <strong>Concentration Dimension:</strong>{concentration_risk_2_dimension}<br>
+        <strong>Current Exposure Level:</strong>{concentration_risk_2_exposure}<br>
+        <strong>Threshold Position:</strong>{concentration_risk_2_threshold}<br>
+        <strong>Correlation with SRI:</strong>{concentration_risk_2_sri_correlation}<br>
+        <strong>Contagion Amplification Effect:</strong>{concentration_risk_2_contagion_amplification}<br>
+        <strong>Recommended Monitoring Metrics:</strong>{concentration_risk_2_monitoring_metrics}
       </p>
       <div class="warning-tier" style="margin-top:8px;">
-        <span class="warn-badge amber">影响量级：{集中度风险2量级}</span>
-        <span class="warn-badge amber">触发概率：{集中度风险2概率}</span>
-        <span class="warn-badge amber">优先级 P1</span>
+        <span class="warn-badge amber">Impact Magnitude: {concentration_risk_2_magnitude}</span>
+        <span class="warn-badge amber">Trigger Probability: {concentration_risk_2_probability}</span>
+        <span class="warn-badge amber">Priority P1</span>
       </div>
     </div>
 
     <div class="concentration-warn-card">
-      <span class="cw-tag">集中度风险 #3 · 优先级 P1</span>
-      <h4>{集中度风险3名称}</h4>
+      <span class="cw-tag">Concentration Risk #3 · Priority P1</span>
+      <h4>{concentration_risk_3_name}</h4>
       <p class="cw-desc">
-        <strong>集中度维度：</strong>{集中度风险3维度}<br>
-        <strong>当前敞口水平：</strong>{集中度风险3当前敞口}<br>
-        <strong>阈值位置：</strong>{集中度风险3阈值位置}<br>
-        <strong>与SRI的关联：</strong>{集中度风险3与SRI关联}<br>
-        <strong>传染放大效应：</strong>{集中度风险3传染放大描述}<br>
-        <strong>建议监控指标：</strong>{集中度风险3监控指标}
+        <strong>Concentration Dimension:</strong>{concentration_risk_3_dimension}<br>
+        <strong>Current Exposure Level:</strong>{concentration_risk_3_exposure}<br>
+        <strong>Threshold Position:</strong>{concentration_risk_3_threshold}<br>
+        <strong>Correlation with SRI:</strong>{concentration_risk_3_sri_correlation}<br>
+        <strong>Contagion Amplification Effect:</strong>{concentration_risk_3_contagion_amplification}<br>
+        <strong>Recommended Monitoring Metrics:</strong>{concentration_risk_3_monitoring_metrics}
       </p>
       <div class="warning-tier" style="margin-top:8px;">
-        <span class="warn-badge amber">影响量级：{集中度风险3量级}</span>
-        <span class="warn-badge green">触发概率：{集中度风险3概率}</span>
-        <span class="warn-badge amber">优先级 P1</span>
+        <span class="warn-badge amber">Impact Magnitude: {concentration_risk_3_magnitude}</span>
+        <span class="warn-badge green">Trigger Probability: {concentration_risk_3_probability}</span>
+        <span class="warn-badge amber">Priority P1</span>
       </div>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>五维集中度风险矩阵</h3>
+      <h3>Five-Dimension Concentration Risk Matrix</h3>
       <table>
         <thead>
           <tr>
-            <th>集中度维度</th>
-            <th>当前风险等级</th>
-            <th>SRI联动强度</th>
-            <th>传染放大风险</th>
-            <th>建议行动</th>
+            <th>Concentration Dimension</th>
+            <th>Current Risk Level</th>
+            <th>SRI Correlation Strength</th>
+            <th>Contagion Amplification Risk</th>
+            <th>Recommended Action</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>行业集中度</td>
-            <td><span class="tag tag-red">{行业集中度风险等级}</span></td>
-            <td><span class="tag tag-red">{行业集中度SRI联动}</span></td>
-            <td><span class="tag tag-red">{行业集中度传染放大}</span></td>
-            <td>{行业集中度行动}</td>
+            <td>Industry Concentration</td>
+            <td><span class="tag tag-red">{industry_concentration_risk_level}</span></td>
+            <td><span class="tag tag-red">{industry_concentration_sri_linkage}</span></td>
+            <td><span class="tag tag-red">{industry_concentration_contagion_amplification}</span></td>
+            <td>{industry_concentration_action}</td>
           </tr>
           <tr>
-            <td>区域集中度</td>
-            <td><span class="tag tag-amber">{区域集中度风险等级}</span></td>
-            <td><span class="tag tag-amber">{区域集中度SRI联动}</span></td>
-            <td><span class="tag tag-amber">{区域集中度传染放大}</span></td>
-            <td>{区域集中度行动}</td>
+            <td>Regional Concentration</td>
+            <td><span class="tag tag-amber">{regional_concentration_risk_level}</span></td>
+            <td><span class="tag tag-amber">{regional_concentration_sri_linkage}</span></td>
+            <td><span class="tag tag-amber">{regional_concentration_contagion_amplification}</span></td>
+            <td>{regional_concentration_action}</td>
           </tr>
           <tr>
-            <td>评级集中度</td>
-            <td><span class="tag tag-{评级集中度标签颜色}">{评级集中度风险等级}</span></td>
-            <td><span class="tag tag-{评级集中度SRI标签}">{评级集中度SRI联动}</span></td>
-            <td><span class="tag tag-{评级集中度传染标签}">{评级集中度传染放大}</span></td>
-            <td>{评级集中度行动}</td>
+            <td>Rating Concentration</td>
+            <td><span class="tag tag-{rating_concentration_tag_color}">{rating_concentration_risk_level}</span></td>
+            <td><span class="tag tag-{rating_concentration_sri_tag}">{rating_concentration_sri_linkage}</span></td>
+            <td><span class="tag tag-{rating_concentration_contagion_tag}">{rating_concentration_contagion_amplification}</span></td>
+            <td>{rating_concentration_action}</td>
           </tr>
           <tr>
-            <td>期限集中度</td>
-            <td><span class="tag tag-{期限集中度标签颜色}">{期限集中度风险等级}</span></td>
-            <td><span class="tag tag-{期限集中度SRI标签}">{期限集中度SRI联动}</span></td>
-            <td><span class="tag tag-{期限集中度传染标签}">{期限集中度传染放大}</span></td>
-            <td>{期限集中度行动}</td>
+            <td>Maturity Concentration</td>
+            <td><span class="tag tag-{maturity_concentration_tag_color}">{maturity_concentration_risk_level}</span></td>
+            <td><span class="tag tag-{maturity_concentration_sri_tag}">{maturity_concentration_sri_linkage}</span></td>
+            <td><span class="tag tag-{maturity_concentration_contagion_tag}">{maturity_concentration_contagion_amplification}</span></td>
+            <td>{maturity_concentration_action}</td>
           </tr>
           <tr>
-            <td>融资渠道集中度</td>
-            <td><span class="tag tag-{融资渠道标签颜色}">{融资渠道风险等级}</span></td>
-            <td><span class="tag tag-{融资渠道SRI标签}">{融资渠道SRI联动}</span></td>
-            <td><span class="tag tag-{融资渠道传染标签}">{融资渠道传染放大}</span></td>
-            <td>{融资渠道行动}</td>
+            <td>Funding Channel Concentration</td>
+            <td><span class="tag tag-{funding_channel_tag_color}">{funding_channel_risk_level}</span></td>
+            <td><span class="tag tag-{funding_channel_sri_tag}">{funding_channel_sri_linkage}</span></td>
+            <td><span class="tag tag-{funding_channel_contagion_tag}">{funding_channel_contagion_amplification}</span></td>
+            <td>{funding_channel_action}</td>
           </tr>
         </tbody>
       </table>
       <div class="info-box info-amber" style="margin-top:10px;">
-        <strong>集中度综合评估：</strong>{集中度综合评估——在当前SRI环境下各维度的综合集中风险、维度间的叠加效应、以及SRI温度计升级时集中度框架将触发的自动调整规则（如SRI🟡关注时行业集中度权重从25%上浮至30%）。}
+        <strong>Concentration Overview:</strong>{concentration_overview}
       </div>
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- SECTION 5 — 与前季度对比 -->
+  <!-- SECTION 5 — Quarter-over-Quarter Comparison -->
   <!-- ================================================================ -->
   <div class="section">
     <h2 class="section-title">
       <span class="signal" style="background:var(--amber);"></span>
-      五、与前季度对比
+      5. Quarter-over-Quarter Comparison
     </h2>
     <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
-      本季度与上季度的SRI趋势对比、新增红色行业和退出红色的行业。
-      趋势分析是判断系统性风险走向的关键依据——连续两期上升意味着风险积累加速。
+      Comparison of SRI trends between the current quarter and the previous quarter, newly added red industries, and industries that have exited the red zone.
+      Trend analysis is a key basis for judging the direction of systemic risk -- two consecutive periods of rising indicate accelerating risk accumulation.
     </p>
 
     <div class="trend-card">
-      <h4>SRI趋势</h4>
+      <h4>SRI Trend</h4>
       <p style="font-size:13px; color:var(--text-secondary); line-height:1.7;">
-        <strong>本季度SRI：</strong><span class="text-red">{当前SRI读数}</span><br>
-        <strong>上季度SRI：</strong>{上季度SRI读数}<br>
-        <strong>变化方向：</strong><span class="text-red">{趋势箭头} {SRI变化值}</span><br>
-        <strong>变化幅度百分比：</strong>{SRI变化百分比}%<br>
-        <strong>趋势判断：</strong>{趋势判断描述}<br>
-        <strong>主要驱动因素：</strong>{趋势驱动因素描述}
+        <strong>Current Quarter SRI:</strong><span class="text-red">{current_sri_reading}</span><br>
+        <strong>Previous Quarter SRI:</strong>{prev_quarter_sri}<br>
+        <strong>Direction of Change:</strong><span class="text-red">{trend_arrow} {sri_change}</span><br>
+        <strong>Percentage Change:</strong>{sri_change_pct}%<br>
+        <strong>Trend Assessment:</strong>{trend_assessment_desc}<br>
+        <strong>Key Drivers:</strong>{trend_drivers_desc}
       </p>
       <div class="threshold-vis">
-        <span style="font-size:11px;color:var(--text-tertiary);min-width:40px;">SRI轨迹:</span>
+        <span style="font-size:11px;color:var(--text-tertiary);min-width:40px;">SRI Trajectory:</span>
         <div class="threshold-track">
-          <div class="threshold-label" style="left:0%;">上季度</div>
-          <div class="threshold-label" style="left:100%;">本季度</div>
-          <div class="threshold-marker" style="left:{上季度SRI位置}%;background:var(--{上季度颜色});"></div>
-          <div class="threshold-marker" style="left:{本季度SRI位置}%;background:var(--{本季度颜色});"></div>
-          <div class="threshold-current" style="left:{本季度SRI位置}%;background:var(--{本季度颜色});"></div>
+          <div class="threshold-label" style="left:0%;">Prev Quarter</div>
+          <div class="threshold-label" style="left:100%;">Current Quarter</div>
+          <div class="threshold-marker" style="left:{prev_quarter_sri_position}%;background:var(--{prev_quarter_color});"></div>
+          <div class="threshold-marker" style="left:{current_quarter_sri_position}%;background:var(--{current_quarter_color});"></div>
+          <div class="threshold-current" style="left:{current_quarter_sri_position}%;background:var(--{current_quarter_color});"></div>
         </div>
-        <span style="font-size:11px;font-weight:700;color:var(--text-secondary);min-width:60px;">SRI: {当前SRI读数}</span>
+        <span style="font-size:11px;font-weight:700;color:var(--text-secondary);min-width:60px;">SRI: {current_sri_reading}</span>
       </div>
     </div>
 
     <div class="card">
-      <h3>新增红色行业（本季度新进入风险得分≥2.0的行业）</h3>
+      <h3>Newly Red Industries (Industries entering risk score &ge; 2.0 this quarter)</h3>
       <table>
         <thead>
           <tr>
-            <th>行业</th>
-            <th>本季度风险得分</th>
-            <th>上季度风险得分</th>
-            <th>变化</th>
-            <th>转红原因</th>
-            <th>影响评估</th>
+            <th>Industry</th>
+            <th>Current Quarter Risk Score</th>
+            <th>Previous Quarter Risk Score</th>
+            <th>Change</th>
+            <th>Cause of Turning Red</th>
+            <th>Impact Assessment</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>{新增红色行业1名称}</td>
-            <td><span class="tag tag-red">{新增1本季度得分}</span></td>
-            <td>{新增1上季度得分}</td>
-            <td class="text-red">+{新增1变化值}</td>
-            <td>{新增1转红原因}</td>
-            <td><span class="tag tag-red">{新增1影响评估}</span></td>
+            <td>{new_red_industry_1_name}</td>
+            <td><span class="tag tag-red">{new_1_current_quarter_score}</span></td>
+            <td>{new_1_prev_quarter_score}</td>
+            <td class="text-red">+{new_1_change_value}</td>
+            <td>{new_1_cause_of_turning_red}</td>
+            <td><span class="tag tag-red">{new_1_impact_assessment}</span></td>
           </tr>
           <tr>
-            <td>{新增红色行业2名称}</td>
-            <td><span class="tag tag-red">{新增2本季度得分}</span></td>
-            <td>{新增2上季度得分}</td>
-            <td class="text-red">+{新增2变化值}</td>
-            <td>{新增2转红原因}</td>
-            <td><span class="tag tag-red">{新增2影响评估}</span></td>
+            <td>{new_red_industry_2_name}</td>
+            <td><span class="tag tag-red">{new_2_current_quarter_score}</span></td>
+            <td>{new_2_prev_quarter_score}</td>
+            <td class="text-red">+{new_2_change_value}</td>
+            <td>{new_2_cause_of_turning_red}</td>
+            <td><span class="tag tag-red">{new_2_impact_assessment}</span></td>
           </tr>
           <tr>
-            <td>{新增红色行业3名称}</td>
-            <td><span class="tag tag-red">{新增3本季度得分}</span></td>
-            <td>{新增3上季度得分}</td>
-            <td class="text-red">+{新增3变化值}</td>
-            <td>{新增3转红原因}</td>
-            <td><span class="tag tag-amber">{新增3影响评估}</span></td>
+            <td>{new_red_industry_3_name}</td>
+            <td><span class="tag tag-red">{new_3_current_quarter_score}</span></td>
+            <td>{new_3_prev_quarter_score}</td>
+            <td class="text-red">+{new_3_change_value}</td>
+            <td>{new_3_cause_of_turning_red}</td>
+            <td><span class="tag tag-amber">{new_3_impact_assessment}</span></td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>退出红色的行业（本季度风险得分降至2.0以下的行业）</h3>
+      <h3>Industries No Longer Red (Industries with risk score falling below 2.0 this quarter)</h3>
       <table>
         <thead>
           <tr>
-            <th>行业</th>
-            <th>本季度风险得分</th>
-            <th>上季度风险得分</th>
-            <th>变化</th>
-            <th>退出原因</th>
-            <th>持久性评估</th>
+            <th>Industry</th>
+            <th>Current Quarter Risk Score</th>
+            <th>Previous Quarter Risk Score</th>
+            <th>Change</th>
+            <th>Reason for Exit</th>
+            <th>Persistence Assessment</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>{退出红色行业1名称}</td>
-            <td><span class="tag tag-green">{退出1本季度得分}</span></td>
-            <td>{退出1上季度得分}</td>
-            <td class="text-green">-{退出1变化值}</td>
-            <td>{退出1退出原因}</td>
-            <td><span class="tag tag-{退出1持久标签}">{退出1持久评估}</span></td>
+            <td>{exited_red_industry_1_name}</td>
+            <td><span class="tag tag-green">{exited_1_current_score}</span></td>
+            <td>{exited_1_prev_score}</td>
+            <td class="text-green">-{exited_1_change}</td>
+            <td>{exited_1_reason}</td>
+            <td><span class="tag tag-{exited_1_persistence_tag}">{exited_1_persistence_assessment}</span></td>
           </tr>
           <tr>
-            <td>{退出红色行业2名称}</td>
-            <td><span class="tag tag-green">{退出2本季度得分}</span></td>
-            <td>{退出2上季度得分}</td>
-            <td class="text-green">-{退出2变化值}</td>
-            <td>{退出2退出原因}</td>
-            <td><span class="tag tag-{退出2持久标签}">{退出2持久评估}</span></td>
+            <td>{exited_red_industry_2_name}</td>
+            <td><span class="tag tag-green">{exited_2_current_score}</span></td>
+            <td>{exited_2_prev_score}</td>
+            <td class="text-green">-{exited_2_change}</td>
+            <td>{exited_2_reason}</td>
+            <td><span class="tag tag-{exited_2_persistence_tag}">{exited_2_persistence_assessment}</span></td>
           </tr>
           <tr>
-            <td>{退出红色行业3名称}</td>
-            <td><span class="tag tag-green">{退出3本季度得分}</span></td>
-            <td>{退出3上季度得分}</td>
-            <td class="text-green">-{退出3变化值}</td>
-            <td>{退出3退出原因}</td>
-            <td><span class="tag tag-{退出3持久标签}">{退出3持久评估}</span></td>
+            <td>{exited_red_industry_3_name}</td>
+            <td><span class="tag tag-green">{exited_3_current_score}</span></td>
+            <td>{exited_3_prev_score}</td>
+            <td class="text-green">-{exited_3_change}</td>
+            <td>{exited_3_reason}</td>
+            <td><span class="tag tag-{exited_3_persistence_tag}">{exited_3_persistence_assessment}</span></td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>季度间SRI贡献变化</h3>
+      <h3>Quarter-over-Quarter SRI Contribution Changes</h3>
       <table>
         <thead>
           <tr>
-            <th>行业</th>
-            <th>本季度贡献</th>
-            <th>上季度贡献</th>
-            <th>贡献变化</th>
-            <th>贡献变化原因</th>
+            <th>Industry</th>
+            <th>Current Quarter Contribution</th>
+            <th>Previous Quarter Contribution</th>
+            <th>Contribution Change</th>
+            <th>Reason for Change</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>{贡献变化行业1}</td>
-            <td class="text-red">{贡献变化1当前}</td>
-            <td>{贡献变化1上季度}</td>
-            <td class="text-red">{贡献变化1变化}</td>
-            <td>{贡献变化1原因}</td>
+            <td>{contribution_change_industry_1}</td>
+            <td class="text-red">{contribution_change_1_current}</td>
+            <td>{contribution_change_1_prev}</td>
+            <td class="text-red">{contribution_change_1_change}</td>
+            <td>{contribution_change_1_reason}</td>
           </tr>
           <tr>
-            <td>{贡献变化行业2}</td>
-            <td class="text-red">{贡献变化2当前}</td>
-            <td>{贡献变化2上季度}</td>
-            <td class="text-amber">{贡献变化2变化}</td>
-            <td>{贡献变化2原因}</td>
+            <td>{contribution_change_industry_2}</td>
+            <td class="text-red">{contribution_change_2_current}</td>
+            <td>{contribution_change_2_prev}</td>
+            <td class="text-amber">{contribution_change_2_change}</td>
+            <td>{contribution_change_2_reason}</td>
           </tr>
           <tr>
-            <td>{贡献变化行业3}</td>
-            <td class="text-green">{贡献变化3当前}</td>
-            <td>{贡献变化3上季度}</td>
-            <td class="text-green">{贡献变化3变化}</td>
-            <td>{贡献变化3原因}</td>
+            <td>{contribution_change_industry_3}</td>
+            <td class="text-green">{contribution_change_3_current}</td>
+            <td>{contribution_change_3_prev}</td>
+            <td class="text-green">{contribution_change_3_change}</td>
+            <td>{contribution_change_3_reason}</td>
           </tr>
           <tr>
-            <td>{贡献变化行业4}</td>
-            <td class="text-amber">{贡献变化4当前}</td>
-            <td>{贡献变化4上季度}</td>
-            <td class="text-amber">{贡献变化4变化}</td>
-            <td>{贡献变化4原因}</td>
+            <td>{contribution_change_industry_4}</td>
+            <td class="text-amber">{contribution_change_4_current}</td>
+            <td>{contribution_change_4_prev}</td>
+            <td class="text-amber">{contribution_change_4_change}</td>
+            <td>{contribution_change_4_reason}</td>
           </tr>
           <tr>
-            <td>{贡献变化行业5}</td>
-            <td class="text-green">{贡献变化5当前}</td>
-            <td>{贡献变化5上季度}</td>
-            <td class="text-green">{贡献变化5变化}</td>
-            <td>{贡献变化5原因}</td>
+            <td>{contribution_change_industry_5}</td>
+            <td class="text-green">{contribution_change_5_current}</td>
+            <td>{contribution_change_5_prev}</td>
+            <td class="text-green">{contribution_change_5_change}</td>
+            <td>{contribution_change_5_reason}</td>
           </tr>
         </tbody>
       </table>
       <div class="info-box info-amber" style="margin-top:10px;">
-        <strong>季度对比总结：</strong>{季度对比总结——SRI的季度间变化方向是判断趋势的核心依据。连续上升2期以上需关注趋势性恶化的可能性。本季度的SRI变化中，{主导变化类型}是主要动力——其中{关键行业名称}的贡献变化最为显著。如果{关键变量描述}，SRI可能在下一季度进入{下一等级名称}区间。}
+        <strong>Quarterly Comparison Summary:</strong>{quarterly_comparison_summary}
       </div>
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- SECTION 6 — 行动建议 -->
+  <!-- SECTION 6 — Action Recommendations -->
   <!-- ================================================================ -->
   <div class="section">
     <h2 class="section-title">
       <span class="signal" style="background:var(--blue);"></span>
-      六、行动建议
+      6. Action Recommendations
     </h2>
     <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
-      本文档不提供"该买什么"的投资建议，而是从风险控制角度提出：哪些集中度需要降低、哪些行业需要增加监控频率、哪些传染链需要重点关注、以及在当前温度计等级下的组合防御策略。
-      所有建议均基于当前SRI读数{当前SRI读数}（{温度计等级}）和红色行业分布。
+      This document does not provide "what to buy" investment advice, but rather proposes from a risk control perspective: which concentrations need to be reduced, which industries require increased monitoring frequency, which contagion chains need focused attention, and the portfolio defense strategy under the current thermometer level.
+      All recommendations are based on the current SRI reading of {current_sri_reading} ({thermometer_level}) and the distribution of red industries.
     </p>
 
     <div class="action-grid">
       <div class="action-grid-item">
         <span class="priority-tag p0">P0</span>
-        <h5>{行动建议1标题}</h5>
+        <h5>{action_1_title}</h5>
         <p class="ag-desc">
-          {行动建议1详细描述——明确说明需要降低的集中度目标、当前敞口水平、目标敞口水平、执行节奏和预期效果。}
+          {action_1_detail}
         </p>
       </div>
       <div class="action-grid-item">
         <span class="priority-tag p0">P0</span>
-        <h5>{行动建议2标题}</h5>
+        <h5>{action_2_title}</h5>
         <p class="ag-desc">
-          {行动建议2详细描述——明确说明需要增加监控的行业/区域/指标、监控频率从多少提升至多少、以及触发升级行动的关键阈值。}
+          {action_2_detail}
         </p>
       </div>
       <div class="action-grid-item">
         <span class="priority-tag p1">P1</span>
-        <h5>{行动建议3标题}</h5>
+        <h5>{action_3_title}</h5>
         <p class="ag-desc">
-          {行动建议3详细描述——明确说明需要重点关注的传染链、该传染链在当前温度下的升级风险、以及传染矩阵升级因子协同效应的监控方案。}
+          {action_3_detail}
         </p>
       </div>
       <div class="action-grid-item">
         <span class="priority-tag p1">P1</span>
-        <h5>{行动建议4标题}</h5>
+        <h5>{action_4_title}</h5>
         <p class="ag-desc">
-          {行动建议4详细描述——明确说明在温度计当前等级下的组合防御策略、久期管理建议、现金储备建议以及压力测试触发条件。}
+          {action_4_detail}
         </p>
       </div>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>行动建议汇总表</h3>
+      <h3>Action Recommendation Summary</h3>
       <table>
         <thead>
           <tr>
-            <th>优先级</th>
-            <th>行动类别</th>
-            <th>具体行动</th>
-            <th>目标对象</th>
-            <th>执行时限</th>
-            <th>预期效果</th>
+            <th>Priority</th>
+            <th>Action Category</th>
+            <th>Specific Action</th>
+            <th>Target</th>
+            <th>Timeline</th>
+            <th>Expected Effect</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td><span class="priority-tag p0">P0</span></td>
-            <td>{行动1类别}</td>
-            <td>{行动1具体行动}</td>
-            <td>{行动1目标对象}</td>
-            <td>{行动1时限}</td>
-            <td>{行动1效果}</td>
+            <td>{action_1_category}</td>
+            <td>{action_1_specific}</td>
+            <td>{action_1_target}</td>
+            <td>{action_1_timeline}</td>
+            <td>{action_1_effect}</td>
           </tr>
           <tr>
             <td><span class="priority-tag p0">P0</span></td>
-            <td>{行动2类别}</td>
-            <td>{行动2具体行动}</td>
-            <td>{行动2目标对象}</td>
-            <td>{行动2时限}</td>
-            <td>{行动2效果}</td>
+            <td>{action_2_category}</td>
+            <td>{action_2_specific}</td>
+            <td>{action_2_target}</td>
+            <td>{action_2_timeline}</td>
+            <td>{action_2_effect}</td>
           </tr>
           <tr>
             <td><span class="priority-tag p1">P1</span></td>
-            <td>{行动3类别}</td>
-            <td>{行动3具体行动}</td>
-            <td>{行动3目标对象}</td>
-            <td>{行动3时限}</td>
-            <td>{行动3效果}</td>
+            <td>{action_3_category}</td>
+            <td>{action_3_specific}</td>
+            <td>{action_3_target}</td>
+            <td>{action_3_timeline}</td>
+            <td>{action_3_effect}</td>
           </tr>
           <tr>
             <td><span class="priority-tag p1">P1</span></td>
-            <td>{行动4类别}</td>
-            <td>{行动4具体行动}</td>
-            <td>{行动4目标对象}</td>
-            <td>{行动4时限}</td>
-            <td>{行动4效果}</td>
+            <td>{action_4_category}</td>
+            <td>{action_4_specific}</td>
+            <td>{action_4_target}</td>
+            <td>{action_4_timeline}</td>
+            <td>{action_4_effect}</td>
           </tr>
           <tr>
             <td><span class="priority-tag p2">P2</span></td>
-            <td>{行动5类别}</td>
-            <td>{行动5具体行动}</td>
-            <td>{行动5目标对象}</td>
-            <td>{行动5时限}</td>
-            <td>{行动5效果}</td>
+            <td>{action_5_category}</td>
+            <td>{action_5_specific}</td>
+            <td>{action_5_target}</td>
+            <td>{action_5_timeline}</td>
+            <td>{action_5_effect}</td>
           </tr>
           <tr>
             <td><span class="priority-tag p2">P2</span></td>
-            <td>{行动6类别}</td>
-            <td>{行动6具体行动}</td>
-            <td>{行动6目标对象}</td>
-            <td>{行动6时限}</td>
-            <td>{行动6效果}</td>
+            <td>{action_6_category}</td>
+            <td>{action_6_specific}</td>
+            <td>{action_6_target}</td>
+            <td>{action_6_timeline}</td>
+            <td>{action_6_effect}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>温度计等级升级预案</h3>
+      <h3>Thermometer Upgrade Contingency</h3>
       <table>
         <thead>
           <tr>
-            <th>升级路径</th>
-            <th>触发条件</th>
-            <th>概率评估</th>
-            <th>需要提前准备的行动</th>
-            <th>准备时限</th>
+            <th>Upgrade Path</th>
+            <th>Trigger Condition</th>
+            <th>Probability Assessment</th>
+            <th>Preparatory Actions Required</th>
+            <th>Preparation Timeline</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>{温度计等级} → 🟠 警惕</td>
-            <td>{升级警惕触发条件}</td>
-            <td><span class="tag tag-{升级警惕概率标签}">{升级警惕概率}</span></td>
-            <td>{升级警惕准备行动}</td>
-            <td>{升级警惕时限}</td>
+            <td>{thermometer_level} &rarr; 🟠 Caution</td>
+            <td>{caution_upgrade_trigger}</td>
+            <td><span class="tag tag-{caution_upgrade_probability_tag}">{caution_upgrade_probability}</span></td>
+            <td>{caution_upgrade_preparation}</td>
+            <td>{caution_upgrade_timeline}</td>
           </tr>
           <tr>
-            <td>🟡 关注 → 🔴 危险</td>
-            <td>{升级危险触发条件}</td>
-            <td><span class="tag tag-{升级危险概率标签}">{升级危险概率}</span></td>
-            <td>{升级危险准备行动}</td>
-            <td>{升级危险时限}</td>
+            <td>🟡 Watch &rarr; 🔴 Danger</td>
+            <td>{danger_upgrade_trigger}</td>
+            <td><span class="tag tag-{danger_upgrade_probability_tag}">{danger_upgrade_probability}</span></td>
+            <td>{danger_upgrade_preparation}</td>
+            <td>{danger_upgrade_timeline}</td>
           </tr>
           <tr>
-            <td>🟡 关注 → 🟢 正常</td>
-            <td>{降级触发条件}</td>
-            <td><span class="tag tag-{降级概率标签}">{降级概率}</span></td>
-            <td>{降级准备行动}</td>
-            <td>{降级时限}</td>
+            <td>🟡 Watch &rarr; 🟢 Normal</td>
+            <td>{downgrade_trigger}</td>
+            <td><span class="tag tag-{downgrade_probability_tag}">{downgrade_probability}</span></td>
+            <td>{downgrade_preparation}</td>
+            <td>{downgrade_timeline}</td>
           </tr>
         </tbody>
       </table>
       <div class="info-box info-blue" style="margin-top:10px;">
-        <strong>行动建议核心原则：</strong>{行动建议核心原则——在当前SRI和温度计等级下，行动建议的核心原则是"预防性管理"而非"危机应对"。温度计为{温度计等级}意味着系统性风险存在但未到紧急程度，应该利用这个窗口期进行预防性调整，而非等到升温至🟠警惕或🔴危险才开始行动。}
+        <strong>Core Principles for Action Recommendations:</strong>{action_core_principles}
       </div>
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- SECTION 7 — 温度计与传染矩阵升级因子联动 -->
+  <!-- SECTION 7 — Thermometer and Contagion Matrix Escalation Factor Linkage -->
   <!-- ================================================================ -->
   <div class="section">
     <h2 class="section-title">
       <span class="signal" style="background:var(--purple);"></span>
-      七、温度计与传染矩阵升级因子联动
+      7. Thermometer and Contagion Matrix Escalation Factor Linkage
     </h2>
     <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
-      温度计等级与传染矩阵升级因子（恐慌情绪、监管政策真空、高杠杆环境、信息不对称、时间节点效应）的联动分析。
-      当温度计进入🟠或🔴时，系统性风险本身将充当全域升级因子，使传染矩阵全部链路强度+1~+2。
+      Linkage analysis between thermometer levels and contagion matrix escalation factors (panic sentiment, regulatory policy vacuum, high leverage environment, information asymmetry, timing effect).
+      When the thermometer enters 🟠 or 🔴, systemic risk itself acts as a global escalation factor, increasing all contagion matrix link strengths by +1 to +2.
     </p>
 
     <div class="card">
-      <h3>升级因子激活状态</h3>
+      <h3>Escalation Factor Activation Status</h3>
       <table>
         <thead>
           <tr>
-            <th>升级因子</th>
-            <th>当前状态</th>
-            <th>激活程度</th>
-            <th>与SRI联动效应</th>
-            <th>传染矩阵影响</th>
+            <th>Escalation Factor</th>
+            <th>Current Status</th>
+            <th>Activation Level</th>
+            <th>SRI Linkage Effect</th>
+            <th>Contagion Matrix Impact</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>市场恐慌情绪</td>
-            <td>{恐慌情绪状态}</td>
-            <td><span class="tag tag-{恐慌等级标签}">{恐慌等级}</span></td>
-            <td>{恐慌SRI联动}</td>
-            <td>{恐慌传染影响}</td>
+            <td>Market Panic Sentiment</td>
+            <td>{panic_sentiment_status}</td>
+            <td><span class="tag tag-{panic_level_tag}">{panic_level}</span></td>
+            <td>{panic_sri_linkage}</td>
+            <td>{panic_contagion_impact}</td>
           </tr>
           <tr>
-            <td>监管政策真空或滞后</td>
-            <td>{政策状态}</td>
-            <td><span class="tag tag-{政策等级标签}">{政策等级}</span></td>
-            <td>{政策SRI联动}</td>
-            <td>{政策传染影响}</td>
+            <td>Regulatory Policy Vacuum or Lag</td>
+            <td>{policy_status}</td>
+            <td><span class="tag tag-{policy_level_tag}">{policy_level}</span></td>
+            <td>{policy_sri_linkage}</td>
+            <td>{policy_contagion_impact}</td>
           </tr>
           <tr>
-            <td>高杠杆环境</td>
-            <td>{高杠杆状态}</td>
-            <td><span class="tag tag-{高杠杆等级标签}">{高杠杆等级}</span></td>
-            <td>{高杠杆SRI联动}</td>
-            <td>{高杠杆传染影响}</td>
+            <td>High Leverage Environment</td>
+            <td>{leverage_status}</td>
+            <td><span class="tag tag-{leverage_level_tag}">{leverage_level}</span></td>
+            <td>{leverage_sri_linkage}</td>
+            <td>{leverage_contagion_impact}</td>
           </tr>
           <tr>
-            <td>信息不对称</td>
-            <td>{信息不对称状态}</td>
-            <td><span class="tag tag-{信息不对称等级标签}">{信息不对称等级}</span></td>
-            <td>{信息不对称SRI联动}</td>
-            <td>{信息不对称传染影响}</td>
+            <td>Information Asymmetry</td>
+            <td>{information_asymmetry_status}</td>
+            <td><span class="tag tag-{information_asymmetry_level_tag}">{information_asymmetry_level}</span></td>
+            <td>{information_asymmetry_sri_linkage}</td>
+            <td>{information_asymmetry_contagion_impact}</td>
           </tr>
           <tr>
-            <td>时间节点效应</td>
-            <td>{时间节点状态}</td>
-            <td><span class="tag tag-{时间节点等级标签}">{时间节点等级}</span></td>
-            <td>{时间节点SRI联动}</td>
-            <td>{时间节点传染影响}</td>
+            <td>Timing Effect</td>
+            <td>{timing_status}</td>
+            <td><span class="tag tag-{timing_level_tag}">{timing_level}</span></td>
+            <td>{timing_sri_linkage}</td>
+            <td>{timing_contagion_impact}</td>
           </tr>
         </tbody>
       </table>
       <div class="info-box info-purple" style="margin-top:10px;">
-        <strong>升级因子协同效应评估：</strong>{升级因子协同效应评估——在当前温度计{温度计等级}下，{已触发数}个升级因子处于激活状态。如果温度计升级至🟠警惕，将自动触发升级因子协同效应中的"两个及以上"规则，使得传染矩阵全部链路强度+1。当前需特别关注{最需关注的升级因子名称}的演化方向，该因子可能在{触发条件描述}时被激活。}
+        <strong>Escalation Factor Synergy Assessment:</strong>{escalation_synergy_assessment}
       </div>
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- SECTION 8 — 历史可比情景 -->
+  <!-- SECTION 8 — Historical Comparable Scenarios -->
   <!-- ================================================================ -->
   <div class="section">
     <h2 class="section-title">
       <span class="signal" style="background:var(--green);"></span>
-      八、历史可比情景
+      8. Historical Comparable Scenarios
     </h2>
     <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
-      将当前SRI读数与历史关键时点对比，评估当前系统性风险在历史谱系中的位置。
-      引用系统性预警框架（systemic-warning-framework.md）的历史回测数据。
+      Comparing the current SRI reading with key historical points to assess where the current systemic risk sits on the historical spectrum.
+      References historical backtest data from the systemic warning framework (systemic-warning-framework.md).
     </p>
 
     <div class="card">
-      <h3>SRI历史对比表</h3>
+      <h3>SRI Historical Comparison Table</h3>
       <table>
         <thead>
           <tr>
-            <th>历史情景</th>
-            <th>时间窗口</th>
-            <th>SRI估算</th>
-            <th>温度计</th>
-            <th>与当前对比</th>
+            <th>Historical Scenario</th>
+            <th>Time Window</th>
+            <th>SRI Estimate</th>
+            <th>Thermometer</th>
+            <th>Comparison to Current</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>永煤违约前</td>
-            <td>2020年8月</td>
+            <td>Before Yongmei Default</td>
+            <td>August 2020</td>
             <td class="text-amber">0.58</td>
-            <td><span class="tag tag-amber">🟡关注</span></td>
-            <td>{与永煤对比}</td>
+            <td><span class="tag tag-amber">🟡 Watch</span></td>
+            <td>{comparison_yongmei}</td>
           </tr>
           <tr>
-            <td>地产危机前</td>
-            <td>2021年3月</td>
+            <td>Before Property Crisis</td>
+            <td>March 2021</td>
             <td class="text-amber">0.97</td>
-            <td><span class="tag tag-amber">🟡关注(上沿)</span></td>
-            <td>{与地产危机对比}</td>
+            <td><span class="tag tag-amber">🟡 Watch (Upper Edge)</span></td>
+            <td>{comparison_realestate}</td>
           </tr>
           <tr>
-            <td>疫情冲击</td>
-            <td>2020年2月</td>
+            <td>COVID-19 Impact</td>
+            <td>February 2020</td>
             <td class="text-red">1.83</td>
-            <td><span class="tag tag-red">🔴危险</span></td>
-            <td>{与疫情对比}</td>
+            <td><span class="tag tag-red">🔴 Danger</span></td>
+            <td>{comparison_covid}</td>
           </tr>
           <tr>
-            <td><strong>当前时点</strong></td>
-            <td><strong>{当前时点}</strong></td>
-            <td class="text-red"><strong>{当前SRI读数}</strong></td>
-            <td><span class="tag tag-{当前温度标签}"><strong>{温度计等级}</strong></span></td>
-            <td><strong>{当前自评}</strong></td>
+            <td><strong>Current Period</strong></td>
+            <td><strong>{current_time}</strong></td>
+            <td class="text-red"><strong>{current_sri_reading}</strong></td>
+            <td><span class="tag tag-{current_temp_tag}"><strong>{thermometer_level}</strong></span></td>
+            <td><strong>{current_self_assessment}</strong></td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>历史启示</h3>
+      <h3>Historical Lessons</h3>
       <div class="comparison-grid">
         <div class="comparison-item" style="border-left:3px solid var(--amber);">
-          <h5>永煤违约启示</h5>
+          <h5>Lessons from Yongmei Default</h5>
           <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
-            <strong>SRI在先：</strong>永煤违约前3个月SRI已进入🟡关注区间（0.58），与当前读数接近。<br>
-            <strong>关键区别：</strong>当时风险集中在煤炭/周期行业，当前集中在城投债+光伏+新能源车。<br>
-            <strong>当前启示：</strong>{永煤启示描述}
+            <strong>SRI Leading Indicator:</strong> 3 months before Yongmei's default, the SRI had already entered the 🟡 Watch range (0.58), close to the current reading.<br>
+            <strong>Key Difference:</strong> At that time, risk was concentrated in coal/cyclical industries; currently it is concentrated in LGFV bonds + photovoltaic + new energy vehicles.<br>
+            <strong>Current Takeaway:</strong>{yongmei_lesson}
           </p>
         </div>
         <div class="comparison-item" style="border-left:3px solid var(--red);">
-          <h5>地产危机启示</h5>
+          <h5>Lessons from the Property Crisis</h5>
           <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
-            <strong>SRI在先：</strong>地产危机爆发前6个月SRI为0.97，接近🟠警惕阈值。<br>
-            <strong>关键区别：</strong>当时有超级传染者（房地产通过城投间接）出现信号，当前超级传染者尚平稳。<br>
-            <strong>当前启示：</strong>{地产危机启示描述}
+            <strong>SRI Leading Indicator:</strong> 6 months before the property crisis erupted, the SRI was 0.97, close to the 🟠 Caution threshold.<br>
+            <strong>Key Difference:</strong> At that time, a super-spreader signal (real estate through LGFV indirect channels) had appeared; currently the super-spreader is still stable.<br>
+            <strong>Current Takeaway:</strong>{realestate_lesson}
           </p>
         </div>
       </div>
       <div class="info-box info-green" style="margin-top:10px;">
-        <strong>历史对比核心结论：</strong>{历史对比结论——当前SRI读数{当前SRI读数}在历史谱系中处于{历史定位级别}，类似于{可比历史时期}的状态。主要区别在于{关键区别描述}。如果{恶化条件}则可能复制{历史情景}的演化路径，需要注意的关键预警信号是{关键信号描述}。}
+        <strong>Core Conclusion from Historical Comparison:</strong>{historical_comparison_conclusion}
       </div>
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- SECTION 9 — 完备性报告 -->
+  <!-- SECTION 9 — Completeness Report -->
   <!-- ================================================================ -->
   <div class="section">
     <h2 class="section-title">
       <span class="signal" style="background:var(--green);"></span>
-      九、完备性报告
+      9. Completeness Report
     </h2>
     <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
-      本报告的完备性检查——涵盖系统性风险警报的各个维度、数据来源、方法论局限性和后续更新计划。
+      Completeness check for this report -- covering various dimensions of systemic risk alerting, data sources, methodological limitations, and subsequent update plans.
     </p>
 
     <div class="card">
-      <h3>9.1 覆盖维度检查</h3>
+      <h3>9.1 Coverage Dimension Check</h3>
       <table>
         <thead>
           <tr>
-            <th>分析维度</th>
-            <th>覆盖状态</th>
-            <th>数据来源</th>
-            <th>置信度</th>
-            <th>备注</th>
+            <th>Analysis Dimension</th>
+            <th>Coverage Status</th>
+            <th>Data Source</th>
+            <th>Confidence</th>
+            <th>Notes</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>SRI指数计算</td>
-            <td><span class="tag tag-green">已覆盖</span></td>
-            <td>{SRI数据来源}</td>
-            <td><span class="text-green">高</span></td>
-            <td>{SRI备注}</td>
+            <td>SRI Index Calculation</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{sri_data_source}</td>
+            <td><span class="text-green">High</span></td>
+            <td>{sri_note}</td>
           </tr>
           <tr>
-            <td>温度计可视化</td>
-            <td><span class="tag tag-green">已覆盖</span></td>
-            <td>{温度计数据来源}</td>
-            <td><span class="text-green">高</span></td>
-            <td>{温度计备注}</td>
+            <td>Thermometer Visualization</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{thermometer_data_source}</td>
+            <td><span class="text-green">High</span></td>
+            <td>{thermometer_note}</td>
           </tr>
           <tr>
-            <td>红色行业清单</td>
-            <td><span class="tag tag-green">已覆盖</span></td>
-            <td>{红色行业数据来源}</td>
-            <td><span class="text-green">高</span></td>
-            <td>{红色行业备注}</td>
+            <td>Red Industry List</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{red_industry_data_source}</td>
+            <td><span class="text-green">High</span></td>
+            <td>{red_industry_note}</td>
           </tr>
           <tr>
-            <td>传染风险TOP5</td>
-            <td><span class="tag tag-green">已覆盖</span></td>
-            <td>{传染风险数据来源}</td>
-            <td><span class="text-amber">中高</span></td>
-            <td>{传染风险备注}</td>
+            <td>Top 5 Contagion Risks</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{contagion_risk_data_source}</td>
+            <td><span class="text-amber">Medium-High</span></td>
+            <td>{contagion_risk_note}</td>
           </tr>
           <tr>
-            <td>集中度警示</td>
-            <td><span class="tag tag-green">已覆盖</span></td>
-            <td>{集中度数据来源}</td>
-            <td><span class="text-amber">中高</span></td>
-            <td>{集中度备注}</td>
+            <td>Concentration Warning</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{concentration_data_source}</td>
+            <td><span class="text-amber">Medium-High</span></td>
+            <td>{concentration_note}</td>
           </tr>
           <tr>
-            <td>与前季度对比</td>
-            <td><span class="tag tag-green">已覆盖</span></td>
-            <td>{季度对比数据来源}</td>
-            <td><span class="text-green">高</span></td>
-            <td>{季度对比备注}</td>
+            <td>Quarter-over-Quarter Comparison</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{quarterly_comparison_data_source}</td>
+            <td><span class="text-green">High</span></td>
+            <td>{quarterly_comparison_note}</td>
           </tr>
           <tr>
-            <td>行动建议</td>
-            <td><span class="tag tag-green">已覆盖</span></td>
-            <td>{行动建议数据来源}</td>
-            <td><span class="text-amber">中</span></td>
-            <td>{行动建议备注}</td>
+            <td>Action Recommendations</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{action_recommendation_data_source}</td>
+            <td><span class="text-amber">Medium</span></td>
+            <td>{action_recommendation_note}</td>
           </tr>
           <tr>
-            <td>升级因子联动</td>
-            <td><span class="tag tag-green">已覆盖</span></td>
-            <td>{升级因子数据来源}</td>
-            <td><span class="text-amber">中高</span></td>
-            <td>{升级因子备注}</td>
+            <td>Escalation Factor Linkage</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{escalation_factor_data_source}</td>
+            <td><span class="text-amber">Medium-High</span></td>
+            <td>{escalation_factor_note}</td>
           </tr>
           <tr>
-            <td>历史可比情景</td>
-            <td><span class="tag tag-green">已覆盖</span></td>
-            <td>{历史数据来源}</td>
-            <td><span class="text-green">高</span></td>
-            <td>{历史备注}</td>
+            <td>Historical Comparable Scenarios</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{historical_data_source}</td>
+            <td><span class="text-green">High</span></td>
+            <td>{historical_note}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>9.2 数据质量与局限性</h3>
+      <h3>9.2 Data Quality and Limitations</h3>
       <table>
         <thead>
           <tr>
-            <th>数据类别</th>
-            <th>数据质量</th>
-            <th>完整度</th>
-            <th>时效性</th>
-            <th>局限性说明</th>
+            <th>Data Category</th>
+            <th>Data Quality</th>
+            <th>Completeness</th>
+            <th>Timeliness</th>
+            <th>Limitation Notes</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>轨道A行业评分</td>
-            <td><span class="tag tag-green">良好</span></td>
+            <td>Track-A Industry Rating</td>
+            <td><span class="tag tag-green">Good</span></td>
             <td>95%</td>
-            <td>T+7天</td>
-            <td>{轨道A局限性}</td>
+            <td>T+7 days</td>
+            <td>{track_a_limitation}</td>
           </tr>
           <tr>
-            <td>轨道B市场信号</td>
-            <td><span class="tag tag-green">良好</span></td>
+            <td>Track-B Market Signal</td>
+            <td><span class="tag tag-green">Good</span></td>
             <td>95%</td>
-            <td>T+1天</td>
-            <td>{轨道B局限性}</td>
+            <td>T+1 day</td>
+            <td>{track_b_limitation}</td>
           </tr>
           <tr>
-            <td>传染矩阵强度</td>
-            <td><span class="tag tag-amber">中等</span></td>
+            <td>Contagion Matrix Strength</td>
+            <td><span class="tag tag-amber">Moderate</span></td>
             <td>80%</td>
-            <td>T+30天</td>
-            <td>{传染矩阵局限性}</td>
+            <td>T+30 days</td>
+            <td>{contagion_matrix_limitation}</td>
           </tr>
           <tr>
-            <td>行业权重数据</td>
-            <td><span class="tag tag-amber">中等</span></td>
+            <td>Industry Weight Data</td>
+            <td><span class="tag tag-amber">Moderate</span></td>
             <td>85%</td>
-            <td>T+30天</td>
-            <td>{权重局限性}</td>
+            <td>T+30 days</td>
+            <td>{weight_limitation}</td>
           </tr>
           <tr>
-            <td>信用债存量数据</td>
-            <td><span class="tag tag-amber">中等</span></td>
+            <td>Credit Bond Outstanding Data</td>
+            <td><span class="tag tag-amber">Moderate</span></td>
             <td>75%</td>
-            <td>T+90天</td>
-            <td>{存量局限性}</td>
+            <td>T+90 days</td>
+            <td>{outstanding_data_limitation}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>9.3 方法局限性声明</h3>
+      <h3>9.3 Methodological Limitation Statement</h3>
       <div class="card card-amber">
-        <h4>局限一：信号质量依赖</h4>
+        <h4>Limitation 1: Signal Quality Dependency</h4>
         <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
-          SRI的计算质量取决于输入的轨道A评分和轨道B信号的准确性。如果这些基础信号本身有偏差（如评级虚高），SRI也会失真。引用引擎的"伪高评级"识别机制作为SRI质量的辅助验证。
+          The calculation quality of the SRI depends on the accuracy of the input Track-A ratings and Track-B signals. If these underlying signals themselves have biases (e.g., inflated ratings), the SRI will also be distorted. References the engine's "pseudo-high rating" identification mechanism as auxiliary verification of SRI quality.
         </p>
       </div>
       <div class="card card-amber" style="margin-top:10px;">
-        <h4>局限二：滞后于外生冲击</h4>
+        <h4>Limitation 2: Lag Behind Exogenous Shocks</h4>
         <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
-          SRI框架基于行业基本面信号，无法提前预警外生的、非信用的冲击（如疫情、自然灾害、地缘冲突）。对于已知的外部风险（如贸易摩擦、监管政策变化），可在展望评估中提前反映，部分缓解滞后性。
+          The SRI framework is based on industry fundamental signals and cannot provide early warning for exogenous, non-credit shocks (e.g., pandemics, natural disasters, geopolitical conflicts). For known external risks (e.g., trade frictions, regulatory policy changes), these can be reflected in advance through the outlook assessment, partially mitigating the lag.
         </p>
       </div>
       <div class="card card-amber" style="margin-top:10px;">
-        <h4>局限三：行业覆盖不完整</h4>
+        <h4>Limitation 3: Incomplete Industry Coverage</h4>
         <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
-          框架仅覆盖13个行业，房地产、建筑、煤炭等信用债重要行业不在直接覆盖范围内，通过间接映射存在信息损失。通过城投债（土地财政映射）、交通运输（建筑供应链映射）等关联行业的信号间接捕获。
+          The framework only covers 13 industries. Key credit-bond industries such as real estate, construction, and coal are not directly covered and are captured indirectly through related industries (e.g., LGFV bonds for land finance mapping, transportation for construction supply chain mapping), which entails information loss.
         </p>
       </div>
       <div class="card card-amber" style="margin-top:10px;">
-        <h4>局限四：参数主观性</h4>
+        <h4>Limitation 4: Parameter Subjectivity</h4>
         <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
-          行业风险得分的阈值（3.0/5.0/6.0）、惩罚因子（0.5分）、温度计阈值（0.5/1.0/1.8）均基于主观判断和历史校准，非统计优化。提供悲观/基准/乐观三套参数版本，用户可根据风险偏好选择，年度回测校准参数。
+          The industry risk score thresholds (3.0/5.0/6.0), penalty factors (0.5 points), and thermometer thresholds (0.5/1.0/1.8) are all based on subjective judgment and historical calibration, not statistical optimization. Three parameter versions (pessimistic/baseline/optimistic) are available for users to choose based on risk appetite, with annual backtesting for parameter calibration.
         </p>
       </div>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>9.4 完整度评分</h3>
-      <!-- BEFORE outputting any rating in this template, confirm that all dimensions used meet the density rules in mosaic-engine.md §4. If not, output '信息不足无法评估' instead. -->
+      <h3>9.4 Completeness Score</h3>
+      <!-- BEFORE outputting any rating in this template, confirm that all dimensions used meet the density rules in mosaic-engine.md §4. If not, output 'Insufficient information, cannot assess' instead. -->
       <table>
         <thead>
           <tr>
-            <th>评估维度</th>
-            <th>评分</th>
-            <th>完整度百分比</th>
-            <th>待改进项</th>
+            <th>Assessment Dimension</th>
+            <th>Rating</th>
+            <th>Completeness Percentage</th>
+            <th>Items to Improve</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>SRI计算覆盖</td>
-            <td><span class="tag tag-green">{SRI评分}</span></td>
+            <td>SRI Calculation Coverage</td>
+            <td><span class="tag tag-green">{sri_rating}</span></td>
             <td>
               <div class="completeness-bar">
-                <div class="completeness-fill" style="width:{SRI百分比}%;background:var(--green);">{SRI百分比}%</div>
+                <div class="completeness-fill" style="width:{sri_pct}%;background:var(--green);">{sri_pct}%</div>
               </div>
             </td>
-            <td>{SRI待改进}</td>
+            <td>{sri_improvement}</td>
           </tr>
           <tr>
-            <td>红色行业分析深度</td>
-            <td><span class="tag tag-green">{红色行业评分}</span></td>
+            <td>Red Industry Analysis Depth</td>
+            <td><span class="tag tag-green">{red_industry_rating}</span></td>
             <td>
               <div class="completeness-bar">
-                <div class="completeness-fill" style="width:{红色行业百分比}%;background:var(--green);">{红色行业百分比}%</div>
+                <div class="completeness-fill" style="width:{red_industry_pct}%;background:var(--green);">{red_industry_pct}%</div>
               </div>
             </td>
-            <td>{红色行业待改进}</td>
+            <td>{red_industry_improvement}</td>
           </tr>
           <tr>
-            <td>传染链覆盖度</td>
-            <td><span class="tag tag-amber">{传染链评分}</span></td>
+            <td>Contagion Chain Coverage</td>
+            <td><span class="tag tag-amber">{contagion_chain_rating}</span></td>
             <td>
               <div class="completeness-bar">
-                <div class="completeness-fill" style="width:{传染链百分比}%;background:var(--amber);">{传染链百分比}%</div>
+                <div class="completeness-fill" style="width:{contagion_chain_pct}%;background:var(--amber);">{contagion_chain_pct}%</div>
               </div>
             </td>
-            <td>{传染链待改进}</td>
+            <td>{contagion_chain_improvement}</td>
           </tr>
           <tr>
-            <td>集中度警示深度</td>
-            <td><span class="tag tag-amber">{集中度警示评分}</span></td>
+            <td>Concentration Warning Depth</td>
+            <td><span class="tag tag-amber">{concentration_warning_rating}</span></td>
             <td>
               <div class="completeness-bar">
-                <div class="completeness-fill" style="width:{集中度警示百分比}%;background:var(--amber);">{集中度警示百分比}%</div>
+                <div class="completeness-fill" style="width:{concentration_warning_pct}%;background:var(--amber);">{concentration_warning_pct}%</div>
               </div>
             </td>
-            <td>{集中度警示待改进}</td>
+            <td>{concentration_warning_improvement}</td>
           </tr>
           <tr>
-            <td>季度对比精度</td>
-            <td><span class="tag tag-green">{季度对比评分}</span></td>
+            <td>Quarterly Comparison Precision</td>
+            <td><span class="tag tag-green">{quarterly_comparison_rating}</span></td>
             <td>
               <div class="completeness-bar">
-                <div class="completeness-fill" style="width:{季度对比百分比}%;background:var(--green);">{季度对比百分比}%</div>
+                <div class="completeness-fill" style="width:{quarterly_comparison_pct}%;background:var(--green);">{quarterly_comparison_pct}%</div>
               </div>
             </td>
-            <td>{季度对比待改进}</td>
+            <td>{quarterly_comparison_improvement}</td>
           </tr>
           <tr>
-            <td>行动建议可操作性</td>
-            <td><span class="tag tag-amber">{行动建议评分}</span></td>
+            <td>Action Recommendation Operability</td>
+            <td><span class="tag tag-amber">{action_recommendation_rating}</span></td>
             <td>
               <div class="completeness-bar">
-                <div class="completeness-fill" style="width:{行动建议百分比}%;background:var(--amber);">{行动建议百分比}%</div>
+                <div class="completeness-fill" style="width:{action_recommendation_pct}%;background:var(--amber);">{action_recommendation_pct}%</div>
               </div>
             </td>
-            <td>{行动建议待改进}</td>
+            <td>{action_recommendation_improvement}</td>
           </tr>
           <tr>
-            <td>升级因子联动深度</td>
-            <td><span class="tag tag-amber">{升级因子评分}</span></td>
+            <td>Escalation Factor Linkage Depth</td>
+            <td><span class="tag tag-amber">{escalation_factor_rating}</span></td>
             <td>
               <div class="completeness-bar">
-                <div class="completeness-fill" style="width:{升级因子百分比}%;background:var(--amber);">{升级因子百分比}%</div>
+                <div class="completeness-fill" style="width:{escalation_factor_pct}%;background:var(--amber);">{escalation_factor_pct}%</div>
               </div>
             </td>
-            <td>{升级因子待改进}</td>
+            <td>{escalation_factor_improvement}</td>
           </tr>
           <tr>
-            <td>历史对比充分性</td>
-            <td><span class="tag tag-green">{历史评分}</span></td>
+            <td>Historical Comparison Adequacy</td>
+            <td><span class="tag tag-green">{historical_rating}</span></td>
             <td>
               <div class="completeness-bar">
-                <div class="completeness-fill" style="width:{历史百分比}%;background:var(--green);">{历史百分比}%</div>
+                <div class="completeness-fill" style="width:{historical_pct}%;background:var(--green);">{historical_pct}%</div>
               </div>
             </td>
-            <td>{历史待改进}</td>
+            <td>{historical_improvement}</td>
           </tr>
           <tr>
-            <td><strong>综合完整度</strong></td>
-            <td><span class="tag tag-amber">{综合评分}</span></td>
+            <td><strong>Overall Completeness</strong></td>
+            <td><span class="tag tag-amber">{overall_rating}</span></td>
             <td>
               <div class="completeness-bar" style="height:24px;">
-                <div class="completeness-fill" style="width:{综合百分比}%;background:var(--blue);font-size:12px;line-height:24px;">{综合百分比}%</div>
+                <div class="completeness-fill" style="width:{overall_pct}%;background:var(--blue);font-size:12px;line-height:24px;">{overall_pct}%</div>
               </div>
             </td>
-            <td>{综合待改进项}</td>
+            <td>{overall_improvement_items}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>9.5 更新计划</h3>
+      <h3>9.5 Update Plan</h3>
       <table>
         <thead>
           <tr>
-            <th>更新内容</th>
-            <th>预计更新时间</th>
-            <th>触发条件</th>
-            <th>负责方</th>
+            <th>Update Content</th>
+            <th>Expected Update Time</th>
+            <th>Trigger Condition</th>
+            <th>Responsible Party</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>{更新内容1}</td>
-            <td>{预计更新时间1}</td>
-            <td>{触发条件1}</td>
-            <td>{负责方1}</td>
+            <td>{update_content_1}</td>
+            <td>{expected_update_time_1}</td>
+            <td>{trigger_condition_1}</td>
+            <td>{responsible_party_1}</td>
           </tr>
           <tr>
-            <td>{更新内容2}</td>
-            <td>{预计更新时间2}</td>
-            <td>{触发条件2}</td>
-            <td>{负责方2}</td>
+            <td>{update_content_2}</td>
+            <td>{expected_update_time_2}</td>
+            <td>{trigger_condition_2}</td>
+            <td>{responsible_party_2}</td>
           </tr>
           <tr>
-            <td>{更新内容3}</td>
-            <td>{预计更新时间3}</td>
-            <td>{触发条件3}</td>
-            <td>{负责方3}</td>
+            <td>{update_content_3}</td>
+            <td>{expected_update_time_3}</td>
+            <td>{trigger_condition_3}</td>
+            <td>{responsible_party_3}</td>
           </tr>
           <tr>
-            <td>{更新内容4}</td>
-            <td>{预计更新时间4}</td>
-            <td>{触发条件4}</td>
-            <td>{负责方4}</td>
+            <td>{update_content_4}</td>
+            <td>{expected_update_time_4}</td>
+            <td>{trigger_condition_4}</td>
+            <td>{responsible_party_4}</td>
           </tr>
           <tr>
-            <td>{更新内容5}</td>
-            <td>{预计更新时间5}</td>
-            <td>{触发条件5}</td>
-            <td>{负责方5}</td>
+            <td>{update_content_5}</td>
+            <td>{expected_update_time_5}</td>
+            <td>{trigger_condition_5}</td>
+            <td>{responsible_party_5}</td>
           </tr>
         </tbody>
       </table>
       <div class="info-box info-blue" style="margin-top:12px;">
-        <strong>完备性总结：</strong>{完备性总结——对本报告的整体完备性进行评估，哪些维度达到预期标准、哪些需要补充、下一轮更新的重点方向。当前报告在{强项维度}等方面覆盖充分，但在{待改进维度}等方面有提升空间。下一轮更新将重点改进{更新重点}。}
+        <strong>Completeness Summary:</strong>{completeness_summary}
       </div>
     </div>
   </div>
@@ -1526,13 +1526,15 @@
   <!-- ================================================================ -->
   <div class="section">
     <div class="card card-red">
-      <h3>免责声明</h3>
+      <h3>Disclaimer</h3>
       <p style="font-size:13px; color:var(--text-secondary); line-height:1.7;">
-        本系统性风险警报报告（Type 15）仅供内部风险评估参考使用。报告中的SRI系统性风险指数、温度计等级、
-        红色行业清单、传染风险排名、集中度警示、行动建议等均为基于公开信息和模型推演的初步判断，
-        不构成任何投资建议或信用决策依据。系统性风险分析涉及大量假设和简化，实际风险可能因市场环境、
-        政策变化、主体行为、外部冲击等因素与分析结果存在显著偏差。SRI指数不能预测外生冲击（如疫情、
-        地缘冲突、自然灾害等）。在做出任何投资或信用决策前，应结合最新的市场信息和专业判断进行综合评估。
+        This Systemic Risk Alert Report (Type 15) is for internal risk assessment reference only. The SRI Systemic Risk Index, Thermometer Level,
+        Red Industry List, Contagion Risk Rankings, Concentration Warnings, Action Recommendations, etc. in this report are all preliminary judgments
+        based on public information and model simulations, and do not constitute any investment advice or credit decision basis. Systemic risk analysis
+        involves numerous assumptions and simplifications; actual risks may deviate significantly from the analysis results due to market environment,
+        policy changes, entity behavior, external shocks, and other factors. The SRI index cannot predict exogenous shocks (such as pandemics,
+        geopolitical conflicts, natural disasters, etc.). Before making any investment or credit decisions, a comprehensive assessment should be
+        made combining the latest market information and professional judgment.
       </p>
     </div>
   </div>
@@ -1543,10 +1545,10 @@
 <!-- FOOTER -->
 <!-- ================================================================ -->
 <div class="footer">
-  <p><strong>系统性风险警报报告</strong> — Type 15 模板</p>
-  <p>报告编号 T15-{报告编号} · 版本 v0.8.4-release · 生成于 {生成日期} · 仅供内部风险评估使用</p>
+  <p><strong>Systemic Risk Alert Report</strong> — Type 15 Template</p>
+  <p>Report No. T15-{report_number} · Version v0.8.4-release · Generated on {generation_date} · For Internal Risk Assessment Only</p>
   <p style="margin-top:6px; font-size:10px; color:var(--text-tertiary);">
-    基于统一信贷评估框架 v0.8.4-release · 系统性预警框架 v0.8.4-release · 所有分析均为内部推演，不构成投资建议
+    Based on Unified Credit Assessment Framework v0.8.4-release · Systemic Warning Framework v0.8.4-release · All analyses are internal simulations and do not constitute investment advice
   </p>
 </div>
 

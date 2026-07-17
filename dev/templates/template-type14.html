@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <!-- @template: dev/templates/template-type14.html -->
 <!-- @engine-version: v0.8.4-release -->
-<html lang="zh-CN">
-<!-- 实例报告: concentration-pv-heavy.html, concentration-liaoning-heavy.html, concentration-ideal.html -->
+<html lang="en">
+<!-- Sample reports: concentration-pv-heavy.html, concentration-liaoning-heavy.html, concentration-ideal.html -->
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="组合集中度分析报告模板 Type 14 · 五维集中度评估·热力图·评级调整·分散化路径·与传染矩阵联动·系统风控智能层">
-<title>组合集中度分析报告 · Type 14 模板</title>
+<meta name="description" content="Portfolio Concentration Analysis Report Template Type 14 · Five-Dimension Concentration Assessment · Heatmap · Rating Adjustment · Diversification Path · Contagion Matrix Integration · Systemic Risk Control Intelligence Layer">
+<title>Portfolio Concentration Analysis Report · Type 14 Template</title>
 <link rel="stylesheet" href="template-base.css">
 <style>
 .hero { background: linear-gradient(135deg, #0f172a, #1e3a5f, #312e81); }
@@ -64,20 +64,20 @@
 <body>
 
 <!-- ================================================================ -->
-<!-- HERO — 深蓝/靛蓝风控主题渐变 -->
+<!-- HERO -- Dark Blue/Indigo Risk Control Theme Gradient -->
 <!-- ================================================================ -->
 <div class="hero">
-  <span class="chip">组合集中度分析报告 · TYPE 14</span>
-  <h1>{组合名称}</h1>
+  <span class="chip">Portfolio Concentration Analysis Report · TYPE 14</span>
+  <h1>{portfolio_name}</h1>
   <p class="subtitle">
-    五维集中度评估 · 热力图分析 · 评级调整影响 · 分散化建议路径 · 与传染矩阵联动 · 系统风控智能层
+    Five-Dimension Concentration Assessment · Heatmap Analysis · Rating Adjustment Impact · Diversification Recommendation Path · Contagion Matrix Integration · Systemic Risk Control Intelligence Layer
   </p>
   <div class="meta">
-    <span>分析时点：{分析时点}</span>
-    <span>组合规模：{组合规模}</span>
-    <span>覆盖行业数：{覆盖行业数}</span>
-    <span>发行人数量：{发行人数量}</span>
-    <span>报告版本：v0.8.4-release · Type 14 集中度分析</span>
+    <span>Analysis Date: {analysis_date}</span>
+    <span>Portfolio Size: {portfolio_size}</span>
+    <span>Industries Covered: {industry_count}</span>
+    <span>Number of Issuers: {issuer_count}</span>
+    <span>Report Version: v0.8.4-release · Type 14 Concentration Analysis</span>
   </div>
 </div>
 
@@ -87,782 +87,782 @@
 <div class="container">
 
   <!-- ================================================================ -->
-  <!-- STRIP — 5列核心指标 -->
+  <!-- STRIP -- 5-Column Core Metrics -->
   <!-- ================================================================ -->
   <div class="strip cols-5">
     <div class="strip-item">
-      <div class="slabel">综合集中度评分</div>
-      <div class="sval" style="color:var(--blue);">{综合集中度评分}/10</div>
-      <div class="ssub">1=极低集中风险 · 10=极高集中风险</div>
+      <div class="slabel">Composite Concentration Score</div>
+      <div class="sval" style="color:var(--blue);">{composite_concentration_score}/10</div>
+      <div class="ssub">1=Very Low Concentration Risk · 10=Very High Concentration Risk</div>
     </div>
     <div class="strip-item">
-      <div class="slabel">高维数</div>
-      <div class="sval">{高维数数}/5</div>
-      <div class="ssub">集中度预警维度数量</div>
+      <div class="slabel">High-Dimension Count</div>
+      <div class="sval">{high_dimension_count}/5</div>
+      <div class="ssub">Number of Dimensions with Concentration Warning</div>
     </div>
     <div class="strip-item">
-      <div class="slabel">极端集中标志</div>
-      <div class="sval" style="color:var(--red);">{极端集中标志}</div>
-      <div class="ssub">存在/不存在极端集中</div>
+      <div class="slabel">Extreme Concentration Flag</div>
+      <div class="sval" style="color:var(--red);">{extreme_concentration_flag}</div>
+      <div class="ssub">Present/Absent Extreme Concentration</div>
     </div>
     <div class="strip-item">
-      <div class="slabel">调整幅度</div>
-      <div class="sval" style="color:var(--amber);">{调整幅度}</div>
-      <div class="ssub">综合评级调整幅度（子级）</div>
+      <div class="slabel">Adjustment Magnitude</div>
+      <div class="sval" style="color:var(--amber);">{adjustment_magnitude}</div>
+      <div class="ssub">Composite Rating Adjustment Magnitude (Notches)</div>
     </div>
     <div class="strip-item">
-      <div class="slabel">置信度</div>
-      <div class="sval" style="color:var(--green);">{置信度}</div>
-      <div class="ssub">集中度评估数据置信水平</div>
+      <div class="slabel">Confidence Level</div>
+      <div class="sval" style="color:var(--green);">{confidence_level}</div>
+      <div class="ssub">Confidence Level of Concentration Assessment Data</div>
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- SECTION 1 — 五维集中度热力图 -->
+  <!-- SECTION 1 -- Five-Dimension Concentration Heatmap -->
   <!-- ================================================================ -->
   <div class="section">
     <h2 class="section-title">
       <span class="signal" style="background:var(--blue);"></span>
-      一、五维集中度热力图
+      1. Five-Dimension Concentration Heatmap
     </h2>
     <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
-      从行业/评级/区域/期限/融资渠道五个维度评估组合集中风险，绿/黄/橙/红四色表示风险等级递增。
-      条形图比例反映各维度的实际集中度偏离基准的程度。
+      Evaluate portfolio concentration risk across five dimensions: Industry/Rating/Region/Maturity/Funding Channel. Green/Yellow/Orange/Red indicate increasing risk levels.
+      Bar chart proportions reflect the degree to which each dimension's actual concentration deviates from the baseline.
     </p>
 
     <div class="card">
-      <h3>五维集中度总览</h3>
+      <h3>Five-Dimension Concentration Overview</h3>
       <div class="bar-chart">
-        <span class="bar-label">行业集中度</span>
+        <span class="bar-label">Industry Concentration</span>
         <div class="bar-track">
-          <div class="bar-fill" style="width:{行业集中度百分比}%;background:{行业集中度颜色};">{行业集中度水平}</div>
+          <div class="bar-fill" style="width:{industry_concentration_pct}%;background:{industry_concentration_color};">{industry_concentration_level}</div>
         </div>
-        <span class="bar-value" style="color:{行业集中度颜色};">{行业集中度分数}</span>
+        <span class="bar-value" style="color:{industry_concentration_color};">{industry_concentration_score}</span>
       </div>
       <div class="bar-chart">
-        <span class="bar-label">评级集中度</span>
+        <span class="bar-label">Rating Concentration</span>
         <div class="bar-track">
-          <div class="bar-fill" style="width:{评级集中度百分比}%;background:{评级集中度颜色};">{评级集中度水平}</div>
+          <div class="bar-fill" style="width:{rating_concentration_pct}%;background:{rating_concentration_color};">{rating_concentration_level}</div>
         </div>
-        <span class="bar-value" style="color:{评级集中度颜色};">{评级集中度分数}</span>
+        <span class="bar-value" style="color:{rating_concentration_color};">{rating_concentration_score}</span>
       </div>
       <div class="bar-chart">
-        <span class="bar-label">区域集中度</span>
+        <span class="bar-label">Regional Concentration</span>
         <div class="bar-track">
-          <div class="bar-fill" style="width:{区域集中度百分比}%;background:{区域集中度颜色};">{区域集中度水平}</div>
+          <div class="bar-fill" style="width:{regional_concentration_pct}%;background:{regional_concentration_color};">{regional_concentration_level}</div>
         </div>
-        <span class="bar-value" style="color:{区域集中度颜色};">{区域集中度分数}</span>
+        <span class="bar-value" style="color:{regional_concentration_color};">{regional_concentration_score}</span>
       </div>
       <div class="bar-chart">
-        <span class="bar-label">期限集中度</span>
+        <span class="bar-label">Maturity Concentration</span>
         <div class="bar-track">
-          <div class="bar-fill" style="width:{期限集中度百分比}%;background:{期限集中度颜色};">{期限集中度水平}</div>
+          <div class="bar-fill" style="width:{maturity_concentration_pct}%;background:{maturity_concentration_color};">{maturity_concentration_level}</div>
         </div>
-        <span class="bar-value" style="color:{期限集中度颜色};">{期限集中度分数}</span>
+        <span class="bar-value" style="color:{maturity_concentration_color};">{maturity_concentration_score}</span>
       </div>
       <div class="bar-chart">
-        <span class="bar-label">融资渠道集中度</span>
+        <span class="bar-label">Funding Channel Concentration</span>
         <div class="bar-track">
-          <div class="bar-fill" style="width:{融资渠道集中度百分比}%;background:{融资渠道集中度颜色};">{融资渠道集中度水平}</div>
+          <div class="bar-fill" style="width:{funding_channel_concentration_pct}%;background:{funding_channel_concentration_color};">{funding_channel_concentration_level}</div>
         </div>
-        <span class="bar-value" style="color:{融资渠道集中度颜色};">{融资渠道集中度分数}</span>
+        <span class="bar-value" style="color:{funding_channel_concentration_color};">{funding_channel_concentration_score}</span>
       </div>
       <div style="margin-top:12px; display:flex; gap:16px; justify-content:center; font-size:12px;">
-        <span><span class="signal" style="background:var(--green);"></span> 低风险</span>
-        <span><span class="signal" style="background:var(--blue);"></span> 较低风险</span>
-        <span><span class="signal" style="background:var(--amber);"></span> 中等风险</span>
-        <span><span class="signal" style="background:var(--red);"></span> 高风险</span>
+        <span><span class="signal" style="background:var(--green);"></span> Low Risk</span>
+        <span><span class="signal" style="background:var(--blue);"></span> Medium-Low Risk</span>
+        <span><span class="signal" style="background:var(--amber);"></span> Medium Risk</span>
+        <span><span class="signal" style="background:var(--red);"></span> High Risk</span>
       </div>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>集中度评分矩阵</h3>
+      <h3>Concentration Score Matrix</h3>
       <table>
         <thead>
           <tr>
-            <th>评估维度</th>
-            <th>当前值</th>
-            <th>阈值位置</th>
-            <th>离下一档距离</th>
-            <th>评级影响</th>
-            <th>风险等级</th>
+            <th>Assessment Dimension</th>
+            <th>Current Value</th>
+            <th>Threshold Position</th>
+            <th>Distance to Next Tier</th>
+            <th>Rating Impact</th>
+            <th>Risk Level</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>行业集中度</td>
-            <td>{行业集中度当前值}</td>
-            <td>{行业集中度阈值位置}</td>
-            <td>{行业集中度距离}</td>
-            <td>{行业集中度评级影响}</td>
-            <td><span class="tag tag-{行业集中度标签颜色}">{行业集中度风险等级}</span></td>
+            <td>Industry Concentration</td>
+            <td>{industry_concentration_current_value}</td>
+            <td>{industry_concentration_threshold_position}</td>
+            <td>{industry_concentration_distance}</td>
+            <td>{industry_concentration_rating_impact}</td>
+            <td><span class="tag tag-{industry_concentration_tag_color}">{industry_concentration_risk_level}</span></td>
           </tr>
           <tr>
-            <td>评级集中度</td>
-            <td>{评级集中度当前值}</td>
-            <td>{评级集中度阈值位置}</td>
-            <td>{评级集中度距离}</td>
-            <td>{评级集中度评级影响}</td>
-            <td><span class="tag tag-{评级集中度标签颜色}">{评级集中度风险等级}</span></td>
+            <td>Rating Concentration</td>
+            <td>{rating_concentration_current_value}</td>
+            <td>{rating_concentration_threshold_position}</td>
+            <td>{rating_concentration_distance}</td>
+            <td>{rating_concentration_rating_impact}</td>
+            <td><span class="tag tag-{rating_concentration_tag_color}">{rating_concentration_risk_level}</span></td>
           </tr>
           <tr>
-            <td>区域集中度</td>
-            <td>{区域集中度当前值}</td>
-            <td>{区域集中度阈值位置}</td>
-            <td>{区域集中度距离}</td>
-            <td>{区域集中度评级影响}</td>
-            <td><span class="tag tag-{区域集中度标签颜色}">{区域集中度风险等级}</span></td>
+            <td>Regional Concentration</td>
+            <td>{regional_concentration_current_value}</td>
+            <td>{regional_concentration_threshold_position}</td>
+            <td>{regional_concentration_distance}</td>
+            <td>{regional_concentration_rating_impact}</td>
+            <td><span class="tag tag-{regional_concentration_tag_color}">{regional_concentration_risk_level}</span></td>
           </tr>
           <tr>
-            <td>期限集中度</td>
-            <td>{期限集中度当前值}</td>
-            <td>{期限集中度阈值位置}</td>
-            <td>{期限集中度距离}</td>
-            <td>{期限集中度评级影响}</td>
-            <td><span class="tag tag-{期限集中度标签颜色}">{期限集中度风险等级}</span></td>
+            <td>Maturity Concentration</td>
+            <td>{maturity_concentration_current_value}</td>
+            <td>{maturity_concentration_threshold_position}</td>
+            <td>{maturity_concentration_distance}</td>
+            <td>{maturity_concentration_rating_impact}</td>
+            <td><span class="tag tag-{maturity_concentration_tag_color}">{maturity_concentration_risk_level}</span></td>
           </tr>
           <tr>
-            <td>融资渠道集中度</td>
-            <td>{融资渠道集中度当前值}</td>
-            <td>{融资渠道集中度阈值位置}</td>
-            <td>{融资渠道集中度距离}</td>
-            <td>{融资渠道集中度评级影响}</td>
-            <td><span class="tag tag-{融资渠道集中度标签颜色}">{融资渠道集中度风险等级}</span></td>
+            <td>Funding Channel Concentration</td>
+            <td>{funding_channel_concentration_current_value}</td>
+            <td>{funding_channel_concentration_threshold_position}</td>
+            <td>{funding_channel_concentration_distance}</td>
+            <td>{funding_channel_concentration_rating_impact}</td>
+            <td><span class="tag tag-{funding_channel_concentration_tag_color}">{funding_channel_concentration_risk_level}</span></td>
           </tr>
         </tbody>
       </table>
       <div class="info-box info-blue" style="margin-top:10px;">
-        <strong>综合评估：</strong>{综合评估描述——提取五维中最高风险维度及交叉影响分析。当多维度同时预警时，集中度调整幅度需考虑叠加效应。}
+        <strong>Composite Assessment:</strong>{composite_assessment_desc——Extract the highest risk dimension from the five dimensions and cross-impact analysis. When multiple dimensions warn simultaneously, the concentration adjustment magnitude must consider the superposition effect.}
       </div>
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- SECTION 2 — 各维详细分析 -->
+  <!-- SECTION 2 -- Dimension-Level Detailed Analysis -->
   <!-- ================================================================ -->
   <div class="section">
     <h2 class="section-title">
       <span class="signal" style="background:var(--blue);"></span>
-      二、各维详细分析
+      2. Dimension-Level Detailed Analysis
     </h2>
     <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
-      每项维度逐卡展示当前值、阈值位置、离下一档的距离及行业/主体分布详情。
-      基于行业集中度模型、区域经济数据和评级迁移矩阵进行量化评估。
+      Each dimension is presented in its own card showing current value, threshold position, distance to the next tier, and industry/entity distribution details.
+      Quantitative assessment is based on the industry concentration model, regional economic data, and rating migration matrix.
     </p>
 
     <div class="dim-card" style="border-left-color:var(--red);">
-      <h4>2.1 行业集中度</h4>
-      <span class="dim-tag">申万二级行业分类 · HHI指数监测 · 行业beta调整</span>
+      <h4>2.1 Industry Concentration</h4>
+      <span class="dim-tag">Shenwan Secondary Industry Classification · HHI Index Monitoring · Industry Beta Adjustment</span>
       <div class="threshold-vis">
-        <span style="font-size:11px;color:var(--text-tertiary);min-width:40px;">阈值: </span>
+        <span style="font-size:11px;color:var(--text-tertiary);min-width:40px;">Threshold: </span>
         <div class="threshold-track">
-          <div class="threshold-label" style="left:25%;">分散</div>
-          <div class="threshold-label" style="left:50%;">中性</div>
-          <div class="threshold-label" style="left:75%;">集中</div>
-          <div class="threshold-label" style="left:95%;">极端</div>
+          <div class="threshold-label" style="left:25%;">Diversified</div>
+          <div class="threshold-label" style="left:50%;">Neutral</div>
+          <div class="threshold-label" style="left:75%;">Concentrated</div>
+          <div class="threshold-label" style="left:95%;">Extreme</div>
           <div class="threshold-marker" style="left:25%;background:var(--green);"></div>
           <div class="threshold-marker" style="left:50%;background:var(--blue);"></div>
           <div class="threshold-marker" style="left:75%;background:var(--amber);"></div>
           <div class="threshold-marker" style="left:95%;background:var(--red);"></div>
-          <div class="threshold-current" style="left:{行业集中度阈值位置水平}%;background:var(--{行业集中度阈值颜色});"></div>
+          <div class="threshold-current" style="left:{industry_concentration_threshold_position_pct}%;background:var(--{industry_concentration_threshold_color});"></div>
         </div>
-        <span style="font-size:11px;font-weight:700;color:var(--text-secondary);min-width:60px;">当前: {行业集中度当前值}</span>
+        <span style="font-size:11px;font-weight:700;color:var(--text-secondary);min-width:60px;">Current: {industry_concentration_current_value}</span>
       </div>
       <table style="margin-top:8px;">
         <thead>
           <tr>
-            <th>行业</th>
-            <th>敞口占比</th>
-            <th>集中度贡献</th>
-            <th>行业评级</th>
-            <th>行业展望</th>
+            <th>Industry</th>
+            <th>Exposure Ratio</th>
+            <th>Concentration Contribution</th>
+            <th>Industry Rating</th>
+            <th>Industry Outlook</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>{行业1名称}</td>
-            <td>{行业1敞口占比}%</td>
-            <td>{行业1集中度贡献}</td>
-            <td><span class="rating-badge" style="background:rgba(239,68,68,0.15);color:var(--red);">{行业1行业评级}</span></td>
-            <td><span class="tag tag-{行业1展望标签}">{行业1展望}</span></td>
+            <td>{industry_1_name}</td>
+            <td>{industry_1_exposure_pct}%</td>
+            <td>{industry_1_concentration_contribution}</td>
+            <td><span class="rating-badge" style="background:rgba(239,68,68,0.15);color:var(--red);">{industry_1_industry_rating}</span></td>
+            <td><span class="tag tag-{industry_1_outlook_tag}">{industry_1_outlook}</span></td>
           </tr>
           <tr>
-            <td>{行业2名称}</td>
-            <td>{行业2敞口占比}%</td>
-            <td>{行业2集中度贡献}</td>
-            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">{行业2行业评级}</span></td>
-            <td><span class="tag tag-{行业2展望标签}">{行业2展望}</span></td>
+            <td>{industry_2_name}</td>
+            <td>{industry_2_exposure_pct}%</td>
+            <td>{industry_2_concentration_contribution}</td>
+            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">{industry_2_industry_rating}</span></td>
+            <td><span class="tag tag-{industry_2_outlook_tag}">{industry_2_outlook}</span></td>
           </tr>
           <tr>
-            <td>{行业3名称}</td>
-            <td>{行业3敞口占比}%</td>
-            <td>{行业3集中度贡献}</td>
-            <td><span class="rating-badge" style="background:rgba(34,197,94,0.15);color:var(--green);">{行业3行业评级}</span></td>
-            <td><span class="tag tag-{行业3展望标签}">{行业3展望}</span></td>
+            <td>{industry_3_name}</td>
+            <td>{industry_3_exposure_pct}%</td>
+            <td>{industry_3_concentration_contribution}</td>
+            <td><span class="rating-badge" style="background:rgba(34,197,94,0.15);color:var(--green);">{industry_3_industry_rating}</span></td>
+            <td><span class="tag tag-{industry_3_outlook_tag}">{industry_3_outlook}</span></td>
           </tr>
           <tr>
-            <td>{行业4名称}</td>
-            <td>{行业4敞口占比}%</td>
-            <td>{行业4集中度贡献}</td>
-            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{行业4行业评级}</span></td>
-            <td><span class="tag tag-{行业4展望标签}">{行业4展望}</span></td>
+            <td>{industry_4_name}</td>
+            <td>{industry_4_exposure_pct}%</td>
+            <td>{industry_4_concentration_contribution}</td>
+            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{industry_4_industry_rating}</span></td>
+            <td><span class="tag tag-{industry_4_outlook_tag}">{industry_4_outlook}</span></td>
           </tr>
           <tr>
-            <td>{行业5名称}</td>
-            <td>{行业5敞口占比}%</td>
-            <td>{行业5集中度贡献}</td>
-            <td><span class="rating-badge" style="background:rgba(168,85,247,0.15);color:var(--purple);">{行业5行业评级}</span></td>
-            <td><span class="tag tag-{行业5展望标签}">{行业5展望}</span></td>
+            <td>{industry_5_name}</td>
+            <td>{industry_5_exposure_pct}%</td>
+            <td>{industry_5_concentration_contribution}</td>
+            <td><span class="rating-badge" style="background:rgba(168,85,247,0.15);color:var(--purple);">{industry_5_industry_rating}</span></td>
+            <td><span class="tag tag-{industry_5_outlook_tag}">{industry_5_outlook}</span></td>
           </tr>
           <tr>
-            <td>{其他行业}</td>
-            <td>{其他敞口占比}%</td>
-            <td>{其他集中度贡献}</td>
+            <td>{other_industries}</td>
+            <td>{other_exposure_pct}%</td>
+            <td>{other_concentration_contribution}</td>
             <td>-</td>
             <td>-</td>
           </tr>
         </tbody>
       </table>
-      <div class="info-box info-{行业集中度信息类型}" style="margin-top:8px;">
-        <strong>行业集中度评估：</strong>{行业集中度详细评估——HHI指数水平、最大行业敞口占比、行业相关性影响、集中度调整建议。}
+      <div class="info-box info-{industry_concentration_info_type}" style="margin-top:8px;">
+        <strong>Industry Concentration Assessment:</strong>{industry_concentration_detailed_assessment——HHI index level, largest industry exposure ratio, industry correlation impact, concentration adjustment recommendation.}
       </div>
     </div>
 
-    <div class="dim-card" style="border-left-color:var(--{评级集中度边框颜色});">
-      <h4>2.2 评级集中度</h4>
-      <span class="dim-tag">内评等级分布 · 评级集中度HHI · 评级迁移风险</span>
+    <div class="dim-card" style="border-left-color:var(--{rating_concentration_border_color});">
+      <h4>2.2 Rating Concentration</h4>
+      <span class="dim-tag">Internal Rating Distribution · Rating Concentration HHI · Rating Migration Risk</span>
       <div class="threshold-vis">
-        <span style="font-size:11px;color:var(--text-tertiary);min-width:40px;">阈值: </span>
+        <span style="font-size:11px;color:var(--text-tertiary);min-width:40px;">Threshold: </span>
         <div class="threshold-track">
-          <div class="threshold-label" style="left:25%;">分散</div>
-          <div class="threshold-label" style="left:50%;">中性</div>
-          <div class="threshold-label" style="left:75%;">集中</div>
-          <div class="threshold-label" style="left:95%;">极端</div>
+          <div class="threshold-label" style="left:25%;">Diversified</div>
+          <div class="threshold-label" style="left:50%;">Neutral</div>
+          <div class="threshold-label" style="left:75%;">Concentrated</div>
+          <div class="threshold-label" style="left:95%;">Extreme</div>
           <div class="threshold-marker" style="left:25%;background:var(--green);"></div>
           <div class="threshold-marker" style="left:50%;background:var(--blue);"></div>
           <div class="threshold-marker" style="left:75%;background:var(--amber);"></div>
           <div class="threshold-marker" style="left:95%;background:var(--red);"></div>
-          <div class="threshold-current" style="left:{评级集中度阈值位置水平}%;background:var(--{评级集中度阈值颜色});"></div>
+          <div class="threshold-current" style="left:{rating_concentration_threshold_position_pct}%;background:var(--{rating_concentration_threshold_color});"></div>
         </div>
-        <span style="font-size:11px;font-weight:700;color:var(--text-secondary);min-width:60px;">当前: {评级集中度当前值}</span>
+        <span style="font-size:11px;font-weight:700;color:var(--text-secondary);min-width:60px;">Current: {rating_concentration_current_value}</span>
       </div>
       <table style="margin-top:8px;">
         <thead>
           <tr>
-            <th>内评等级</th>
-            <th>发行人数量</th>
-            <th>敞口占比</th>
-            <th>累计占比</th>
-            <th>评级迁移风险</th>
+            <th>Internal Rating</th>
+            <th>Number of Issuers</th>
+            <th>Exposure Ratio</th>
+            <th>Cumulative Ratio</th>
+            <th>Rating Migration Risk</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td><span class="rating-badge" style="background:rgba(34,197,94,0.15);color:var(--green);">AAA</span></td>
-            <td>{AAA发行人数量}</td>
-            <td>{AAA敞口占比}%</td>
-            <td>{AAA累计占比}%</td>
-            <td><span class="tag tag-{AAA迁移标签}">{AAA迁移风险}</span></td>
+            <td>{AAA_issuer_count}</td>
+            <td>{AAA_exposure_pct}%</td>
+            <td>{AAA_cumulative_pct}%</td>
+            <td><span class="tag tag-{AAA_migration_tag}">{AAA_migration_risk}</span></td>
           </tr>
           <tr>
             <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">AA</span></td>
-            <td>{AA发行人数量}</td>
-            <td>{AA敞口占比}%</td>
-            <td>{AA累计占比}%</td>
-            <td><span class="tag tag-{AA迁移标签}">{AA迁移风险}</span></td>
+            <td>{AA_issuer_count}</td>
+            <td>{AA_exposure_pct}%</td>
+            <td>{AA_cumulative_pct}%</td>
+            <td><span class="tag tag-{AA_migration_tag}">{AA_migration_risk}</span></td>
           </tr>
           <tr>
             <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">A</span></td>
-            <td>{A发行人数量}</td>
-            <td>{A敞口占比}%</td>
-            <td>{A累计占比}%</td>
-            <td><span class="tag tag-{A迁移标签}">{A迁移风险}</span></td>
+            <td>{A_issuer_count}</td>
+            <td>{A_exposure_pct}%</td>
+            <td>{A_cumulative_pct}%</td>
+            <td><span class="tag tag-{A_migration_tag}">{A_migration_risk}</span></td>
           </tr>
           <tr>
             <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">BBB</span></td>
-            <td>{BBB发行人数量}</td>
-            <td>{BBB敞口占比}%</td>
-            <td>{BBB累计占比}%</td>
-            <td><span class="tag tag-{BBB迁移标签}">{BBB迁移风险}</span></td>
+            <td>{BBB_issuer_count}</td>
+            <td>{BBB_exposure_pct}%</td>
+            <td>{BBB_cumulative_pct}%</td>
+            <td><span class="tag tag-{BBB_migration_tag}">{BBB_migration_risk}</span></td>
           </tr>
           <tr>
-            <td><span class="rating-badge" style="background:rgba(239,68,68,0.15);color:var(--red);">BB及以下</span></td>
-            <td>{BB发行人数量}</td>
-            <td>{BB敞口占比}%</td>
-            <td>{BB累计占比}%</td>
-            <td><span class="tag tag-{BB迁移标签}">{BB迁移风险}</span></td>
+            <td><span class="rating-badge" style="background:rgba(239,68,68,0.15);color:var(--red);">BB and Below</span></td>
+            <td>{BB_issuer_count}</td>
+            <td>{BB_exposure_pct}%</td>
+            <td>{BB_cumulative_pct}%</td>
+            <td><span class="tag tag-{BB_migration_tag}">{BB_migration_risk}</span></td>
           </tr>
         </tbody>
       </table>
-      <div class="info-box info-{评级集中度信息类型}" style="margin-top:8px;">
-        <strong>评级集中度评估：</strong>{评级集中度详细评估——AAA/AA集中度水平、评级迁移概率、评级虚高风险、调整建议。}
+      <div class="info-box info-{rating_concentration_info_type}" style="margin-top:8px;">
+        <strong>Rating Concentration Assessment:</strong>{rating_concentration_detailed_assessment——AAA/AA concentration level, rating migration probability, rating inflation risk, adjustment recommendation.}
       </div>
     </div>
 
-    <div class="dim-card" style="border-left-color:var(--{区域集中度边框颜色});">
-      <h4>2.3 区域集中度</h4>
-      <span class="dim-tag">省级/地级市分布 · 区域经济强度指数 · 区域融资环境</span>
+    <div class="dim-card" style="border-left-color:var(--{regional_concentration_border_color});">
+      <h4>2.3 Regional Concentration</h4>
+      <span class="dim-tag">Province/Prefecture Distribution · Regional Economic Strength Index · Regional Funding Environment</span>
       <div class="threshold-vis">
-        <span style="font-size:11px;color:var(--text-tertiary);min-width:40px;">阈值: </span>
+        <span style="font-size:11px;color:var(--text-tertiary);min-width:40px;">Threshold: </span>
         <div class="threshold-track">
-          <div class="threshold-label" style="left:25%;">分散</div>
-          <div class="threshold-label" style="left:50%;">中性</div>
-          <div class="threshold-label" style="left:75%;">集中</div>
-          <div class="threshold-label" style="left:95%;">极端</div>
+          <div class="threshold-label" style="left:25%;">Diversified</div>
+          <div class="threshold-label" style="left:50%;">Neutral</div>
+          <div class="threshold-label" style="left:75%;">Concentrated</div>
+          <div class="threshold-label" style="left:95%;">Extreme</div>
           <div class="threshold-marker" style="left:25%;background:var(--green);"></div>
           <div class="threshold-marker" style="left:50%;background:var(--blue);"></div>
           <div class="threshold-marker" style="left:75%;background:var(--amber);"></div>
           <div class="threshold-marker" style="left:95%;background:var(--red);"></div>
-          <div class="threshold-current" style="left:{区域集中度阈值位置水平}%;background:var(--{区域集中度阈值颜色});"></div>
+          <div class="threshold-current" style="left:{regional_concentration_threshold_position_pct}%;background:var(--{regional_concentration_threshold_color});"></div>
         </div>
-        <span style="font-size:11px;font-weight:700;color:var(--text-secondary);min-width:60px;">当前: {区域集中度当前值}</span>
+        <span style="font-size:11px;font-weight:700;color:var(--text-secondary);min-width:60px;">Current: {regional_concentration_current_value}</span>
       </div>
       <table style="margin-top:8px;">
         <thead>
           <tr>
-            <th>区域</th>
-            <th>敞口占比</th>
-            <th>区域经济强度</th>
-            <th>区域融资环境</th>
-            <th>集中度调整因子</th>
+            <th>Region</th>
+            <th>Exposure Ratio</th>
+            <th>Regional Economic Strength</th>
+            <th>Regional Funding Environment</th>
+            <th>Concentration Adjustment Factor</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>{区域1名称}</td>
-            <td>{区域1敞口占比}%</td>
-            <td>{区域1经济强度}</td>
-            <td><span class="tag tag-{区域1融资标签}">{区域1融资环境}</span></td>
-            <td>{区域1调整因子}</td>
+            <td>{region_1_name}</td>
+            <td>{region_1_exposure_pct}%</td>
+            <td>{region_1_economic_strength}</td>
+            <td><span class="tag tag-{region_1_funding_tag}">{region_1_funding_environment}</span></td>
+            <td>{region_1_adjustment_factor}</td>
           </tr>
           <tr>
-            <td>{区域2名称}</td>
-            <td>{区域2敞口占比}%</td>
-            <td>{区域2经济强度}</td>
-            <td><span class="tag tag-{区域2融资标签}">{区域2融资环境}</span></td>
-            <td>{区域2调整因子}</td>
+            <td>{region_2_name}</td>
+            <td>{region_2_exposure_pct}%</td>
+            <td>{region_2_economic_strength}</td>
+            <td><span class="tag tag-{region_2_funding_tag}">{region_2_funding_environment}</span></td>
+            <td>{region_2_adjustment_factor}</td>
           </tr>
           <tr>
-            <td>{区域3名称}</td>
-            <td>{区域3敞口占比}%</td>
-            <td>{区域3经济强度}</td>
-            <td><span class="tag tag-{区域3融资标签}">{区域3融资环境}</span></td>
-            <td>{区域3调整因子}</td>
+            <td>{region_3_name}</td>
+            <td>{region_3_exposure_pct}%</td>
+            <td>{region_3_economic_strength}</td>
+            <td><span class="tag tag-{region_3_funding_tag}">{region_3_funding_environment}</span></td>
+            <td>{region_3_adjustment_factor}</td>
           </tr>
           <tr>
-            <td>{区域4名称}</td>
-            <td>{区域4敞口占比}%</td>
-            <td>{区域4经济强度}</td>
-            <td><span class="tag tag-{区域4融资标签}">{区域4融资环境}</span></td>
-            <td>{区域4调整因子}</td>
+            <td>{region_4_name}</td>
+            <td>{region_4_exposure_pct}%</td>
+            <td>{region_4_economic_strength}</td>
+            <td><span class="tag tag-{region_4_funding_tag}">{region_4_funding_environment}</span></td>
+            <td>{region_4_adjustment_factor}</td>
           </tr>
           <tr>
-            <td>{其他区域}</td>
-            <td>{其他区域敞口占比}%</td>
+            <td>{other_regions}</td>
+            <td>{other_regions_exposure_pct}%</td>
             <td>-</td>
             <td>-</td>
             <td>-</td>
           </tr>
         </tbody>
       </table>
-      <div class="info-box info-{区域集中度信息类型}" style="margin-top:8px;">
-        <strong>区域集中度评估：</strong>{区域集中度详细评估——最大区域敞口占比、区域经济强度加权、区域风险传染路径、调整建议。}
+      <div class="info-box info-{regional_concentration_info_type}" style="margin-top:8px;">
+        <strong>Regional Concentration Assessment:</strong>{regional_concentration_detailed_assessment——Largest regional exposure ratio, regional economic strength weighted, regional risk contagion path, adjustment recommendation.}
       </div>
     </div>
 
-    <div class="dim-card" style="border-left-color:var(--{期限集中度边框颜色});">
-      <h4>2.4 期限集中度</h4>
-      <span class="dim-tag">到期期限分布 · 期限集中度HHI · 到期集中度压力测试</span>
+    <div class="dim-card" style="border-left-color:var(--{maturity_concentration_border_color});">
+      <h4>2.4 Maturity Concentration</h4>
+      <span class="dim-tag">Maturity Distribution · Maturity Concentration HHI · Maturity Concentration Stress Test</span>
       <div class="threshold-vis">
-        <span style="font-size:11px;color:var(--text-tertiary);min-width:40px;">阈值: </span>
+        <span style="font-size:11px;color:var(--text-tertiary);min-width:40px;">Threshold: </span>
         <div class="threshold-track">
-          <div class="threshold-label" style="left:25%;">分散</div>
-          <div class="threshold-label" style="left:50%;">中性</div>
-          <div class="threshold-label" style="left:75%;">集中</div>
-          <div class="threshold-label" style="left:95%;">极端</div>
+          <div class="threshold-label" style="left:25%;">Diversified</div>
+          <div class="threshold-label" style="left:50%;">Neutral</div>
+          <div class="threshold-label" style="left:75%;">Concentrated</div>
+          <div class="threshold-label" style="left:95%;">Extreme</div>
           <div class="threshold-marker" style="left:25%;background:var(--green);"></div>
           <div class="threshold-marker" style="left:50%;background:var(--blue);"></div>
           <div class="threshold-marker" style="left:75%;background:var(--amber);"></div>
           <div class="threshold-marker" style="left:95%;background:var(--red);"></div>
-          <div class="threshold-current" style="left:{期限集中度阈值位置水平}%;background:var(--{期限集中度阈值颜色});"></div>
+          <div class="threshold-current" style="left:{maturity_concentration_threshold_position_pct}%;background:var(--{maturity_concentration_threshold_color});"></div>
         </div>
-        <span style="font-size:11px;font-weight:700;color:var(--text-secondary);min-width:60px;">当前: {期限集中度当前值}</span>
+        <span style="font-size:11px;font-weight:700;color:var(--text-secondary);min-width:60px;">Current: {maturity_concentration_current_value}</span>
       </div>
       <table style="margin-top:8px;">
         <thead>
           <tr>
-            <th>期限区间</th>
-            <th>敞口占比</th>
-            <th>到期规模</th>
-            <th>再融资风险</th>
-            <th>调整因子</th>
+            <th>Maturity Bucket</th>
+            <th>Exposure Ratio</th>
+            <th>Maturing Amount</th>
+            <th>Refinancing Risk</th>
+            <th>Adjustment Factor</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>1年以内</td>
-            <td>{短期敞口占比}%</td>
-            <td>{短期到期规模}</td>
-            <td><span class="tag tag-{短期再融资标签}">{短期再融资风险}</span></td>
-            <td>{短期调整因子}</td>
+            <td>Within 1 Year</td>
+            <td>{short_term_exposure_pct}%</td>
+            <td>{short_term_maturity_amount}</td>
+            <td><span class="tag tag-{short_term_refinancing_tag}">{short_term_refinancing_risk}</span></td>
+            <td>{short_term_adjustment_factor}</td>
           </tr>
           <tr>
-            <td>1-3年</td>
-            <td>{中期敞口占比}%</td>
-            <td>{中期到期规模}</td>
-            <td><span class="tag tag-{中期再融资标签}">{中期再融资风险}</span></td>
-            <td>{中期调整因子}</td>
+            <td>1-3 Years</td>
+            <td>{medium_term_exposure_pct}%</td>
+            <td>{medium_term_maturity_amount}</td>
+            <td><span class="tag tag-{medium_term_refinancing_tag}">{medium_term_refinancing_risk}</span></td>
+            <td>{medium_term_adjustment_factor}</td>
           </tr>
           <tr>
-            <td>3-5年</td>
-            <td>{中长期敞口占比}%</td>
-            <td>{中长期到期规模}</td>
-            <td><span class="tag tag-{中长期再融资标签}">{中长期再融资风险}</span></td>
-            <td>{中长期调整因子}</td>
+            <td>3-5 Years</td>
+            <td>{medium_long_term_exposure_pct}%</td>
+            <td>{medium_long_term_maturity_amount}</td>
+            <td><span class="tag tag-{medium_long_term_refinancing_tag}">{medium_long_term_refinancing_risk}</span></td>
+            <td>{medium_long_term_adjustment_factor}</td>
           </tr>
           <tr>
-            <td>5年以上</td>
-            <td>{长期敞口占比}%</td>
-            <td>{长期到期规模}</td>
-            <td><span class="tag tag-{长期再融资标签}">{长期再融资风险}</span></td>
-            <td>{长期调整因子}</td>
+            <td>Above 5 Years</td>
+            <td>{long_term_exposure_pct}%</td>
+            <td>{long_term_maturity_amount}</td>
+            <td><span class="tag tag-{long_term_refinancing_tag}">{long_term_refinancing_risk}</span></td>
+            <td>{long_term_adjustment_factor}</td>
           </tr>
         </tbody>
       </table>
-      <div class="info-box info-{期限集中度信息类型}" style="margin-top:8px;">
-        <strong>期限集中度评估：</strong>{期限集中度详细评估——到期峰值的集中月份、再融资窗口拥挤度、利率风险暴露、调整建议。}
+      <div class="info-box info-{maturity_concentration_info_type}" style="margin-top:8px;">
+        <strong>Maturity Concentration Assessment:</strong>{maturity_concentration_detailed_assessment——Peak maturity concentration months, refinancing window congestion, interest rate risk exposure, adjustment recommendation.}
       </div>
     </div>
 
-    <div class="dim-card" style="border-left-color:var(--{融资渠道集中度边框颜色});">
-      <h4>2.5 融资渠道集中度</h4>
-      <span class="dim-tag">融资渠道多样性 · 渠道依赖度 · 渠道流动性差异</span>
+    <div class="dim-card" style="border-left-color:var(--{funding_channel_concentration_border_color});">
+      <h4>2.5 Funding Channel Concentration</h4>
+      <span class="dim-tag">Funding Channel Diversity · Channel Dependency · Channel Liquidity Differences</span>
       <div class="threshold-vis">
-        <span style="font-size:11px;color:var(--text-tertiary);min-width:40px;">阈值: </span>
+        <span style="font-size:11px;color:var(--text-tertiary);min-width:40px;">Threshold: </span>
         <div class="threshold-track">
-          <div class="threshold-label" style="left:25%;">分散</div>
-          <div class="threshold-label" style="left:50%;">中性</div>
-          <div class="threshold-label" style="left:75%;">集中</div>
-          <div class="threshold-label" style="left:95%;">极端</div>
+          <div class="threshold-label" style="left:25%;">Diversified</div>
+          <div class="threshold-label" style="left:50%;">Neutral</div>
+          <div class="threshold-label" style="left:75%;">Concentrated</div>
+          <div class="threshold-label" style="left:95%;">Extreme</div>
           <div class="threshold-marker" style="left:25%;background:var(--green);"></div>
           <div class="threshold-marker" style="left:50%;background:var(--blue);"></div>
           <div class="threshold-marker" style="left:75%;background:var(--amber);"></div>
           <div class="threshold-marker" style="left:95%;background:var(--red);"></div>
-          <div class="threshold-current" style="left:{融资渠道集中度阈值位置水平}%;background:var(--{融资渠道集中度阈值颜色});"></div>
+          <div class="threshold-current" style="left:{funding_channel_concentration_threshold_position_pct}%;background:var(--{funding_channel_concentration_threshold_color});"></div>
         </div>
-        <span style="font-size:11px;font-weight:700;color:var(--text-secondary);min-width:60px;">当前: {融资渠道集中度当前值}</span>
+        <span style="font-size:11px;font-weight:700;color:var(--text-secondary);min-width:60px;">Current: {funding_channel_concentration_current_value}</span>
       </div>
       <table style="margin-top:8px;">
         <thead>
           <tr>
-            <th>融资渠道</th>
-            <th>敞口占比</th>
-            <th>渠道流动性评级</th>
-            <th>渠道稳定性</th>
-            <th>调整因子</th>
+            <th>Funding Channel</th>
+            <th>Exposure Ratio</th>
+            <th>Channel Liquidity Rating</th>
+            <th>Channel Stability</th>
+            <th>Adjustment Factor</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>信用债融资</td>
-            <td>{信用债敞口占比}%</td>
-            <td><span class="tag tag-green">{信用债流动性评级}</span></td>
-            <td><span class="tag tag-{信用债稳定性标签}">{信用债稳定性}</span></td>
-            <td>{信用债调整因子}</td>
+            <td>Credit Bond Financing</td>
+            <td>{credit_bond_exposure_pct}%</td>
+            <td><span class="tag tag-green">{credit_bond_liquidity_rating}</span></td>
+            <td><span class="tag tag-{credit_bond_stability_tag}">{credit_bond_stability}</span></td>
+            <td>{credit_bond_adjustment_factor}</td>
           </tr>
           <tr>
-            <td>银行贷款</td>
-            <td>{银行贷款敞口占比}%</td>
-            <td><span class="tag tag-{贷款流动性标签}">{贷款流动性评级}</span></td>
-            <td><span class="tag tag-{贷款稳定性标签}">{贷款稳定性}</span></td>
-            <td>{贷款调整因子}</td>
+            <td>Bank Loans</td>
+            <td>{bank_loan_exposure_pct}%</td>
+            <td><span class="tag tag-{bank_loan_liquidity_tag}">{bank_loan_liquidity_rating}</span></td>
+            <td><span class="tag tag-{bank_loan_stability_tag}">{bank_loan_stability}</span></td>
+            <td>{bank_loan_adjustment_factor}</td>
           </tr>
           <tr>
-            <td>非标融资</td>
-            <td>{非标敞口占比}%</td>
-            <td><span class="tag tag-{非标流动性标签}">{非标流动性评级}</span></td>
-            <td><span class="tag tag-{非标稳定性标签}">{非标稳定性}</span></td>
-            <td>{非标调整因子}</td>
+            <td>Non-Standard Financing</td>
+            <td>{non_standard_exposure_pct}%</td>
+            <td><span class="tag tag-{non_standard_liquidity_tag}">{non_standard_liquidity_rating}</span></td>
+            <td><span class="tag tag-{non_standard_stability_tag}">{non_standard_stability}</span></td>
+            <td>{non_standard_adjustment_factor}</td>
           </tr>
           <tr>
-            <td>境外融资</td>
-            <td>{境外敞口占比}%</td>
-            <td><span class="tag tag-{境外流动性标签}">{境外流动性评级}</span></td>
-            <td><span class="tag tag-{境外稳定性标签}">{境外稳定性}</span></td>
-            <td>{境外调整因子}</td>
+            <td>Offshore Financing</td>
+            <td>{offshore_exposure_pct}%</td>
+            <td><span class="tag tag-{offshore_liquidity_tag}">{offshore_liquidity_rating}</span></td>
+            <td><span class="tag tag-{offshore_stability_tag}">{offshore_stability}</span></td>
+            <td>{offshore_adjustment_factor}</td>
           </tr>
           <tr>
-            <td>股权融资</td>
-            <td>{股权敞口占比}%</td>
-            <td><span class="tag tag-{股权流动性标签}">{股权流动性评级}</span></td>
-            <td><span class="tag tag-{股权稳定性标签}">{股权稳定性}</span></td>
-            <td>{股权调整因子}</td>
+            <td>Equity Financing</td>
+            <td>{equity_exposure_pct}%</td>
+            <td><span class="tag tag-{equity_liquidity_tag}">{equity_liquidity_rating}</span></td>
+            <td><span class="tag tag-{equity_stability_tag}">{equity_stability}</span></td>
+            <td>{equity_adjustment_factor}</td>
           </tr>
         </tbody>
       </table>
-      <div class="info-box info-{融资渠道集中度信息类型}" style="margin-top:8px;">
-        <strong>融资渠道集中度评估：</strong>{融资渠道集中度详细评估——渠道多样性评分、单一渠道依赖度、渠道冻结风险敞口、调整建议。}
+      <div class="info-box info-{funding_channel_concentration_info_type}" style="margin-top:8px;">
+        <strong>Funding Channel Concentration Assessment:</strong>{funding_channel_concentration_detailed_assessment——Channel diversity score, single channel dependency, channel freeze risk exposure, adjustment recommendation.}
       </div>
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- SECTION 3 — 高风险集中项识别 -->
+  <!-- SECTION 3 -- High-Risk Concentration Item Identification -->
   <!-- ================================================================ -->
   <div class="section">
     <h2 class="section-title">
       <span class="signal" style="background:var(--red);"></span>
-      三、高风险集中项识别
+      3. High-Risk Concentration Item Identification
     </h2>
     <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
-      基于五维集中度分析，识别TOP3集中风险项。每项标注影响量级、触发条件及建议行动。
-      高风险集中项是评级调整的核心输入因素，需重点监测与管理。
+      Based on the five-dimension concentration analysis, identify the TOP 3 concentration risk items. Each item is annotated with impact magnitude, trigger conditions, and recommended actions.
+      High-risk concentration items are core input factors for rating adjustments and require focused monitoring and management.
     </p>
 
     <div class="risk-card" style="border-left-color:var(--red);">
-      <span class="risk-tag">集中风险 #1 · 优先级 P0</span>
-      <h4>{高风险项1名称}</h4>
+      <span class="risk-tag">Concentration Risk #1 · Priority P0</span>
+      <h4>{high_risk_item_1_name}</h4>
       <p class="risk-desc">
-        <strong>集中维度：</strong>{高风险项1维度}<br>
-        <strong>当前敞口：</strong>{高风险项1当前敞口}<br>
-        <strong>阈值对照：</strong>{高风险项1阈值对照}<br>
-        <strong>影响量级：</strong>{高风险项1影响量级}<br>
-        <strong>触发条件：</strong>{高风险项1触发条件}<br>
-        <strong>建议行动：</strong>{高风险项1建议行动}
+        <strong>Concentration Dimension:</strong>{high_risk_item_1_dimension}<br>
+        <strong>Current Exposure:</strong>{high_risk_item_1_current_exposure}<br>
+        <strong>Threshold Comparison:</strong>{high_risk_item_1_threshold_comparison}<br>
+        <strong>Impact Magnitude:</strong>{high_risk_item_1_impact_magnitude}<br>
+        <strong>Trigger Conditions:</strong>{high_risk_item_1_trigger_condition}<br>
+        <strong>Recommended Action:</strong>{high_risk_item_1_recommended_action}
       </p>
       <div class="warning-tier" style="margin-top:8px;">
-        <span class="warn-badge red">影响量级：{高风险项1量级等级}</span>
-        <span class="warn-badge amber">触发概率：{高风险项1触发概率}</span>
-        <span class="warn-badge red">{高风险项1紧急标志}</span>
+        <span class="warn-badge red">Impact Magnitude: {high_risk_item_1_magnitude_level}</span>
+        <span class="warn-badge amber">Trigger Probability: {high_risk_item_1_trigger_probability}</span>
+        <span class="warn-badge red">{high_risk_item_1_urgency_flag}</span>
       </div>
     </div>
 
     <div class="risk-card" style="border-left-color:var(--amber);">
-      <span class="risk-tag">集中风险 #2 · 优先级 P1</span>
-      <h4>{高风险项2名称}</h4>
+      <span class="risk-tag">Concentration Risk #2 · Priority P1</span>
+      <h4>{high_risk_item_2_name}</h4>
       <p class="risk-desc">
-        <strong>集中维度：</strong>{高风险项2维度}<br>
-        <strong>当前敞口：</strong>{高风险项2当前敞口}<br>
-        <strong>阈值对照：</strong>{高风险项2阈值对照}<br>
-        <strong>影响量级：</strong>{高风险项2影响量级}<br>
-        <strong>触发条件：</strong>{高风险项2触发条件}<br>
-        <strong>建议行动：</strong>{高风险项2建议行动}
+        <strong>Concentration Dimension:</strong>{high_risk_item_2_dimension}<br>
+        <strong>Current Exposure:</strong>{high_risk_item_2_current_exposure}<br>
+        <strong>Threshold Comparison:</strong>{high_risk_item_2_threshold_comparison}<br>
+        <strong>Impact Magnitude:</strong>{high_risk_item_2_impact_magnitude}<br>
+        <strong>Trigger Conditions:</strong>{high_risk_item_2_trigger_condition}<br>
+        <strong>Recommended Action:</strong>{high_risk_item_2_recommended_action}
       </p>
       <div class="warning-tier" style="margin-top:8px;">
-        <span class="warn-badge amber">影响量级：{高风险项2量级等级}</span>
-        <span class="warn-badge amber">触发概率：{高风险项2触发概率}</span>
-        <span class="warn-badge amber">{高风险项2紧急标志}</span>
+        <span class="warn-badge amber">Impact Magnitude: {high_risk_item_2_magnitude_level}</span>
+        <span class="warn-badge amber">Trigger Probability: {high_risk_item_2_trigger_probability}</span>
+        <span class="warn-badge amber">{high_risk_item_2_urgency_flag}</span>
       </div>
     </div>
 
     <div class="risk-card" style="border-left-color:var(--blue);">
-      <span class="risk-tag">集中风险 #3 · 优先级 P2</span>
-      <h4>{高风险项3名称}</h4>
+      <span class="risk-tag">Concentration Risk #3 · Priority P2</span>
+      <h4>{high_risk_item_3_name}</h4>
       <p class="risk-desc">
-        <strong>集中维度：</strong>{高风险项3维度}<br>
-        <strong>当前敞口：</strong>{高风险项3当前敞口}<br>
-        <strong>阈值对照：</strong>{高风险项3阈值对照}<br>
-        <strong>影响量级：</strong>{高风险项3影响量级}<br>
-        <strong>触发条件：</strong>{高风险项3触发条件}<br>
-        <strong>建议行动：</strong>{高风险项3建议行动}
+        <strong>Concentration Dimension:</strong>{high_risk_item_3_dimension}<br>
+        <strong>Current Exposure:</strong>{high_risk_item_3_current_exposure}<br>
+        <strong>Threshold Comparison:</strong>{high_risk_item_3_threshold_comparison}<br>
+        <strong>Impact Magnitude:</strong>{high_risk_item_3_impact_magnitude}<br>
+        <strong>Trigger Conditions:</strong>{high_risk_item_3_trigger_condition}<br>
+        <strong>Recommended Action:</strong>{high_risk_item_3_recommended_action}
       </p>
       <div class="warning-tier" style="margin-top:8px;">
-        <span class="warn-badge blue">影响量级：{高风险项3量级等级}</span>
-        <span class="warn-badge green">触发概率：{高风险项3触发概率}</span>
-        <span class="warn-badge blue">{高风险项3紧急标志}</span>
+        <span class="warn-badge blue">Impact Magnitude: {high_risk_item_3_magnitude_level}</span>
+        <span class="warn-badge green">Trigger Probability: {high_risk_item_3_trigger_probability}</span>
+        <span class="warn-badge blue">{high_risk_item_3_urgency_flag}</span>
       </div>
     </div>
 
     <div class="info-box info-red" style="margin-top:10px;">
-      <strong>集中风险汇总：</strong>{集中风险综合评估——各风险项的叠加效应、交叉风险传导路径、综合调整幅度的确认依据。当多项集中风险同时存在时，需考虑调整幅度的协同放大效应。}
+      <strong>Concentration Risk Summary:</strong>{concentration_risk_assessment——Superposition effect of each risk item, cross-risk transmission path, confirmation basis for the composite adjustment magnitude. When multiple concentration risks exist simultaneously, the synergistic amplification effect on the adjustment magnitude must be considered.}
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- SECTION 4 — 评级调整影响 -->
+  <!-- SECTION 4 -- Rating Adjustment Impact -->
   <!-- ================================================================ -->
   <div class="section">
     <h2 class="section-title">
       <span class="signal" style="background:var(--amber);"></span>
-      四、评级调整影响
+      4. Rating Adjustment Impact
     </h2>
     <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
-      展示集中度调整前后组合内各发行人评级的分布变化。
-      通过评级迁移矩阵模拟集中度调整对组合信用质量的影响。
+      Displays the distribution changes of issuer ratings within the portfolio before and after concentration adjustments.
+      Simulates the impact of concentration adjustments on portfolio credit quality through the rating migration matrix.
     </p>
 
     <div class="card">
-      <h3>4.1 调整前后评级分布对比</h3>
+      <h3>4.1 Pre- and Post-Adjustment Rating Distribution Comparison</h3>
       <table>
         <thead>
           <tr>
-            <th>内评等级</th>
-            <th>调整前数量</th>
-            <th>调整前占比</th>
-            <th>调整后数量</th>
-            <th>调整后占比</th>
-            <th>数量变化</th>
-            <th>占比变化</th>
+            <th>Internal Rating</th>
+            <th>Pre-Adjustment Count</th>
+            <th>Pre-Adjustment Ratio</th>
+            <th>Post-Adjustment Count</th>
+            <th>Post-Adjustment Ratio</th>
+            <th>Count Change</th>
+            <th>Ratio Change</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td><span class="rating-badge" style="background:rgba(34,197,94,0.15);color:var(--green);">AAA</span></td>
-            <td>{调整前AAA数量}</td>
-            <td>{调整前AAA占比}%</td>
-            <td>{调整后AAA数量}</td>
-            <td>{调整后AAA占比}%</td>
-            <td class="{AAA变化颜色}">{AAA数量变化}</td>
-            <td class="{AAA变化颜色}">{AAA占比变化}pp</td>
+            <td>{pre_adjustment_AAA_count}</td>
+            <td>{pre_adjustment_AAA_ratio}%</td>
+            <td>{post_adjustment_AAA_count}</td>
+            <td>{post_adjustment_AAA_ratio}%</td>
+            <td class="{AAA_change_color}">{AAA_count_change}</td>
+            <td class="{AAA_change_color}">{AAA_ratio_change}pp</td>
           </tr>
           <tr>
             <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">AA</span></td>
-            <td>{调整前AA数量}</td>
-            <td>{调整前AA占比}%</td>
-            <td>{调整后AA数量}</td>
-            <td>{调整后AA占比}%</td>
-            <td class="{AA变化颜色}">{AA数量变化}</td>
-            <td class="{AA变化颜色}">{AA占比变化}pp</td>
+            <td>{pre_adjustment_AA_count}</td>
+            <td>{pre_adjustment_AA_ratio}%</td>
+            <td>{post_adjustment_AA_count}</td>
+            <td>{post_adjustment_AA_ratio}%</td>
+            <td class="{AA_change_color}">{AA_count_change}</td>
+            <td class="{AA_change_color}">{AA_ratio_change}pp</td>
           </tr>
           <tr>
             <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">A</span></td>
-            <td>{调整前A数量}</td>
-            <td>{调整前A占比}%</td>
-            <td>{调整后A数量}</td>
-            <td>{调整后A占比}%</td>
-            <td class="{A变化颜色}">{A数量变化}</td>
-            <td class="{A变化颜色}">{A占比变化}pp</td>
+            <td>{pre_adjustment_A_count}</td>
+            <td>{pre_adjustment_A_ratio}%</td>
+            <td>{post_adjustment_A_count}</td>
+            <td>{post_adjustment_A_ratio}%</td>
+            <td class="{A_change_color}">{A_count_change}</td>
+            <td class="{A_change_color}">{A_ratio_change}pp</td>
           </tr>
           <tr>
             <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">BBB</span></td>
-            <td>{调整前BBB数量}</td>
-            <td>{调整前BBB占比}%</td>
-            <td>{调整后BBB数量}</td>
-            <td>{调整后BBB占比}%</td>
-            <td class="{BBB变化颜色}">{BBB数量变化}</td>
-            <td class="{BBB变化颜色}">{BBB占比变化}pp</td>
+            <td>{pre_adjustment_BBB_count}</td>
+            <td>{pre_adjustment_BBB_ratio}%</td>
+            <td>{post_adjustment_BBB_count}</td>
+            <td>{post_adjustment_BBB_ratio}%</td>
+            <td class="{BBB_change_color}">{BBB_count_change}</td>
+            <td class="{BBB_change_color}">{BBB_ratio_change}pp</td>
           </tr>
           <tr>
-            <td><span class="rating-badge" style="background:rgba(239,68,68,0.15);color:var(--red);">BB及以下</span></td>
-            <td>{调整前BB数量}</td>
-            <td>{调整前BB占比}%</td>
-            <td>{调整后BB数量}</td>
-            <td>{调整后BB占比}%</td>
-            <td class="{BB变化颜色}">{BB数量变化}</td>
-            <td class="{BB变化颜色}">{BB占比变化}pp</td>
+            <td><span class="rating-badge" style="background:rgba(239,68,68,0.15);color:var(--red);">BB and Below</span></td>
+            <td>{pre_adjustment_BB_count}</td>
+            <td>{pre_adjustment_BB_ratio}%</td>
+            <td>{post_adjustment_BB_count}</td>
+            <td>{post_adjustment_BB_ratio}%</td>
+            <td class="{BB_change_color}">{BB_count_change}</td>
+            <td class="{BB_change_color}">{BB_ratio_change}pp</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>4.2 受调整影响的主要发行人</h3>
+      <h3>4.2 Main Issuers Affected by Adjustment</h3>
       <table>
         <thead>
           <tr>
-            <th>发行人</th>
-            <th>调整前评级</th>
-            <th>调整后评级</th>
-            <th>调整幅度</th>
-            <th>调整原因</th>
-            <th>敞口占比</th>
+            <th>Issuer</th>
+            <th>Pre-Adjustment Rating</th>
+            <th>Post-Adjustment Rating</th>
+            <th>Adjustment Magnitude</th>
+            <th>Adjustment Reason</th>
+            <th>Exposure Ratio</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>{受调整发行人1}</td>
-            <td><span class="rating-badge" style="background:rgba(34,197,94,0.15);color:var(--green);">{调整前评级1}</span></td>
-            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{调整后评级1}</span></td>
-            <td class="text-red">{调整幅度1}</td>
-            <td>{调整原因1}</td>
-            <td>{发行人敞口占比1}%</td>
+            <td>{adjusted_issuer_1}</td>
+            <td><span class="rating-badge" style="background:rgba(34,197,94,0.15);color:var(--green);">{pre_adjustment_rating_1}</span></td>
+            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{post_adjustment_rating_1}</span></td>
+            <td class="text-red">{adjustment_magnitude_1}</td>
+            <td>{adjustment_reason_1}</td>
+            <td>{issuer_exposure_pct_1}%</td>
           </tr>
           <tr>
-            <td>{受调整发行人2}</td>
-            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{调整前评级2}</span></td>
-            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{调整后评级2}</span></td>
-            <td class="text-amber">{调整幅度2}</td>
-            <td>{调整原因2}</td>
-            <td>{发行人敞口占比2}%</td>
+            <td>{adjusted_issuer_2}</td>
+            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{pre_adjustment_rating_2}</span></td>
+            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{post_adjustment_rating_2}</span></td>
+            <td class="text-amber">{adjustment_magnitude_2}</td>
+            <td>{adjustment_reason_2}</td>
+            <td>{issuer_exposure_pct_2}%</td>
           </tr>
           <tr>
-            <td>{受调整发行人3}</td>
-            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{调整前评级3}</span></td>
-            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">{调整后评级3}</span></td>
-            <td class="text-red">{调整幅度3}</td>
-            <td>{调整原因3}</td>
-            <td>{发行人敞口占比3}%</td>
+            <td>{adjusted_issuer_3}</td>
+            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{pre_adjustment_rating_3}</span></td>
+            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">{post_adjustment_rating_3}</span></td>
+            <td class="text-red">{adjustment_magnitude_3}</td>
+            <td>{adjustment_reason_3}</td>
+            <td>{issuer_exposure_pct_3}%</td>
           </tr>
           <tr>
-            <td>{受调整发行人4}</td>
-            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">{调整前评级4}</span></td>
-            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">{调整后评级4}</span></td>
-            <td class="text-amber">{调整幅度4}</td>
-            <td>{调整原因4}</td>
-            <td>{发行人敞口占比4}%</td>
+            <td>{adjusted_issuer_4}</td>
+            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">{pre_adjustment_rating_4}</span></td>
+            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">{post_adjustment_rating_4}</span></td>
+            <td class="text-amber">{adjustment_magnitude_4}</td>
+            <td>{adjustment_reason_4}</td>
+            <td>{issuer_exposure_pct_4}%</td>
           </tr>
           <tr>
-            <td>{受调整发行人5}</td>
-            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">{调整前评级5}</span></td>
-            <td><span class="rating-badge" style="background:rgba(239,68,68,0.15);color:var(--red);">{调整后评级5}</span></td>
-            <td class="text-red">{调整幅度5}</td>
-            <td>{调整原因5}</td>
-            <td>{发行人敞口占比5}%</td>
+            <td>{adjusted_issuer_5}</td>
+            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">{pre_adjustment_rating_5}</span></td>
+            <td><span class="rating-badge" style="background:rgba(239,68,68,0.15);color:var(--red);">{post_adjustment_rating_5}</span></td>
+            <td class="text-red">{adjustment_magnitude_5}</td>
+            <td>{adjustment_reason_5}</td>
+            <td>{issuer_exposure_pct_5}%</td>
           </tr>
         </tbody>
       </table>
       <div class="info-box info-amber" style="margin-top:8px;">
-        <strong>评级调整影响总结：</strong>{评级调整影响总结描述——调整前后组合加权评级变化、评级分布形态变化、受调整的发行人数量和敞口占比、对组合信用风险的总体影响。}
+        <strong>Rating Adjustment Impact Summary:</strong>{rating_adjustment_impact_summary_desc——Pre- and post-adjustment portfolio weighted rating change, rating distribution morphology change, number of adjusted issuers and exposure ratio, overall impact on portfolio credit risk.}
       </div>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>4.3 调整后组合信用评分变化</h3>
+      <h3>4.3 Post-Adjustment Portfolio Credit Score Changes</h3>
       <table>
         <thead>
           <tr>
-            <th>指标</th>
-            <th>调整前</th>
-            <th>调整后</th>
-            <th>变化</th>
-            <th>评估</th>
+            <th>Indicator</th>
+            <th>Pre-Adjustment</th>
+            <th>Post-Adjustment</th>
+            <th>Change</th>
+            <th>Assessment</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>组合加权评级</td>
-            <td>{调整前加权评级}</td>
-            <td>{调整后加权评级}</td>
-            <td class="{加权评级变化颜色}">{加权评级变化}</td>
-            <td><span class="tag tag-{加权评级标签}">{加权评级评估}</span></td>
+            <td>Portfolio Weighted Rating</td>
+            <td>{pre_adjustment_weighted_rating}</td>
+            <td>{post_adjustment_weighted_rating}</td>
+            <td class="{weighted_rating_change_color}">{weighted_rating_change}</td>
+            <td><span class="tag tag-{weighted_rating_tag}">{weighted_rating_assessment}</span></td>
           </tr>
           <tr>
-            <td>AAA占比</td>
-            <td>{调整前AAA占比}%</td>
-            <td>{调整后AAA占比}%</td>
-            <td class="{AAA占比变化颜色}">{AAA占比变化}pp</td>
-            <td><span class="tag tag-{AAA占比标签}">{AAA占比评估}</span></td>
+            <td>AAA Ratio</td>
+            <td>{pre_adjustment_AAA_ratio}%</td>
+            <td>{post_adjustment_AAA_ratio}%</td>
+            <td class="{AAA_ratio_change_color}">{AAA_ratio_change}pp</td>
+            <td><span class="tag tag-{AAA_ratio_tag}">{AAA_ratio_assessment}</span></td>
           </tr>
           <tr>
-            <td>投资级占比</td>
-            <td>{调整前投资级占比}%</td>
-            <td>{调整后投资级占比}%</td>
-            <td class="{投资级占比变化颜色}">{投资级占比变化}pp</td>
-            <td><span class="tag tag-{投资级占比标签}">{投资级占比评估}</span></td>
+            <td>Investment Grade Ratio</td>
+            <td>{pre_adjustment_investment_grade_ratio}%</td>
+            <td>{post_adjustment_investment_grade_ratio}%</td>
+            <td class="{investment_grade_ratio_change_color}">{investment_grade_ratio_change}pp</td>
+            <td><span class="tag tag-{investment_grade_ratio_tag}">{investment_grade_ratio_assessment}</span></td>
           </tr>
           <tr>
-            <td>信用风险值</td>
-            <td>{调整前信用风险值}</td>
-            <td>{调整后信用风险值}</td>
-            <td class="{信用风险变化颜色}">{信用风险变化}</td>
-            <td><span class="tag tag-{信用风险标签}">{信用风险评估}</span></td>
+            <td>Credit Risk Value</td>
+            <td>{pre_adjustment_credit_risk_value}</td>
+            <td>{post_adjustment_credit_risk_value}</td>
+            <td class="{credit_risk_change_color}">{credit_risk_change}</td>
+            <td><span class="tag tag-{credit_risk_tag}">{credit_risk_assessment}</span></td>
           </tr>
           <tr>
-            <td>预期损失率</td>
-            <td>{调整前预期损失率}%</td>
-            <td>{调整后预期损失率}%</td>
-            <td class="{预期损失变化颜色}">{预期损失变化}pp</td>
-            <td><span class="tag tag-{预期损失标签}">{预期损失评估}</span></td>
+            <td>Expected Loss Rate</td>
+            <td>{pre_adjustment_expected_loss_rate}%</td>
+            <td>{post_adjustment_expected_loss_rate}%</td>
+            <td class="{expected_loss_change_color}">{expected_loss_change}pp</td>
+            <td><span class="tag tag-{expected_loss_tag}">{expected_loss_assessment}</span></td>
           </tr>
         </tbody>
       </table>
@@ -870,54 +870,54 @@
   </div>
 
   <!-- ================================================================ -->
-  <!-- SECTION 5 — 分散化建议路径 -->
+  <!-- SECTION 5 -- Diversification Recommendation Path -->
   <!-- ================================================================ -->
   <div class="section">
     <h2 class="section-title">
       <span class="signal" style="background:var(--green);"></span>
-      五、分散化建议路径
+      5. Diversification Recommendation Path
     </h2>
     <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
-      针对集中度风险，提出具体的分散化方案。明确减少哪些集中行业/区域，增加哪些分散行业/区域，
-      以及预期分散效果和实现路径。
+      Propose specific diversification plans targeting concentration risk. Specify which concentrated industries/regions to reduce, which diversified industries/regions to increase,
+      along with expected diversification effects and implementation paths.
     </p>
 
     <div class="card">
-      <h3>5.1 减少配置 — 高风险集中项</h3>
+      <h3>5.1 Reduce Allocation -- High-Risk Concentration Items</h3>
       <table>
         <thead>
           <tr>
-            <th>减少目标</th>
-            <th>当前敞口</th>
-            <th>目标敞口</th>
-            <th>减少幅度</th>
-            <th>预期效果</th>
-            <th>优先级</th>
+            <th>Reduction Target</th>
+            <th>Current Exposure</th>
+            <th>Target Exposure</th>
+            <th>Reduction Magnitude</th>
+            <th>Expected Effect</th>
+            <th>Priority</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>{减少目标1名称}</td>
-            <td>{减少目标1当前敞口}%</td>
-            <td>{减少目标1目标敞口}%</td>
-            <td>{减少目标1减少幅度}pp</td>
-            <td>{减少目标1预期效果}</td>
+            <td>{reduction_target_1_name}</td>
+            <td>{reduction_target_1_current_exposure}%</td>
+            <td>{reduction_target_1_target_exposure}%</td>
+            <td>{reduction_target_1_reduction_magnitude}pp</td>
+            <td>{reduction_target_1_expected_effect}</td>
             <td><span class="tag tag-red">P0</span></td>
           </tr>
           <tr>
-            <td>{减少目标2名称}</td>
-            <td>{减少目标2当前敞口}%</td>
-            <td>{减少目标2目标敞口}%</td>
-            <td>{减少目标2减少幅度}pp</td>
-            <td>{减少目标2预期效果}</td>
+            <td>{reduction_target_2_name}</td>
+            <td>{reduction_target_2_current_exposure}%</td>
+            <td>{reduction_target_2_target_exposure}%</td>
+            <td>{reduction_target_2_reduction_magnitude}pp</td>
+            <td>{reduction_target_2_expected_effect}</td>
             <td><span class="tag tag-red">P0</span></td>
           </tr>
           <tr>
-            <td>{减少目标3名称}</td>
-            <td>{减少目标3当前敞口}%</td>
-            <td>{减少目标3目标敞口}%</td>
-            <td>{减少目标3减少幅度}pp</td>
-            <td>{减少目标3预期效果}</td>
+            <td>{reduction_target_3_name}</td>
+            <td>{reduction_target_3_current_exposure}%</td>
+            <td>{reduction_target_3_target_exposure}%</td>
+            <td>{reduction_target_3_reduction_magnitude}pp</td>
+            <td>{reduction_target_3_expected_effect}</td>
             <td><span class="tag tag-amber">P1</span></td>
           </tr>
         </tbody>
@@ -925,49 +925,49 @@
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>5.2 增加配置 — 分散化推荐</h3>
+      <h3>5.2 Increase Allocation -- Diversification Recommendations</h3>
       <table>
         <thead>
           <tr>
-            <th>增加目标</th>
-            <th>目标敞口</th>
-            <th>增加幅度</th>
-            <th>分散化价值</th>
-            <th>建议理由</th>
-            <th>优先级</th>
+            <th>Increase Target</th>
+            <th>Target Exposure</th>
+            <th>Increase Magnitude</th>
+            <th>Diversification Value</th>
+            <th>Recommendation Rationale</th>
+            <th>Priority</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>{增加目标1名称}</td>
-            <td>{增加目标1目标敞口}%</td>
-            <td>{增加目标1增加幅度}pp</td>
-            <td>{增加目标1分散化价值}</td>
-            <td>{增加目标1建议理由}</td>
+            <td>{increase_target_1_name}</td>
+            <td>{increase_target_1_target_exposure}%</td>
+            <td>{increase_target_1_increase_magnitude}pp</td>
+            <td>{increase_target_1_diversification_value}</td>
+            <td>{increase_target_1_recommendation_rationale}</td>
             <td><span class="tag tag-green">P0</span></td>
           </tr>
           <tr>
-            <td>{增加目标2名称}</td>
-            <td>{增加目标2目标敞口}%</td>
-            <td>{增加目标2增加幅度}pp</td>
-            <td>{增加目标2分散化价值}</td>
-            <td>{增加目标2建议理由}</td>
+            <td>{increase_target_2_name}</td>
+            <td>{increase_target_2_target_exposure}%</td>
+            <td>{increase_target_2_increase_magnitude}pp</td>
+            <td>{increase_target_2_diversification_value}</td>
+            <td>{increase_target_2_recommendation_rationale}</td>
             <td><span class="tag tag-green">P0</span></td>
           </tr>
           <tr>
-            <td>{增加目标3名称}</td>
-            <td>{增加目标3目标敞口}%</td>
-            <td>{增加目标3增加幅度}pp</td>
-            <td>{增加目标3分散化价值}</td>
-            <td>{增加目标3建议理由}</td>
+            <td>{increase_target_3_name}</td>
+            <td>{increase_target_3_target_exposure}%</td>
+            <td>{increase_target_3_increase_magnitude}pp</td>
+            <td>{increase_target_3_diversification_value}</td>
+            <td>{increase_target_3_recommendation_rationale}</td>
             <td><span class="tag tag-blue">P1</span></td>
           </tr>
           <tr>
-            <td>{增加目标4名称}</td>
-            <td>{增加目标4目标敞口}%</td>
-            <td>{增加目标4增加幅度}pp</td>
-            <td>{增加目标4分散化价值}</td>
-            <td>{增加目标4建议理由}</td>
+            <td>{increase_target_4_name}</td>
+            <td>{increase_target_4_target_exposure}%</td>
+            <td>{increase_target_4_increase_magnitude}pp</td>
+            <td>{increase_target_4_diversification_value}</td>
+            <td>{increase_target_4_recommendation_rationale}</td>
             <td><span class="tag tag-blue">P1</span></td>
           </tr>
         </tbody>
@@ -975,778 +975,778 @@
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>5.3 分散化路径模拟</h3>
+      <h3>5.3 Diversification Path Simulation</h3>
       <table>
         <thead>
           <tr>
-            <th>模拟阶段</th>
-            <th>操作内容</th>
-            <th>完成时限</th>
-            <th>集中度评分改善</th>
-            <th>调整后评级影响</th>
-            <th>风险提示</th>
+            <th>Simulation Stage</th>
+            <th>Operation Details</th>
+            <th>Completion Timeline</th>
+            <th>Concentration Score Improvement</th>
+            <th>Post-Adjustment Rating Impact</th>
+            <th>Risk Note</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>第一阶段</td>
-            <td>{第一阶段操作内容}</td>
-            <td>{第一阶段时限}</td>
-            <td>{第一阶段评分改善}/10</td>
-            <td>{第一阶段评级影响}</td>
-            <td><span class="tag tag-amber">{第一阶段风险提示}</span></td>
+            <td>Stage 1</td>
+            <td>{stage_1_operation_detail}</td>
+            <td>{stage_1_timeline}</td>
+            <td>{stage_1_score_improvement}/10</td>
+            <td>{stage_1_rating_impact}</td>
+            <td><span class="tag tag-amber">{stage_1_risk_note}</span></td>
           </tr>
           <tr>
-            <td>第二阶段</td>
-            <td>{第二阶段操作内容}</td>
-            <td>{第二阶段时限}</td>
-            <td>{第二阶段评分改善}/10</td>
-            <td>{第二阶段评级影响}</td>
-            <td><span class="tag tag-amber">{第二阶段风险提示}</span></td>
+            <td>Stage 2</td>
+            <td>{stage_2_operation_detail}</td>
+            <td>{stage_2_timeline}</td>
+            <td>{stage_2_score_improvement}/10</td>
+            <td>{stage_2_rating_impact}</td>
+            <td><span class="tag tag-amber">{stage_2_risk_note}</span></td>
           </tr>
           <tr>
-            <td>第三阶段</td>
-            <td>{第三阶段操作内容}</td>
-            <td>{第三阶段时限}</td>
-            <td>{第三阶段评分改善}/10</td>
-            <td>{第三阶段评级影响}</td>
-            <td><span class="tag tag-green">{第三阶段风险提示}</span></td>
+            <td>Stage 3</td>
+            <td>{stage_3_operation_detail}</td>
+            <td>{stage_3_timeline}</td>
+            <td>{stage_3_score_improvement}/10</td>
+            <td>{stage_3_rating_impact}</td>
+            <td><span class="tag tag-green">{stage_3_risk_note}</span></td>
           </tr>
         </tbody>
       </table>
       <div class="info-box info-green" style="margin-top:10px;">
-        <strong>分散化路径总结：</strong>{分散化路径总结——通过分阶段操作后组合集中度评分的预期改善幅度、评级调整的收窄空间、以及需要关注的执行风险。建议定期对分散化效果进行回顾和调整。}
+        <strong>Diversification Path Summary:</strong>{diversification_path_summary——Expected improvement in portfolio concentration score through phased operations, the narrowing space for rating adjustments, and execution risks requiring attention. It is recommended to regularly review and adjust the diversification effects.}
       </div>
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- SECTION 6 — 与传染矩阵联动 -->
+  <!-- SECTION 6 -- Contagion Matrix Integration -->
   <!-- ================================================================ -->
   <div class="section">
     <h2 class="section-title">
       <span class="signal" style="background:var(--purple);"></span>
-      六、与传染矩阵联动
+      6. Contagion Matrix Integration
     </h2>
     <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
-      将当前组合的集中项投射至传染矩阵中，识别集中风险在传染情景下的最差情景和蔓延路径。
-      通过行业关联度矩阵计算集中项裂变后的组合损失分布。
+      Project the current portfolio's concentration items into the contagion matrix to identify the worst-case scenarios and propagation paths of concentration risk under contagion scenarios.
+      Calculate the portfolio loss distribution after concentration item fission through the industry correlation matrix.
     </p>
 
     <div class="contagion-link">
-      <h4>集中项在传染矩阵中的位置</h4>
+      <h4>Position of Concentration Items in the Contagion Matrix</h4>
       <table>
         <thead>
           <tr>
-            <th>集中项</th>
-            <th>传染矩阵节点</th>
-            <th>传染扇出度</th>
-            <th>关联行业数</th>
-            <th>最差传染情景</th>
-            <th>损失估算</th>
+            <th>Concentration Item</th>
+            <th>Contagion Matrix Node</th>
+            <th>Contagion Fan-Out Degree</th>
+            <th>Number of Related Industries</th>
+            <th>Worst-Case Contagion Scenario</th>
+            <th>Estimated Loss</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>{传染集中项1名称}</td>
-            <td>{传染集中项1节点}</td>
-            <td><span class="tag tag-red">{传染集中项1扇出度}</span></td>
-            <td>{传染集中项1关联行业数}</td>
-            <td>{传染集中项1最差情景}</td>
-            <td class="text-red">{传染集中项1损失估算}</td>
+            <td>{contagion_concentration_item_1_name}</td>
+            <td>{contagion_concentration_item_1_node}</td>
+            <td><span class="tag tag-red">{contagion_concentration_item_1_fan_out}</span></td>
+            <td>{contagion_concentration_item_1_related_industry_count}</td>
+            <td>{contagion_concentration_item_1_worst_case_scenario}</td>
+            <td class="text-red">{contagion_concentration_item_1_estimated_loss}</td>
           </tr>
           <tr>
-            <td>{传染集中项2名称}</td>
-            <td>{传染集中项2节点}</td>
-            <td><span class="tag tag-amber">{传染集中项2扇出度}</span></td>
-            <td>{传染集中项2关联行业数}</td>
-            <td>{传染集中项2最差情景}</td>
-            <td class="text-red">{传染集中项2损失估算}</td>
+            <td>{contagion_concentration_item_2_name}</td>
+            <td>{contagion_concentration_item_2_node}</td>
+            <td><span class="tag tag-amber">{contagion_concentration_item_2_fan_out}</span></td>
+            <td>{contagion_concentration_item_2_related_industry_count}</td>
+            <td>{contagion_concentration_item_2_worst_case_scenario}</td>
+            <td class="text-red">{contagion_concentration_item_2_estimated_loss}</td>
           </tr>
           <tr>
-            <td>{传染集中项3名称}</td>
-            <td>{传染集中项3节点}</td>
-            <td><span class="tag tag-amber">{传染集中项3扇出度}</span></td>
-            <td>{传染集中项3关联行业数}</td>
-            <td>{传染集中项3最差情景}</td>
-            <td class="text-amber">{传染集中项3损失估算}</td>
+            <td>{contagion_concentration_item_3_name}</td>
+            <td>{contagion_concentration_item_3_node}</td>
+            <td><span class="tag tag-amber">{contagion_concentration_item_3_fan_out}</span></td>
+            <td>{contagion_concentration_item_3_related_industry_count}</td>
+            <td>{contagion_concentration_item_3_worst_case_scenario}</td>
+            <td class="text-amber">{contagion_concentration_item_3_estimated_loss}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="contagion-link" style="margin-top:12px;">
-      <h4>行业关联度传染矩阵</h4>
+      <h4>Industry Correlation Contagion Matrix</h4>
       <p style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;">
-        基于申万二级行业上下游关联度数据，构建关联度矩阵。行列交叉为行业间传染强度（0-1），
-        值越接近1表示关联度越强、传染风险越高。
+        Constructed based on Shenwan secondary industry upstream-downstream correlation data. The row-column intersection represents contagion intensity between industries (0-1),
+        where values closer to 1 indicate stronger correlation and higher contagion risk.
       </p>
       <table>
         <thead>
           <tr>
-            <th>行业</th>
-            <th>{关联行业1}</th>
-            <th>{关联行业2}</th>
-            <th>{关联行业3}</th>
-            <th>{关联行业4}</th>
-            <th>{关联行业5}</th>
+            <th>Industry</th>
+            <th>{related_industry_1}</th>
+            <th>{related_industry_2}</th>
+            <th>{related_industry_3}</th>
+            <th>{related_industry_4}</th>
+            <th>{related_industry_5}</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>{关联行业1}</td>
-            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{关联度1-1}</td>
-            <td style="background:rgba(245,158,11,0.15);color:var(--amber);text-align:center;">{关联度1-2}</td>
-            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{关联度1-3}</td>
-            <td style="background:rgba(239,68,68,0.15);color:var(--red);text-align:center;">{关联度1-4}</td>
-            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{关联度1-5}</td>
+            <td>{related_industry_1}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_1_1}</td>
+            <td style="background:rgba(245,158,11,0.15);color:var(--amber);text-align:center;">{correlation_1_2}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_1_3}</td>
+            <td style="background:rgba(239,68,68,0.15);color:var(--red);text-align:center;">{correlation_1_4}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_1_5}</td>
           </tr>
           <tr>
-            <td>{关联行业2}</td>
-            <td style="background:rgba(245,158,11,0.15);color:var(--amber);text-align:center;">{关联度2-1}</td>
-            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{关联度2-2}</td>
-            <td style="background:rgba(239,68,68,0.15);color:var(--red);text-align:center;">{关联度2-3}</td>
-            <td style="background:rgba(245,158,11,0.15);color:var(--amber);text-align:center;">{关联度2-4}</td>
-            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{关联度2-5}</td>
+            <td>{related_industry_2}</td>
+            <td style="background:rgba(245,158,11,0.15);color:var(--amber);text-align:center;">{correlation_2_1}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_2_2}</td>
+            <td style="background:rgba(239,68,68,0.15);color:var(--red);text-align:center;">{correlation_2_3}</td>
+            <td style="background:rgba(245,158,11,0.15);color:var(--amber);text-align:center;">{correlation_2_4}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_2_5}</td>
           </tr>
           <tr>
-            <td>{关联行业3}</td>
-            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{关联度3-1}</td>
-            <td style="background:rgba(239,68,68,0.15);color:var(--red);text-align:center;">{关联度3-2}</td>
-            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{关联度3-3}</td>
-            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{关联度3-4}</td>
-            <td style="background:rgba(245,158,11,0.15);color:var(--amber);text-align:center;">{关联度3-5}</td>
+            <td>{related_industry_3}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_3_1}</td>
+            <td style="background:rgba(239,68,68,0.15);color:var(--red);text-align:center;">{correlation_3_2}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_3_3}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_3_4}</td>
+            <td style="background:rgba(245,158,11,0.15);color:var(--amber);text-align:center;">{correlation_3_5}</td>
           </tr>
           <tr>
-            <td>{关联行业4}</td>
-            <td style="background:rgba(239,68,68,0.15);color:var(--red);text-align:center;">{关联度4-1}</td>
-            <td style="background:rgba(245,158,11,0.15);color:var(--amber);text-align:center;">{关联度4-2}</td>
-            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{关联度4-3}</td>
-            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{关联度4-4}</td>
-            <td style="background:rgba(239,68,68,0.15);color:var(--red);text-align:center;">{关联度4-5}</td>
+            <td>{related_industry_4}</td>
+            <td style="background:rgba(239,68,68,0.15);color:var(--red);text-align:center;">{correlation_4_1}</td>
+            <td style="background:rgba(245,158,11,0.15);color:var(--amber);text-align:center;">{correlation_4_2}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_4_3}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_4_4}</td>
+            <td style="background:rgba(239,68,68,0.15);color:var(--red);text-align:center;">{correlation_4_5}</td>
           </tr>
           <tr>
-            <td>{关联行业5}</td>
-            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{关联度5-1}</td>
-            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{关联度5-2}</td>
-            <td style="background:rgba(245,158,11,0.15);color:var(--amber);text-align:center;">{关联度5-3}</td>
-            <td style="background:rgba(239,68,68,0.15);color:var(--red);text-align:center;">{关联度5-4}</td>
-            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{关联度5-5}</td>
+            <td>{related_industry_5}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_5_1}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_5_2}</td>
+            <td style="background:rgba(245,158,11,0.15);color:var(--amber);text-align:center;">{correlation_5_3}</td>
+            <td style="background:rgba(239,68,68,0.15);color:var(--red);text-align:center;">{correlation_5_4}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_5_5}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="contagion-link" style="margin-top:12px;">
-      <h4>最差传染情景推演</h4>
+      <h4>Worst-Case Contagion Scenario Simulation</h4>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border-default); border-radius:8px; overflow:hidden; margin:14px 0;">
         <div class="concentration-item" style="border-left:3px solid var(--red);">
-          <h5 style="color:var(--red);">情景一：{最差情景1名称}</h5>
+          <h5 style="color:var(--red);">Scenario 1: {worst_case_scenario_1_name}</h5>
           <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
-            <strong>触发条件：</strong>{最差情景1触发条件}<br>
-            <strong>传染路径：</strong>{最差情景1传染路径}<br>
-            <strong>波及深度：</strong>{最差情景1波及深度}<br>
-            <strong>估算损失：</strong><span class="c-stat" style="font-size:18px;">{最差情景1估算损失}</span>
+            <strong>Trigger Conditions:</strong>{worst_case_scenario_1_trigger_condition}<br>
+            <strong>Contagion Path:</strong>{worst_case_scenario_1_contagion_path}<br>
+            <strong>Contagion Depth:</strong>{worst_case_scenario_1_contagion_depth}<br>
+            <strong>Estimated Loss:</strong><span class="c-stat" style="font-size:18px;">{worst_case_scenario_1_estimated_loss}</span>
           </p>
         </div>
         <div class="concentration-item" style="border-left:3px solid var(--amber);">
-          <h5 style="color:var(--amber);">情景二：{最差情景2名称}</h5>
+          <h5 style="color:var(--amber);">Scenario 2: {worst_case_scenario_2_name}</h5>
           <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
-            <strong>触发条件：</strong>{最差情景2触发条件}<br>
-            <strong>传染路径：</strong>{最差情景2传染路径}<br>
-            <strong>波及深度：</strong>{最差情景2波及深度}<br>
-            <strong>估算损失：</strong><span class="c-stat" style="font-size:18px;">{最差情景2估算损失}</span>
+            <strong>Trigger Conditions:</strong>{worst_case_scenario_2_trigger_condition}<br>
+            <strong>Contagion Path:</strong>{worst_case_scenario_2_contagion_path}<br>
+            <strong>Contagion Depth:</strong>{worst_case_scenario_2_contagion_depth}<br>
+            <strong>Estimated Loss:</strong><span class="c-stat" style="font-size:18px;">{worst_case_scenario_2_estimated_loss}</span>
           </p>
         </div>
       </div>
       <div class="info-box info-purple" style="margin-top:8px;">
-        <strong>传染联动综合评估：</strong>{传染联动综合评估——集中项在传染矩阵中的风险暴露度、行业关联度对风险扩散的影响、分散化行动对传染风险的缓释效果。}
+        <strong>Contagion Integration Composite Assessment:</strong>{contagion_linkage_assessment——Risk exposure of concentration items in the contagion matrix, impact of industry correlation on risk diffusion, mitigation effect of diversification actions on contagion risk.}
       </div>
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- SECTION 7 — 分散化方案详细实施 -->
+  <!-- SECTION 7 -- Diversification Plan Detailed Implementation -->
   <!-- ================================================================ -->
   <div class="section">
     <h2 class="section-title">
       <span class="signal" style="background:var(--green);"></span>
-      七、分散化方案详细实施
+      7. Diversification Plan Detailed Implementation
     </h2>
     <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
-      将分散化建议转化为可执行的操作方案。包括具体的调仓比例、可替代品种建议、
-      执行节奏和预期效果评估。
+      Translate diversification recommendations into executable operational plans. Including specific rebalancing ratios, recommended substitute instruments,
+      execution pace, and expected effect assessment.
     </p>
 
     <div class="card">
-      <h3>7.1 减仓执行方案</h3>
+      <h3>7.1 Reduction Execution Plan</h3>
       <table>
         <thead>
           <tr>
-            <th>减仓品种/行业</th>
-            <th>当前持仓</th>
-            <th>目标持仓</th>
-            <th>减仓规模</th>
-            <th>执行方式</th>
-            <th>节奏建议</th>
-            <th>市场影响评估</th>
+            <th>Instrument/Industry to Reduce</th>
+            <th>Current Holdings</th>
+            <th>Target Holdings</th>
+            <th>Reduction Size</th>
+            <th>Execution Method</th>
+            <th>Pace Recommendation</th>
+            <th>Market Impact Assessment</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>{减仓品种1}</td>
-            <td>{减仓品种1当前}亿元</td>
-            <td>{减仓品种1目标}亿元</td>
-            <td>{减仓品种1规模}亿元</td>
-            <td>{减仓品种1方式}</td>
-            <td>{减仓品种1节奏}</td>
-            <td><span class="tag tag-{减仓品种1影响标签}">{减仓品种1影响}</span></td>
+            <td>{reduce_instrument_1}</td>
+            <td>{reduce_instrument_1_current} hundred million</td>
+            <td>{reduce_instrument_1_target} hundred million</td>
+            <td>{reduce_instrument_1_size} hundred million</td>
+            <td>{reduce_instrument_1_method}</td>
+            <td>{reduce_instrument_1_pace}</td>
+            <td><span class="tag tag-{reduce_instrument_1_impact_tag}">{reduce_instrument_1_impact}</span></td>
           </tr>
           <tr>
-            <td>{减仓品种2}</td>
-            <td>{减仓品种2当前}亿元</td>
-            <td>{减仓品种2目标}亿元</td>
-            <td>{减仓品种2规模}亿元</td>
-            <td>{减仓品种2方式}</td>
-            <td>{减仓品种2节奏}</td>
-            <td><span class="tag tag-{减仓品种2影响标签}">{减仓品种2影响}</span></td>
+            <td>{reduce_instrument_2}</td>
+            <td>{reduce_instrument_2_current} hundred million</td>
+            <td>{reduce_instrument_2_target} hundred million</td>
+            <td>{reduce_instrument_2_size} hundred million</td>
+            <td>{reduce_instrument_2_method}</td>
+            <td>{reduce_instrument_2_pace}</td>
+            <td><span class="tag tag-{reduce_instrument_2_impact_tag}">{reduce_instrument_2_impact}</span></td>
           </tr>
           <tr>
-            <td>{减仓品种3}</td>
-            <td>{减仓品种3当前}亿元</td>
-            <td>{减仓品种3目标}亿元</td>
-            <td>{减仓品种3规模}亿元</td>
-            <td>{减仓品种3方式}</td>
-            <td>{减仓品种3节奏}</td>
-            <td><span class="tag tag-{减仓品种3影响标签}">{减仓品种3影响}</span></td>
+            <td>{reduce_instrument_3}</td>
+            <td>{reduce_instrument_3_current} hundred million</td>
+            <td>{reduce_instrument_3_target} hundred million</td>
+            <td>{reduce_instrument_3_size} hundred million</td>
+            <td>{reduce_instrument_3_method}</td>
+            <td>{reduce_instrument_3_pace}</td>
+            <td><span class="tag tag-{reduce_instrument_3_impact_tag}">{reduce_instrument_3_impact}</span></td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>7.2 增仓执行方案</h3>
+      <h3>7.2 Increase Execution Plan</h3>
       <table>
         <thead>
           <tr>
-            <th>增仓品种/行业</th>
-            <th>目标持仓</th>
-            <th>增仓规模</th>
-            <th>推荐标的</th>
-            <th>信用质量</th>
-            <th>执行节奏</th>
+            <th>Instrument/Industry to Increase</th>
+            <th>Target Holdings</th>
+            <th>Increase Size</th>
+            <th>Recommended Instruments</th>
+            <th>Credit Quality</th>
+            <th>Execution Pace</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>{增仓品种1}</td>
-            <td>{增仓品种1目标}亿元</td>
-            <td>{增仓品种1规模}亿元</td>
-            <td>{增仓品种1标的}</td>
-            <td><span class="rating-badge" style="background:rgba(34,197,94,0.15);color:var(--green);">{增仓品种1评级}</span></td>
-            <td>{增仓品种1节奏}</td>
+            <td>{increase_instrument_1}</td>
+            <td>{increase_instrument_1_target} hundred million</td>
+            <td>{increase_instrument_1_size} hundred million</td>
+            <td>{increase_instrument_1_target_instrument}</td>
+            <td><span class="rating-badge" style="background:rgba(34,197,94,0.15);color:var(--green);">{increase_instrument_1_rating}</span></td>
+            <td>{increase_instrument_1_pace}</td>
           </tr>
           <tr>
-            <td>{增仓品种2}</td>
-            <td>{增仓品种2目标}亿元</td>
-            <td>{增仓品种2规模}亿元</td>
-            <td>{增仓品种2标的}</td>
-            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{增仓品种2评级}</span></td>
-            <td>{增仓品种2节奏}</td>
+            <td>{increase_instrument_2}</td>
+            <td>{increase_instrument_2_target} hundred million</td>
+            <td>{increase_instrument_2_size} hundred million</td>
+            <td>{increase_instrument_2_target_instrument}</td>
+            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{increase_instrument_2_rating}</span></td>
+            <td>{increase_instrument_2_pace}</td>
           </tr>
           <tr>
-            <td>{增仓品种3}</td>
-            <td>{增仓品种3目标}亿元</td>
-            <td>{增仓品种3规模}亿元</td>
-            <td>{增仓品种3标的}</td>
-            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{增仓品种3评级}</span></td>
-            <td>{增仓品种3节奏}</td>
+            <td>{increase_instrument_3}</td>
+            <td>{increase_instrument_3_target} hundred million</td>
+            <td>{increase_instrument_3_size} hundred million</td>
+            <td>{increase_instrument_3_target_instrument}</td>
+            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{increase_instrument_3_rating}</span></td>
+            <td>{increase_instrument_3_pace}</td>
           </tr>
           <tr>
-            <td>{增仓品种4}</td>
-            <td>{增仓品种4目标}亿元</td>
-            <td>{增仓品种4规模}亿元</td>
-            <td>{增仓品种4标的}</td>
-            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">{增仓品种4评级}</span></td>
-            <td>{增仓品种4节奏}</td>
+            <td>{increase_instrument_4}</td>
+            <td>{increase_instrument_4_target} hundred million</td>
+            <td>{increase_instrument_4_size} hundred million</td>
+            <td>{increase_instrument_4_target_instrument}</td>
+            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">{increase_instrument_4_rating}</span></td>
+            <td>{increase_instrument_4_pace}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>7.3 分散化前后对比</h3>
+      <h3>7.3 Pre- and Post-Diversification Comparison</h3>
       <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1px; background:var(--border-default); border-radius:8px; overflow:hidden; margin:14px 0;">
         <div class="concentration-item">
-          <h5>指标</h5>
+          <h5>Indicator</h5>
           <div style="font-size:12px;color:var(--text-secondary);line-height:2;">
-            <div>行业HHI指数</div>
-            <div>最大行业敞口</div>
-            <div>评级HHI指数</div>
-            <div>区域数量</div>
-            <div>期限分散度</div>
-            <div>渠道多样性</div>
-            <div><strong>综合集中度评分</strong></div>
+            <div>Industry HHI Index</div>
+            <div>Largest Industry Exposure</div>
+            <div>Rating HHI Index</div>
+            <div>Number of Regions</div>
+            <div>Maturity Diversification</div>
+            <div>Channel Diversity</div>
+            <div><strong>Composite Concentration Score</strong></div>
           </div>
         </div>
         <div class="concentration-item">
-          <h5>分散化前</h5>
+          <h5>Pre-Diversification</h5>
           <div style="font-size:12px;color:var(--text-secondary);line-height:2;">
-            <div>{前行业HHI}</div>
-            <div>{前最大行业敞口}%</div>
-            <div>{前评级HHI}</div>
-            <div>{前区域数量}个</div>
-            <div>{前期限分散度}</div>
-            <div>{前渠道多样性}个</div>
-            <div><strong>{前综合评分}/10</strong></div>
+            <div>{pre_industry_hhi}</div>
+            <div>{pre_max_industry_exposure}%</div>
+            <div>{pre_rating_hhi}</div>
+            <div>{pre_region_count}</div>
+            <div>{pre_maturity_diversification}</div>
+            <div>{pre_channel_diversity}</div>
+            <div><strong>{pre_composite_score}/10</strong></div>
           </div>
         </div>
         <div class="concentration-item">
-          <h5>分散化后</h5>
+          <h5>Post-Diversification</h5>
           <div style="font-size:12px;color:var(--text-secondary);line-height:2;">
-            <div>{后行业HHI}</div>
-            <div>{后最大行业敞口}%</div>
-            <div>{后评级HHI}</div>
-            <div>{后区域数量}个</div>
-            <div>{后期限分散度}</div>
-            <div>{后渠道多样性}个</div>
-            <div><strong>{后综合评分}/10</strong></div>
+            <div>{post_industry_hhi}</div>
+            <div>{post_max_industry_exposure}%</div>
+            <div>{post_rating_hhi}</div>
+            <div>{post_region_count}</div>
+            <div>{post_maturity_diversification}</div>
+            <div>{post_channel_diversity}</div>
+            <div><strong>{post_composite_score}/10</strong></div>
           </div>
         </div>
       </div>
       <div class="info-box info-green" style="margin-top:8px;">
-        <strong>分散化效果评估：</strong>{分散化效果评估——通过分散化操作后集中度指标的改善幅度、需要关注的潜在风险和后续跟踪建议。}
+        <strong>Diversification Effect Assessment:</strong>{diversification_effect_assessment——Improvement in concentration indicators after diversification operations, potential risks requiring attention, and subsequent tracking recommendations.}
       </div>
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- SECTION 8 — 敏感性分析 -->
+  <!-- SECTION 8 -- Sensitivity Analysis -->
   <!-- ================================================================ -->
   <div class="section">
     <h2 class="section-title">
       <span class="signal" style="background:var(--amber);"></span>
-      八、敏感性分析
+      8. Sensitivity Analysis
     </h2>
     <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
-      对主要集中度参数进行敏感性测试，评估参数变化对集中度评分和评级调整幅度的影响。
-      识别关键敏感因子和阈值突破风险。
+      Conduct sensitivity tests on key concentration parameters to assess the impact of parameter changes on the concentration score and rating adjustment magnitude.
+      Identify key sensitivity factors and threshold breach risks.
     </p>
 
     <div class="card">
-      <h3>8.1 行业集中度敏感性</h3>
+      <h3>8.1 Industry Concentration Sensitivity</h3>
       <table>
         <thead>
           <tr>
-            <th>情景参数</th>
-            <th>参数变化</th>
-            <th>集中度评分变化</th>
-            <th>评级调整变化</th>
-            <th>阈值突破</th>
-            <th>概率评估</th>
+            <th>Scenario Parameter</th>
+            <th>Parameter Change</th>
+            <th>Concentration Score Change</th>
+            <th>Rating Adjustment Change</th>
+            <th>Threshold Breach</th>
+            <th>Probability Assessment</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>最大行业敞口+5%</td>
-            <td>{参数变化1}</td>
-            <td class="text-red">{敏感度1评分变化}</td>
-            <td class="text-red">{敏感度1评级变化}</td>
-            <td><span class="tag tag-{敏感度1阈值标签}">{敏感度1阈值}</span></td>
-            <td><span class="tag tag-{敏感度1概率标签}">{敏感度1概率}</span></td>
+            <td>Largest Industry Exposure +5%</td>
+            <td>{parameter_change_1}</td>
+            <td class="text-red">{sensitivity_1_score_change}</td>
+            <td class="text-red">{sensitivity_1_rating_change}</td>
+            <td><span class="tag tag-{sensitivity_1_threshold_tag}">{sensitivity_1_threshold}</span></td>
+            <td><span class="tag tag-{sensitivity_1_probability_tag}">{sensitivity_1_probability}</span></td>
           </tr>
           <tr>
-            <td>最大行业敞口-10%</td>
-            <td>{参数变化2}</td>
-            <td class="text-green">{敏感度2评分变化}</td>
-            <td class="text-green">{敏感度2评级变化}</td>
-            <td><span class="tag tag-{敏感度2阈值标签}">{敏感度2阈值}</span></td>
-            <td><span class="tag tag-{敏感度2概率标签}">{敏感度2概率}</span></td>
+            <td>Largest Industry Exposure -10%</td>
+            <td>{parameter_change_2}</td>
+            <td class="text-green">{sensitivity_2_score_change}</td>
+            <td class="text-green">{sensitivity_2_rating_change}</td>
+            <td><span class="tag tag-{sensitivity_2_threshold_tag}">{sensitivity_2_threshold}</span></td>
+            <td><span class="tag tag-{sensitivity_2_probability_tag}">{sensitivity_2_probability}</span></td>
           </tr>
           <tr>
-            <td>次大行业敞口+8%</td>
-            <td>{参数变化3}</td>
-            <td class="text-amber">{敏感度3评分变化}</td>
-            <td class="text-amber">{敏感度3评级变化}</td>
-            <td><span class="tag tag-{敏感度3阈值标签}">{敏感度3阈值}</span></td>
-            <td><span class="tag tag-{敏感度3概率标签}">{敏感度3概率}</span></td>
+            <td>Second Largest Industry Exposure +8%</td>
+            <td>{parameter_change_3}</td>
+            <td class="text-amber">{sensitivity_3_score_change}</td>
+            <td class="text-amber">{sensitivity_3_rating_change}</td>
+            <td><span class="tag tag-{sensitivity_3_threshold_tag}">{sensitivity_3_threshold}</span></td>
+            <td><span class="tag tag-{sensitivity_3_probability_tag}">{sensitivity_3_probability}</span></td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>8.2 区域集中度敏感性</h3>
+      <h3>8.2 Regional Concentration Sensitivity</h3>
       <table>
         <thead>
           <tr>
-            <th>情景参数</th>
-            <th>参数变化</th>
-            <th>集中度评分变化</th>
-            <th>评级调整变化</th>
-            <th>阈值突破</th>
-            <th>概率评估</th>
+            <th>Scenario Parameter</th>
+            <th>Parameter Change</th>
+            <th>Concentration Score Change</th>
+            <th>Rating Adjustment Change</th>
+            <th>Threshold Breach</th>
+            <th>Probability Assessment</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>最大区域敞口+5%</td>
-            <td>{区域敏感度1参数}</td>
-            <td class="text-red">{区域敏感度1评分}</td>
-            <td class="text-red">{区域敏感度1评级}</td>
-            <td><span class="tag tag-{区域敏感度1阈值标签}">{区域敏感度1阈值}</span></td>
-            <td><span class="tag tag-{区域敏感度1概率标签}">{区域敏感度1概率}</span></td>
+            <td>Largest Regional Exposure +5%</td>
+            <td>{regional_sensitivity_1_parameter}</td>
+            <td class="text-red">{regional_sensitivity_1_score}</td>
+            <td class="text-red">{regional_sensitivity_1_rating}</td>
+            <td><span class="tag tag-{regional_sensitivity_1_threshold_tag}">{regional_sensitivity_1_threshold}</span></td>
+            <td><span class="tag tag-{regional_sensitivity_1_probability_tag}">{regional_sensitivity_1_probability}</span></td>
           </tr>
           <tr>
-            <td>最大区域敞口-8%</td>
-            <td>{区域敏感度2参数}</td>
-            <td class="text-green">{区域敏感度2评分}</td>
-            <td class="text-green">{区域敏感度2评级}</td>
-            <td><span class="tag tag-{区域敏感度2阈值标签}">{区域敏感度2阈值}</span></td>
-            <td><span class="tag tag-{区域敏感度2概率标签}">{区域敏感度2概率}</span></td>
+            <td>Largest Regional Exposure -8%</td>
+            <td>{regional_sensitivity_2_parameter}</td>
+            <td class="text-green">{regional_sensitivity_2_score}</td>
+            <td class="text-green">{regional_sensitivity_2_rating}</td>
+            <td><span class="tag tag-{regional_sensitivity_2_threshold_tag}">{regional_sensitivity_2_threshold}</span></td>
+            <td><span class="tag tag-{regional_sensitivity_2_probability_tag}">{regional_sensitivity_2_probability}</span></td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>8.3 关键敏感因子识别</h3>
+      <h3>8.3 Key Sensitivity Factor Identification</h3>
       <div class="heat-map">
         <div class="heat-item" style="background:rgba(239,68,68,0.2);border:1px solid var(--red);">
-          <strong style="color:var(--red);">最敏感因子</strong><br>
-          <span style="font-size:18px;font-weight:800;color:var(--red);">{最敏感因子名称}</span><br>
-          <span style="font-size:10px;color:var(--text-tertiary);">敏感系数：{最敏感因子系数}</span>
+          <strong style="color:var(--red);">Most Sensitive Factor</strong><br>
+          <span style="font-size:18px;font-weight:800;color:var(--red);">{most_sensitive_factor_name}</span><br>
+          <span style="font-size:10px;color:var(--text-tertiary);">Sensitivity Coefficient: {most_sensitive_factor_coefficient}</span>
         </div>
         <div class="heat-item" style="background:rgba(245,158,11,0.15);border:1px solid var(--amber);">
-          <strong style="color:var(--amber);">次敏感因子</strong><br>
-          <span style="font-size:18px;font-weight:800;color:var(--amber);">{次敏感因子名称}</span><br>
-          <span style="font-size:10px;color:var(--text-tertiary);">敏感系数：{次敏感因子系数}</span>
+          <strong style="color:var(--amber);">Second Most Sensitive Factor</strong><br>
+          <span style="font-size:18px;font-weight:800;color:var(--amber);">{second_most_sensitive_factor_name}</span><br>
+          <span style="font-size:10px;color:var(--text-tertiary);">Sensitivity Coefficient: {second_most_sensitive_factor_coefficient}</span>
         </div>
         <div class="heat-item" style="background:rgba(99,102,241,0.15);border:1px solid var(--blue);">
-          <strong style="color:var(--blue);">阈值最近因子</strong><br>
-          <span style="font-size:18px;font-weight:800;color:var(--blue);">{阈值最近因子名称}</span><br>
-          <span style="font-size:10px;color:var(--text-tertiary);">距阈值：{阈值最近因子距离}</span>
+          <strong style="color:var(--blue);">Closest to Threshold Factor</strong><br>
+          <span style="font-size:18px;font-weight:800;color:var(--blue);">{closest_to_threshold_factor_name}</span><br>
+          <span style="font-size:10px;color:var(--text-tertiary);">Distance to Threshold: {closest_to_threshold_factor_distance}</span>
         </div>
       </div>
       <div class="info-box info-amber" style="margin-top:8px;">
-        <strong>敏感性分析总结：</strong>{敏感性分析总结——各参数的敏感系数排序、阈值突破的临界条件识别、以及需要重点监控的关键参数和预警线设置建议。}
+        <strong>Sensitivity Analysis Summary:</strong>{sensitivity_analysis_summary——Sensitivity coefficient ranking of each parameter, identification of critical conditions for threshold breach, and key parameters requiring focused monitoring along with early warning line setting recommendations.}
       </div>
     </div>
   </div>
 
   <!-- ================================================================ -->
-  <!-- SECTION 9 — 完备性报告 -->
+  <!-- SECTION 9 -- Completeness Report -->
   <!-- ================================================================ -->
   <div class="section">
     <h2 class="section-title">
       <span class="signal" style="background:var(--green);"></span>
-      九、完备性报告
+      9. Completeness Report
     </h2>
     <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
-      本报告的完备性检查——涵盖集中度分析的各个维度、数据来源、方法论局限性和后续更新计划。
+      Completeness check for this report -- covering all dimensions of concentration analysis, data sources, methodological limitations, and subsequent update plans.
     </p>
 
     <div class="card">
-      <h3>9.1 覆盖维度检查</h3>
+      <h3>9.1 Dimension Coverage Check</h3>
       <table>
         <thead>
           <tr>
-            <th>分析维度</th>
-            <th>覆盖状态</th>
-            <th>数据来源</th>
-            <th>置信度</th>
-            <th>备注</th>
+            <th>Analysis Dimension</th>
+            <th>Coverage Status</th>
+            <th>Data Source</th>
+            <th>Confidence Level</th>
+            <th>Notes</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>行业集中度分析</td>
-            <td><span class="tag tag-green">已覆盖</span></td>
-            <td>{行业集中度数据来源}</td>
-            <td><span class="text-green">高</span></td>
-            <td>{行业集中度备注}</td>
+            <td>Industry Concentration Analysis</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{industry_concentration_data_source}</td>
+            <td><span class="text-green">High</span></td>
+            <td>{industry_concentration_notes}</td>
           </tr>
           <tr>
-            <td>评级集中度分析</td>
-            <td><span class="tag tag-green">已覆盖</span></td>
-            <td>{评级集中度数据来源}</td>
-            <td><span class="text-green">高</span></td>
-            <td>{评级集中度备注}</td>
+            <td>Rating Concentration Analysis</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{rating_concentration_data_source}</td>
+            <td><span class="text-green">High</span></td>
+            <td>{rating_concentration_notes}</td>
           </tr>
           <tr>
-            <td>区域集中度分析</td>
-            <td><span class="tag tag-green">已覆盖</span></td>
-            <td>{区域集中度数据来源}</td>
-            <td><span class="text-amber">中高</span></td>
-            <td>{区域集中度备注}</td>
+            <td>Regional Concentration Analysis</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{regional_concentration_data_source}</td>
+            <td><span class="text-amber">Medium-High</span></td>
+            <td>{regional_concentration_notes}</td>
           </tr>
           <tr>
-            <td>期限集中度分析</td>
-            <td><span class="tag tag-green">已覆盖</span></td>
-            <td>{期限集中度数据来源}</td>
-            <td><span class="text-green">高</span></td>
-            <td>{期限集中度备注}</td>
+            <td>Maturity Concentration Analysis</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{maturity_concentration_data_source}</td>
+            <td><span class="text-green">High</span></td>
+            <td>{maturity_concentration_notes}</td>
           </tr>
           <tr>
-            <td>融资渠道集中度分析</td>
-            <td><span class="tag tag-green">已覆盖</span></td>
-            <td>{融资渠道数据来源}</td>
-            <td><span class="text-amber">中</span></td>
-            <td>{融资渠道备注}</td>
+            <td>Funding Channel Concentration Analysis</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{funding_channel_data_source}</td>
+            <td><span class="text-amber">Medium</span></td>
+            <td>{funding_channel_notes}</td>
           </tr>
           <tr>
-            <td>评级调整影响</td>
-            <td><span class="tag tag-green">已覆盖</span></td>
-            <td>{评级调整数据来源}</td>
-            <td><span class="text-amber">中高</span></td>
-            <td>{评级调整备注}</td>
+            <td>Rating Adjustment Impact</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{rating_adjustment_data_source}</td>
+            <td><span class="text-amber">Medium-High</span></td>
+            <td>{rating_adjustment_notes}</td>
           </tr>
           <tr>
-            <td>分散化建议路径</td>
-            <td><span class="tag tag-green">已覆盖</span></td>
-            <td>{分散化数据来源}</td>
-            <td><span class="text-amber">中</span></td>
-            <td>{分散化备注}</td>
+            <td>Diversification Recommendation Path</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{diversification_data_source}</td>
+            <td><span class="text-amber">Medium</span></td>
+            <td>{diversification_notes}</td>
           </tr>
           <tr>
-            <td>传染矩阵联动</td>
-            <td><span class="tag tag-green">已覆盖</span></td>
-            <td>{传染矩阵数据来源}</td>
-            <td><span class="text-amber">中</span></td>
-            <td>{传染矩阵备注}</td>
+            <td>Contagion Matrix Integration</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{contagion_matrix_data_source}</td>
+            <td><span class="text-amber">Medium</span></td>
+            <td>{contagion_matrix_notes}</td>
           </tr>
           <tr>
-            <td>敏感性分析</td>
-            <td><span class="tag tag-green">已覆盖</span></td>
-            <td>{敏感性数据来源}</td>
-            <td><span class="text-amber">中高</span></td>
-            <td>{敏感性备注}</td>
+            <td>Sensitivity Analysis</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{sensitivity_data_source}</td>
+            <td><span class="text-amber">Medium-High</span></td>
+            <td>{sensitivity_notes}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>9.2 数据质量与局限性</h3>
+      <h3>9.2 Data Quality and Limitations</h3>
       <table>
         <thead>
           <tr>
-            <th>数据类别</th>
-            <th>数据质量</th>
-            <th>完整度</th>
-            <th>时效性</th>
-            <th>局限性说明</th>
+            <th>Data Category</th>
+            <th>Data Quality</th>
+            <th>Completeness</th>
+            <th>Timeliness</th>
+            <th>Limitation Description</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>行业敞口数据</td>
-            <td><span class="tag tag-green">良好</span></td>
+            <td>Industry Exposure Data</td>
+            <td><span class="tag tag-green">Good</span></td>
             <td>95%</td>
-            <td>T+1天</td>
-            <td>{行业数据局限性说明}</td>
+            <td>T+1 day</td>
+            <td>{industry_data_limitation_detail}</td>
           </tr>
           <tr>
-            <td>评级数据</td>
-            <td><span class="tag tag-green">良好</span></td>
+            <td>Rating Data</td>
+            <td><span class="tag tag-green">Good</span></td>
             <td>95%</td>
-            <td>T+7天</td>
-            <td>{评级数据局限性说明}</td>
+            <td>T+7 days</td>
+            <td>{rating_data_limitation_detail}</td>
           </tr>
           <tr>
-            <td>区域经济数据</td>
-            <td><span class="tag tag-amber">中等</span></td>
+            <td>Regional Economic Data</td>
+            <td><span class="tag tag-amber">Medium</span></td>
             <td>70%</td>
-            <td>T+90天</td>
-            <td>{区域数据局限性说明}</td>
+            <td>T+90 days</td>
+            <td>{regional_data_limitation_detail}</td>
           </tr>
           <tr>
-            <td>期限分布数据</td>
-            <td><span class="tag tag-green">良好</span></td>
+            <td>Maturity Distribution Data</td>
+            <td><span class="tag tag-green">Good</span></td>
             <td>95%</td>
-            <td>T+1天</td>
-            <td>{期限数据局限性说明}</td>
+            <td>T+1 day</td>
+            <td>{maturity_data_limitation_detail}</td>
           </tr>
           <tr>
-            <td>融资渠道数据</td>
-            <td><span class="tag tag-amber">中等</span></td>
+            <td>Funding Channel Data</td>
+            <td><span class="tag tag-amber">Medium</span></td>
             <td>75%</td>
-            <td>T+30天</td>
-            <td>{渠道数据局限性说明}</td>
+            <td>T+30 days</td>
+            <td>{channel_data_limitation_detail}</td>
           </tr>
           <tr>
-            <td>传染矩阵数据</td>
-            <td><span class="tag tag-amber">中等</span></td>
+            <td>Contagion Matrix Data</td>
+            <td><span class="tag tag-amber">Medium</span></td>
             <td>70%</td>
-            <td>T+30天</td>
-            <td>{传染数据局限性说明}</td>
+            <td>T+30 days</td>
+            <td>{contagion_data_limitation_detail}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>9.3 方法局限性声明</h3>
+      <h3>9.3 Methodological Limitation Statement</h3>
       <div class="card card-amber">
-        <h4>局限一：{局限性标题1}</h4>
+        <h4>Limitation 1: {limitation_title_1}</h4>
         <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
-          {局限性详细说明1}
+          {limitation_detail_1}
         </p>
       </div>
       <div class="card card-amber" style="margin-top:10px;">
-        <h4>局限二：{局限性标题2}</h4>
+        <h4>Limitation 2: {limitation_title_2}</h4>
         <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
-          {局限性详细说明2}
+          {limitation_detail_2}
         </p>
       </div>
       <div class="card card-amber" style="margin-top:10px;">
-        <h4>局限三：{局限性标题3}</h4>
+        <h4>Limitation 3: {limitation_title_3}</h4>
         <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
-          {局限性详细说明3}
+          {limitation_detail_3}
         </p>
       </div>
       <div class="card card-amber" style="margin-top:10px;">
-        <h4>局限四：{局限性标题4}</h4>
+        <h4>Limitation 4: {limitation_title_4}</h4>
         <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
-          {局限性详细说明4}
+          {limitation_detail_4}
         </p>
       </div>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>9.4 完整度评分</h3>
-      <!-- BEFORE outputting any rating in this template, confirm that all dimensions used meet the density rules in mosaic-engine.md §4. If not, output '信息不足无法评估' instead. -->
+      <h3>9.4 Completeness Score</h3>
+      <!-- BEFORE outputting any rating in this template, confirm that all dimensions used meet the density rules in mosaic-engine.md §4. If not, output 'Insufficient information to assess' instead. -->
       <table>
         <thead>
           <tr>
-            <th>评估维度</th>
-            <th>评分</th>
-            <th>完整度百分比</th>
-            <th>待改进项</th>
+            <th>Assessment Dimension</th>
+            <th>Score</th>
+            <th>Completeness Percentage</th>
+            <th>Items to Improve</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>五维集中度覆盖</td>
-            <td><span class="tag tag-green">{五维覆盖评分}</span></td>
+            <td>Five-Dimension Concentration Coverage</td>
+            <td><span class="tag tag-green">{five_dim_coverage_score}</span></td>
             <td>
               <div class="completeness-bar">
-                <div class="completeness-fill" style="width:{五维覆盖百分比}%;background:var(--green);">{五维覆盖百分比}%</div>
+                <div class="completeness-fill" style="width:{five_dim_coverage_pct}%;background:var(--green);">{five_dim_coverage_pct}%</div>
               </div>
             </td>
-            <td>{五维覆盖待改进}</td>
+            <td>{five_dim_coverage_to_improve}</td>
           </tr>
           <tr>
-            <td>数据支撑强度</td>
-            <td><span class="tag tag-amber">{数据支撑评分}</span></td>
+            <td>Data Support Strength</td>
+            <td><span class="tag tag-amber">{data_support_score}</span></td>
             <td>
               <div class="completeness-bar">
-                <div class="completeness-fill" style="width:{数据支撑百分比}%;background:var(--amber);">{数据支撑百分比}%</div>
+                <div class="completeness-fill" style="width:{data_support_pct}%;background:var(--amber);">{data_support_pct}%</div>
               </div>
             </td>
-            <td>{数据支撑待改进}</td>
+            <td>{data_support_to_improve}</td>
           </tr>
           <tr>
-            <td>评级调整精度</td>
-            <td><span class="tag tag-amber">{评级调整评分}</span></td>
+            <td>Rating Adjustment Precision</td>
+            <td><span class="tag tag-amber">{rating_adjustment_score}</span></td>
             <td>
               <div class="completeness-bar">
-                <div class="completeness-fill" style="width:{评级调整百分比}%;background:var(--amber);">{评级调整百分比}%</div>
+                <div class="completeness-fill" style="width:{rating_adjustment_pct}%;background:var(--amber);">{rating_adjustment_pct}%</div>
               </div>
             </td>
-            <td>{评级调整待改进}</td>
+            <td>{rating_adjustment_to_improve}</td>
           </tr>
           <tr>
-            <td>分散化建议操作性</td>
-            <td><span class="tag tag-green">{分散化评分}</span></td>
+            <td>Diversification Recommendation Operability</td>
+            <td><span class="tag tag-green">{diversification_score}</span></td>
             <td>
               <div class="completeness-bar">
-                <div class="completeness-fill" style="width:{分散化百分比}%;background:var(--green);">{分散化百分比}%</div>
+                <div class="completeness-fill" style="width:{diversification_pct}%;background:var(--green);">{diversification_pct}%</div>
               </div>
             </td>
-            <td>{分散化待改进}</td>
+            <td>{diversification_to_improve}</td>
           </tr>
           <tr>
-            <td>传染联动深度</td>
-            <td><span class="tag tag-amber">{传染联动评分}</span></td>
+            <td>Contagion Integration Depth</td>
+            <td><span class="tag tag-amber">{contagion_linkage_score}</span></td>
             <td>
               <div class="completeness-bar">
-                <div class="completeness-fill" style="width:{传染联动百分比}%;background:var(--amber);">{传染联动百分比}%</div>
+                <div class="completeness-fill" style="width:{contagion_linkage_pct}%;background:var(--amber);">{contagion_linkage_pct}%</div>
               </div>
             </td>
-            <td>{传染联动待改进}</td>
+            <td>{contagion_linkage_to_improve}</td>
           </tr>
           <tr>
-            <td>敏感性分析覆盖</td>
-            <td><span class="tag tag-amber">{敏感性评分}</span></td>
+            <td>Sensitivity Analysis Coverage</td>
+            <td><span class="tag tag-amber">{sensitivity_score}</span></td>
             <td>
               <div class="completeness-bar">
-                <div class="completeness-fill" style="width:{敏感性百分比}%;background:var(--amber);">{敏感性百分比}%</div>
+                <div class="completeness-fill" style="width:{sensitivity_pct}%;background:var(--amber);">{sensitivity_pct}%</div>
               </div>
             </td>
-            <td>{敏感性待改进}</td>
+            <td>{sensitivity_to_improve}</td>
           </tr>
           <tr>
-            <td><strong>综合完整度</strong></td>
-            <td><span class="tag tag-amber">{综合评分}</span></td>
+            <td><strong>Overall Completeness</strong></td>
+            <td><span class="tag tag-amber">{composite_score}</span></td>
             <td>
               <div class="completeness-bar" style="height:24px;">
-                <div class="completeness-fill" style="width:{综合百分比}%;background:var(--blue);font-size:12px;line-height:24px;">{综合百分比}%</div>
+                <div class="completeness-fill" style="width:{composite_pct}%;background:var(--blue);font-size:12px;line-height:24px;">{composite_pct}%</div>
               </div>
             </td>
-            <td>{综合待改进项}</td>
+            <td>{composite_improvement_items}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <div class="card" style="margin-top:14px;">
-      <h3>9.5 更新计划</h3>
+      <h3>9.5 Update Plan</h3>
       <table>
         <thead>
           <tr>
-            <th>更新内容</th>
-            <th>预计更新时间</th>
-            <th>触发条件</th>
-            <th>负责方</th>
+            <th>Update Content</th>
+            <th>Estimated Update Time</th>
+            <th>Trigger Condition</th>
+            <th>Responsible Party</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>{更新内容1}</td>
-            <td>{预计更新时间1}</td>
-            <td>{触发条件1}</td>
-            <td>{负责方1}</td>
+            <td>{update_content_1}</td>
+            <td>{expected_update_time_1}</td>
+            <td>{trigger_condition_1}</td>
+            <td>{responsible_party_1}</td>
           </tr>
           <tr>
-            <td>{更新内容2}</td>
-            <td>{预计更新时间2}</td>
-            <td>{触发条件2}</td>
-            <td>{负责方2}</td>
+            <td>{update_content_2}</td>
+            <td>{expected_update_time_2}</td>
+            <td>{trigger_condition_2}</td>
+            <td>{responsible_party_2}</td>
           </tr>
           <tr>
-            <td>{更新内容3}</td>
-            <td>{预计更新时间3}</td>
-            <td>{触发条件3}</td>
-            <td>{负责方3}</td>
+            <td>{update_content_3}</td>
+            <td>{expected_update_time_3}</td>
+            <td>{trigger_condition_3}</td>
+            <td>{responsible_party_3}</td>
           </tr>
           <tr>
-            <td>{更新内容4}</td>
-            <td>{预计更新时间4}</td>
-            <td>{触发条件4}</td>
-            <td>{负责方4}</td>
+            <td>{update_content_4}</td>
+            <td>{expected_update_time_4}</td>
+            <td>{trigger_condition_4}</td>
+            <td>{responsible_party_4}</td>
           </tr>
           <tr>
-            <td>{更新内容5}</td>
-            <td>{预计更新时间5}</td>
-            <td>{触发条件5}</td>
-            <td>{负责方5}</td>
+            <td>{update_content_5}</td>
+            <td>{expected_update_time_5}</td>
+            <td>{trigger_condition_5}</td>
+            <td>{responsible_party_5}</td>
           </tr>
         </tbody>
       </table>
 
       <div class="info-box info-blue" style="margin-top:12px;">
-        <strong>完备性总结：</strong>{完备性总结——对本报告的整体完备性进行评估，哪些维度达到预期标准、哪些需要补充、下一轮更新的重点方向。}
+        <strong>Completeness Summary:</strong>{completeness_summary——Evaluate the overall completeness of this report, which dimensions meet expected standards, which need supplementation, and the key directions for the next update round.}
       </div>
     </div>
   </div>
@@ -1756,13 +1756,13 @@
   <!-- ================================================================ -->
   <div class="section">
     <div class="card card-red">
-      <h3>免责声明</h3>
+      <h3>Disclaimer</h3>
       <p style="font-size:13px; color:var(--text-secondary); line-height:1.7;">
-        本组合集中度分析报告（Type 14）仅供内部风险评估参考使用。报告中的集中度评分、评级调整幅度、
-        分散化建议等均为基于公开信息和模型推演的初步判断，不构成任何投资建议或信用决策依据。
-        集中度分析涉及大量假设和简化，实际风险可能因市场环境、政策变化、主体行为等因素与
-        分析结果存在显著偏差。在做出任何投资或信用决策前，应结合最新的市场信息和专业判断
-        进行综合评估。
+        This Portfolio Concentration Analysis Report (Type 14) is for internal risk assessment reference only. The concentration scores, rating adjustment magnitudes,
+        diversification recommendations, and other content herein are preliminary judgments based on public information and model simulations, and do not constitute any investment advice or credit decision basis.
+        Concentration analysis involves numerous assumptions and simplifications; actual risks may deviate significantly from the analysis results due to market conditions, policy changes,
+        entity behavior, and other factors. Before making any investment or credit decisions, a comprehensive assessment should be conducted in conjunction with the latest market information
+        and professional judgment.
       </p>
     </div>
   </div>
@@ -1773,10 +1773,10 @@
 <!-- FOOTER -->
 <!-- ================================================================ -->
 <div class="footer">
-  <p><strong>组合集中度分析报告</strong> — Type 14 模板</p>
-  <p>报告编号 T14-{报告编号} · 版本 v0.8.4-release · 生成于 {生成日期} · 仅供内部风险评估使用</p>
+  <p><strong>Portfolio Concentration Analysis Report</strong> -- Type 14 Template</p>
+  <p>Report ID T14-{report_number} · Version v0.8.4-release · Generated on {generation_date} · For internal risk assessment only</p>
   <p style="margin-top:6px; font-size:10px; color:var(--text-tertiary);">
-    基于统一信贷评估框架 v0.8.4-release · 集中度分析模型 v0.8.4-release · 所有分析均为内部推演，不构成投资建议
+    Based on Unified Credit Assessment Framework v0.8.4-release · Concentration Analysis Model v0.8.4-release · All analysis is internal simulation and does not constitute investment advice
   </p>
 </div>
 
