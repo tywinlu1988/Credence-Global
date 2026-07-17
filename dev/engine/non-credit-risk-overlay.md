@@ -1,905 +1,913 @@
-# 非信用风险叠加层（Overlay）
+# Non-Credit Risk Overlay
 
-**版本**: v0.8.4-release | **日期**: 2026-07-10 | **定位**: 信用金字塔基准评级之上的独立调整层
-
----
-
-## 目录
-
-- [一、方法论缺口：风险覆盖范围](#一方法论缺口风险覆盖范围)
-- [二、非信用风险在引擎中的定位](#二非信用风险在引擎中的定位)
-- [三、市场风险对信用的传导](#三市场风险对信用的传导)
-- [四、操作风险信号](#四操作风险信号)
-- [五、声誉风险信号](#五声誉风险信号)
-- [六、战略风险信号](#六战略风险信号)
-- [七、流动性风险信号](#七流动性风险信号)
-- [八、叠加调整规则](#八叠加调整规则)
-- [九、信号汇总与评分规则](#九信号汇总与评分规则)
-- [十、与现有框架的集成](#十与现有框架的集成)
-- [十一、公开数据约束下的诚实标注](#十一公开数据约束下的诚实标注)
-- [附录A：各风险维度的数据来源清单](#附录a各风险维度的数据来源清单)
+**Version**: v0.8.4-release | **Date**: 2026-07-10 | **Position**: Independent adjustment layer above the credit pyramid baseline rating
 
 ---
 
-## 一、方法论缺口：风险覆盖范围
+## Table of Contents
 
-### 1.1 审计发现
-
-风险管理标准审计（audits/risk-management-standards-audit.md）对照Basel新资本协议和COSO ERM 2017框架，识别出引擎当前覆盖的7类Basel风险类型中存在显著缺口：
-
-| Basel风险类型 | 引擎覆盖情况 | 覆盖等级 | 缺口描述 |
-|---|---|---|---|
-| **信用风险** | Track A基本面金字塔 + Track B市场定价 + FCF/利息覆盖 + 评级映射 | 完全覆盖 | 引擎核心能力，无重大改进需求 |
-| **市场风险** | Track B部分覆盖信用利差/波动率；利率久期/凸性作为付费数据标注 | 部分覆盖 | 利率/汇率/商品价格风险完全未覆盖 |
-| **操作风险** | L4财务层隐含覆盖部分欺诈信号；FCF庞氏融资嫌疑检测 | 薄弱覆盖 | 内部流程缺陷/系统故障/法律合规风险/管理层舞弊未被系统覆盖 |
-| **流动性风险** | 债务到期排程 + FCF/利息覆盖 + M1.3债券流动性评估 | 部分覆盖 | 融资渠道集中度/授信使用率/债券发行失败记录未覆盖 |
-| **声誉风险** | 完全未覆盖 | 未覆盖 | ESG争议/媒体负面报道/客户终止合作未纳入分析 |
-| **战略风险** | L1行业金字塔隐含覆盖部分结构性因子 | 薄弱覆盖 | 商业模式可持续性/技术颠覆/管理层战略执行力未被明确评估 |
-| **集中度风险** | L3供应链覆盖客户集中度 | 薄弱覆盖 | 行业/区域/融资渠道集中度未被系统覆盖 |
-
-### 1.2 本模块的响应范围
-
-本模块覆盖前6类Basel风险类型中引擎覆盖不足的维度。集中度风险已在各行业金字塔的L3供应链层和M4组合风控视角中部分涉及，不作为本模块的核心范围。
+- [1. Methodological Gap: Risk Coverage Scope](#1-methodological-gap-risk-coverage-scope)
+- [2. Positioning of Non-Credit Risk in the Engine](#2-positioning-of-non-credit-risk-in-the-engine)
+- [3. Market Risk Transmission to Credit](#3-market-risk-transmission-to-credit)
+- [4. Operational Risk Signals](#4-operational-risk-signals)
+- [5. Reputational Risk Signals](#5-reputational-risk-signals)
+- [6. Strategic Risk Signals](#6-strategic-risk-signals)
+- [7. Liquidity Risk Signals](#7-liquidity-risk-signals)
+- [8. Overlay Adjustment Rules](#8-overlay-adjustment-rules)
+- [9. Signal Aggregation and Scoring Rules](#9-signal-aggregation-and-scoring-rules)
+- [10. Integration with Existing Frameworks](#10-integration-with-existing-frameworks)
+- [11. Honest Labeling Under Public Data Constraints](#11-honest-labeling-under-public-data-constraints)
+- [Appendix A: Data Source Inventory by Risk Dimension](#appendix-a-data-source-inventory-by-risk-dimension)
 
 ---
 
-## 二、非信用风险在引擎中的定位
+## 1. Methodological Gap: Risk Coverage Scope
 
-### 2.1 设计哲学：叠加层（Overlay），而非替代
+### 1.1 Audit Findings
 
-非信用风险层**不替代**现有的信用分析四层金字塔——信用金字塔给出的是"基准评级"，非信用风险叠加层在此基础上进行上下调整。
+The risk management standards audit (audits/risk-management-standards-audit.md) identified significant gaps in the engine's current coverage of seven Basel risk types when benchmarked against the Basel capital accord and the COSO ERM 2017 framework:
 
-```
-标准分析流程（含非信用风险叠加层）：
-
-步骤 1: 行业分类 → 选择金字塔模板
-步骤 2: 金字塔评分 → L1-L4/L5逐层评分 → 加权综合得分 → 基准信用等级
-步骤 3: 外部支持评估（如需） → 上调基准评级（0~3子级）
-步骤 4: ★ 非信用风险叠加（新增）
-   ├── 3a: 市场风险评估 → 传导路径识别
-   ├── 3b: 操作风险评估 → 红旗信号检测
-   ├── 3c: 声誉风险评估 → 负面事件扫描
-   ├── 3d: 战略风险评估 → 商业模式可持续性判断
-   └── 3e: 流动性风险评估 → 融资渠道健康度
-步骤 5: ★ 叠加调整 → 在基准评级基础上做 ±0 ~ ±1 子级调整
-步骤 6: 轨道B市场定价交叉验证
-步骤 7: 输出综合评级 + 非信用风险叠加标注
-```
-
-### 2.2 与外部支持框架的类比
-
-本模块的设计机制与external-support-framework.md中的"上调"逻辑一致——均为在金字塔基准评分完成后、输出最终评级之前的独立调整层。
-
-| 调整层 | 方向 | 幅度 | 触发条件 |
+| Basel Risk Type | Engine Coverage Status | Coverage Level | Gap Description |
 |---|---|---|---|
-| 外部支持叠加 | 仅上调（+） | 0~3子级 | 存在明确支持方且支持能力+意愿足够 |
-| 非信用风险叠加 | 可上下调（±） | 0~1子级 | 检测到非信用风险信号且达到影响阈值 |
+| **Credit Risk** | Track A Fundamental Pyramid + Track B Market Pricing + FCF/Interest Coverage + Rating Mapping | Full Coverage | Core engine capability, no major improvement needed |
+| **Market Risk** | Track B partially covers credit spread/volatility; interest rate duration/convexity marked as paid data | Partial Coverage | Interest rate/forex/commodity price risk completely uncovered |
+| **Operational Risk** | L4 Financial layer implicitly covers some fraud signals; FCF Ponzi financing suspicion detection | Weak Coverage | Internal process deficiencies/system failures/legal compliance risk/management fraud not systematically covered |
+| **Liquidity Risk** | Debt maturity schedule + FCF/Interest Coverage + M1.3 Bond Liquidity Assessment | Partial Coverage | Funding channel concentration/credit facility utilization/bond issuance failure history not covered |
+| **Reputational Risk** | Completely uncovered | Uncovered | ESG controversies/negative media coverage/client termination not incorporated into analysis |
+| **Strategic Risk** | L1 Industry Pyramid implicitly covers some structural factors | Weak Coverage | Business model sustainability/technological disruption/management strategic execution not explicitly assessed |
+| **Concentration Risk** | L3 Supply Chain covers customer concentration | Weak Coverage | Industry/geographic/funding channel concentration not systematically covered |
 
-两者叠加顺序：先进行外部支持上调，再进行非信用风险叠加调整（可抵消外部支持上调或加剧下行风险）。
+### 1.2 Scope of This Module
 
-### 2.3 叠加层在引擎架构中的位置
+This module covers the dimensions within the first six Basel risk types where the engine's coverage is insufficient. Concentration risk is already partially addressed through the L3 supply chain layer of each industry pyramid and the M4 portfolio risk management perspective, and is therefore not within the core scope of this module.
+
+---
+
+## 2. Positioning of Non-Credit Risk in the Engine
+
+### 2.1 Design Philosophy: Overlay, Not Replacement
+
+The non-credit risk layer does **not replace** the existing four-layer credit analysis pyramid. The credit pyramid produces a "baseline rating," and the non-credit risk overlay adjusts it up or down from that baseline.
 
 ```
-引擎架构（完整版 v0.4.0+）：
-                                                          ┌─────────────────────┐
-                                                          │ 非信用风险叠加层     │
-输入 → 马赛克引擎 → 轨道A金字塔评分 → 外部支持上调 →  ──┤ ★ 本文档             │──→ 交叉对撞 → 综合输出
-                                                          │ 市场/操作/声誉/      │
-                                                          │ 战略/流动性风险      │
-                                                          │ ±0~1子级调整        │
-                                                          └─────────────────────┘
+Standard Analysis Process (with Non-Credit Risk Overlay):
+
+Step 1: Industry Classification -> Select Pyramid Template
+Step 2: Pyramid Scoring -> L1-L4/L5 Layer-by-Layer Scoring -> Weighted Composite Score -> Baseline Credit Rating
+Step 3: External Support Assessment (if needed) -> Upgrade Baseline Rating (0-3 notches)
+Step 4: ★ Non-Credit Risk Overlay (New)
+   ├── 4a: Market Risk Assessment -> Transmission Path Identification
+   ├── 4b: Operational Risk Assessment -> Red Flag Signal Detection
+   ├── 4c: Reputational Risk Assessment -> Negative Event Scanning
+   ├── 4d: Strategic Risk Assessment -> Business Model Sustainability Judgment
+   └── 4e: Liquidity Risk Assessment -> Funding Channel Health
+Step 5: ★ Overlay Adjustment -> Apply ±0 to ±1 notch adjustment on baseline rating
+Step 6: Track B Market Pricing Cross-Validation
+Step 7: Output Composite Rating + Non-Credit Risk Overlay Annotation
+```
+
+### 2.2 Analogy with External Support Framework
+
+The design mechanism of this module is consistent with the "upgrade" logic in external-support-framework.md — both are independent adjustment layers applied after baseline pyramid scoring and before the final rating output.
+
+| Adjustment Layer | Direction | Magnitude | Trigger Condition |
+|---|---|---|---|
+| External Support Overlay | Upgrade only (+) | 0-3 notches | Clear supporting entity with sufficient capability + willingness |
+| Non-Credit Risk Overlay | Can adjust up or down (±) | 0-1 notches | Non-credit risk signals detected and impact threshold reached |
+
+Order of application: External support upgrade is applied first, followed by the non-credit risk overlay adjustment (which can offset the external support upgrade or amplify downside risk).
+
+### 2.3 Position of the Overlay in the Engine Architecture
+
+```
+Engine Architecture (Full Version v0.4.0+):
+                                                                        ┌───────────────────────────┐
+                                                                        │ Non-Credit Risk Overlay   │
+Input -> Mosaic Engine -> Track A Pyramid Scoring -> External Support ->│ ★ This Document           │-> Cross-Collision -> Composite Output
+                                                                        │ Market/Operational/       │
+                                                                        │ Reputational/Strategic/   │
+                                                                        │ Liquidity Risk            │
+                                                                        │ ±0-1 notch adjustment     │
+                                                                        └───────────────────────────┘
 ```
 
 ---
 
-## 三、市场风险对信用的传导
+## 3. Market Risk Transmission to Credit
 
-### 3.1 市场风险在信用分析中的定义
+### 3.1 Definition of Market Risk in Credit Analysis
 
-市场风险（Market Risk）指因利率、汇率、商品价格等市场价格因子不利变动而导致企业偿债能力下降的风险。本模块不评估组合层面的VaR（那是M3/M4的职责），而是评估市场风险向信用质量的**传导路径**。
+Market Risk refers to the risk that a company's debt-servicing capacity deteriorates due to adverse movements in market price factors such as interest rates, exchange rates, and commodity prices. This module does not assess portfolio-level VaR (that is the responsibility of M3/M4), but rather evaluates the **transmission pathways** from market risk to credit quality.
 
-### 3.2 利率风险传导路径
+### 3.2 Interest Rate Risk Transmission Path
 
-| 传导要素 | 指标 | 计算公式/数据来源 | 数据可获取性 |
+| Transmission Factor | Indicator | Formula/Data Source | Data Accessibility |
 |---|---|---|---|
-| **利息覆盖倍数恶化** | 浮动利率债务占比 | 年报附注"借款"分类：浮动利率借款 / 总有息负债 | 年报附注可获取 |
-| **再融资成本上升** | 存量债券平均票面利率 vs 当前市场利率 | 募集说明书 + 中债估值（免费公开） | 债券发行信息免费，中债估值部分免费 |
-| **债务结构锁定效应** | 固定利率债务占比 | 年报附注"借款"分类：固定利率借款 / 总有息负债 | 年报附注可获取 |
-| **久期暴露** | 加权平均债务久期（近似） | 债券到期日加权平均（报告年度为基准） | 估算值，精确久期需付费终端 |
+| **Interest Coverage Deterioration** | Floating Rate Debt Ratio | Annual report notes "Borrowings" classification: Floating rate borrowings / Total interest-bearing debt | Annual report notes accessible |
+| **Refinancing Cost Increase** | Average coupon rate on outstanding bonds vs current market rate | Prospectus + Central bond pricing (free public) | Bond issuance info free, central bond pricing partially free |
+| **Debt Structure Lock-in Effect** | Fixed Rate Debt Ratio | Annual report notes "Borrowings" classification: Fixed rate borrowings / Total interest-bearing debt | Annual report notes accessible |
+| **Duration Exposure** | Weighted Average Debt Duration (approximate) | Weighted average of bond maturities (based on reporting year) | Estimated value; precise duration requires paid terminal |
 
-**利率风险传导路径**：
+**Interest Rate Risk Transmission Path**:
 
 ```
-利率上升
-  ├── 浮动利率债务利息增加 ──► 利息支出上升 ──► 利息覆盖倍数下降
-  ├── 新发债/续贷成本上升 ──► 融资成本上升 ──► FCF减少
-  ├── 债券价格下跌 ──► 资产端浮亏 ──► 净资产减少 ──► 负债率上升
-  └── 高杠杆企业再融资困难 ──► 流动性挤压 ──► 违约风险上升
+Rising Interest Rates
+  ├── Floating Rate Debt Interest Increases -> Interest Expense Rises -> Interest Coverage Declines
+  ├── New Bond/Loan Refinancing Cost Rises -> Financing Cost Increases -> FCF Declines
+  ├── Bond Prices Fall -> Unrealized Losses on Asset Side -> Net Assets Decline -> Leverage Ratio Increases
+  └── Highly Leveraged Enterprises Face Refinancing Difficulty -> Liquidity Squeeze -> Default Risk Increases
 ```
 
-**信号检测**：
+**Signal Detection**:
 
-| 信号 | 检测条件 | 强度 | 数据来源 |
+| Signal | Detection Condition | Severity | Data Source |
 |---|---|---|---|
-| 浮动利率债务占比 > 40% | 年报附注"短期借款+长期借款"中浮动利率占比 | 中等 | 年报附注（借款分类） |
-| 利率覆盖倍数 < 2x 且总债务/EBITDA > 5x | (EBITDA / 利息支出) < 2x | 高 | 年报利润表+附注 |
-| 未来12个月到期债务 > 40% 且正处加息周期 | 债务到期排程 + 央行基准利率走势 | 中等 | financial-deep-dive.md C.3 + 央行公开市场操作公告 |
-| 短期借款占比跃升 > 10pp（同比） | 短期借款 / 总有息负债同比变化 | 中等 | 年报资产负债表 |
+| Floating rate debt ratio > 40% | Annual report notes "short-term borrowings + long-term borrowings" floating rate proportion | Medium | Annual report notes (borrowings classification) |
+| Interest coverage < 2x and total debt/EBITDA > 5x | (EBITDA / Interest Expense) < 2x | High | Annual report income statement + notes |
+| Debt maturing in next 12 months > 40% and currently in a rising rate cycle | Debt maturity schedule + Central bank benchmark rate trends | Medium | financial-deep-dive.md C.3 + Central bank open market operations announcements |
+| Short-term borrowings ratio jumped > 10pp (YoY) | Short-term borrowings / Total interest-bearing debt YoY change | Medium | Annual report balance sheet |
 
-**数据限制标注**：精确的久期（Macaulay Duration / Modified Duration）需要债券估值模型或付费金融终端（Wind/Choice）。本模块使用近似替代——基于剩余到期年限的加权平均。
+**Data Limitation Note**: Precise duration (Macaulay Duration / Modified Duration) requires bond valuation models or paid financial terminals (Bloomberg/Refinitiv). This module uses an approximate substitute — weighted average based on remaining years to maturity.
 
-### 3.3 汇率风险传导路径
+### 3.3 Exchange Rate Risk Transmission Path
 
-**适用对象**：有外币收入/外币债务/海外业务的发行人。
+**Applicable to**: Issuers with foreign currency revenue/foreign currency debt/overseas operations.
 
-| 传导要素 | 指标 | 计算公式/数据来源 | 数据可获取性 |
+| Transmission Factor | Indicator | Formula/Data Source | Data Accessibility |
 |---|---|---|---|
-| 外币收入敞口 | 外币收入 / 总收入 | 年报分地区收入附注（海外收入占比） | 年报附注可获取 |
-| 外币债务敞口 | 外币债务 / 总有息负债 | 年报附注"借款"分类中的外币借款 | 年报附注可获取 |
-| 净外汇敞口 | 外币资产 - 外币负债（简化） | 年报附注"外币货币性项目" | 年报附注可获取 |
-| 汇率对冲比例 | 外汇衍生品名义本金 / 净外汇敞口 | 年报衍生品交易附注（远期/期权/掉期） | 年报附注可获取 |
+| Foreign Currency Revenue Exposure | Foreign currency revenue / Total revenue | Annual report geographic revenue breakdown (overseas revenue proportion) | Annual report notes accessible |
+| Foreign Currency Debt Exposure | Foreign currency debt / Total interest-bearing debt | Annual report notes "borrowings" classification — foreign currency borrowings | Annual report notes accessible |
+| Net Foreign Exchange Exposure | Foreign currency assets - Foreign currency liabilities (simplified) | Annual report notes "foreign currency monetary items" | Annual report notes accessible |
+| FX Hedge Ratio | FX derivative notional principal / Net FX exposure | Annual report derivative transaction notes (forwards/options/swaps) | Annual report notes accessible |
 
-**汇率风险传导路径**：
+**Exchange Rate Risk Transmission Path**:
 
 ```
-本币贬值
-  ├── 进口原材料/设备成本上升 ──► 毛利率压缩 ──► 盈利能力下降
-  ├── 外债本息偿还成本上升 ──► 偿债负担加重 ──► 利息覆盖下降
-  ├── [正向] 出口收入本币价值上升 ──► 收入增加（取决于计价货币）
-  └── [负债端] 外币债务重估损失 ──► 汇兑损失 ──► 净利润下降
+Local Currency Depreciation
+  ├── Imported Raw Material/Equipment Costs Rise -> Gross Margin Compression -> Profitability Declines
+  ├── Foreign Debt Principal & Interest Repayment Costs Rise -> Debt Service Burden Increases -> Interest Coverage Declines
+  ├── [Positive] Export Revenue in Local Currency Value Rises -> Revenue Increases (depends on invoicing currency)
+  └── [Liability Side] Foreign Currency Debt Revaluation Loss -> FX Translation Loss -> Net Profit Declines
 ```
 
-**信号检测**：
+**Signal Detection**:
 
-| 信号 | 检测条件 | 强度 | 数据来源 |
+| Signal | Detection Condition | Severity | Data Source |
 |---|---|---|---|
-| 外币收入占比 > 30% 且未充分对冲 | 海外收入占比高 + 衍生品名义本金/净敞口 < 30% | 中等 | 年报分地区收入 + 衍生品附注 |
-| 外币债务占比 > 20% 且本币贬值周期 | 外币债务占总债务 > 20% + 汇率趋势 | 中等 | 年报附注借款分类 + 人民银行汇率中间价 |
-| 汇兑损益/净利润 > 10% | 年报财务费用中的汇兑损益 / 净利润 | 中等 | 年报财务费用明细 |
-| 净外汇敞口 > 净资产 20% | (外币资产 - 外币负债) / 净资产 | 高 | 年报外币货币性项目附注 |
+| Foreign currency revenue proportion > 30% and insufficiently hedged | High overseas revenue proportion + derivative notional/net exposure < 30% | Medium | Annual report geographic revenue + derivative notes |
+| Foreign currency debt proportion > 20% and local currency depreciation cycle | Foreign currency debt / total debt > 20% + currency trend | Medium | Annual report notes borrowings classification + central bank exchange rate fix |
+| FX gain-loss / net profit > 10% | FX gains/losses in annual report finance costs / net profit | Medium | Annual report finance cost details |
+| Net FX exposure > 20% of net assets | (Foreign currency assets - Foreign currency liabilities) / Net assets | High | Annual report foreign currency monetary items notes |
 
-**数据限制标注**：汇率对冲的具体条款（执行价格/到期日/对手方信用）在年报中通常不完整披露，仅能看到名义本金和公允价值。精确的汇率风险暴露需要内部管理报告——不可公开获取。
+**Data Limitation Note**: Specific terms of FX hedges (strike prices, maturities, counterparty credit) are typically not fully disclosed in annual reports — only notional principal and fair value are visible. Precise exchange rate risk exposure requires internal management reports — not publicly accessible.
 
-### 3.4 商品价格风险传导路径
+### 3.4 Commodity Price Risk Transmission Path
 
-**适用对象**：上游原材料价格波动对利润率和现金流的冲击。
+**Applicable to**: Impact of upstream raw material price volatility on margins and cash flow.
 
-| 传导要素 | 指标 | 计算公式/数据来源 | 数据可获取性 |
+| Transmission Factor | Indicator | Formula/Data Source | Data Accessibility |
 |---|---|---|---|
-| 成本传导能力 | 毛利率 vs 原材料价格指数的相关系数 | 年度毛利率变动 / 行业原材料价格指数变动 | 行业价格数据（SMM/LME/Mysteel等免费数据平台） |
-| 原材料成本占比 | 原材料成本 / 营业成本 | 年报成本分析附注（料/工/费拆分） | 年报附注可获取 |
-| 价格锁定程度 | 长协覆盖比例 / 库存保障月数 | 年报采购合同部分 / 存货周转天数 | 部分年报披露供应链管理 |
+| Cost Pass-Through Ability | Correlation coefficient between gross margin and raw material price index | Annual gross margin change / Industry raw material price index change | Industry price data (SMM/LME/Mysteel and other free data platforms) |
+| Raw Material Cost Ratio | Raw material cost / Operating cost | Annual report cost analysis notes (materials/labor/overhead breakdown) | Annual report notes accessible |
+| Price Lock-In Degree | Long-term contract coverage ratio / Inventory coverage months | Annual report procurement contract section / Inventory turnover days | Some annual reports disclose supply chain management |
 
-**商品价格风险传导路径**：
+**Commodity Price Risk Transmission Path**:
 
 ```
-原材料价格上涨
-  ├── 成本上升 —— 能传导给客户？—— 是 → 毛利率稳定
-  │                           └── 否 → 毛利率压缩 → FCF减少
-  ├── 库存价值上升（正向，但不可持续）
-  └── 需要额外营运资金 ──► 资金占用上升 ──► 流动性压力
+Rising Raw Material Prices
+  ├── Costs Rise -- Can be passed to customers? -- Yes -> Gross Margin Stable
+  │                                             └── No -> Gross Margin Compression -> FCF Declines
+  ├── Inventory Value Increases (positive, but unsustainable)
+  └── Additional Working Capital Required -> Capital Tie-Up Increases -> Liquidity Pressure
 ```
 
-**信号检测**：
+**Signal Detection**:
 
-| 信号 | 检测条件 | 强度 | 数据来源 |
+| Signal | Detection Condition | Severity | Data Source |
 |---|---|---|---|
-| 毛利率与原材料价格负相关 > 0.7 | 连续3年毛利率变动方向与原材料价格指数相反 | 高 | 年报毛利率 + SMM/LME价格指数 |
-| 原材料成本占比 > 60% 且无长协保护 | 料/工/费拆分中原材料比例高 | 中等 | 年报成本分析附注 |
-| 存货周转天数持续上升+毛利率下降 | DIO上升 + 毛利率下降同时出现（滞销+跌价双重打击） | 高 | 年报 + financial-deep-dive.md B.3 |
+| Gross margin negatively correlated with raw material prices > 0.7 | Gross margin movement direction opposite to raw material price index for 3 consecutive years | High | Annual report gross margin + SMM/LME price indices |
+| Raw material cost ratio > 60% with no long-term contract protection | Raw material proportion high in materials/labor/overhead breakdown | Medium | Annual report cost analysis notes |
+| Inventory turnover days continuously rising + gross margin declining | DIO rising + gross margin declining simultaneously (double hit of slow sales + price impairment) | High | Annual report + financial-deep-dive.md B.3 |
 
-### 3.5 市场风险综合评级
+### 3.5 Market Risk Composite Assessment
 
-| 评估 | 条件 |
+| Assessment | Condition |
 |---|---|
-| **低** | 纯内销 + 无外币债务 + 固定利率为主 + 原材料成本占比 < 30% |
-| **中等** | 任一维度存在中等敞口（外币收入>20%或浮动利率>20%或原材料占比>40%） |
-| **高** | 两个或以上维度同时存在大敞口 + 未对冲 |
-| **极高** | 两个维度以上大敞口 + 财务弹性差（利息覆盖<1.5x） |
+| **Low** | Purely domestic sales + no foreign currency debt + predominantly fixed rate + raw material cost ratio < 30% |
+| **Medium** | Any single dimension has moderate exposure (foreign currency revenue > 20% or floating rate debt > 20% or raw material ratio > 40%) |
+| **High** | Two or more dimensions simultaneously have large exposure + unhedged |
+| **Very High** | Large exposure across 2+ dimensions + poor financial flexibility (interest coverage < 1.5x) |
 
 ---
 
-## 四、操作风险信号
+## 4. Operational Risk Signals
 
-### 4.1 操作风险在信用分析中的定义
+### 4.1 Definition of Operational Risk in Credit Analysis
 
-根据Basel新资本协议，操作风险指"由不完善或有问题的内部程序、人员、系统或外部事件所导致的损失的风险"。在信用分析中，操作风险信号预示企业管理控制失效——这是管理层能力和诚信度的直接体现。
+Under the Basel capital accord, operational risk is defined as "the risk of loss resulting from inadequate or failed internal processes, people, and systems or from external events." In credit analysis, operational risk signals indicate a breakdown in management controls — a direct reflection of management capability and integrity.
 
-### 4.2 操作风险的四象限分类
+### 4.2 Four-Quadrant Classification of Operational Risk
 
-| 类别 | 示例 | 对信用的传导路径 | 公开数据可观测性 |
+| Category | Examples | Transmission Path to Credit | Public Data Observability |
 |---|---|---|---|
-| **内部流程缺陷** | 财务报表重述、内部控制审计失败、会计差错更正 | 数据可信度受损 → 所有基于财报的分析需打折 | **部分可观测**——财务报表重述和内部控制审计报告公开发布 |
-| **人员风险** | CEO/CFO突然离职、合规负责人变更、关键人员失联 | 管理层连续性中断 → 战略执行不确定性上升 | **可观测**——公司公告、工商变更信息 |
-| **系统风险** | 核心信息系统故障、数据泄露、网络安全事件 | 经营中断 → 收入损失 + 声誉受损 + 监管处罚 | **部分可观测**——重大系统故障/数据泄露事件通过监管公告或媒体报道公开 |
-| **外部事件** | 欺诈/舞弊、监管处罚、法律诉讼 | 直接财务损失 + 间接声誉损害 + 融资成本上升 | **可观测**——证监会处罚/交易所处分/法律判决均公开 |
+| **Internal Process Deficiencies** | Financial statement restatements, internal control audit failures, accounting error corrections | Data credibility impaired -> All financial-statement-based analysis must be discounted | **Partially observable** — Financial statement restatements and internal control audit reports are publicly released |
+| **People Risk** | Sudden departure of CEO/CFO, compliance officer change, key personnel uncontactable | Management continuity disrupted -> Strategic execution uncertainty rises | **Observable** — Company announcements, business registration changes |
+| **System Risk** | Core information system failure, data breach, cybersecurity incident | Business interruption -> Revenue loss + reputational damage + regulatory penalties | **Partially observable** — Major system failures/data breaches become public through regulatory announcements or media reports |
+| **External Events** | Fraud/misconduct, regulatory penalties, legal proceedings | Direct financial loss + indirect reputational damage + increased financing costs | **Observable** — Securities regulator penalties/exchange sanctions/court judgments are all public |
 
-### 4.3 操作风险红旗信号清单
+### 4.3 Operational Risk Red Flag Signal Checklist
 
-#### 4.3.1 重大系统故障/网络安全事件
+#### 4.3.1 Major System Failures / Cybersecurity Incidents
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 | 可观测性 |
+| Red Flag Signal | Detection Condition | Signal Severity | Data Source | Observability |
 |---|---|---|---|---|
-| **核心系统重大故障导致业务中断** | 媒体报道/公司公告确认系统故障导致业务暂停超过24小时 | 中 | 新闻数据库、行业媒体、公司公告 | **可观测**——重大系统故障通常有媒体报道 |
-| **数据泄露/网络安全事件** | 公司公告确认发生数据泄露或被监管部门约谈 | 高 | 公司公告、国家网信办公示、行业监管通报 | **可观测**——重大数据泄露需按法规公告 |
-| **云服务/IT基础设施被中断** | 核心供应商（如阿里云/AWS/腾讯云）中断导致业务停摆 | 中 | 行业新闻、服务商状态页 | **部分可观测**——仅重大事件被报道 |
+| **Core system major failure causing business interruption** | Media reports/company announcement confirms system failure causing business suspension exceeding 24 hours | Medium | News databases, industry media, company announcements | **Observable** — Major system failures typically have media coverage |
+| **Data breach / cybersecurity incident** | Company announcement confirms data breach or regulatory interview/notification | High | Company announcements, cyber administration disclosures, industry regulatory notices | **Observable** — Major data breaches must be publicly announced per regulations |
+| **Cloud service / IT infrastructure disruption** | Core provider (e.g., AWS/Azure/GCP) outage causing business shutdown | Medium | Industry news, provider status pages | **Partially observable** — Only major events are reported |
 
-**数据限制标注**：内部流程缺陷（如审批流程漏洞、员工违规操作）在不触发公开事件时**完全不可观测**。本模块仅捕获那些已外部化（如已造成损失、已被监管处罚）的操作风险事件——这天然存在滞后性。
+**Data Limitation Note**: Internal process deficiencies (such as approval process loopholes, employee misconduct) are **completely unobservable** when they do not trigger a public event. This module only captures operational risk events that have already become externalized (e.g., have caused losses, have been penalized by regulators) — which inherently involves a lag.
 
-#### 4.3.2 监管处罚
+#### 4.3.2 Regulatory Penalties
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 |
+| Red Flag Signal | Detection Condition | Signal Severity | Data Source |
 |---|---|---|---|
-| **证监会立案调查** | 公司公告"收到证监会立案调查通知书" | 强 | 公司公告、证监会官网公示 |
-| **交易所公开谴责/通报批评** | 上交所/深交所出具"公开谴责"或"通报批评"处分 | 强 | 上交所/深交所监管信息公开栏目 |
-| **银保监/人行行政处罚** | 银保监会/人民银行对银行/保险/金融类企业出具行政处罚决定书 | 中-强 | 银保监会官网公示、人民银行官网 |
-| **环保行政处罚** | 生态环境部/省级环保部门处罚超过10万元 | 中 | 生态环境部官网"行政处罚"栏目 |
-| **市场监督管理局处罚** | 因产品质量/广告违规/反垄断被市监局处罚 | 中 | 国家市场监督管理总局公示系统 |
-| **税务处罚** | 偷逃税款被税务稽查并处罚 | 强 | 税务局重大税收违法案件公示 |
+| **Securities regulator investigation** | Company announcement "received notice of investigation from securities regulator" | Strong | Company announcements, securities regulator official website |
+| **Exchange public censure / notice of criticism** | Stock exchange issues "public censure" or "notice of criticism" sanction | Strong | Stock exchange regulatory information disclosure sections |
+| **Banking/financial regulator administrative penalty** | Banking/financial regulator imposes administrative penalty on banks/insurance/financial companies | Medium-Strong | Financial/banking regulator official website, central bank website |
+| **Environmental administrative penalty** | Environmental protection agency or provincial environmental department penalty exceeding threshold | Medium | Environmental protection agency website "administrative penalties" section |
+| **Market regulation authority penalty** | Penalty for product quality/advertising violations/antitrust from market regulation authority | Medium | National market regulation authority disclosure system |
+| **Tax penalty** | Tax evasion detected by tax audit and penalized | Strong | Tax authority major tax violation case disclosures |
 
-**从governance-fraud-risk.md提取的欺诈信号属于操作风险的子集**：该文档涵盖的财务欺诈红旗（收入质量异常、利润质量异常、资产负债质量异常、审计意见异常）和管理层治理红旗（股权质押率、实控人风险、管理层稳定性、董事会独立性）本质上是操作风险中"内部流程+人员风险"的具体表现。这些信号在本模块中复用，不作重复定义。
+**Fraud signals extracted from governance-fraud-risk.md are a subset of operational risk**: The financial fraud red flags (revenue quality anomalies, profit quality anomalies, asset/liability quality anomalies, audit opinion anomalies) and management governance red flags (share pledge ratio, ultimate controller risk, management stability, board independence) covered in that document are essentially specific manifestations of "internal processes + people risk" within operational risk. These signals are reused in this module and are not redefined.
 
-#### 4.3.3 关键人员风险
+#### 4.3.3 Key Personnel Risk
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 |
+| Red Flag Signal | Detection Condition | Signal Severity | Data Source |
 |---|---|---|---|
-| **CEO/CFO突然离职** | 公司公告CEO/CFO/财务总监非正常离职（非任期到期、非退休） | 强 | 公司公告、交易所公告 |
-| **CTO/核心技术负责人离职** | 技术型企业核心技术负责人离职（如半导体公司的研发副总、生物医药的首席科学官） | 中-强 | 公司公告、行业媒体、企查查工商变更 |
-| **独立董事集中辞职** | 同一财务报告期内2名以上独立董事辞职 | 强 | 公司公告 |
-| **监事/审计委员会成员辞职** | 审计委员会主席或监事辞职（内控监督职能弱化） | 中 | 公司公告 |
-| **核心管理层被采取强制措施** | 公告确认高管被拘留/调查/取保候审 | 强 | 公司公告、裁判文书网、执行信息公开网 |
-| **核心管理层集体减持** | 多位核心高管在财报披露前30日内集中减持 | 中 | 董监高持股变动公告 |
+| **Sudden departure of CEO/CFO** | Company announcement confirms abnormal departure of CEO/CFO/finance director (not term expiration, not retirement) | Strong | Company announcements, exchange announcements |
+| **Departure of CTO/key technical leader** | Departure of core technical leader in technology companies (e.g., R&D VP at semiconductor firms, Chief Scientific Officer at biopharma) | Medium-Strong | Company announcements, industry media, business registration changes |
+| **Concentrated resignations of independent directors** | Resignation of 2+ independent directors within the same financial reporting period | Strong | Company announcements |
+| **Resignation of supervisor/audit committee member** | Resignation of audit committee chair or supervisor (weakening of internal control oversight) | Medium | Company announcements |
+| **Core management placed under coercive measures** | Announcement confirms senior executive detained/investigated/under bail pending investigation | Strong | Company announcements, court judgment databases, enforcement information disclosure platforms |
+| **Collective share reduction by core management** | Multiple senior executives collectively reduce holdings within 30 days before financial disclosure | Medium | Director/supervisor/senior management shareholding change announcements |
 
-**数据限制标注**：关键人员离职的背后原因（是个人原因、工作不胜任、还是发现了重大问题）通常不完整披露。"个人原因"是最常见的标准表述，无法区分真实原因。仅当离职后公司出现其他违规事件时，才能反向推断——这在时间上存在滞后。
+**Data Limitation Note**: The underlying reasons for key personnel departures (personal reasons, performance inadequacy, or discovery of major issues) are typically not fully disclosed. "Personal reasons" is the most common standard formulation, making it impossible to distinguish the true cause. Only when the company subsequently experiences other irregularities after the departure can a reverse inference be made — which involves a time lag.
 
-#### 4.3.4 法律诉讼风险
+#### 4.3.4 Legal Litigation Risk
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 |
+| Red Flag Signal | Detection Condition | Signal Severity | Data Source |
 |---|---|---|---|
-| **重大未决诉讼标的 > 净资产10%** | 年报"重大诉讼仲裁"章节中披露的未决诉讼金额 | 中-强 | 年报、中期报告 |
-| **作为被告且可能败诉** | 诉讼状态为"已受理"或"一审判决"且企业为被告方 | 中 | 年报、裁判文书网、天眼查/企查查 |
-| **涉集体诉讼/投资者索赔** | 因信息披露违规/虚假陈述被提起证券虚假陈述责任纠纷诉讼 | 强 | 公司公告、法院公告 |
-| **知识产权重大诉讼** | 核心技术/核心产品涉及专利侵权诉讼 | 中-强 | 公司公告、裁判文书网 |
+| **Material pending litigation amount > 10% of net assets** | Amount of pending litigation disclosed in annual report "Material Litigation and Arbitration" section | Medium-Strong | Annual report, interim reports |
+| **Party as defendant with potential adverse judgment** | Litigation status "accepted" or "first instance judgment" and enterprise is defendant | Medium | Annual report, court judgment databases, business information platforms |
+| **Involvement in class action / investor claims** | Securities misrepresentation liability dispute lawsuit due to information disclosure violations / false statements | Strong | Company announcements, court announcements |
+| **Major intellectual property litigation** | Core technology/core product involved in patent infringement litigation | Medium-Strong | Company announcements, court judgment databases |
 
-### 4.4 操作风险综合判断
+### 4.4 Operational Risk Composite Judgment
 
-| 评估 | 条件 |
+| Assessment | Condition |
 |---|---|
-| **无信号** | 无任何披露的监管处罚、诉讼、人员异常变动 |
-| **弱信号** | 1-2个中等强度信号（如单项环保处罚、单一独董辞职） |
-| **中等信号** | 1个强信号 或 2-3个中等信号 |
-| **强信号** | 2个以上强信号（如证监会立案调查+CFO突然离职） |
-| **极端信号** | 确认的财务欺诈（审计保留意见+证监会确认）或管理层集体失联 |
+| **No Signal** | No disclosed regulatory penalties, litigation, or abnormal personnel changes |
+| **Weak Signal** | 1-2 medium-severity signals (e.g., single environmental penalty, single independent director resignation) |
+| **Moderate Signal** | 1 strong signal OR 2-3 medium signals |
+| **Strong Signal** | 2 or more strong signals (e.g., securities regulator investigation + sudden CFO departure) |
+| **Extreme Signal** | Confirmed financial fraud (qualified audit opinion + securities regulator confirmation) or collective loss of contact with management |
 
 ---
 
-## 五、声誉风险信号
+## 5. Reputational Risk Signals
 
-### 5.1 声誉风险在信用分析中的定义
+### 5.1 Definition of Reputational Risk in Credit Analysis
 
-声誉风险（Reputational Risk）是指因公众负面认知导致企业融资成本上升、客户流失、业务机会减少，从而间接损害信用质量的风险。声誉风险通常不直接导致违约——但它是"加速器"，在已有信用问题的基础上成倍放大恶化速度。
+Reputational Risk refers to the risk that negative public perception causes a company's financing costs to rise, customers to leave, and business opportunities to decrease, thereby indirectly impairing credit quality. Reputational risk does not typically lead directly to default — but it acts as an "accelerator," exponentially magnifying the speed of deterioration on top of existing credit problems.
 
-### 5.2 声誉风险向信用的传导路径
+### 5.2 Transmission Path of Reputational Risk to Credit
 
 ```
-负面事件（ESG争议/丑闻/处罚）
-  │
-  ├── 媒体曝光/公众关注 ──► 品牌价值受损
-  │     ├── 客户流失 ──► 收入下降
-  │     └── 供应商要求缩短账期/预付款 ──► 营运资金压力
-  │
-  ├── 融资渠道
-  │     ├── 银行收紧授信 ──► 融资弹性下降
-  │     ├── 债券投资者抛售 ──► 利差扩大 + 发债困难
-  │     └── 股权融资受阻 ──► 资本补充能力下降
-  │
-  └── 监管关注
-        ├── 专项检查 ──► 合规成本上升
-        └── 业务限制 ──► 增长受限
+Negative Event (ESG controversy / Scandal / Penalty)
+  |
+  ├-- Media Exposure / Public Attention -> Brand Value Impaired
+  |     ├-- Customer Attrition -> Revenue Decline
+  |     └-- Suppliers Demand Shortened Payment Terms / Prepayment -> Working Capital Pressure
+  |
+  ├-- Funding Channels
+  |     ├-- Banks Tighten Credit Lines -> Financing Flexibility Declines
+  |     ├-- Bond Investors Sell Off -> Spread Widening + Bond Issuance Difficulty
+  |     └-- Equity Financing Hindered -> Capital Replenishment Capacity Declines
+  |
+  └-- Regulatory Scrutiny
+        ├-- Special Inspections -> Compliance Costs Rise
+        └-- Business Restrictions -> Growth Constrained
 ```
 
-### 5.3 声誉风险信号清单
+### 5.3 Reputational Risk Signal Checklist
 
-#### 5.3.1 ESG争议事件
+#### 5.3.1 ESG Controversy Events
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 | 可观测性 |
+| Red Flag Signal | Detection Condition | Signal Severity | Data Source | Observability |
 |---|---|---|---|---|
-| **重大环境事故** | 化学品泄漏、爆炸、超标排放被生态环境部挂牌督办 | 强 | 生态环境部官网"挂牌督办"栏目、省级环保厅公示 | **可观测**——环境事故由官方公示 |
-| **劳工纠纷/罢工** | 媒体报道或工会公告确认大规模罢工/劳资冲突 | 中-强 | 新闻数据库、地方劳动监察部门公示 | **可观测**——大规-模劳资纠纷有媒体报道 |
-| **产品质量丑闻** | 产品被召回/被监管部门认定存在安全隐患/被消费者集体投诉 | 强 | 国家市场监督管理总局缺陷产品管理中心、消费者协会、新闻 | **可观测**——产品召回需公开公告 |
-| **数据隐私争议** | 因违规收集/使用用户数据被监管调查或被媒体曝光 | 中 | 国家网信办公示、行业监管通报 | **部分可观测**——仅监管介入后才公开 |
-| **供应链ESG违规** | 核心供应商存在重度环境污染/童工/强迫劳动被国际组织曝光 | 中 | 国际NGO报告（如Greenpeace、HRW）、ESG评级机构报告 | **部分可观测**——需第三方报告触发 |
+| **Major environmental accident** | Chemical leak, explosion, excessive emissions subject to environmental protection agency supervision | Strong | Environmental protection agency website "supervision" section, provincial environmental department disclosures | **Observable** — Environmental accidents are officially disclosed |
+| **Labor dispute / strike** | Media reports or union announcements confirm large-scale strike / labor conflict | Medium-Strong | News databases, local labor inspection department disclosures | **Observable** — Large-scale labor disputes have media coverage |
+| **Product quality scandal** | Product recalled / deemed to have safety hazards by regulators / subject to collective consumer complaints | Strong | National market regulation authority product defect management center, consumer associations, news | **Observable** — Product recalls require public announcement |
+| **Data privacy controversy** | Regulatory investigation or media exposure due to illegal collection/use of user data | Medium | Cyber administration disclosures, industry regulatory notices | **Partially observable** — Only becomes public after regulatory intervention |
+| **Supply chain ESG violation** | Core supplier found to have severe environmental pollution/child labor/forced labor exposed by international organizations | Medium | International NGO reports (e.g., Greenpeace, HRW), ESG rating agency reports | **Partially observable** — Requires third-party report to trigger |
 
-#### 5.3.2 媒体与市场情绪
+#### 5.3.2 Media and Market Sentiment
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 |
+| Red Flag Signal | Detection Condition | Signal Severity | Data Source |
 |---|---|---|---|
-| **评级机构负面行动** | 评级展望从稳定调至负面 / 被列入负面观察名单 / 评级被下调 | 强 | 评级机构公告（联合资信/中诚信/大公国际/新世纪） |
-| **集中负面媒体报道** | 连续30天内出现3篇以上指向同一问题的深度负面报道 | 中 | WebSearch新闻监测 |
-| **社交媒体舆情爆发** | 在微博/知乎/雪球等平台出现热点讨论（负面话题阅读量>100万） | 中 | 社交媒体监测（公开可获取的大V发帖） |
-| **分析师集体下调盈利预测** | 覆盖该公司的≥3家券商分析师在同一季度内下调盈利预测>15% | 中 | 券商研究报告（公开摘要） |
-| **做空机构发布做空报告** | 做空机构（如浑水/香橼/GMT）发布针对该公司的做空报告 | 强 | 做空机构官网、新闻 |
+| **Rating agency negative action** | Rating outlook changed from stable to negative / placed on negative watch list / rating downgraded | Strong | Rating agency announcements (S&P/Moody's/Fitch) |
+| **Concentrated negative media coverage** | More than 3 in-depth negative reports targeting the same issue within 30 consecutive days | Medium | WebSearch news monitoring |
+| **Social media sentiment outbreak** | Hot discussion on social media platforms (negative topic with significant readership) | Medium | Social media monitoring (publicly accessible influencer posts) |
+| **Analysts collectively downgrade earnings forecasts** | Three or more covering analysts from different firms downgrade earnings forecasts > 15% in the same quarter | Medium | Broker research reports (public summaries) |
+| **Short seller issues short report** | Short seller (e.g., Muddy Waters / Citron / GMT Research) issues short report targeting the company | Strong | Short seller websites, news |
 
-#### 5.3.3 客户/供应商关系
+#### 5.3.3 Client / Supplier Relationships
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 |
+| Red Flag Signal | Detection Condition | Signal Severity | Data Source |
 |---|---|---|---|
-| **核心客户公开终止合作** | 前5大客户之一的采购合同确认到期不续约 | 强 | 公司公告、客户公告（如大型企业采购公告） |
-| **核心供应商停止供货** | 原材料/关键零部件供应商宣布停止供应 | 强 | 公司公告、行业媒体 |
-| **渠道商/经销商集体抵制** | 多家经销商同时停止采购/要求调整条款 | 中-强 | 行业媒体、经销商协会公告 |
-| **行业协会除名/公开谴责** | 被行业协会取消会员资格或公开谴责 | 中 | 行业协会官网公告 |
+| **Core client publicly terminates partnership** | Procurement contract of one of top 5 clients confirmed not renewed upon expiration | Strong | Company announcements, client announcements (e.g., large enterprise procurement notices) |
+| **Core supplier stops supply** | Raw material / key component supplier announces cessation of supply | Strong | Company announcements, industry media |
+| **Channel partners / distributors collectively boycott** | Multiple distributors simultaneously stop purchasing / demand terms adjustment | Medium-Strong | Industry media, distributor association announcements |
+| **Industry association expulsion / public censure** | Membership revoked or public censure issued by industry association | Medium | Industry association official website announcements |
 
-**数据限制标注**：客户和供应商关系的变化在大多数情况下**不公开**。仅当涉及上市公司重大合同（达到信息披露标准）或双方均为上市公司时，才能从公告中获知。对于非上市企业或无强制披露义务的主体，此类信号的检测能力极低。
+**Data Limitation Note**: Changes in client and supplier relationships are **not publicly disclosed** in most cases. They can only be learned from announcements when they involve a material contract (meeting information disclosure standards) or when both parties are listed companies. For non-listed enterprises or entities without mandatory disclosure obligations, the detection capability for such signals is extremely low.
 
-### 5.4 声誉风险综合判断
+### 5.4 Reputational Risk Composite Judgment
 
-| 评估 | 条件 |
+| Assessment | Condition |
 |---|---|
-| **无信号** | 无ESG争议、无负面媒体报道、评级稳定 |
-| **弱信号** | 单一轻度ESG事件（如轻微环保罚款）或1-2篇负面报道 |
-| **中等信号** | 评级展望调至负面 + 一篇深度负面报道 或 中等程度的ESG事件 |
-| **强信号** | 评级下调 + 产品召回/重大环境污染 + 媒体报道持续3周以上 |
-| **极端信号** | 做空报告 + 评级下调 + 客户终止合作 同时出现 |
+| **No Signal** | No ESG controversy, no negative media coverage, stable ratings |
+| **Weak Signal** | Single minor ESG event (e.g., minor environmental fine) or 1-2 negative reports |
+| **Moderate Signal** | Rating outlook downgraded to negative + one in-depth negative report, or moderate ESG event |
+| **Strong Signal** | Rating downgrade + product recall / major environmental pollution + media coverage persisting for 3+ weeks |
+| **Extreme Signal** | Short report + rating downgrade + client termination occurring simultaneously |
 
 ---
 
-## 六、战略风险信号
+## 6. Strategic Risk Signals
 
-### 6.1 战略风险在信用分析中的定义
+### 6.1 Definition of Strategic Risk in Credit Analysis
 
-战略风险（Strategic Risk）指企业因商业模式失败、竞争战略失误、技术颠覆、行业结构性衰退而丧失持续经营能力的风险。这是最难以量化但又最关键的非信用风险维度——一旦发生，其他所有分析（财务健康、供应链质量、外部支持）都沦为次要。
+Strategic Risk refers to the risk that a company loses its ability to continue as a going concern due to business model failure, flawed competitive strategy, technological disruption, or structural industry decline. This is the most difficult to quantify yet the most critical non-credit risk dimension — once triggered, all other analyses (financial health, supply chain quality, external support) become secondary.
 
-### 6.2 技术颠覆风险
+### 6.2 Technology Disruption Risk
 
-**从行业金字塔L2技术层的迁移**：行业金字塔的L2层评估"当前技术路线的竞争位势"，而技术颠覆风险评估的是"当前技术路线**是否正在被替代**"——两者是时间维度的区别。当技术颠覆信号确认时，应从L2层迁移至本层作为战略风险处理。
+**Migration from Industry Pyramid L2 Technology Layer**: The L2 layer of the industry pyramid assesses "the competitive position of the current technology pathway," while technology disruption risk assesses whether "the current technology pathway **is being replaced**" — the difference is one of time dimension. When technology disruption signals are confirmed, the assessment should migrate from the L2 layer to this layer as a strategic risk.
 
-| 颠覆模式 | 历史案例 | 对信用的影响 | 预警窗口 |
+| Disruption Mode | Historical Example | Impact on Credit | Warning Window |
 |---|---|---|---|
-| **技术路线替代** | PERC → TOPCon（光伏2023-2025） | PERC产能沦为沉没成本 → 资产减值 → 亏损 → FCF为负 | 12-18个月 |
-| **产品替代** | 燃油车 → 新能源车（汽车2018-2025） | 燃油车产业链收入骤降 → 裁员/关厂 → 债务负担不可持续 | 24-36个月 |
-| **商业模式颠覆** | 传统零售 → 电商（2010-2020） | 实体店租金+人员固定成本刚性 → 亏损 → 债务违约 | 36-60个月 |
-| **技术范式转移** | 功能手机 → 智能手机（2007-2013） | 落后技术生态完全被抛弃 → 归零 | 12-24个月 |
-| **地缘政治断供** | HW被制裁后芯片来源中断（2019） | 核心产品停产 → 收入归零 | 即时（无预警） |
+| **Technology Pathway Replacement** | PERC -> TOPCon (Solar PV 2023-2025) | PERC capacity becomes sunk cost -> Asset impairment -> Losses -> Negative FCF | 12-18 months |
+| **Product Replacement** | Internal combustion engine vehicles -> New energy vehicles (Automotive 2018-2025) | ICE vehicle supply chain revenue collapses -> Layoffs/plant closures -> Debt burden unsustainable | 24-36 months |
+| **Business Model Disruption** | Traditional retail -> E-commerce (2010-2020) | Fixed costs of physical stores + personnel rigid -> Losses -> Debt default | 36-60 months |
+| **Technology Paradigm Shift** | Feature phones -> Smartphones (2007-2013) | Legacy technology ecosystem completely abandoned -> Zero | 12-24 months |
+| **Geopolitical Supply Cutoff** | Chip supply cut off after sanctions (2019) | Core product production halted -> Revenue zero | Immediate (no warning) |
 
-**信号检测**：
+**Signal Detection**:
 
-| 信号 | 检测条件 | 强度 | 数据来源 |
+| Signal | Detection Condition | Severity | Data Source |
 |---|---|---|---|
-| **核心产品技术路线被主流市场认定淘汰** | 招投标技术规格中已不出现该路线产品 | 强 | 央企集采公告、行业技术白皮书、招投标平台 |
-| **主要竞争对手全部转向新技术路线** | 行业前5名中已有3家以上全面转向新技术 | 强 | 行业技术论坛、公司公告产能规划、设备采购公告 |
-| **研发投入方向与行业背离** | 公司研发投入集中在淘汰路线上 | 中 | 年报研发投入披露、专利局专利分类 |
-| **核心产品价格跌破公司现金成本** | 市场价格 < 公司现金成本（可变成本+必要的固定成本分摊） | 高 | SMM/PVInfoLink/TrendForce价格数据 + 年报成本数据 |
-| **核心产品市场空间持续萎缩** | 连续2年该产品市场规模下降 > 10% | 中-强 | 行业协会数据、券商研究报告 |
+| **Core product technology pathway deemed obsolete by mainstream market** | Product from that technology pathway no longer appears in procurement technical specifications | Strong | Central enterprise/state procurement announcements, industry technology white papers, procurement platforms |
+| **Major competitors have all shifted to new technology pathway** | 3+ of top 5 industry players have fully transitioned to new technology | Strong | Industry technology forums, company announcement capacity plans, equipment procurement announcements |
+| **R&D investment direction diverges from industry** | Company R&D investment concentrated on the obsolete pathway | Medium | Annual report R&D investment disclosures, patent office patent classifications |
+| **Core product price falls below company cash cost** | Market price < Company cash cost (variable cost + necessary fixed cost allocation) | High | Price data (PVInfoLink/TrendForce) + Annual report cost data |
+| **Core product market size continuously shrinking** | Market size for that product declined > 10% for 2 consecutive years | Medium-Strong | Industry association data, broker research reports |
 
-**行业特定技术颠覆信号**（参考industry-framework.md中的各行业技术路线）：
+**Industry-Specific Technology Disruption Signals** (refer to industry technology pathways in industry-framework.md):
 
-| 行业 | 当前主流路线 | 潜在的颠覆路线 | 颠覆预警来源 |
+| Industry | Current Mainstream Pathway | Potential Disruptive Pathway | Disruption Warning Source |
 |---|---|---|---|
-| 光伏 | TOPCon / BC | HJT+钙钛矿叠层（尚在量产前的效率纪录阶段） | PVInfoLink+BloombergNEF集采效率要求变化 |
-| 半导体 | FinFET（3nm/5nm/7nm） | GAAFET（Gate-All-Around，三星3nm已量产）、Chiplet架构 | ISSCC/IEDM论文+流片数据+设备供应商ASML/AMAT公告 |
-| 生物医药 | 小分子+单抗 | ADC（抗体药物偶联物）/双特异性抗体/CAR-T/细胞基因治疗 | FDA NMPA新药审批公告+临床试验结果+Nature Biotechnology |
-| 新能源车 | 纯电BEV + PHEV | 固态电池（如果量产突破）、氢燃料电池（商用车） | 宁德时代/比亚迪/丰田电池公告+续航/安全性独立测试 |
-| 数据中心 | 风冷 | 液冷（单机柜功率>30kW后液冷渗透率加速） | 工信部PUE要求+头部互联网公司（腾讯/阿里/字节）数据中心技术白皮书 |
+| Solar PV | TOPCon / BC | HJT + Perovskite Tandem (still in pre-production efficiency record stage) | PVInfoLink + BloombergNEF procurement efficiency requirement changes |
+| Semiconductors | FinFET (3nm/5nm/7nm) | GAAFET (Gate-All-Around, Samsung 3nm already in production), Chiplet architecture | ISSCC/IEDM papers + tape-out data + equipment supplier ASML/AMAT announcements |
+| Biopharmaceuticals | Small molecule + monoclonal antibody | ADC (Antibody-Drug Conjugates) / Bispecific antibodies / CAR-T / Cell and gene therapy | FDA NMPA new drug approval announcements + clinical trial results + Nature Biotechnology |
+| New Energy Vehicles | BEV + PHEV | Solid-state batteries (if mass production breakthrough occurs), hydrogen fuel cells (commercial vehicles) | Battery technology announcements + range/safety independent testing |
+| Data Centers | Air cooling | Liquid cooling (liquid cooling penetration accelerates beyond 30kW per rack) | PUE requirements + major technology company data center technical white papers |
 
-### 6.3 商业模式风险
+### 6.3 Business Model Risk
 
-| 信号 | 检测条件 | 强度 | 数据来源 |
+| Signal | Detection Condition | Severity | Data Source |
 |---|---|---|---|
-| **单一产品依赖 > 60% 且面临替代威胁** | 前1款产品收入/毛利占比 > 60% | 高 | 年报分部报告、招股书产品构成 |
-| **单一客户依赖 > 40%** | 前1大客户收入占比 > 40%（参考L3供应链层阈值） | 高 | 年报客户信息披露 |
-| **商业模式本质上存在结构性缺陷** | 例如：P2P平台、长租公寓"高收低出"、预付费模式后资金被挪用 | 强 | 行业分析、监管政策文件 |
-| **盈利模式依赖非可持续的套利** | 例如：依赖补贴套利、监管套利、税制套利 | 中-强 | 年报政府补贴附注、行业政策文件 |
-| **战略频繁转向（年均有1次以上重大战略变更）** | 近3年主业变更/重大资产重组 > 3次 | 中 | 公司公告、年报董事会报告 |
-| **管理层战略执行力不足** | 连续2年设定目标与结果差异 > 30%（如产能投产进度延迟、收入目标未达成） | 中 | 年报管理层分析与讨论、预测vs实际对比 |
+| **Single product dependence > 60% facing substitution threat** | Revenue/gross profit of top 1 product > 60% | High | Annual report segment reporting, prospectus product composition |
+| **Single client dependence > 40%** | Revenue from top 1 client > 40% (referencing L3 supply chain layer threshold) | High | Annual report client information disclosure |
+| **Business model inherently structurally flawed** | E.g., P2P platforms, rental models with structural mismatch, prepayment model where funds are misappropriated | Strong | Industry analysis, regulatory policy documents |
+| **Profit model dependent on unsustainable arbitrage** | E.g., subsidy arbitrage, regulatory arbitrage, tax arbitrage | Medium-Strong | Annual report government subsidy notes, industry policy documents |
+| **Frequent strategy shifts (more than 1 major strategic change per year on average)** | More than 3 core business changes / major asset restructurings in the past 3 years | Medium | Company announcements, annual report board report |
+| **Insufficient management strategic execution** | Target vs. actual results deviation > 30% for 2 consecutive years (e.g., capacity commissioning delays, revenue targets missed) | Medium | Annual report management discussion & analysis, forecast vs actual comparison |
 
-### 6.3.1 商业模式失败触发条件
+### 6.3.1 Business Model Failure Trigger Conditions
 
-| 触发条件 | 检测方法 | 预警窗口 | 严重度 |
-|---------|---------|---------|-------|
-| **连续3年市场份额下降且行业在萎缩** | 市场份额数据(行业协会/公司公告)连续3年下降 + 行业总量连续3年负增长 | 6-12个月 | 强——双重确认的生存性危机 |
-| **技术替代窗口<3年** | 核心产品技术路线被主流市场认定为"过渡技术"且竞争对手已全面转向新技术 | 12-18个月 | 强——哈佛商学院"颠覆性创新"框架确认的致命时窗 |
-| **核心产品价格跌破现金成本** | 市场价格持续低于企业现金成本(可变成本+必需的固定成本分摊)超2个季度 | 3-6个月 | 极端——每一笔生产都在消耗现金，FCF为负且无逆转可能 |
-| **融资渠道因商业模式质疑而系统性关闭** | 银行/债券市场/股权融资同时明确收紧，且企业已无替代融资渠道可用 | 即时 | 极端——融资断流意味着即使有好资产也无法维持运营 |
-| **连续2年经营性现金流为负且现金跑道<12个月** | 年报CFO连续2年为负 + 现金跑道小于12个月 | 3-6个月 | 强——造血功能丧失+安全垫有限的双重危险信号 |
+| Trigger Condition | Detection Method | Warning Window | Severity |
+|---|---|---|---|
+| **Market share declining for 3 consecutive years while industry is shrinking** | Market share data (industry association / company announcements) declining for 3 years + total industry negative growth for 3 consecutive years | 6-12 months | Strong — dual-confirmed existential crisis |
+| **Technology replacement window < 3 years** | Core product technology pathway deemed a "transitional technology" by mainstream market and competitors have fully shifted to new technology | 12-18 months | Strong — fatal time window confirmed by Harvard Business School "disruptive innovation" framework |
+| **Core product price falls below cash cost** | Market price persistently below enterprise cash cost (variable cost + necessary fixed cost allocation) for more than 2 quarters | 3-6 months | Extreme — every unit of production consumes cash, FCF negative with no reversal possible |
+| **Funding channels systematically close due to business model concerns** | Banks / bond market / equity financing simultaneously and explicitly tighten, and enterprise has no alternative funding channels available | Immediate | Extreme — funding cutoff means even good assets cannot sustain operations |
+| **Operating cash flow negative for 2 consecutive years and cash runway < 12 months** | Annual report CFO negative for 2 consecutive years + cash runway less than 12 months | 3-6 months | Strong — dual risk of impaired cash-generating function + limited safety margin |
 
-**商业模式失败的叠加效应**：
+**Business Model Failure Cascade Effect**:
 ```
-市场份额持续下降
-  └──► 规模不经济（固定成本无法分摊）
-       └──► 毛利率持续压缩
-            └──► 研发/销售投入被迫削减
-                 └──► 产品竞争力进一步下降
-                      └──► 市场份额加速下降（恶性循环）
-                           └──► 融资渠道关闭 ──► 债务违约
+Persistent Market Share Decline
+  └---> Diseconomies of Scale (fixed costs cannot be spread)
+       └---> Gross Margin Persistent Compression
+            └---> R&D/Sales Investment Forced to Cut
+                 └---> Product Competitiveness Further Declines
+                      └---> Accelerated Market Share Decline (vicious cycle)
+                           └---> Funding Channels Close -> Debt Default
 ```
 
-**与COSO ERM 2017的对应**：
-COSO ERM 2017框架要求将"战略目标与商业模式的可行性"作为企业风险评估的起点。本触发条件直接对应COSO ERM的"战略与目标设定"（Strategy & Objective-Setting）原则——当商业模式本身不可持续时，所有基于该模式的战略目标均无效。
+**Correspondence with COSO ERM 2017**:
+The COSO ERM 2017 framework requires "strategic objectives and business model viability" as the starting point for enterprise risk assessment. This trigger condition directly corresponds to COSO ERM's "Strategy & Objective-Setting" principle — when the business model itself is unsustainable, all strategic objectives based on that model are invalid.
 
-### 6.4 行业结构性衰退
+### 6.4 Structural Industry Decline
 
-| 信号 | 检测条件 | 强度 | 数据来源 |
+| Signal | Detection Condition | Severity | Data Source |
 |---|---|---|---|
-| **行业总量持续萎缩（连续3年负增长）** | 行业规模连续3年同比下降 | 强 | 国家统计局行业数据、行业协会年度报告 |
-| **政策层面认定该行业为"限制/淘汰类"** | 列入国家发改委《产业结构调整指导目录》限制类或淘汰类 | 强 | 发改委产业指导目录、工信部行业准入条件 |
-| **行业出现系统性亏损（>50%企业亏损）** | 上市同行中亏损企业占比 > 50% | 强 | 上市公司季报/年报（行业可比公司） |
-| **行业内企业大规模退出/倒闭** | 行业企业数量持续下降（连续2年退出率 > 10%） | 中-强 | 工商注销数据、行业协会统计 |
-| **融资渠道对该行业系统性收紧** | 银行/债券市场对该行业授信政策明确收紧 | 中 | 央行/银保监会窗口指导文件、券商行业研报 |
+| **Total industry size persistently shrinking (negative growth for 3 consecutive years)** | Industry size declining YoY for 3 consecutive years | Strong | National statistics bureau industry data, industry association annual reports |
+| **Policy designates the industry as "restricted/eliminated"** | Listed in the Industrial Structure Adjustment Guidance Catalog as restricted or eliminated category | Strong | National development/reform authority industry guidance catalog, ministry of industry access conditions |
+| **Systemic industry losses (> 50% of companies loss-making)** | Loss-making enterprises among listed peers > 50% | Strong | Listed company quarterly/annual reports (industry comparable companies) |
+| **Large-scale industry exits / bankruptcies** | Number of enterprises in the industry persistently declining (exit rate > 10% for 2 consecutive years) | Medium-Strong | Business deregistration data, industry association statistics |
+| **Systematic tightening of funding channels for the industry** | Banks/bond market explicitly tightening credit policies for the industry | Medium | Central bank / financial regulator window guidance documents, broker industry research reports |
 
-### 6.5 战略风险综合判断
+### 6.5 Strategic Risk Composite Judgment
 
-| 评估 | 条件 |
+| Assessment | Condition |
 |---|---|
-| **无信号** | 商业模式清晰且可持续，行业处于成长期或成熟期 |
-| **弱信号** | 单一产品依赖度高但替代威胁尚不明确，或行业增速放缓但不至萎缩 |
-| **中等信号** | 技术颠覆趋势已显现但尚未大规模替代，或单一客户依赖度过高开始出现替代威胁 |
-| **强信号** | 技术路线已被确定淘汰（如PERC在2024年后）+ 企业未完成转型 |
-| **极端信号（触发一票否决）** | 核心商业模式被彻底颠覆且无法转型（如功能手机厂商在2012年仍坚持Symbian） |
+| **No Signal** | Business model clear and sustainable, industry in growth or mature stage |
+| **Weak Signal** | High single product dependence but substitution threat not yet clear, or industry growth slowing but not shrinking |
+| **Moderate Signal** | Technology disruption trend has emerged but not yet large-scale replacement, or high single client dependence with emerging substitution threats |
+| **Strong Signal** | Technology pathway confirmed obsolete (e.g., PERC post-2024) + enterprise has not completed transition |
+| **Extreme Signal (triggers veto)** | Core business model completely disrupted with no possibility of transition (e.g., feature phone maker still committed to Symbian in 2012) |
 
-**战略风险的一票否决触发条件**：
+**Strategic Risk Veto Trigger Conditions**:
 
-> 当以下条件同时满足时，战略风险信号触发一票否决，综合评级上限锁定为CCC：
-> 1. 核心产品/技术路线已被市场主流确认为**淘汰状态**（行业招标已不出现该路线产品）
-> 2. 企业**未完成**向新技术路线的转型且转型窗口已基本关闭（无技术储备、无研发计划、无相关专利或人员配置）
-> 3. 无明确的外部支持方（如政府/母公司）可提供转型所需的资金和资源
+> When the following conditions are simultaneously met, the strategic risk signal triggers a veto, and the composite rating ceiling is capped at CCC:
+> 1. The core product/technology pathway has been **confirmed obsolete** by market consensus (industry procurement tenders no longer feature products on this pathway)
+> 2. The enterprise has **not completed** the transition to the new technology pathway and the transition window has largely closed (no technology reserves, no R&D plan, no relevant patents or personnel allocation)
+> 3. No clear external support party (such as government/parent company) can provide the capital and resources needed for transition
 
-**各非信用风险维度否决上限汇总**：
+**Summary of Non-Credit Risk Dimension Veto Ceilings**:
 
-| 风险维度 | 否决/硬上限类型 | 评级上限 | 说明 |
+| Risk Dimension | Veto / Hard Cap Type | Rating Ceiling | Description |
 |---|---|---|---|
-| 市场风险 | 待定义 | 待定义 | 当前未定义市场风险的一票否决条件 |
-| 操作风险 | 待定义 | 待定义 | 当前未定义操作风险的一票否决条件；治理/欺诈风险的一票否决归入 [governance-fraud-risk.md](governance-fraud-risk.md)（CCC） |
-| 声誉风险 | 待定义 | 待定义 | 当前未定义声誉风险的一票否决条件 |
-| 战略风险 | 一票否决 | **CCC** | 核心商业模式被彻底颠覆且无法转型时触发（见6.5节） |
-| 流动性风险 | 待定义 | 待定义 | 当前未定义流动性风险的一票否决条件 |
+| Market Risk | To be defined | To be defined | No veto conditions currently defined for market risk |
+| Operational Risk | To be defined | To be defined | No veto conditions currently defined for operational risk; governance/fraud risk veto covered by governance-fraud-risk.md (CCC) |
+| Reputational Risk | To be defined | To be defined | No veto conditions currently defined for reputational risk |
+| Strategic Risk | One-vote veto | **CCC** | Triggered when core business model is completely disrupted with no possibility of transition (see Section 6.5) |
+| Liquidity Risk | To be defined | To be defined | No veto conditions currently defined for liquidity risk |
 
-> **说明**：本表明确各非信用风险维度是否可触发否决及对应上限。未定义的类型统一标注为"待定义"，避免与发行人层面一票否决（CCC）混淆。
+> **Note**: This table clarifies whether each non-credit risk dimension can trigger a veto and the corresponding ceiling. Undefined types are uniformly marked as "to be defined" to avoid confusion with issuer-level one-vote veto (CCC).
 
-**诚实标注**：技术颠覆的时间窗口判断存在"过早判定"（premature判定）的风险——在颠覆真正发生前，市场可能长期使用旧技术（参考"半导体光刻技术：193nm浸没式光刻使用了近20年才被EUV替代"）。本框架以**可观测的行业信号**（集采技术规格变化、竞争对手产能转换、国家级/行业技术标准修订）为触发依据，而非基于预测性判断。
+**Honest Labeling**: The judgment of technology disruption time windows carries the risk of "premature determination" — before disruption actually occurs, the market may continue using older technology for extended periods (referencing "semiconductor lithography: 193nm immersion lithography was used for nearly 20 years before being replaced by EUV"). This framework uses **observable industry signals** (changes in procurement technical specifications, competitor capacity conversion, national/industry technical standards revisions) as trigger bases, rather than predictive judgment.
 
 ---
 
-## 七、流动性风险信号
+## 7. Liquidity Risk Signals
 
-### 7.1 流动性风险在信用分析中的定义
+### 7.1 Definition of Liquidity Risk in Credit Analysis
 
-流动性风险在本模块中特指**融资流动性风险**（Funding Liquidity Risk）——企业无法以合理成本获得足够资金以履行到期偿债义务的风险。这部分内容从financial-deep-dive.md的债务到期排程（C.3）和银行授信覆盖比率（C.4）中**部分提取并扩展**。
+Liquidity Risk in this module specifically refers to **Funding Liquidity Risk** — the risk that a company cannot obtain sufficient funds at a reasonable cost to meet its maturing debt obligations. This content is **partially extracted and expanded** from the debt maturity schedule (C.3) and bank credit facility coverage ratio (C.4) in financial-deep-dive.md.
 
-### 7.2 流动性风险向信用的传导路径
+### 7.2 Transmission Path of Liquidity Risk to Credit
 
 ```
-融资渠道收紧
-  ├── 银行授信被收回/额度缩减 ──► 备用流动性下降
-  ├── 债券发行失败/延期 ──► 预期融资落空
-  ├── 股权融资（定增/配股）失败 ──► 资本补充中断
-  │
-  到期债务压力
-  ├── 短期债务集中到期 ──► 再融资需求大
-  ├── 银行授信使用率接近上限 ──► 弹性空间耗竭
-  │
-  触发场景
-  └── 任一市场负面事件
-        └── 融资渠道同时关闭 ──► 流动性危机 ──► 违约
+Funding Channel Tightening
+  ├-- Bank credit facilities withdrawn/limits reduced -> Backup liquidity declines
+  ├-- Bond issuance failure/delayed -> Expected funding falls through
+  ├-- Equity (private placement/rights offering) fails -> Capital replenishment interrupted
+  |
+  Maturing Debt Pressure
+  ├-- Short-term debt concentrated maturities -> High refinancing demand
+  ├-- Bank credit facility utilization near ceiling -> Flexible capacity exhausted
+  |
+  Trigger Scenario
+  └-- Any negative market event
+        └-- Funding channels simultaneously close -> Liquidity crisis -> Default
 ```
 
-### 7.3 流动性风险信号清单
+### 7.3 Liquidity Risk Signal Checklist
 
-#### 7.3.1 融资渠道集中度
+#### 7.3.1 Funding Channel Concentration
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 |
+| Red Flag Signal | Detection Condition | Signal Severity | Data Source |
 |---|---|---|---|
-| **过度依赖单一融资渠道** | 单一融资渠道（如仅依靠银行借款或仅依靠债券发行）占比 > 80% | 中 | 年报附注借款分类 + 融资结构分析 |
-| **债券市场依赖度高** | 应付债券 / 总有息负债 > 50%（尤其当债券市场环境恶化时） | 中 | 年报应付债券附注 |
-| **关联方融资占比过高** | 关联方借款 / 总有息负债 > 30% | 中-强 | 年报关联交易附注 |
-| **融资渠道历史单一** | 近3年融资方式仅有1-2种（如仅有银行借款+股东借款，从未发行债券或股票融资） | 中 | 年报融资活动分析、募集说明书 |
+| **Excessive reliance on a single funding channel** | Single funding channel (e.g., bank borrowings only or bond issuance only) accounts for > 80% | Medium | Annual report notes borrowings classification + financing structure analysis |
+| **High dependence on bond market** | Bonds payable / total interest-bearing debt > 50% (especially when bond market conditions deteriorate) | Medium | Annual report bonds payable notes |
+| **Excessively high related-party financing proportion** | Related-party borrowings / total interest-bearing debt > 30% | Medium-Strong | Annual report related-party transaction notes |
+| **Historically narrow funding channels** | Only 1-2 financing methods used in the past 3 years (e.g., only bank borrowings + shareholder loans, never issued bonds or equity) | Medium | Annual report financing activity analysis, prospectus |
 
-#### 7.3.2 银行授信使用率
+#### 7.3.2 Bank Credit Facility Utilization
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 |
+| Red Flag Signal | Detection Condition | Signal Severity | Data Source |
 |---|---|---|---|
-| **授信使用率 > 80%** | 已使用授信额度 / 总授信额度 > 80% | 中-强 | 年报"银行授信"附注（通常在董事会报告或管理层讨论中披露） |
-| **授信使用率 > 95%** | 接近上限，融资弹性几乎为零 | 强 | 同上 |
-| **授信额度当年缩减 > 20%** | 本年度总授信额度较上年度下降 > 20% | 强 | 年报对比前后年度授信额度 |
-| **授信集中度高** | 前3大授信银行占全部授信 > 70% | 中 | 年报银行授信附注（部分企业披露授信银行分布） |
+| **Credit facility utilization > 80%** | Utilized credit limit / total credit limit > 80% | Medium-Strong | Annual report "bank credit facilities" notes (usually disclosed in board report or management discussion) |
+| **Credit facility utilization > 95%** | Approaching ceiling, financing flexibility nearly zero | Strong | Same as above |
+| **Credit limit reduced > 20% in the year** | Total credit limit for current year decreased > 20% compared to prior year | Strong | Annual report comparing credit limits across periods |
+| **High credit concentration** | Top 3 credit banks account for > 70% of total credit facilities | Medium | Annual report bank credit facility notes (some companies disclose bank distribution) |
 
-**数据限制标注**：银行授信使用率和授信银行分布的披露不是强制性的。上交所/深交所上市公司中，约60-70%会在年报"管理层讨论与分析"或"财务报表附注"中披露授信额度，但非上市企业和部分上市公司可能不完整披露。当该数据缺失时，本模块标注为"数据不可得（不披露）"而非"无风险"。
+**Data Limitation Note**: Disclosure of bank credit facility utilization and credit bank distribution is not mandatory. Among exchange-listed companies, approximately 60-70% disclose credit limits in the annual report's "Management Discussion & Analysis" or "Notes to Financial Statements," but non-listed companies and some listed companies may not disclose fully. When this data is missing, this module marks it as "Data unavailable (not disclosed)" rather than "No risk."
 
-#### 7.3.3 债券发行取消/延期记录
+#### 7.3.3 Bond Issuance Cancellation / Delay Records
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 |
+| Red Flag Signal | Detection Condition | Signal Severity | Data Source |
 |---|---|---|---|
-| **债券发行取消/推迟** | 公司公告"取消发行"或"推迟发行"（因市场环境/投资者认购不足/价格无法达成） | 强 | 中国货币网、上清所、交易所债券公告 |
-| **发行利率大幅高于预期** | 实际发行利率高于初步询价区间上限 > 50bp | 中-强 | 发行结果公告 vs 初步询价公告对比 |
-| **发行规模大幅缩减** | 实际发行规模 < 计划发行规模的70% | 中-强 | 发行结果公告 |
-| **近期无任何成功融资记录** | 近6个月内未成功发行任何债券或获得任何新贷款 | 中 | 无公开融资公告 = 潜在融资困难信号（需结合其他信号） |
-| **投资级主体发行利率异常偏高** | 外部评级AAA/AA+主体发行利率高于同评级同期限均值 > 100bp | 中-强 | 发行结果公告 + 中债收益率曲线 |
+| **Bond issuance cancelled / postponed** | Company announcement "cancellation of issuance" or "postponement of issuance" (due to market conditions / insufficient investor subscription / price disagreement) | Strong | Bond market information platform, clearing house, exchange bond announcements |
+| **Issuance rate significantly higher than expected** | Actual issuance rate exceeds upper end of initial price inquiry range by > 50bp | Medium-Strong | Issuance result announcement vs. initial price inquiry announcement comparison |
+| **Issuance size significantly reduced** | Actual issuance size < 70% of planned issuance size | Medium-Strong | Issuance result announcement |
+| **No recent successful financing record** | No bonds successfully issued or no new loans obtained in the past 6 months | Medium | No public financing announcement = potential financing difficulty signal (requires combination with other signals) |
+| **Investment-grade issuer issuance rate abnormally high** | AAA/AA+ rated issuer issuance rate exceeds same-rating same-tenor average by > 100bp | Medium-Strong | Issuance result announcement + central bond yield curve |
 
-#### 7.3.4 短期债务到期集中度
+#### 7.3.4 Short-Term Debt Maturity Concentration
 
-**从financial-deep-dive.md C.3提取并扩展**：
+**Extracted and expanded from financial-deep-dive.md C.3**:
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 |
+| Red Flag Signal | Detection Condition | Signal Severity | Data Source |
 |---|---|---|---|
-| **未来12个月到期 > 总债务50%** | 参考financial-deep-dive.md C.3的危险分级 | 高 | financial-deep-dive.md C.3 + 年报附注债务到期排程 |
-| **单月集中到期 > 20%** | 某个月份到期债务占总债务 > 20% | 高 | 同上 |
-| **短债/总有息负债 > 60%** | 短期借款+一年内到期非流动负债 / 总有息负债 | 中-强 | 年报资产负债表 + 附注 |
-| **滚动续发依赖度高** | 未来12个月到期债务中 > 50%为债券且需在债券市场滚续发行 | 中-强 | 债务到期排程 + 债券市场环境判断 |
+| **More than 50% of total debt maturing in the next 12 months** | Refer to financial-deep-dive.md C.3 hazard classification | High | financial-deep-dive.md C.3 + annual report notes debt maturity schedule |
+| **Single-month concentrated maturity > 20%** | Debt maturing in a single month accounts for > 20% of total debt | High | Same as above |
+| **Short-term debt / total interest-bearing debt > 60%** | Short-term borrowings + current portion of non-current liabilities / total interest-bearing debt | Medium-Strong | Annual report balance sheet + notes |
+| **High rollover reliance** | > 50% of debt maturing in the next 12 months is bonds that need to be rolled over in the bond market | Medium-Strong | Debt maturity schedule + bond market condition assessment |
 
-#### 7.3.5 现金储备与应变能力
+#### 7.3.5 Cash Reserves and Resilience
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 |
+| Red Flag Signal | Detection Condition | Signal Severity | Data Source |
 |---|---|---|---|
-| **现金跑道 < 6个月** | (货币资金 + 交易性金融资产) / (每月付现成本 + 每月平均到期债务) < 6 | 强 | financial-deep-dive.md E.4/E.5 + 年报现金流量表 |
-| **货币资金受限比例 > 50%** | 受限货币资金 / 货币资金总额 > 50%（保证金/监管户/质押存款） | 中-强 | 年报货币资金附注（受限资金明细） |
-| **现金/短期债务 < 0.5x** | 货币资金 / (短期借款 + 一年内到期非流动负债) < 0.5x | 强 | 年报资产负债表 |
-| **未使用授信/短期债务 < 1.0x** | 未使用授信额度 / 未来12个月到期债务 < 1.0x | 强 | financial-deep-dive.md C.4 + 年报授信披露 |
+| **Cash runway < 6 months** | (Cash + cash equivalents + trading financial assets) / (monthly cash operating costs + average monthly maturing debt) < 6 | Strong | financial-deep-dive.md E.4/E.5 + annual report cash flow statement |
+| **Restricted cash ratio > 50%** | Restricted cash / total cash > 50% (margin deposits / escrow accounts / pledged deposits) | Medium-Strong | Annual report cash notes (restricted cash details) |
+| **Cash / short-term debt < 0.5x** | Cash / (short-term borrowings + current portion of non-current liabilities) < 0.5x | Strong | Annual report balance sheet |
+| **Undrawn credit / short-term debt < 1.0x** | Undrawn credit facilities / debt maturing in next 12 months < 1.0x | Strong | financial-deep-dive.md C.4 + annual report credit disclosure |
 
-**从financial-deep-dive.md提取的与流动性相关的章节**：
+**Liquidity-Related Sections Extracted from financial-deep-dive.md**:
 
-| 章节 | 提取内容 | 在本模块中的位置 |
+| Section | Extracted Content | Position in This Module |
 |---|---|---|
-| C.3 危险分级 | 未来12个月到期占比判定（🟢/🟡/🟠/🔴） | 7.3.4 短期债务到期集中度 |
-| C.4 银行授信覆盖比率 | 未使用授信 / 未来12个月到期债务 | 7.3.2 银行授信使用率 + 7.3.5 现金储备 |
-| D.2 FCF分类矩阵 | 持续负FCF = 依赖外部融资 | 7.3.5 现金跑道（FCF为负影响跑道长度） |
+| C.3 Hazard Classification | Proportion of debt maturing in next 12 months assessment (green/yellow/orange/red) | 7.3.4 Short-Term Debt Maturity Concentration |
+| C.4 Bank Credit Facility Coverage Ratio | Undrawn credit / debt maturing in next 12 months | 7.3.2 Bank Credit Facility Utilization + 7.3.5 Cash Reserves |
+| D.2 FCF Classification Matrix | Persistently negative FCF = dependent on external financing | 7.3.5 Cash Runway (negative FCF affects runway length) |
 
-### 7.4 流动性风险综合判断
+### 7.4 Liquidity Risk Composite Judgment
 
-| 评估 | 条件 |
+| Assessment | Condition |
 |---|---|
-| **低** | 授信使用率 < 50% + 未来12个月到期 < 30% + 现金跑道 > 12个月 |
-| **中等** | 任一达关注阈值（授信使用率50-80%/到期占比30-50%/现金跑道6-12月） |
-| **高** | 两个维度达危险阈值（授信使用率>80%或到期占比>50%或现金跑道<6月） |
-| **极高** | 授信使用率>95% + 到期占比>50% + 现金跑道<6个月 + 债券取消发行记录 |
+| **Low** | Credit facility utilization < 50% + next 12 months maturities < 30% + cash runway > 12 months |
+| **Medium** | Any single dimension reaches watch threshold (utilization 50-80% / maturities 30-50% / cash runway 6-12 months) |
+| **High** | Two dimensions reach danger threshold (utilization > 80% or maturities > 50% or cash runway < 6 months) |
+| **Very High** | Utilization > 95% + maturities > 50% + cash runway < 6 months + bond issuance cancellation record |
 
 ---
 
-## 八、叠加调整规则
+## 8. Overlay Adjustment Rules
 
-### 8.1 调整总则
+### 8.1 General Adjustment Principles
 
-| 非信用风险信号强度 | 调整幅度 | 触发条件 |
+| Non-Credit Risk Signal Severity | Adjustment Magnitude | Trigger Condition |
 |---|---|---|
-| **无信号** | 0 | 所有维度无异常（各维度综合评级均为"低"或"无信号"） |
-| **弱信号（单一维度，低影响）** | **0** | 仅1个维度出现弱信号（如单一轻微环保罚款）；标注风险但不调整评级 |
-| **中等信号（1-2个维度，中等影响）** | **±0.5子级** | 1-2个维度达到"中等"风险评级（如市场风险较高但可管理 + 轻微声誉事件） |
-| **强信号（2+维度，高影响）** | **±1子级** | 2个及以上维度达到"强/高"风险评级（如声誉事件+监管处罚同时触发） |
-| **极端信号** | **触发一票否决** | 核心商业模式被彻底颠覆且无法转型（战略风险极端信号触发条件见6.5节） |
+| **No Signal** | 0 | All dimensions normal (all dimension composite ratings are "Low" or "No Signal") |
+| **Weak Signal (single dimension, low impact)** | **0** | Only 1 dimension shows weak signal (e.g., single minor environmental fine); note the risk but do not adjust rating |
+| **Moderate Signal (1-2 dimensions, moderate impact)** | **±0.5 notch** | 1-2 dimensions reach "Moderate" risk rating (e.g., market risk elevated but manageable + minor reputational event) |
+| **Strong Signal (2+ dimensions, high impact)** | **±1 notch** | 2 or more dimensions reach "Strong/High" risk rating (e.g., reputational event + regulatory penalty triggered simultaneously) |
+| **Extreme Signal** | **Triggers veto** | Core business model completely disrupted with no possibility of transition (strategic risk extreme signal trigger conditions in Section 6.5) |
 
-**调整方向说明**：
+**Adjustment Direction**:
 
-- **下调（负面调整）**：占绝大多数场景。非信用风险的存在几乎总是增加信用风险，因此在检测到信号时通常下调评级。
-- **上调（正面调整）**：极少见场景。仅在同时满足以下条件时考虑上调：
-  1. 之前因非信用风险被下调过的主体，且该风险已明确消除（如监管处罚已结案、管理层已稳定）
-  2. 外部支持框架已确认的"能力+意愿均强"且非信用风险维度无信号
+- **Downgrade (negative adjustment)**: Applies in the vast majority of scenarios. The existence of non-credit risk almost always increases credit risk, so the rating is typically downgraded when signals are detected.
+- **Upgrade (positive adjustment)**: Very rare scenarios. Considered only when the following conditions are simultaneously met:
+  1. A previously downgraded entity due to non-credit risk, where that risk has been clearly eliminated (e.g., regulatory penalty closed, management stabilized)
+  2. The external support framework has confirmed "capability + willingness both strong" and no signals from non-credit risk dimensions
 
-### 8.2 调整步长与操作规则
+### 8.2 Step Size and Operational Rules
 
-| 规则 | 内容 |
+| Rule | Content |
 |---|---|
-| **单位** | 调整以0.5子级为最小步长（1子级 = 一个评级台阶，如BB+到BB-） |
-| **单次上限** | 非信用风险叠加调整不超过±1子级（单次触发） |
-| **累计上限** | 同一主体连续12个月内因非信用风险叠加的累计调整不超过±2子级 |
-| **最低触发条件** | 至少1个风险维度达到"中等"评级方可触发调整（单一"弱信号"不触发调整） |
-| **叠加顺序** | 先做外部支持上调 → 再做非信用风险叠加调整（最终评级 = 基准评级 + 外部支持调整 + 非信用风险调整） |
-| **最低评级约束** | 非信用风险叠加调整后的评级受各维度否决上限约束；已定义的战略风险一票否决上限为CCC，其他维度否决上限待定义（详见6.5节汇总表） |
-| **调整标注** | 每次调整必须在分析结论中附带"非信用风险调整说明" |
+| **Unit** | Adjustments use 0.5 notch as the minimum step size (1 notch = one rating step, e.g., BB+ to BB-) |
+| **Single Adjustment Cap** | Non-credit risk overlay adjustment does not exceed ±1 notch (single trigger) |
+| **Cumulative Cap** | Cumulative adjustments from non-credit risk overlay for the same entity within 12 consecutive months do not exceed ±2 notches |
+| **Minimum Trigger Condition** | At least 1 risk dimension must reach "Moderate" rating to trigger adjustment (single "Weak Signal" does not trigger adjustment) |
+| **Order of Application** | External support upgrade applied first -> then non-credit risk overlay adjustment (final rating = baseline rating + external support adjustment + non-credit risk adjustment) |
+| **Minimum Rating Constraint** | Rating after non-credit risk overlay adjustment is subject to the veto ceiling of each dimension; defined strategic risk one-vote veto ceiling is CCC, other dimension veto ceilings to be defined (see Section 6.5 summary table) |
+| **Adjustment Annotation** | Each adjustment must be accompanied by a "Non-Credit Risk Adjustment Explanation" in the analysis conclusion |
 
-### 8.3 调整输出示例
+### 8.3 Adjustment Output Example
 
 ```yaml
-# 非信用风险调整说明
-base_rating: BB+                     # 金字塔基准评级
-external_support_adjustment: +1      # 外部支持上调1子级（至BBB-）
-non_credit_risk_adjustment: -0.5     # 非信用风险叠加下调0.5子级
+# Non-Credit Risk Adjustment Explanation
+base_rating: BB+                     # Pyramid baseline rating
+external_support_adjustment: +1      # External support upgrade by 1 notch (to BBB-)
+non_credit_risk_adjustment: -0.5     # Non-credit risk overlay downgrade by 0.5 notch
 
-final_rating: BB+                    # 基准BB+ +1子级 -0.5子级 = 实际BB+不变
+final_rating: BB+                    # Baseline BB+ +1 notch -0.5 notch = effectively BB+ unchanged
 non_credit_risk_detail:
-  market_risk: "中等（外币收入35%+浮动利率借款占比25%+汇率未对冲）"
-  operational_risk: "弱信号（单项环保处罚10万元）"
-  reputation_risk: "无信号"
-  strategic_risk: "无信号（技术路线跟踪正常）"
-  liquidity_risk: "低（授信使用率35%+到期排程均匀+现金跑道14个月）"
-adjustment_rationale: "市场风险中等（外汇敞口+浮动利率债务）触发-0.5调整，但流动性充裕和外部支持形成对冲"
+  market_risk: "Moderate (foreign currency revenue 35% + floating rate borrowings 25% + FX unhedged)"
+  operational_risk: "Weak signal (single environmental fine)"
+  reputation_risk: "No signal"
+  strategic_risk: "No signal (technology pathway tracking normal)"
+  liquidity_risk: "Low (credit utilization 35% + even maturity schedule + cash runway 14 months)"
+adjustment_rationale: "Market risk moderate (FX exposure + floating rate debt) triggers -0.5 adjustment, but ample liquidity and external support form a buffer"
 ```
 
-### 8.4 评级调整实例：隆基绿能非信用风险叠加
+### 8.4 Rating Adjustment Example: LONGi Green Energy Non-Credit Risk Overlay
 
-> **背景**：隆基绿能（601012）2025-2026年面临多维度非信用风险信号，但均有明确的缓释因素。
+> **Context**: LONGi Green Energy (601012) faced multi-dimensional non-credit risk signals in 2025-2026, but each had clear mitigating factors.
 
 ```yaml
-# 非信用风险调整说明 · 隆基绿能 2026Q1
-base_rating: BBB-                    # 金字塔基准评级（穿越周期能力确认，但周期亏损拖累）
-external_support_adjustment: 0       # 无明确政府/母公司支持（已上市民企）
-non_credit_risk_adjustment: -0.5     # 非信用风险叠加下调0.5子级
+# Non-Credit Risk Adjustment Explanation · LONGi Green Energy 2026 Q1
+base_rating: BBB-                    # Pyramid baseline rating (cycle resilience confirmed, but cyclical losses weigh)
+external_support_adjustment: 0       # No clear government/parent company support (listed private enterprise)
+non_credit_risk_adjustment: -0.5     # Non-credit risk overlay downgrade by 0.5 notch
 
-final_rating: BB+                    # BBB- + 0 - 0.5 = BB+/BBB-边界，取BB+
+final_rating: BB+                    # BBB- + 0 - 0.5 = BB+/BBB- boundary, take BB+
  
 non_credit_risk_detail:
-  market_risk: "中等（境外收入44.7% + 汇率风险部分对冲 + 商品价格风险通过一体化缓冲）"
-  operational_risk: "弱信号（行业产能过剩导致部分PERC产线闲置，但非管理缺陷）"
-  reputation_risk: "弱信号（评级机构维持AAA/稳定，但市场质疑持续亏损后的信用质量）"
-  strategic_risk: "中等（BC技术路线面临HJT+钙钛矿叠层的远期替代压力，但转换窗口>5年，非短期风险）"
-  liquidity_risk: "低（526亿现金储备覆盖有息负债3.5倍/CFO 2025年已转正+43.59亿/授信充足）"
+  market_risk: "Moderate (overseas revenue 44.7% + FX risk partially hedged + commodity price risk buffered by vertical integration)"
+  operational_risk: "Weak signal (industry overcapacity leading to partial PERC line idling, but not a management deficiency)"
+  reputation_risk: "Weak signal (rating agencies maintain stable outlook, but market questions credit quality after persistent losses)"
+  strategic_risk: "Moderate (BC technology pathway faces long-term substitution pressure from HJT+Perovskite tandem, but transition window > 5 years, not a short-term risk)"
+  liquidity_risk: "Low (52.6 billion cash reserve covers interest-bearing debt 3.5x / CFO turned positive in 2025 at +4.359 billion / ample credit facilities)"
 
 adjustment_rationale: >
-  战略风险中等触发-0.5子级调整。BC技术虽当前领先（量产效率24.8%/央企集采50.3GW入围），但
-  HJT+钙钛矿叠层效率纪录已达33.7%（2025年），技术替代窗口约5-8年——非短期致命，但属于
-  COSO ERM要求的"战略目标可行性评估"范畴。流动性充裕（526亿现金+43.59亿正CFO）形成缓冲，
-  避免更大幅度的下调。若未来2年BC技术溢价消失或技术替代加速，需重新评估调整幅度。
+  Strategic risk moderate triggers -0.5 notch adjustment. Although BC technology is currently
+  leading (mass production efficiency 24.8% / 50.3GW awarded in central enterprise procurement),
+  HJT+Perovskite tandem efficiency record has reached 33.7% (2025), suggesting a technology
+  replacement window of approximately 5-8 years — not an imminent fatality, but within the
+  scope of COSO ERM's "strategic objective viability assessment." Ample liquidity
+  (52.6 billion cash + 4.359 billion positive CFO) forms a buffer, preventing a larger
+  downgrade. If BC technology premium disappears or technology substitution accelerates
+  in the next 2 years, the adjustment magnitude should be reassessed.
   
 adjustment_likely_reversal: >
-  下调0.5子级的驱动因素是"远期技术替代不确定性"，而非短期流动性或盈利能力恶化。
-  可能的逆转触发条件：①BC技术迭代证明可平滑过渡至下一代 ②公司启动钙钛矿叠层研发并取得
-  可验证进展 ③行业周期触底后毛利率回升至5%以上。
-  预计逆转窗口：12-18个月。
+  The driver of the -0.5 notch downgrade is "long-term technology substitution uncertainty,"
+  not short-term liquidity or profitability deterioration.
+  Possible reversal triggers: (1) BC technology iteration proves a smooth transition to the next
+  generation; (2) the company initiates Perovskite tandem R&D and achieves verifiable progress;
+  (3) the industry cycle bottoms out and gross margin recovers above 5%.
+  Estimated reversal window: 12-18 months.
 ```
 
-**关键设计说明**：
-1. 该实例展示了"中等风险触发-0.5子级调整"的完整逻辑链——这是叠加调整中最常见的场景
-2. 独立风险维度之间的缓冲/放大关系被显式评估（流动性充裕缓冲了战略风险的下调幅度）
-3. 调整的"可逆性判断"被纳入输出——下调不是永久性的，逆转条件被明确列出
-4. 与隆基绿能的实际财务特征一致（526亿现金、43.59亿正CFO、技术进步预期）
+**Key Design Notes**:
+1. This example demonstrates the complete logic chain of "moderate risk triggering -0.5 notch adjustment" — the most common scenario in overlay adjustments
+2. The buffering/amplifying relationships between independent risk dimensions are explicitly evaluated (ample liquidity buffers the magnitude of the strategic risk downgrade)
+3. "Reversibility assessment" of the adjustment is included in the output — the downgrade is not permanent, and reversal conditions are explicitly listed
+4. Consistent with LONGi Green Energy's actual financial characteristics (52.6 billion cash, 4.359 billion positive CFO, technology improvement expectations)
 
-### 8.5 与基准评级置信度的联动
+### 8.5 Linkage with Baseline Rating Confidence
 
-非信用风险叠加调整的置信度应反映在最终评级的置信度标注中：
+The confidence level of the non-credit risk overlay adjustment should be reflected in the final rating's confidence annotation:
 
-| 叠加调整的非信用数据完备性 | 最终评级置信度 |
+| Data Completeness of Overlay Adjustment | Final Rating Confidence |
 |---|---|
-| 所有维度数据均可用（年报全量、市场数据可得） | 不降低置信度 |
-| 1-2个维度数据部分缺失 | 置信度降低一档（如高→中高） |
-| 3个及以上维度数据严重缺失 | 置信度降低两档，且标注"因非信用风险数据缺失，调整判断存在不确定性" |
+| All dimension data available (full annual reports, market data accessible) | No reduction in confidence |
+| 1-2 dimensions partially missing | Confidence reduced by one level (e.g., High -> Medium-High) |
+| 3 or more dimensions severely missing | Confidence reduced by two levels, annotated as "Due to missing non-credit risk data, the adjustment judgment carries uncertainty" |
 
 ---
 
-## 九、信号汇总与评分规则
+## 9. Signal Aggregation and Scoring Rules
 
-### 9.1 非信用风险评分卡
+### 9.1 Non-Credit Risk Scorecard
 
-| 风险维度 | 评分因子 | 权重 | 数据来源依赖 | 数据可得性 |
+| Risk Dimension | Scoring Factors | Weight | Data Source Dependence | Data Availability |
 |---|---|---|---|---|
-| **市场风险** | 利率敞口、汇率敞口、商品价格敞口，取三个中的最高风险等级 | 20% | 年报附注 + 宏观数据 | 较高（年报附注+公开价格指数） |
-| **操作风险** | 监管处罚、关键人员、法律诉讼、欺诈信号，按信号强度计分 | 30% | 公司公告 + 监管公示 + 司法公开 | 中等（仅已外部化的事件可测） |
-| **声誉风险** | ESG事件强度、媒体负面密度、评级机构行动，综合评分 | 15% | 新闻 + 评级机构公告 + ESG数据 | 中等（依赖媒体和公开评级） |
-| **战略风险** | 技术颠覆强度、商业模式可持续性、行业趋势，综合评分 | 25% | 招投标 + 行业技术报告 + 政策文件 | 较高（技术路线和行业趋势数据可获取） |
-| **流动性风险** | 融资渠道集中度、授信使用率、现金跑道、到期集中度 | 10% | 年报附注 + 中国货币网 | 中等（授信数据部分不披露） |
+| **Market Risk** | Interest rate exposure, FX exposure, commodity price exposure; take the highest risk level among the three | 20% | Annual report notes + macro data | Relatively high (annual report notes + public price indices) |
+| **Operational Risk** | Regulatory penalties, key personnel, legal litigation, fraud signals; scored by signal severity | 30% | Company announcements + regulatory disclosures + judicial public records | Medium (only externalized events measurable) |
+| **Reputational Risk** | ESG event severity, media negative density, rating agency actions; composite score | 15% | News + rating agency announcements + ESG data | Medium (depends on media and public ratings) |
+| **Strategic Risk** | Technology disruption severity, business model sustainability, industry trends; composite score | 25% | Procurement tenders + industry technology reports + policy documents | Relatively high (technology pathway and industry trend data accessible) |
+| **Liquidity Risk** | Funding channel concentration, credit facility utilization, cash runway, maturity concentration | 10% | Annual report notes + bond market information platform | Medium (credit data partially undisclosed) |
 
-**权重说明**：操作风险和战略风险权重最高，因为这两类风险对信用质量的影响最深远且最不可逆（参考永煤/紫光/华晨的违约基因型）。市场风险和声誉风险更多通过中介传导路径影响信用，流动性风险是"压垮骆驼的最后一根稻草"——在信用风险分析中已通过L4财务层和债务到期排程部分覆盖。
+**Weight Note**: Operational risk and strategic risk carry the highest weights because these two types of risk have the most profound and irreversible impact on credit quality (referencing the default genotypes of Yongmei/Ziguang/Brilliance Auto). Market risk and reputational risk affect credit more through intermediary transmission pathways, while liquidity risk is "the straw that breaks the camel's back" — already partially covered in credit risk analysis through the L4 financial layer and debt maturity schedule.
 
-### 9.2 综合信号强度计算
+### 9.2 Composite Signal Strength Calculation
 
 ```
-非信用风险综合评分 = Σ(各维度风险评分 × 维度权重)
+Non-Credit Risk Composite Score = Σ(Each Dimension Risk Score × Dimension Weight)
 
-各维度风险评分：
-  无信号 = 0
-  弱信号 = 1
-  中等信号 = 2
-  强信号 = 3
-  极端信号 = 4（触发一票否决）
+Dimension Risk Scores:
+  No Signal     = 0
+  Weak Signal   = 1
+  Moderate Signal = 2
+  Strong Signal = 3
+  Extreme Signal = 4 (triggers veto)
 
-综合评分阈值：
-  0 - 0.5   → 无信号（不调整）
-  0.5 - 1.5 → 弱信号（不调整，标注风险）
-  1.5 - 2.5 → 中等信号（±0.5子级调整）
-  2.5 - 3.5 → 强信号（±1子级调整）
-  > 3.5     → 极端信号（触发一票否决）
+Composite Score Thresholds:
+  0 - 0.5     -> No Signal (no adjustment)
+  0.5 - 1.5   -> Weak Signal (no adjustment, mark risk)
+  1.5 - 2.5   -> Moderate Signal (±0.5 notch adjustment)
+  2.5 - 3.5   -> Strong Signal (±1 notch adjustment)
+  > 3.5       -> Extreme Signal (triggers veto)
 ```
 
-### 9.3 信号叠加的交叉验证
+### 9.3 Cross-Validation of Signal Overlap
 
-当同一事件同时触发多个维度的信号时，遵循以下叠加规则：
+When the same event triggers signals across multiple dimensions simultaneously, the following stacking rules apply:
 
-| 情景 | 处理规则 | 示例 |
+| Scenario | Processing Rule | Example |
 |---|---|---|
-| **同一事件触发多维度信号** | 计为1次事件，但选择最严重的维度方向计入评分 | 产品质量丑闻同时触发声誉风险（强）+ 操作风险（产品质量监管处罚=中），取强信号作为调整依据 |
-| **跨维度信号强度叠加** | 两个以上维度同时达到"中等"时，取比单维度高一档的信号强度 | 操作风险（中等）+ 市场风险（中等）+ 流动性风险（中等）= 综合"强信号" |
-| **矛盾信号（同一维度不同方向）** | 以最近的信号为准（时间加权） | 某企业2025年有操作风险处罚（强信号），2026年已整改完毕且无新违规，以2026年状态为准 |
-| **重复信号** | 同一性质的事件重复发生计为强度升级而非计数加总 | 第二次环保处罚 → 信号强度从中等升级为强 |
+| **Same event triggers multi-dimensional signals** | Count as 1 event, but select the most severe dimension direction for scoring | Product quality scandal simultaneously triggers reputational risk (strong) + operational risk (product quality regulatory penalty = medium); take strong signal as adjustment basis |
+| **Cross-dimensional signal intensity stacking** | When 2+ dimensions simultaneously reach "Moderate," take one step higher than single dimension signal intensity | Operational risk (moderate) + market risk (moderate) + liquidity risk (moderate) = composite "Strong signal" |
+| **Conflicting signals (opposite directions on same dimension)** | Whichever signal is most recent prevails (time-weighted) | Company had operational risk penalty in 2025 (strong signal), but has rectified by 2026 with no new violations; take 2026 status |
+| **Repeated signals** | Repeated occurrence of same nature of events counts as severity escalation, not count accumulation | Second environmental penalty -> signal severity upgraded from moderate to strong |
 
 ---
 
-## 十、与现有框架的集成
+## 10. Integration with Existing Frameworks
 
-### 10.1 在 dual-track-methodology.md 中的集成
+### 10.1 Integration in dual-track-methodology.md
 
-在"七、决策规则"和"八、风险缓释建议框架"之间新增"非信用风险叠加"环节。
+Insert a new "Non-Credit Risk Overlay" section between "7. Decision Rules" and "8. Risk Mitigation Recommendation Framework."
 
-**新增位置**：步骤4（评级映射）之后，步骤5（交叉对撞）之前。
+**New Position**: After Step 4 (Rating Mapping), before Step 5 (Cross-Collision).
 
-**新增段落参考**：
+**Reference Text for New Section**:
 
 ```
-## [新增] 非信用风险叠加
+## [New] Non-Credit Risk Overlay
 
-在完成基准信用评级（含外部支持调整）后，运行非信用风险叠加层：
+After the baseline credit rating (including external support adjustment) is completed, run the non-credit risk overlay:
 
-1. 扫描五大非信用风险维度（市场/操作/声誉/战略/流动性）的全部信号
-2. 计算综合信号强度（9.2节评分规则）
-3. 根据信号强度触发叠加调整（8.1节调整规则）
-4. 输出调整后的最终评级 + 调整说明
+1. Scan all signals across the five non-credit risk dimensions (market/operational/reputational/strategic/liquidity)
+2. Calculate composite signal strength (scoring rules in Section 9.2)
+3. Trigger overlay adjustment based on signal strength (adjustment rules in Section 8.1)
+4. Output adjusted final rating + adjustment explanation
 
-叠加后的评级进入交叉对撞矩阵，与轨道B市场定价信号进行交叉验证：
-- 如果轨道B的利差/价格已反映非信用风险信号 → 叠加调整与市场定价一致，增强信心
-- 如果轨道B未反映非信用风险信号 → 可能市场尚未定价该风险，叠加调整保留
-- 如果轨道B反映了非信用风险信号但叠加层未检测到 → 可能存在引擎未覆盖的风险
+The post-overlay rating enters the cross-collision matrix for cross-validation with Track B market pricing signals:
+  - If Track B spreads/prices already reflect the non-credit risk signals -> Overlay adjustment is consistent with market pricing, confidence enhanced
+  - If Track B has not reflected the non-credit risk signals -> Market may not yet have priced in the risk, overlay adjustment retained
+  - If Track B reflects non-credit risk signals but the overlay layer did not detect them -> There may be risks not covered by the engine
 ```
 
-### 10.2 在 mosaic-engine.md 中的集成
+### 10.2 Integration in mosaic-engine.md
 
-**在"缺口→风险映射表"（5.2节）中增加非信用风险缺口**：
+**Add non-credit risk gaps to the "Gap -> Risk Mapping Table" (Section 5.2)**:
 
-| 缺口类型 | 典型缺失数据 | 对应的信息风险 | 替代信号 |
+| Gap Type | Typical Missing Data | Corresponding Information Risk | Alternative Signal |
 |---|---|---|---|
-| **操作风险** | 内部流程缺陷（审批漏洞/员工舞弊未暴露） | 可能高估企业实际管理控制水平 | 审计意见类型+内部控制审计报告+已暴露的事件记录，标注"内部缺陷不可观测" |
-| **声誉风险** | 非上市企业/非公众人物的声誉感知变化 | 无法实时跟踪声誉变化 | 仅依赖可观测的ESG事件+监管处罚+评级机构行动，标注"声誉风险检测仅覆盖已公开事件" |
-| **市场风险** | 精确的久期/凸性数据 | 利率敏感性估算误差 | 债务剩余年限近似替代，标注"估算值" |
-| **流动性风险** | 授信额度的银行分布和到期日 | 无法判断授信集中度和剩余期限 | 仅依赖已披露的汇总数据，标注"部分银行授信数据未披露" |
-| **战略风险** | 企业内部的技术路线图/研发管道 | 颠覆信号可能有3-12个月的信息滞后 | 行业技术论坛+招投标技术规格+竞争对手产能公告，标注"基于行业公开信号的推断" |
+| **Operational Risk** | Internal process deficiencies (approval loopholes/undisclosed employee misconduct) | May overestimate actual management control level | Audit opinion type + internal control audit report + exposed incident records; annotate "internal deficiencies unobservable" |
+| **Reputational Risk** | Reputation perception changes of non-listed companies / non-public figures | Cannot track reputation changes in real time | Only rely on observable ESG events + regulatory penalties + rating agency actions; annotate "reputational risk detection only covers publicly disclosed events" |
+| **Market Risk** | Precise duration/convexity data | Estimation error in interest rate sensitivity | Substitute using remaining debt maturity approximation; annotate "estimated value" |
+| **Liquidity Risk** | Bank distribution and maturity of credit facilities | Cannot assess credit concentration and remaining tenor | Only rely on aggregated disclosed data; annotate "partial bank credit data not disclosed" |
+| **Strategic Risk** | Internal company technology roadmaps / R&D pipelines | Disruption signals may have 3-12 months of information lag | Industry technology forums + procurement technical specifications + competitor capacity announcements; annotate "inference based on public industry signals" |
 
-**在完备性评估层（5.1节）的信号密度条形图中增加"非信用风险"维度**：
+**Add a "Non-Credit Risk" dimension to the signal density bar chart in the completeness assessment layer (Section 5.1)**:
 
 ```
-信号密度条形图（更新后）：
-┌─────────────────────────────────────┐
-│ L1 政策/宏观    ████████░░ 82%      │
-│ L2 技术/竞争    ██████░░░░ 75%      │
-│ L3 供应链/运营  ████░░░░░░ 48% ⚠️   │
-│ L4 财务/偿债    █████████░ 89%      │
-│ L5 外部支持     ████░░░░░░ 45% ⚠️   │
-│ 市场定价(轨B)   ███░░░░░░░ 35% ⚠️   │
-│ ★非信用风险叠加 ███░░░░░░░ 38% ⚠️   │  ← 新增
-└─────────────────────────────────────┘
+Signal Density Bar Chart (Updated):
++---------------------------------------------------+
+| L1 Policy/Macro        ████████░░ 82%             |
+| L2 Technology/Competition ██████░░░░ 75%          |
+| L3 Supply Chain/Operations ████░░░░░░ 48% ⚠️      |
+| L4 Financial/Debt Service █████████░ 89%          |
+| L5 External Support     ████░░░░░░ 45% ⚠️         |
+| Market Pricing (Track B) ███░░░░░░░ 35% ⚠️        |
+| ★Non-Credit Risk Overlay ███░░░░░░░ 38% ⚠️        |  <- Added
++---------------------------------------------------+
 ```
 
-### 10.3 在 outlook-monitoring-framework.md 中的集成
+### 10.3 Integration in outlook-monitoring-framework.md
 
-**在监控矩阵中增加非信用风险事件触发条件**：
+**Add non-credit risk event trigger conditions to the monitoring matrix**:
 
-| 新增监控项 | 频率 | 数据来源 | 触发重评条件 | 优先级 |
+| New Monitoring Item | Frequency | Data Source | Trigger for Reassessment | Priority |
 |---|---|---|---|---|
-| **市场风险信号** | 季度 | 央行基准利率公告+汇率中间价+行业原材料价格指数 | 利率上升>100bp/本币贬值>5%/原材料价格跳升>20%+企业有敞口 | P1 |
-| **操作风险事件** | 实时 | 公司公告+证监会/银保监会/交易所公示 | 证监会立案调查/CFO离职/重大行政处罚 | P0 |
-| **声誉风险事件** | 周度 | WebSearch新闻监测+评级机构公告 | 评级展望下调/产品质量召回/重大环境事故/做空报告发布 | P1 |
-| **战略风险事件** | 月度 | 行业技术论坛+招投标公告+政策文件 | 行业前3名同时转向新技术/核心产品被政策限制/关键技术突破性替代 | P1 |
-| **流动性风险事件** | 实时 | 中国货币网+交易所公告 | 债券取消发行/授信被收回/短债占比跳升>10pp | P0 |
+| **Market Risk Signals** | Quarterly | Central bank benchmark rate announcements + exchange rate fix + industry raw material price indices | Rate increase > 100bp / local currency depreciation > 5% / raw material price jump > 20% with enterprise exposure | P1 |
+| **Operational Risk Events** | Real-time | Company announcements + securities regulator / financial regulator / exchange disclosures | Securities regulator investigation / CFO departure / major administrative penalty | P0 |
+| **Reputational Risk Events** | Weekly | WebSearch news monitoring + rating agency announcements | Rating outlook downgrade / product quality recall / major environmental accident / short report published | P1 |
+| **Strategic Risk Events** | Monthly | Industry technology forums + procurement announcements + policy documents | Top 3 industry players simultaneously shift to new technology / core product restricted by policy / breakthrough technology substitution | P1 |
+| **Liquidity Risk Events** | Real-time | Bond market information platform + exchange announcements | Bond issuance cancelled / credit facility withdrawn / short-term debt ratio jumps > 10pp | P0 |
 
-**在监控矩阵的"触发重评条件"中扩大范围**：在现有的P0监控项基础上，新增"非信用风险叠加后评级下调"作为触发重评的条件之一。
+**Expand the scope of "trigger conditions for reassessment" in the monitoring matrix**: Add "rating downgrade after non-credit risk overlay" as one of the trigger conditions for reassessment, in addition to existing P0 monitoring items.
 
-### 10.4 在 governance-fraud-risk.md 中的集成标注
+### 10.4 Integration Annotation in governance-fraud-risk.md
 
-**在该文档开头或相关内容处增加说明**：
+**Add the following explanation at the beginning of that document or at relevant sections**:
 
-> **与本模块的关系**：治理与财务欺诈风险分析模块（governance-fraud-risk.md）检测的欺诈信号和管理层治理红旗，在本模块中归类为**操作风险子集**。这些信号从 governance-fraud-risk.md 的专门检测框架中提取后，汇入本模块的操作风险维度（4.3节），与监管处罚、关键人员风险、法律诉讼等信号合并计算操作风险综合评分。
+> **Relationship with This Module**: The fraud signals and management governance red flags detected by the Governance and Financial Fraud Risk Analysis module (governance-fraud-risk.md) are classified in this module as a **subset of operational risk**. These signals are extracted from the specialized detection framework of governance-fraud-risk.md and then aggregated into the operational risk dimension of this module (Section 4.3), where they are combined with regulatory penalties, key personnel risk, legal litigation, and other signals to calculate the operational risk composite score.
 
-### 10.5 在 industry-framework.md 中的集成
+### 10.5 Integration in industry-framework.md
 
-**在各行业金字塔的L1层或独立标注中增加"战略风险-技术颠覆信号"的参考**：
+**Add a reference to "Strategic Risk - Technology Disruption Signals" in the L1 layer or a standalone annotation of each industry pyramid**:
 
 ```
-在各行业金字塔的L2技术层末尾增加如下标注：
-  ⚠️ L2技术层信号与战略风险（非信用风险叠加层）的衔接：
-    当L2技术层评分涉及的"技术路线被淘汰"风险达到临界点时，
-    该信号应同步传递给非信用风险叠加层（strategic_risk维度）。
-    详见 non-credit-risk-overlay.md 6.2节。
+At the end of the L2 Technology layer of each industry pyramid, add the following annotation:
+  ⚠️ Linkage between L2 Technology Layer Signals and Strategic Risk (Non-Credit Risk Overlay Layer):
+    When the risk of "technology pathway obsolescence" assessed by the L2 Technology Layer
+    reaches a critical point, the signal should be simultaneously relayed to the non-credit risk
+    overlay layer (strategic_risk dimension).
+    See non-credit-risk-overlay.md Section 6.2 for details.
 ```
 
 ---
 
-## 十一、公开数据约束下的诚实标注
+## 11. Honest Labeling Under Public Data Constraints
 
-### 11.1 非信用风险检测的根本局限
+### 11.1 Fundamental Limitations of Non-Credit Risk Detection
 
-| 风险维度 | 可观测比例（估算） | 不可观测部分 | 对评估的影响 |
+| Risk Dimension | Observable Proportion (Estimated) | Unobservable Portion | Impact on Assessment |
 |---|---|---|---|
-| **市场风险** | 60-70% | 精确的久期/凸性、完整的对冲策略、内部压力测试结果 | 估算值误差在可接受范围内，不影响方向性判断 |
-| **操作风险** | 30-40% | 内部流程缺陷（未外部化的）、员工不当行为（未披露的）、欺诈企图（未被发现的） | **检测能力最弱的维度**——大量操作风险事件只有在造成实际损失后才可观测 |
-| **声誉风险** | 40-50% | 逐渐累积但尚未爆发的负面情绪、非媒体渠道的口碑恶化、B2B客户关系的私下恶化 | 仅捕获已公开的事件，可能遗漏无声的声誉恶化 |
-| **战略风险** | 55-65% | 企业内部技术路线图、研发管道（未申请的专利）、管理层真实战略意图 | 技术颠覆信号存在3-12个月的信息滞后（从内部决策到公开可观测） |
-| **流动性风险** | 50-60% | 授信的银行分布和到期日、银行内部评级变化、与非金融机构的融资安排 | 汇总数据可获取但细节不足 |
+| **Market Risk** | 60-70% | Precise duration/convexity, complete hedging strategy, internal stress test results | Estimation error within acceptable range, does not affect directional judgment |
+| **Operational Risk** | 30-40% | Internal process deficiencies (not externalized), employee misconduct (not disclosed), fraud attempts (undetected) | **Weakest detection capability dimension** — most operational risk events are only observable after losses have materialized |
+| **Reputational Risk** | 40-50% | Gradually accumulating but not yet erupted negative sentiment, non-media channel reputation deterioration, privately deteriorating B2B client relationships | Only captures publicly disclosed events, may miss silent reputation deterioration |
+| **Strategic Risk** | 55-65% | Internal technology roadmaps, R&D pipelines (unfiled patents), management's true strategic intent | Technology disruption signals have 3-12 months of information lag (from internal decision to public observability) |
+| **Liquidity Risk** | 50-60% | Bank distribution and maturity of credit facilities, changes in bank internal ratings, financing arrangements with non-financial institutions | Aggregated data accessible but detail insufficient |
 
-### 11.2 不同主体类型下的检测能力
+### 11.2 Detection Capability by Entity Type
 
-| 主体类型 | 市场风险 | 操作风险 | 声誉风险 | 战略风险 | 流动性风险 | 综合检测能力 |
+| Entity Type | Market Risk | Operational Risk | Reputational Risk | Strategic Risk | Liquidity Risk | Overall Detection Capability |
 |---|---|---|---|---|---|---|
-| **上市企业（有债券）** | 较高 | 中高 | 中高 | 较高 | 中高 | **最佳** |
-| **上市企业（无债券）** | 较高 | 中高 | 中高 | 较高 | 中 | **良好** |
-| **非上市发债企业** | 中 | 中 | 中 | 中 | 中 | **中等**（无股价/市场情绪信号） |
-| **非上市非发债企业** | 低 | 低 | 低 | 中 | 低 | **薄弱**（严重依赖年报+行业推断） |
-| **单一项目主体（SPV）** | 低 | 低 | 低 | 低 | 中 | **薄弱**（几乎没有公开数据） |
+| **Listed company (with bonds)** | Relatively High | Medium-High | Medium-High | Relatively High | Medium-High | **Best** |
+| **Listed company (without bonds)** | Relatively High | Medium-High | Medium-High | Relatively High | Medium | **Good** |
+| **Non-listed bond-issuing company** | Medium | Medium | Medium | Medium | Medium | **Moderate** (no share price/market sentiment signals) |
+| **Non-listed, non-bond-issuing company** | Low | Low | Low | Medium | Low | **Weak** (heavily reliant on annual reports + industry inference) |
+| **Single-purpose entity (SPV)** | Low | Low | Low | Low | Medium | **Weak** (barely any public data) |
 
-### 11.3 诚实声明
+### 11.3 Honest Disclosure
 
-> **非信用风险叠加声明**：本模块对[企业名称]的非信用风险评估（市场风险/操作风险/声誉风险/战略风险/流动性风险）基于公开可获取的数据进行信号检测和推断。以下局限性已被识别：
+> **Non-Credit Risk Overlay Disclosure**: The non-credit risk assessment (Market Risk / Operational Risk / Reputational Risk / Strategic Risk / Liquidity Risk) for [Entity Name] in this module is based on signal detection and inference from publicly available data. The following limitations have been identified:
 >
-> 1. **仅捕获已外部化的信号**：操作风险和声誉风险中大量未公开的内部缺陷无法被检测。本模块的检测能力仅限于已通过监管处罚、公司公告、媒体报道或司法公开等渠道外部化的事件。
+> 1. **Only externalized signals are captured**: A substantial number of undisclosed internal deficiencies in operational and reputational risk cannot be detected. This module's detection capability is limited to events that have been externalized through channels such as regulatory penalties, company announcements, media reports, or judicial disclosures.
 >
-> 2. **信号存在天然滞后**：从风险发生到公开可信号之间存在时间差（监管处罚通常滞后3-12个月，法律诉讼滞后6-24个月）。本模块无法提供实时预警。
+> 2. **Signals inherently lag**: There is a time gap between the occurrence of a risk and the availability of an observable public signal (regulatory penalties typically lag by 3-12 months, legal litigation by 6-24 months). This module cannot provide real-time early warnings.
 >
-> 3. **非上市主体检测能力显著下降**：对于非上市且不发债的企业，非信用风险的数据来源有限，检测能力可能降至公开上市企业的30-50%。
+> 3. **Significantly reduced detection capability for non-listed entities**: For companies that are not listed and do not issue bonds, non-credit risk data sources are limited, and detection capability may drop to 30-50% of that for publicly listed companies.
 >
-> 4. **不可抗力不在评估范围**：地震、战争、疫情、系统性金融危机等外部冲击不在本模块的非信用风险评估范围内。
+> 4. **Force majeure is outside the scope**: External shocks such as earthquakes, war, pandemics, systemic financial crises are not within the scope of this module's non-credit risk assessment.
 >
-> 5. **本模块是叠加层，不是独立评级框架**：非信用风险信号不替代信用金字塔的分析结论，仅在基准评级基础上做±1子级的修正。对信用质量的最终判断应以信用金字塔的基准评级为主。
+> 5. **This module is an overlay, not an independent rating framework**: Non-credit risk signals do not replace the analytical conclusions of the credit pyramid; they can only make ±1 notch adjustments to the baseline rating. The final judgment on credit quality should primarily rely on the credit pyramid's baseline rating.
 
-### 11.4 与其他"诚实标注"的对比
+### 11.4 Comparison with Other "Honest Labeling" Sections
 
-| 现有框架 | 诚实标注 | 本模块的对应 |
+| Existing Framework | Honest Labeling | Corresponding Section in This Module |
 |---|---|---|
-| external-support-framework.md 10.3 | "外部支持幻觉"——支持不总是成立 | 非信用风险幻觉——未暴露的风险不等于不存在 |
-| dual-track-methodology.md 5.3 | 数据完备性报告 | 非信用风险数据完备性标注 |
-| outlook-monitoring-framework.md 7.1 | 展望的固有局限性 | 非信用风险信号检测的固有局限性 |
-| mosaic-engine.md 5.1 | 信号密度指标 | 非信用风险各维度的信号密度 |
+| external-support-framework.md 10.3 | "External support illusion" — support is not always guaranteed | Non-credit risk illusion — unexposed risk does not equal nonexistent risk |
+| dual-track-methodology.md 5.3 | Data completeness report | Non-credit risk data completeness annotation |
+| outlook-monitoring-framework.md 7.1 | Inherent limitations of outlook | Inherent limitations of non-credit risk signal detection |
+| mosaic-engine.md 5.1 | Signal density indicator | Signal density for each non-credit risk dimension |
 
 ---
 
-## 附录A：各风险维度的数据来源清单
+## Appendix A: Data Source Inventory by Risk Dimension
 
-### 市场风险
+### Market Risk
 
-| 数据项 | 具体数据源 | 免费/付费 | 获取频率 |
+| Data Item | Specific Data Source | Free/Paid | Update Frequency |
 |---|---|---|---|
-| 央行基准利率 | 中国人民银行官网 | 免费 | 实时 |
-| LPR报价 | 全国银行间同业拆借中心 | 免费 | 每月20日 |
-| 人民币汇率中间价 | 中国外汇交易中心 | 免费 | 每日 |
-| SMM有色金属价格 | 上海有色网（smm.cn） | 部分免费 | 每日 |
-| LME金属价格 | 伦敦金属交易所 | 免费 | 每日 |
-| PVInfoLink光伏价格 | PVInfoLink | 部分免费 | 每周 |
-| TrendForce集邦价格 | TrendForce | 部分免费 | 每周 |
-| Mysteel钢铁价格 | Mysteel | 部分免费 | 每日 |
+| Central bank benchmark interest rate | Central bank official website | Free | Real-time |
+| Benchmark lending rate quotes | National interbank lending center | Free | Monthly (20th) |
+| RMB exchange rate fix | China Foreign Exchange Trade System | Free | Daily |
+| SMM non-ferrous metal prices | Shanghai Metals Market (smm.cn) | Partially free | Daily |
+| LME metal prices | London Metal Exchange | Free | Daily |
+| PVInfoLink solar pricing | PVInfoLink | Partially free | Weekly |
+| TrendForce pricing | TrendForce | Partially free | Weekly |
+| Mysteel steel pricing | Mysteel | Partially free | Daily |
 
-### 操作风险
+### Operational Risk
 
-| 数据项 | 具体数据源 | 免费/付费 | 获取频率 |
+| Data Item | Specific Data Source | Free/Paid | Update Frequency |
 |---|---|---|---|
-| 证监会立案调查 | 证监会官网、公司公告 | 免费 | 实时 |
-| 交易所监管处分 | 上交所/深交所/北交所监管信息公开栏目 | 免费 | 实时 |
-| 环保行政处罚 | 生态环境部官网"行政处罚"栏目 | 免费 | 实时 |
-| 法院判决 | 中国裁判文书网 | 免费 | 实时 |
-| 被执行人信息 | 中国执行信息公开网 | 免费 | 实时 |
-| 公司公告 | 巨潮资讯网、上清所、中国货币网 | 免费 | 实时 |
-| 工商变更信息 | 国家企业信用信息公示系统、天眼查/企查查 | 基础免费 | 实时 |
+| Securities regulator investigation | Securities regulator official website, company announcements | Free | Real-time |
+| Exchange regulatory sanctions | Stock exchange regulatory information disclosure sections | Free | Real-time |
+| Environmental administrative penalties | Environmental protection agency website "administrative penalties" section | Free | Real-time |
+| Court judgments | National court judgment database | Free | Real-time |
+| Enforcement information | National enforcement information disclosure platform | Free | Real-time |
+| Company announcements | Company filing platform, clearing house, bond market information platform | Free | Real-time |
+| Business registration changes | National enterprise credit information disclosure system, business information platforms | Basic free | Real-time |
 
-### 声誉风险
+### Reputational Risk
 
-| 数据项 | 具体数据源 | 免费/付费 | 获取频率 |
+| Data Item | Specific Data Source | Free/Paid | Update Frequency |
 |---|---|---|---|
-| 评级机构公告 | 联合资信/中诚信/大公国际/新世纪官网 | 免费 | 实时 |
-| 产品召回 | 国家市场监督管理总局缺陷产品管理中心 | 免费 | 实时 |
-| ESG数据 | 商道融绿/华证ESG评级 | 部分付费 | 季度 |
-| 新闻监测 | WebSearch / 新闻数据库 | 免费（基础） | 实时 |
-| 环境事故 | 生态环境部"挂牌督办"栏目 | 免费 | 实时 |
+| Rating agency announcements | S&P/Moody's/Fitch official websites | Free | Real-time |
+| Product recalls | National market regulation authority product defect management center | Free | Real-time |
+| ESG data | ESG rating agencies | Partially paid | Quarterly |
+| News monitoring | WebSearch / news databases | Free (basic) | Real-time |
+| Environmental accidents | Environmental protection agency website "supervision" section | Free | Real-time |
 
-### 战略风险
+### Strategic Risk
 
-| 数据项 | 具体数据源 | 免费/付费 | 获取频率 |
+| Data Item | Specific Data Source | Free/Paid | Update Frequency |
 |---|---|---|---|
-| 行业技术标准 | 国家标准化管理委员会 | 免费 | 年度 |
-| 招投标技术规格 | 央企/省级采购平台 | 免费 | 实时 |
-| 产能规划公告 | 上市公司公告、行业媒体 | 免费 | 实时 |
-| 产业政策 | 发改委/工信部官网 | 免费 | 实时 |
-| 竞争对手技术路线 | 行业白皮书、会议论文（SNEC/SNEC光伏/ISSCC半导体/ESMO医药） | 部分付费 | 年度/半年度 |
+| Industry technical standards | National standardization authority | Free | Annually |
+| Procurement technical specifications | Central/state procurement platforms | Free | Real-time |
+| Capacity planning announcements | Listed company announcements, industry media | Free | Real-time |
+| Industrial policy | National development/reform authority, ministry of industry official websites | Free | Real-time |
+| Competitor technology pathways | Industry white papers, conference proceedings (SNEC solar/ISSCC semiconductor/ESMO medical) | Partially paid | Annual/semi-annual |
 
-### 流动性风险
+### Liquidity Risk
 
-| 数据项 | 具体数据源 | 免费/付费 | 获取频率 |
+| Data Item | Specific Data Source | Free/Paid | Update Frequency |
 |---|---|---|---|
-| 债务到期排程 | 年报"一年内到期非流动负债/短期借款/应付债券"附注 | 免费 | 半年度/年度 |
-| 银行授信额度 | 年报"银行授信"附注（非强制披露） | 免费 | 年度 |
-| 债券发行公告 | 中国货币网、上清所、交易所 | 免费 | 实时 |
-| 取消发行公告 | 中国货币网 | 免费 | 实时 |
-| 公司现金数据 | 年报/季报现金流量表 | 免费 | 季度 |
+| Debt maturity schedule | Annual report notes "current portion of non-current liabilities / short-term borrowings / bonds payable" | Free | Semi-annual/annual |
+| Bank credit facilities | Annual report "bank credit facilities" notes (not mandatory disclosure) | Free | Annual |
+| Bond issuance announcements | Bond market information platform, clearing house, exchange | Free | Real-time |
+| Issuance cancellation announcements | Bond market information platform | Free | Real-time |
+| Company cash data | Annual report / quarterly report cash flow statement | Free | Quarterly |
 
 ---
 
-## 相关内容
+## Related Content
 
-- [引擎架构总览](engine-overview.md) — 核心理念、总体架构、设计原则
-- [双轨分析方法论](dual-track-methodology.md) — 轨道A+轨道B、交叉对撞、评级映射
-- [马赛克引擎](mosaic-engine.md) — 信号提取、拼图、完备性评估
-- [治理与财务欺诈风险分析模块](governance-fraud-risk.md) — 操作风险子集（欺诈信号+管理层治理红旗）
-- [财务深度分析](financial-deep-dive.md) — 债务到期排程、银行授信覆盖比率、FCF分析（流动性风险来源）
-- [外部支持评估框架](external-support-framework.md) — 类似的叠加层设计模式
-- [评级展望与持续监控框架](outlook-monitoring-framework.md) — 非信用风险事件的监控触发条件
-- [风险管理标准合规审计报告](audits/risk-management-standards-audit.md) — 非信用风险覆盖缺口的审计发现
-- [行业分类与分析框架](industry-framework.md) — 各行业技术路线与颠覆风险参考
+- [Engine Architecture Overview](engine-overview.md) — Core concepts, overall architecture, design principles
+- [Dual-Track Analysis Methodology](dual-track-methodology.md) — Track A + Track B, cross-collision, rating mapping
+- [Mosaic Engine](mosaic-engine.md) — Signal extraction, mosaic assembly, completeness assessment
+- [Governance and Financial Fraud Risk Analysis Module](governance-fraud-risk.md) — Operational risk subset (fraud signals + management governance red flags)
+- [Financial Deep Dive](financial-deep-dive.md) — Debt maturity schedule, bank credit facility coverage ratio, FCF analysis (liquidity risk sources)
+- [External Support Assessment Framework](external-support-framework.md) — Similar overlay layer design pattern
+- [Rating Outlook and Continuous Monitoring Framework](outlook-monitoring-framework.md) — Monitoring trigger conditions for non-credit risk events
+- [Risk Management Standards Compliance Audit Report](audits/risk-management-standards-audit.md) — Audit findings on non-credit risk coverage gaps
+- [Industry Classification and Analysis Framework](industry-framework.md) — Technology pathways and disruption risk reference by industry

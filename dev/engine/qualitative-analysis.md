@@ -1,1161 +1,1160 @@
-# 定性分析方法论 — 固定收益信用分析引擎
+# Qualitative Analysis Methodology — Fixed Income Credit Analysis Engine
 
-**版本**: v0.8.4-release | **日期**: 2026-07-10
-**定位**: 轨道A（基本面分析）的定性判断方法论 · 双轨框架中"方向判断"的规范指引
-
----
-
-## 一、定性分析的定位
-
-### 1.1 在双轨框架中的角色
-
-双轨分析框架的核心分工：**定性判断方向，定量校准精度**。定性分析回答"信用质量在变好还是变坏"，定量分析回答"变化了多少、市场如何定价"。
-
-```
-双轨框架中的角色矩阵：
-
-                        定性分析（本文档）              定量分析（quantitative-analysis.md）
-                        ────────────────              ──────────────────────────────────
-轨道A（基本面）         ✅ 核心主场                    辅助验证
-                        行业趋势判断                    财务比率阈值校验
-                        政策方向解读                    历史财务数据统计
-                        竞争位势评估                    行业均值对标
-                        治理与战略判断
-
-轨道B（市场定价）       辅助验证                        ✅ 核心主场
-                        市场情绪定性判断                利差计算与异常检测
-                        叙事与定价分离                   波动率因子分解
-                        事件驱动力评估                   相关性分析
-```
-
-| 做什么 | 不做什么 |
-|--------|---------|
-| 判断行业趋势方向（上行/平稳/下行） | 替代财务定量指标 |
-| 识别政策信号中的关键变量 | 替代现金流建模 |
-| 评估管理层能力和治理质量 | 给出精确违约概率 |
-| 识别市场叙事和集体盲区 | 替代外部评级（评级本身是输入之一） |
-| 判断企业战略的合理性 | 预测违约精确时机 |
-| 整合碎片化信息形成完整画像 | 替代逐层金字塔评分（评分是定性+定量的结果） |
-
-### 1.2 定性 vs 定量：四层分工原则
-
-| 层级 | 定性负责 | 定量负责 | 谁有最终话语权 |
-|------|---------|---------|--------------|
-| **趋势判断** | 方向（上行/平稳/下行） | 幅度（+x% / -x%） | 定性——方向错了定量无意义 |
-| **异常识别** | "为什么异常" | "是否异常" | 定量——先检测后解释 |
-| **归因分析** | "谁在驱动" | "驱动了多少" | 协作——定性锁定因子，定量测量贡献 |
-| **预测判断** | "什么情景可能发生" | "每种情景的概率和损失" | 定性——情景构建是判断力问题 |
-
-**核心原则：定性框定可能性的边界，定量在边界内做精确测量。当两者冲突时，优先解决定性问题——方向错了，精度无意义。**
-
-### 1.3 定性分析在六利益相关者视角中的角色差异
-
-六类利益相关者（M0-M5）对定性分析的需求权重不同。以下为定性分析在每类视角中的权重和关注焦点：
-
-| 角色 | 定性分析权重 | 定性分析核心关注 |
-|------|------------|-----------------|
-| **M0 信贷审批（银行）** | **高（60-70%）** | 行业风险、政策稳定性、管理层诚信、第二还款来源可靠性 |
-| **M1 债券投资** | **中（40-50%）** | 行业趋势方向、条款保护实质、事件驱动判断 |
-| **M2 债券承销** | **高（50-60%）** | 投资人需求定性判断、发行窗口选择、可比案例研究 |
-| **M3 市场交易** | **低（20-30%）** | 市场情绪定性评估、极端事件情景判断 |
-| **M4 组合风控** | **中（40-50%）** | 尾部风险情景构建、相关性突变定性解释 |
-| **M5 企业融资** | **高（60-70%）** | 资本市场窗口判断、投资人偏好迁移、评级机构关注焦点 |
-
-**M0和M5对定性分析依赖最高——因为这两个角色面临最大的信息不对称和长期不确定性。M3依赖最低——短期交易中量化信号占主导。**
-
-### 1.4 定性分析的方法论类型
-
-本引擎使用四类定性分析方法，按使用频率排序：
-
-| 方法类型 | 定义 | 适用场景 | 在本文档中的章节 |
-|---------|------|---------|-----------------|
-| **信息分级与验证** | 判断信息源的可靠性，交叉验证信号 | 所有定性判断的基础 | 第二章 |
-| **政策文本解读** | 结构化解析政策文件，预测行业影响 | 政策驱动型行业（光伏、半导体） | 第三章 |
-| **行业结构化分析** | 在行业认知框架内组织碎片信息 | 所有行业的基准分析 | 第四章 |
-| **马赛克拼图** | 多源碎片聚合成完整信用画像 | 信息不足时的推理判断 | 第五章 |
+**Version**: v0.8.4-release | **Date**: 2026-07-10
+**Role**: Qualitative judgment methodology for Track A (Fundamental Analysis) · Normative guidance for "direction judgment" in the dual-track framework
 
 ---
 
-## 二、信息源分级与可信度评估
+## 1. Positioning of Qualitative Analysis
 
-### 2.1 六级可信度体系
+### 1.1 Role in the Dual-Track Framework
 
-所有进入分析流程的信息源，必须按照以下六级体系标注可信度。这是定性分析的第一步——**未标注可信度的信号不进入马赛克拼图流程**。
-
-| 级别 | 名称 | 特征 | 时效性 | 可信度 | 适用场景 |
-|------|------|------|--------|--------|---------|
-| **L6** | 政府官方公告 | 国务院、发改委、工信部、央行、财政部等官方发布；红头文件格式；可追溯原文 | 即时发布，但传导至企业需1-12个月 | ★★★★★ 极高 | 行业政策方向、监管规则变更、产业支持力度 |
-| **L5** | 产业协会/权威第三方 | 中国光伏行业协会(CPIA)、中国汽车工业协会、中国有色金属工业协会；PVInfoLink/TrendForce/SMM等专业机构；中债登/上清所登记数据 | 周度-月度发布 | ★★★★☆ 高 | 行业统计数据、价格走势、装机/出货量 |
-| **L4** | 券商/研究机构研报 | 中信、中金、华泰等头部券商研究所报告；行业深度报告、调研纪要 | 月度-季度 | ★★★☆☆ 中高 | 行业深度分析、企业调研信息、竞争格局判断 |
-| **L3** | 正规媒体/财经新闻 | 财新、证券时报、21世纪经济报道、第一财经、经济观察报等持牌财经媒体；交易所公告转载 | 即时-日度 | ★★★☆☆ 中等 | 企业动态跟踪、行业新闻、政策解读 |
-| **L2** | 企业自愿披露 | 上市公司公告、业绩说明会纪要、企业官网新闻、路演材料、ESG报告 | 按披露规则（季度/半年度/年度） | ★★☆☆☆ 中低 | 企业战略、经营数据、管理层判断 |
-| **L1** | 匿名来源/传闻/社交媒体 | 雪球/东方财富股吧帖子、微信公众号未认证文章、微信群截图、未具名人士透露 | 即时（但不可验证） | ★☆☆☆☆ 低 | ⚠️ 仅作为线索，**不得单独作为判断依据** |
-
-**处理规则：**
+Core division of the dual-track analysis framework: **Qualitative analysis judges direction, quantitative analysis calibrates precision**. Qualitative analysis answers "is credit quality improving or deteriorating," while quantitative analysis answers "how much has it changed and how is the market pricing it."
 
 ```
-L6-L4信号 → 可直接进入马赛克拼图层（经时效性检查后）
-L3-L2信号 → 必须标注来源级别，需≥2条独立验证方可升级为有效信号
-L1信号   → 仅用于生成"需关注方向"，不得作为评分依据
-           标注格式："传闻：[内容] — 来源不可验证，需进一步核实"
+Role Matrix in the Dual-Track Framework:
+
+                        Qualitative Analysis (This Document)       Quantitative Analysis (quantitative-analysis.md)
+                        ────────────────────────────────           ──────────────────────────────────
+Track A (Fundamental)  ✅ Core domain                              Auxiliary validation
+                        Industry trend judgment                     Financial ratio threshold checks
+                        Policy direction interpretation             Historical financial data statistics
+                        Competitive position assessment             Industry average benchmarking
+                        Governance and strategy assessment
+
+Track B (Market Pricing) Auxiliary validation                       ✅ Core domain
+                        Market sentiment qualitative judgment       Spread calculation and anomaly detection
+                        Narrative vs. pricing separation            Volatility factor decomposition
+                        Event-driven force assessment               Correlation analysis
 ```
 
-### 2.2 每级信源的详细特征与陷阱
+| What It Does | What It Does NOT Do |
+|-------------|---------------------|
+| Judge industry trend direction (upward/stable/downward) | Replace quantitative financial indicators |
+| Identify key variables in policy signals | Replace cash flow modeling |
+| Assess management capability and governance quality | Provide precise default probability |
+| Identify market narratives and collective blind spots | Replace external ratings (ratings themselves are one input) |
+| Evaluate the soundness of corporate strategy | Predict precise default timing |
+| Integrate fragmented information into a complete picture | Replace the layered pyramid scoring (scoring is a result of qualitative + quantitative) |
 
-| 信源级别 | 典型陷阱 | 规避方法 |
-|---------|---------|---------|
-| **L6 政府公告** | 政策意图和实际效果之间存在偏差（"政策温差"）；部委文件与地方执行脱节 | 必须追踪至地方执行层面；关注部委后的省级配套文件是否落地 |
-| **L5 行业协会/第三方** | 样本偏差（CPIA仅覆盖主要企业，中小企业数据缺失）；统计口径变化 | 检查统计口径是否一致；关注"样本企业"范围变化 |
-| **L4 券商研报** | 利益冲突（投行关系、自营持仓）；乐观偏差；跟风共识 | 查看研报评级分布（若某券商对某行业所有企业均为"买入"→警惕）；对比多家券商结论 |
-| **L3 正规媒体** | 追逐热点导致的信息放大；转载过程中的信息失真（"传话损失"） | 追溯到原文/源头公告；警惕"据知情人士透露"类表述 |
-| **L2 企业自愿披露** | 选择性披露（好消息及时公布、坏消息拖延）；措辞修饰（"行业性挑战"=亏损） | 对比不同时期的披露措辞变化；关注"应披露未披露"事项 |
-| **L1 匿名来源** | 恶意做空/做多动机；信息不完整导致的误导 | 仅用于"需关注"清单，不用于评分；如果有L4+级别交叉验证方可升级 |
+### 1.2 Qualitative vs. Quantitative: Four-Level Division of Responsibilities
 
-### 2.3 交叉验证规则
+| Level | Qualitative Responsibility | Quantitative Responsibility | Who Has Final Say |
+|-------|---------------------------|----------------------------|-------------------|
+| **Trend Judgment** | Direction (upward/stable/downward) | Magnitude (+x% / -x%) | Qualitative — direction is meaningless without correct orientation |
+| **Anomaly Identification** | "Why is it anomalous" | "Is it anomalous" | Quantitative — detect first, then explain |
+| **Attribution Analysis** | "Who is driving it" | "How much is each driving" | Collaboration — qualitative identifies factors, quantitative measures contribution |
+| **Prediction Judgment** | "What scenarios might occur" | "Probability and loss for each scenario" | Qualitative — scenario construction is a matter of judgment |
 
-单一信号不可作为判断依据。所有关键判定需经交叉验证。
+**Core Principle: Qualitative analysis defines the boundaries of possibility; quantitative analysis makes precise measurements within those boundaries. When the two conflict, resolve the qualitative issue first — if the direction is wrong, precision is meaningless.**
 
-| 验证类型 | 规则 | 示例 |
-|---------|------|------|
-| **同级别交叉** | 2个独立L4+源指向同一事实 | 中信+中金两份研报均提到"某企业组件出货量Q2环比下降15%" |
-| **跨级别交叉** | L6+L4或L5+L3指向同一方向 | 发改委政策文件+L6 + 券商解读+L4 = 政策方向确认 |
-| **上下级联合** | L6官方公告 + L5行业数据验证影响 | 光伏补贴退坡政策公布 + CPIA数据显示装机增速下降 |
-| **反方向验证** | 主动寻找反方向证据——"什么情况下这个判断会错" | 判断"行业下行"时，检查是否有超预期的积极政策信号 |
+### 1.3 Differences in Qualitative Analysis Roles Across Six Stakeholder Perspectives
 
-**交叉验证状态标注：**
+The six stakeholder types (M0-M5) have different weights for qualitative analysis needs. The following shows the weight and focus of qualitative analysis for each perspective:
 
-| 状态 | 含义 | 在报告中的表示 |
-|------|------|--------------|
-| ✅ 已验证 | ≥2个独立源（可跨级别）确认同一事实 | 信号置信度升级 |
-| ⏳ 部分验证 | 1个源 + 1个方向性一致的弱信号 | 标注"部分验证" |
-| ⚠️ 待验证 | 仅1个源，无独立交叉验证 | 标注"待验证"，该信号不纳入评分 |
-| 🔴 矛盾 | 多个源指向不同方向 | 进入矛盾信号处理流程 |
+| Role | Qualitative Analysis Weight | Core Focus of Qualitative Analysis |
+|------|---------------------------|------------------------------------|
+| **M0 Credit Approval (Bank)** | **High (60-70%)** | Industry risk, policy stability, management integrity, reliability of secondary repayment source |
+| **M1 Bond Investment** | **Medium (40-50%)** | Industry trend direction, substance of covenant protection, event-driven judgment |
+| **M2 Bond Underwriting** | **High (50-60%)** | Qualitative judgment of investor demand, issuance window selection, comparable case studies |
+| **M3 Market Trading** | **Low (20-30%)** | Qualitative assessment of market sentiment, extreme event scenario judgment |
+| **M4 Portfolio Risk Control** | **Medium (40-50%)** | Tail risk scenario construction, qualitative explanation of correlation mutations |
+| **M5 Corporate Finance** | **High (60-70%)** | Capital market window judgment, investor preference shifts, rating agency focus areas |
 
-### 2.4 矛盾信号处理规则
+**M0 and M5 have the highest dependence on qualitative analysis — because these two roles face the greatest information asymmetry and long-term uncertainty. M3 has the lowest dependence — quantitative signals dominate in short-term trading.**
 
-当不同来源的信号指向相反方向时，按照以下优先级处理：
+### 1.4 Types of Qualitative Analysis Methodologies
 
-```
-Step 1：检查信源级别差异
-  ├── L6/L5 vs L2 → 优先相信L6/L5（除非有特定理由怀疑官方数据）
-  ├── L4 vs L4   → 检查是否存在利益冲突，无冲突时视作"意见分歧"
-  └── L3 vs L6   → 以L6为准，标注"媒体解读与官方文件有出入"
+This engine uses four types of qualitative analysis methods, listed by frequency of use:
 
-Step 2：检查时间戳差异
-  ├── 较新信号 vs 较旧信号 → 优先较新信号（标注时效性差异）
-  └── 但：旧信号是官方公告、新信号是传闻 → 优先旧信号
-
-Step 3：升级验证
-  ├── 矛盾无法解决 → 标注为"该维度存在显著分歧"
-  ├── 影响评级精度 → 评分区间加宽（±1 → ±2）
-  └── 如果分歧涉及一票否决条件 → 升级为最高优先级处理
-
-Step 4：输出规范
-  输出格式：
-  [维度名称] — 信号矛盾
-  ├── 信号A：[内容] — 来源：[级别] — 时间戳
-  ├── 信号B：[内容] — 来源：[级别] — 时间戳  
-  ├── 矛盾原因分析：[分析]
-  ├── 优先选择：[选择逻辑]
-  └── 残余不确定性：[区间]
-```
-
-**矛盾信号处理实例：光伏行业2026年装机预测**
-
-| 信号源 | 级别 | 预测内容 | 时间戳 |
-|--------|------|---------|--------|
-| CPIA | L5 | 2026年中国光伏新增装机220-260GW | 2026-03 |
-| 某头部券商 | L4 | 2026年装机预计仅180-200GW（因并网瓶颈） | 2026-05 |
-
-**处理过程：**
-1. 信源级别：L5 vs L4 → L5优先级更高（协会数据基于会员企业统计）
-2. 时间戳：券商报告更新（+2月），但包含新信息（并网瓶颈）
-3. 结论：以CPIA数据为基准区间（220-260GW），但标注"券商报告提及的并网瓶颈可能导致实际值下沿"→ 使用220-260GW区间，附加下行风险标注
-
-### 2.5 信源可信度衰减曲线
-
-不同级别的信源，可信度随时间衰减的速度不同：
-
-| 源级别 | 半衰期（信源可信度降至50%的时间） | 处理规则 |
-|--------|-----------------------------------|---------|
-| **L6 政府公告** | 6-12个月（重大政策可持续1-2年，执行细则需更新） | 1年内有效，超过1年需检查是否有更新文件 |
-| **L5 产业协会数据** | 3-6个月（行业数据季度有效） | 季度数据以当季为准，跨季数据需标注"上一季度" |
-| **L4 券商研报** | 1-3个月（研报对市场和政策的判断快速失效） | 月度更新，超过3个月不再作为有效信号 |
-| **L3 正规媒体** | 2-4周（新闻事件的直接信息快速过时） | 新闻事件信息有效窗口短，但报道的"事实"部分（如数据引用）可保留 |
-| **L2 企业披露** | 按披露周期（季度/半年度/年度） | 在下一期披露前有效，超过披露周期标记为"待更新" |
-| **L1 匿名来源** | 实时-1周 | 超过1周即标记为"已过时，不可验证" |
+| Method Type | Definition | Applicable Scenarios | Section in This Document |
+|------------|-----------|---------------------|-------------------------|
+| **Information Classification and Verification** | Assess the reliability of information sources, cross-validate signals | Foundation for all qualitative judgments | Chapter 2 |
+| **Policy Text Interpretation** | Structurally parse policy documents, predict industry impact | Policy-driven industries (solar PV, semiconductor) | Chapter 3 |
+| **Industry Structured Analysis** | Organize fragmented information within industry cognitive frameworks | Baseline analysis for all industries | Chapter 4 |
+| **Mosaic Assembly** | Aggregate multi-source fragments into a complete credit profile | Reasoning when information is insufficient | Chapter 5 |
 
 ---
 
-## 三、政策解读方法论
+## 2. Information Source Classification and Credibility Assessment
 
-### 3.1 政策文本结构化解析框架
+### 2.1 Six-Level Credibility System
 
-中国产业政策是信用分析中**最重要但最容易被误读的信息源**。本引擎使用五维解析框架对每份政策文本做结构化拆解。
+All information sources entering the analysis process must be labeled with credibility according to the following six-level system. This is the first step in qualitative analysis — **signals not labeled with credibility level do not enter the mosaic assembly process**.
+
+| Level | Name | Characteristics | Timeliness | Credibility | Applicable Scenarios |
+|-------|------|----------------|------------|-------------|---------------------|
+| **L6** | Official Government Announcements | Official releases from the State Council, National Development and Reform Commission, Ministry of Industry and Information Technology, Central Bank, Ministry of Finance, etc.; official document format; traceable to original text | Published immediately, but transmission to enterprises takes 1-12 months | ★★★★★ Extremely High | Industry policy direction, regulatory rule changes, industrial support intensity |
+| **L5** | Industry Associations / Authoritative Third Parties | CPIA, China Association of Automobile Manufacturers, China Nonferrous Metals Industry Association; PVInfoLink/TrendForce/SMM and other professional institutions; CCDC/Clear registered data | Weekly-Monthly | ★★★★☆ High | Industry statistics, price trends, installed capacity/shipment volumes |
+| **L4** | Brokerage/Research Institution Reports | Reports from CITIC Securities, CICC, Huatai and other leading brokerage research institutes; industry deep-dive reports, research visit memos | Monthly-Quarterly | ★★★☆☆ Medium-High | Industry deep analysis, corporate research information, competitive landscape assessment |
+| **L3** | Mainstream Media / Financial News | Caixin, Securities Times, 21st Century Business Herald, China Business News, Economic Observer and other licensed financial media; exchange announcement reprints | Instant-Daily | ★★★☆☆ Medium | Corporate activity tracking, industry news, policy interpretation |
+| **L2** | Voluntary Corporate Disclosure | Listed company announcements, earnings call transcripts, official corporate website news, roadshow materials, ESG reports | By disclosure rules (quarterly/semi-annual/annual) | ★★☆☆☆ Medium-Low | Corporate strategy, operating data, management judgment |
+| **L1** | Anonymous Sources / Rumors / Social Media | Posts on online investment forums, unverified articles from WeChat public accounts, WeChat group screenshots, disclosures from unnamed individuals | Instant (but unverifiable) | ★☆☆☆☆ Low | ⚠️ Leads only, **must not be used as standalone basis for judgment** |
+
+**Processing Rules:**
 
 ```
-政策文件五维解析：
+L6-L4 signals → Can directly enter the mosaic assembly layer (after timeliness check)
+L3-L2 signals → Must have source level labeled, require ≥2 independent verifications to be upgraded to valid signals
+L1 signals   → Used only to generate "areas requiring attention," not as scoring basis
+               Labeling format: "Rumor: [content] — Source unverifiable, requires further investigation"
+```
+
+### 2.2 Detailed Characteristics and Pitfalls of Each Source Level
+
+| Source Level | Typical Pitfalls | Mitigation Methods |
+|-------------|-----------------|-------------------|
+| **L6 Government Announcements** | Discrepancy between policy intent and actual effect ("policy temperature gap"); disconnect between ministerial documents and local implementation | Must trace to local implementation level; monitor whether provincial supporting documents follow ministerial documents |
+| **L5 Industry Associations / Third Parties** | Sample bias (CPIA only covers major enterprises, SME data missing); statistical methodology changes | Check consistency of statistical methodology; monitor changes in "sample enterprise" scope |
+| **L4 Brokerage Research Reports** | Conflicts of interest (investment banking relationships, proprietary holdings); optimism bias; herd consensus | Check research report rating distribution (if a brokerage gives "Buy" to all companies in an industry → be cautious); compare conclusions across multiple brokerages |
+| **L3 Mainstream Media** | Information amplification from chasing hot topics; information distortion during reproduction ("telephone game losses") | Trace back to original/source announcement; be wary of phrasing like "according to informed sources" |
+| **L2 Voluntary Corporate Disclosure** | Selective disclosure (good news released promptly, bad news delayed); euphemistic language ("industry-wide challenges" = losses) | Compare disclosure wording changes across periods; monitor items "that should have been but were not disclosed" |
+| **L1 Anonymous Sources** | Motivation to short or pump; misleading due to incomplete information | Use only for "needs attention" list, not for scoring; can be upgraded only if cross-validated by L4+ sources |
+
+### 2.3 Cross-Validation Rules
+
+A single signal cannot serve as the basis for judgment. All key determinations require cross-validation.
+
+| Validation Type | Rule | Example |
+|----------------|------|---------|
+| **Same-Level Cross** | 2 independent L4+ sources point to the same fact | Two research reports from CITIC Securities and CICC both mention "Company X's module shipments declined 15% QoQ in Q2" |
+| **Cross-Level Cross** | L6+L4 or L5+L3 point in the same direction | NDRC policy document (L6) + brokerage interpretation (L4) = policy direction confirmed |
+| **Top-Down Joint** | L6 official announcement + L5 industry data validating impact | Solar PV subsidy phase-down policy announced + CPIA data showing installed capacity growth slowing |
+| **Counter-Direction Validation** | Actively search for counter-direction evidence — "under what conditions would this judgment be wrong" | When judging "industry downturn," check for unexpected positive policy signals |
+
+**Cross-Validation Status Labels:**
+
+| Status | Meaning | Representation in Reports |
+|--------|---------|--------------------------|
+| ✅ Verified | ≥2 independent sources (cross-level allowed) confirm the same fact | Signal confidence upgraded |
+| ⏳ Partially Verified | 1 source + 1 directionally consistent weak signal | Label "partially verified" |
+| ⚠️ Pending Verification | Only 1 source, no independent cross-validation | Label "pending verification," this signal not included in scoring |
+| 🔴 Contradiction | Multiple sources point to different directions | Enter contradictory signal processing workflow |
+
+### 2.4 Contradictory Signal Processing Rules
+
+When signals from different sources point in opposite directions, process according to the following priority:
+
+```
+Step 1: Check source level differences
+  ├── L6/L5 vs L2 → Favor L6/L5 (unless there is specific reason to doubt official data)
+  ├── L4 vs L4   → Check for conflicts of interest; if none, treat as "difference of opinion"
+  └── L3 vs L6   → Favor L6, label "media interpretation differs from official document"
+
+Step 2: Check timestamp differences
+  ├── Newer signal vs Older signal → Favor newer signal (label timeliness difference)
+  └── But: if older signal is official announcement, newer signal is rumor → Favor older signal
+
+Step 3: Escalate verification
+  ├── Contradiction unresolvable → Label as "significant divergence exists on this dimension"
+  ├── Affecting rating precision → Widen scoring range (±1 → ±2)
+  └── If divergence involves a veto condition → Escalate to highest priority
+
+Step 4: Output specification
+  Output format:
+  [Dimension Name] — Signal Contradiction
+  ├── Signal A: [content] — Source: [Level] — Timestamp
+  ├── Signal B: [content] — Source: [Level] — Timestamp
+  ├── Contradiction Cause Analysis: [analysis]
+  ├── Preferred Choice: [selection logic]
+  └── Residual Uncertainty: [range]
+```
+
+**Contradictory Signal Processing Example: 2026 Solar PV Installation Forecast**
+
+| Signal Source | Level | Forecast Content | Timestamp |
+|--------------|-------|-----------------|-----------|
+| CPIA | L5 | China's new solar PV installations in 2026: 220-260GW | 2026-03 |
+| Leading Brokerage Firm | L4 | 2026 installations estimated at only 180-200GW (due to grid connection bottlenecks) | 2026-05 |
+
+**Processing Procedure:**
+1. Source level: L5 vs L4 → L5 has higher priority (association data based on member company statistics)
+2. Timestamp: Brokerage report is newer (+2 months), but contains new information (grid connection bottlenecks)
+3. Conclusion: Use CPIA data as the baseline range (220-260GW), but note "grid connection bottlenecks mentioned in brokerage report may push actual results to lower end" → Use 220-260GW range with downside risk annotation
+
+### 2.5 Source Credibility Decay Curves
+
+Different levels of sources have different rates of credibility decay over time:
+
+| Source Level | Half-Life (Time for credibility to drop to 50%) | Processing Rules |
+|-------------|-------------------------------------------------|-----------------|
+| **L6 Government Announcements** | 6-12 months (major policies may last 1-2 years, implementation details need updates) | Valid for 1 year; beyond 1 year, check for updated documents |
+| **L5 Industry Association Data** | 3-6 months (industry data valid quarterly) | Quarterly data valid for current quarter; cross-quarter data must be labeled "previous quarter" |
+| **L4 Brokerage Research Reports** | 1-3 months (research judgments on markets and policies decay quickly) | Monthly updates; beyond 3 months, no longer valid as effective signal |
+| **L3 Mainstream Media** | 2-4 weeks (direct information from news events decays quickly) | Short valid window for news event information, but "factual" parts (e.g., data citations) can be retained |
+| **L2 Corporate Disclosure** | By disclosure cycle (quarterly/semi-annual/annual) | Valid until next disclosure; mark as "pending update" beyond disclosure cycle |
+| **L1 Anonymous Sources** | Real-time to 1 week | Beyond 1 week, mark as "expired, unverifiable" |
+
+---
+
+## 3. Policy Interpretation Methodology
+
+### 3.1 Structured Policy Text Analysis Framework
+
+Industrial policy is **the most important yet most easily misinterpreted information source** in credit analysis. This engine uses a five-dimensional analysis framework to structurally deconstruct each policy document.
+
+```
+Five-Dimensional Policy Document Analysis:
 ┌──────────────────────────────────────────────────────────┐
-│  D1 发文机关 — 谁发的？                                  │
-│    ├── 党中央/国务院 → 最高级别，国家战略               │
-│    ├── 部委（发改委/工信部/能源局等）→ 部门规章          │
-│    ├── 省级政府 → 地方执行层面                           │
-│    └── 行业协会 → 自律规范，无法律约束力                │
+│  D1 Issuing Authority — Who issued it?                   │
+│    ├── CPC Central Committee / State Council → Highest level, national strategy     │
+│    ├── Ministries (NDRC/MIIT/National Energy Administration, etc.) → Departmental regulations  │
+│    ├── Provincial governments → Local implementation level                           │
+│    └── Industry associations → Self-regulatory norms, no legal force                │
 │                                                          │
-│  D2 文件类型 — 什么形式？                                │
-│    ├── 意见/通知/办法/条例/法律（约束力递升）            │
-│    └── 征求意见稿/试行/正式实施（实施阶段）             │
+│  D2 Document Type — What form?                           │
+│    ├── Opinion/Notice/Measure/Regulation/Law (binding force ascending)               │
+│    └── Draft for Comments/Trial/Formal Implementation (implementation stage)        │
 │                                                          │
-│  D3 约束力等级 — 必须遵守还是鼓励？                      │
-│    ├── 强制性（"必须""不得""禁止"）                      │
-│    ├── 条件性（"符合条件的可享受""达到标准可申请"）      │
-│    └── 引导性（"鼓励""支持""引导"）                      │
+│  D3 Binding Force Level — Mandatory or voluntary?        │
+│    ├── Mandatory ("must," "shall not," "prohibited")                                │
+│    ├── Conditional ("those meeting conditions may enjoy," "those meeting standards may apply") │
+│    └── Guiding ("encourage," "support," "guide")                                    │
 │                                                          │
-│  D4 行业影响路径 — 直接作用于哪个环节？                  │
-│    ├── 需求端（补贴/采购/准入限制）                      │
-│    ├── 供给端（产能审批/技术标准/环保限产）              │
-│    └── 成本端（税收/融资/用地/能源成本）                 │
+│  D4 Industry Impact Pathway — Which link does it directly affect?                   │
+│    ├── Demand side (subsidies/procurement/access restrictions)                      │
+│    ├── Supply side (capacity approval/technical standards/environmental production caps)│
+│    └── Cost side (tax/financing/land/energy costs)                                  │
 │                                                          │
-│  D5 执行力度信号 — 会不会认真执行？                      │
-│    ├── 强：设定量化目标（"2025年XX达到XX"）             │
-│    ├── 中：有监督机制（"定期检查""考核问责"）            │
-│    └── 弱：无量化目标、无监督机制                        │
+│  D5 Enforcement Signal — Will it be seriously enforced?  │
+│    ├── Strong: Quantified targets set ("achieve XX by 2025")                        │
+│    ├── Medium: Supervision mechanisms exist ("regular inspections," "assessment accountability") │
+│    └── Weak: No quantified targets, no supervision mechanisms                       │
 └──────────────────────────────────────────────────────────┘
 ```
 
-**AI Agent解析规则：**
+**AI Agent Analysis Rules:**
 
 ```
-输入：政策文本URL或文本内容
-输出：结构化政策信号对象
+Input: Policy text URL or text content
+Output: Structured policy signal object
 
-解析流程：
-1. 识别发文机关 → 标注行政级别（党中央>国务院>部委>省级>协会）
-2. 识别文件类型 → 标注约束力层级（法律>条例>办法>通知>意见>试行）
-3. 提取约束力关键词 → 统计"必须/不得/禁止"（强制性）vs "鼓励/支持"（引导性）的频次
-4. 判断影响路径 → 需求端/供给端/成本端（可能多路径）
-5. 评估执行力度 → 量化目标有无 + 监督机制有无 + 时间表明确度
-6. 输出综合判断：
-   ├── 政策强度评分（1-5）：D1权重40% + D3权重30% + D5权重30%
-   ├── 方向：利好/利空/中性
-   └── 影响时间窗口：立即/短期（1-3月）/中期（3-12月）/长期（12月+）
+Analysis Process:
+1. Identify issuing authority → Label administrative level (CPC Central Committee > State Council > Ministries > Provincial > Associations)
+2. Identify document type → Label binding force level (Law > Regulation > Measures > Notice > Opinion > Trial)
+3. Extract binding force keywords → Count frequency of "must/shall not/prohibited" (mandatory) vs "encourage/support" (guiding)
+4. Determine impact pathway → Demand side/Supply side/Cost side (may be multiple pathways)
+5. Assess enforcement strength → Presence of quantified targets + presence of supervision mechanism + clarity of timeline
+6. Output comprehensive assessment:
+   ├── Policy Strength Score (1-5): D1 weight 40% + D3 weight 30% + D5 weight 30%
+   ├── Direction: Positive/Negative/Neutral
+   └── Impact Time Window: Immediate/Short-term (1-3 months)/Medium-term (3-12 months)/Long-term (12+ months)
 ```
 
-### 3.2 政策传导链：从国家意志到企业实际影响
+### 3.2 Policy Transmission Chain: From National Intent to Actual Enterprise Impact
 
-政策从不直接作用于企业——它通过一条多层传导链完成。理解每个环节的能量损失（"政策温差"）是定性分析的核心。
+Policy never directly affects enterprises — it operates through a multi-layer transmission chain. Understanding the energy loss at each link (the "policy temperature gap") is central to qualitative analysis.
 
 ```
-国家层面（党中央/国务院）
+National Level (CPC Central Committee / State Council)
     │
-    │  政策方向确定（"大力发展XX""严控XX"）
-    │  能量损失：抽象表述，无具体执行路径
+    │   Policy direction established ("vigorously develop XX," "strictly control XX")
+    │   Energy loss: Abstract statements, no specific implementation pathway
     ▼
-部委层面（发改委/工信部/财政部/能源局等）
+Ministerial Level (NDRC/MIIT/Ministry of Finance/National Energy Administration, etc.)
     │
-    │  制定实施细则（补贴额度/准入条件/技术标准/时间表）
-    │  能量损失：部委间协调难度（多部门文件可能矛盾）
+    │   Implementation details formulated (subsidy amounts/access conditions/technical standards/timelines)
+    │   Energy loss: Coordination difficulty among ministries (documents from multiple departments may contradict)
     ▼
-省级/地方层面（省政府/地方发改委/园区管委会）
+Provincial/Local Level (Provincial government/Local NDRC/Park Management Committee)
     │
-    │  地方配套政策（补贴配套/土地/税收优惠/环评审批）
-    │  能量损失：地方财政能力差异 + 地方保护主义
+    │   Local supporting policies (subsidy support/land/tax incentives/environmental impact assessment approval)
+    │   Energy loss: Differences in local fiscal capacity + local protectionism
     ▼
-企业层面
+Enterprise Level
     │
-    │  政策实际效果（产能扩张/收缩/技术切换/成本变化）
-    │  能量损失：企业自身执行能力 + 战略选择
+    │   Actual policy effects (capacity expansion/contraction/technology switching/cost changes)
+    │   Energy loss: Enterprise's own execution capability + strategic choices
     ▼
-信用影响（利润/现金流/负债率/融资能力）
-
+Credit Impact (Profit/Cash Flow/Leverage Ratio/Financing Ability)
 ```
 
-**传导链各环节的能量损失评估：**
+**Energy Loss Assessment at Each Transmission Chain Link:**
 
-| 传导环节 | 典型能量损失 | 判断要点 |
-|---------|------------|---------|
-| 中央→部委 | 方向明确但无细则 | 关注部委是否在1-3个月内发布配套实施细则；若超过6个月无细则→政策可能搁置 |
-| 部委间协调 | 多部门目标冲突（如环保vs增长） | 关注牵头部门是否有跨部门协调权；联合发文比单部门发文执行效力更高 |
-| 部委→地方 | 地方财政能力差异导致的执行偏差 | 发达省份执行力度高、欠发达省份可能打折；区分"东部沿海"vs"中西部"执行差异 |
-| 地方→企业 | 企业选择性执行 | 龙头企业积极配合（获补贴、拿资源）；中小企业可能观望或无法达标 |
+| Transmission Link | Typical Energy Loss | Assessment Points |
+|------------------|-------------------|-------------------|
+| Central → Ministries | Clear direction but no implementation details | Monitor whether ministries issue supporting implementation rules within 1-3 months; if no rules after 6 months → policy may be shelved |
+| Inter-Ministerial Coordination | Conflicting goals across departments (e.g., environmental protection vs. growth) | Check whether the lead ministry has cross-departmental coordination authority; joint issuance has higher enforcement effectiveness than single-department issuance |
+| Ministries → Local | Implementation deviation due to differences in local fiscal capacity | Developed provinces have high implementation intensity; less developed provinces may compromise; distinguish "eastern coastal" vs. "central/western" implementation differences |
+| Local → Enterprises | Selective enterprise implementation | Leading enterprises actively comply (receive subsidies, obtain resources); SMEs may wait-and-see or fail to meet standards |
 
-### 3.3 "信号" vs "噪音" 区分标准
+### 3.3 "Signal" vs. "Noise" Distinction Criteria
 
-不是所有政策文件都值得关注。以下标准用于区分需要深入分析和可以忽略的信息：
+Not all policy documents deserve attention. The following criteria distinguish information requiring in-depth analysis from information that can be ignored:
 
-| 分类 | 特征 | 处理方式 |
-|------|------|---------|
-| **强信号** | 同时满足：发文机关L6 + 含有量化目标 + 强制性语言 + 有监督机制 | 立即纳入分析框架，重新评估相关行业/企业 |
-| **弱信号** | 满足部分条件（如发文机关L6但无量化目标、或仅有引导性语言） | 标记为"需关注"，纳入日常监测，不触发立即重新评估 |
-| **噪音** | 行业协会建议、专家个人观点、媒体解读、征求意见稿（尚未正式） | 不进分析框架，标注"仅供参考" |
+| Category | Characteristics | Processing Method |
+|----------|---------------|------------------|
+| **Strong Signal** | Simultaneously satisfies: Issuing authority L6 + Contains quantified targets + Mandatory language + Has supervision mechanism | Immediately incorporate into analysis framework, reassess relevant industries/enterprises |
+| **Weak Signal** | Satisfies partial conditions (e.g., L6 issuing authority but no quantified targets, or only guiding language) | Mark as "needs attention," include in routine monitoring, does not trigger immediate reassessment |
+| **Noise** | Industry association recommendations, individual expert opinions, media interpretations, draft for comments (not yet formal) | Do not enter analysis framework, label "for reference only" |
 
-**判定规则：**
-
-```
-强度评分 = D1(发文机关) × 0.3 + D3(约束力) × 0.3 + D5(执行力度) × 0.4
-
-评分 > 4.0 → 强信号 → 触发重新评估
-评分 2.0-4.0 → 弱信号 → 纳入观察清单
-评分 < 2.0 → 噪音 → 不进分析框架
-
-示例：
-  国务院发布"关于促进光伏产业健康发展的若干意见"
-  D1=5（国务院） + D3=4（含"必须""不得"） + D5=5（含量化目标+监督机制）
-  评分 = 5×0.3 + 4×0.3 + 5×0.4 = 1.5 + 1.2 + 2.0 = 4.7 → 强信号
-
-示例：
-  某行业协会专家发文"建议提高光伏电站建设标准"
-  D1=2（协会） + D3=2（建议性） + D5=1（无量化目标）
-  评分 = 2×0.3 + 2×0.3 + 1×0.4 = 0.6 + 0.6 + 0.4 = 1.6 → 噪音
-```
-
-### 3.4 对国企/城投的特殊处理：支持能力vs支持意愿分析框架
-
-当分析对象为国有企业或城投平台时，标准的政策解读流程需要额外增加一个分析步骤——**政策对"外部支持"的影响评估**。这一步直接关系到"政府会不会救"这个核心信用问题。
-
-**为什么需要这个步骤**：政策不仅影响发行人的基本面（利润/现金流/负债率），还直接影响政府支持发行人的能力和意愿。在某些情况下，政策环境改变对"外部支持"的影响可能比对企业基本面的影响更大。
-
-#### 3.4.1 政策→外部支持的双路径传导
+**Determination Rules:**
 
 ```
-政策变化
+Strength Score = D1(Issuing Authority) × 0.3 + D3(Binding Force) × 0.3 + D5(Enforcement) × 0.4
+
+Score > 4.0 → Strong Signal → Triggers reassessment
+Score 2.0-4.0 → Weak Signal → Include in observation list
+Score < 2.0 → Noise → Do not enter analysis framework
+
+Example:
+  State Council issues "Several Opinions on Promoting the Healthy Development of the Solar PV Industry"
+  D1=5 (State Council) + D3=4 (contains "must," "shall not") + D5=5 (contains quantified targets + supervision mechanism)
+  Score = 5×0.3 + 4×0.3 + 5×0.4 = 1.5 + 1.2 + 2.0 = 4.7 → Strong Signal
+
+Example:
+  An industry association expert publishes "Suggestions on Raising Solar PV Power Station Construction Standards"
+  D1=2 (Association) + D3=2 (Advisory) + D5=1 (No quantified targets)
+  Score = 2×0.3 + 2×0.3 + 1×0.4 = 0.6 + 0.6 + 0.4 = 1.6 → Noise
+```
+
+### 3.4 Special Treatment for SOEs/LGFVs: Support Capability vs. Support Willingness Analysis Framework
+
+When the analysis target is a state-owned enterprise (SOE) or local government financing vehicle (LGFV), the standard policy interpretation process requires an additional analysis step — **assessment of the policy's impact on "external support."** This step directly relates to the core credit question of "whether the government will provide rescue."
+
+**Why this step is necessary**: Policies not only affect the issuer's fundamentals (profit/cash flow/leverage ratio) but also directly influence the government's capability and willingness to support the issuer. In some cases, the impact of policy environment changes on "external support" may be greater than the impact on the enterprise's fundamentals.
+
+#### 3.4.1 Dual Pathways of Policy → External Support
+
+```
+Policy Changes
     |
-    ├── 路径A：直接影响支持能力
-    |      ├── 财税政策（中央与地方分成比例、转移支付结构）
-    |      ├── 债务管控（隐性债务化解要求、新增债务限额）
-    |      └── 土地政策（土地出让收入变化） → 直接影响地方财政收入
+    ├── Pathway A: Direct Impact on Support Capability
+    |      ├── Fiscal and tax policies (central-local revenue sharing ratios, transfer payment structures)
+    |      ├── Debt control (implicit debt resolution requirements, new debt limits)
+    |      └── Land policies (changes in land transfer revenue) → Directly affects local fiscal revenue
     |
-    └── 路径B：间接影响支持意愿
-           ├── 国企改革政策（竞争中性的推进速度）
-           ├── 行业改革政策（校企改革/医疗改革——直接改变支持逻辑）
-           └── 地方政府考核导向（债务问责力度 → 救助vs不救助的激励变化）
+    └── Pathway B: Indirect Impact on Support Willingness
+           ├── SOE reform policies (pace of competitive neutrality advancement)
+           ├── Industry reform policies (university-affiliated enterprise reform/healthcare reform — directly changes support logic)
+           └── Local government assessment orientation (debt accountability intensity → changes in incentives for rescue vs. non-rescue)
 ```
 
-**判断规则**：每项对国企/城投有影响的政策变化，需按以下两步独立分析：
+**Determination Rules**: For each policy change affecting SOEs/LGFVs, conduct the following two-step independent analysis:
 
 ```
-步骤A：支持能力影响判断
-  → 政策是否影响了地方政府的财政收入或支出？
-  → 债务管控政策是否限制了地方政府加杠杆的空间？
-  → 转移支付结构变化是否有利于/不利于本地？
+Step A: Support Capability Impact Assessment
+  → Does the policy affect local government fiscal revenue or expenditure?
+  → Do debt control policies limit local government's capacity to increase leverage?
+  → Is the change in transfer payment structure favorable/unfavorable to the locality?
 
-  如果是：调整支持能力评分（见 external-support-framework.md 第四章）
+  If yes: Adjust support capability score (see external-support-framework.md Chapter 4)
 
-步骤B：支持意愿影响判断
-  → 政策环境是否在弱化"国企信仰"？（竞争中性/混合所有制改革）
-  → 行业改革是否在降低发行人的战略重要性？
-  → 是否存在核心资产划转/控制权下放的政策导向？
+Step B: Support Willingness Impact Assessment
+  → Is the policy environment weakening the "SOE faith"? (competitive neutrality/mixed ownership reform)
+  → Is industry reform reducing the issuer's strategic importance?
+  → Is there a policy direction toward core asset transfer/control delegation?
 
-  如果是：降低支持意愿评分（见 external-support-framework.md 第五章）
+  If yes: Reduce support willingness score (see external-support-framework.md Chapter 5)
 ```
 
-#### 3.4.2 集成到政策传导链
+#### 3.4.2 Integration into the Policy Transmission Chain
 
-在标准政策传导链（中央→部委→地方→企业）的第2-3级之间，增加"支持能力vs支持意愿"过滤层：
+Between links 2-3 of the standard policy transmission chain (Central → Ministries → Local → Enterprises), add a "support capability vs. support willingness" filter layer:
 
 ```
-国家层面（党中央/国务院）
+National Level (CPC Central Committee / State Council)
     |
     v
-部委层面 ———→ 政策是否调整了地方政府的财权/事权？
-    |               ↓ 影响支持能力
+Ministerial Level ———→ Does the policy adjust local government fiscal authority/spending authority?
+    |                       ↓ Affects support capability
     |
     v
-省级/地方层面 —→ 地方政府是否有财力/意愿执行？
-    |               ↓ 同时评估能力和意愿
+Provincial/Local Level ——→ Does the local government have the fiscal capacity/willingness to implement?
+    |                       ↓ Evaluate both capability and willingness
     |
     v
-企业层面 ———→ 外部支持是否变化对企业的实际影响
+Enterprise Level ———→ The actual impact of external support changes on the enterprise
 ```
 
-#### 3.4.3 典型政策信号对"外部支持"的影响
+#### 3.4.3 Impact of Typical Policy Signals on "External Support"
 
-| 政策信号 | 对支持能力的影响 | 对支持意愿的影响 | 综合影响 |
-|---------|----------------|----------------|---------|
-| 中央转移支付增加 | 提升中西部省份支持能力 | 中性 | 正向——对西部城投偏利好 |
-| 隐性债务化解"清零"要求 | 限制地方财政腾挪空间 | 城投刚兑可能打破（意愿下降） | 负向——城投信仰弱化 |
-| "竞争中性"政策推进 | 中性 | 国企获得的隐性优惠减少 | 负向——外部支持减弱 |
-| 地方政府债务问责加强 | 中性 | 地方官员救助意愿下降（问责成本上升） | 负向——救助概率降低 |
-| 省管县/市管县体制改革 | 对县级政府支持能力可能有影响 | 中性 | 具体分析 |
-| 行业整合政策（如煤炭/钢铁） | 中性 | 战略性企业受支持意愿可能加强 | 正向——龙头国企受益 |
-| 国企混合所有制改革 | 中性 | 国企属性减弱=支持意愿下降 | 负向——对混改后的主体 |
-| 土地出让收入大幅下降 | 明显降低地方政府支持能力 | 中性 | 明显负向——城投和国企均受影响 |
-| 省内其他国企违约未获救助 | 中性 | 强负面信号——支持意愿已变 | 极负向——需重新评估整个地区的国企 |
+| Policy Signal | Impact on Support Capability | Impact on Support Willingness | Overall Impact |
+|--------------|-----------------------------|------------------------------|----------------|
+| Increase in central transfer payments | Enhances support capability of central/western provinces | Neutral | Positive — somewhat favorable for western LGFVs |
+| Implicit debt resolution "clear to zero" requirement | Limits local fiscal flexibility | LGFV rigid repayment may be broken (willingness decreases) | Negative — LGFV faith weakening |
+| "Competitive Neutrality" policy advancement | Neutral | Implicit SOE preferential treatment reduced | Negative — external support weakening |
+| Enhanced local government debt accountability | Neutral | Local officials' willingness to rescue decreases (accountability costs rise) | Negative — rescue probability decreases |
+| Province-managed-county/City-managed-county system reform | May affect county-level government support capability | Neutral | Case-by-case analysis |
+| Industry consolidation policy (e.g., coal/steel) | Neutral | Strategic enterprises may see increased support willingness | Positive — leading SOEs benefit |
+| SOE mixed ownership reform | Neutral | SOE attributes weakened = support willingness decreases | Negative — for entities post-reform |
+| Significant decline in land transfer revenue | Significantly reduces local government support capability | Neutral | Significantly negative — both LGFVs and SOEs affected |
+| Other SOE default in same province without rescue | Neutral | Strong negative signal — support willingness has changed | Extremely negative — requires reassessment of entire region's SOEs |
 
-#### 3.4.4 实操检查清单
+#### 3.4.4 Practical Checklist
 
-对国企/城投进行政策分析时，在完成标准政策解读（3.1-3.3）后，逐项回答：
+When conducting policy analysis for SOEs/LGFVs, after completing the standard policy interpretation (3.1-3.3), answer each item:
 
 ```
-□ 政策是否影响了支持方的财政收入/债务空间？
-□ 政策是否改变了支持方的救助激励（问责/考核导向变化）？
-□ 政策是否降低了发行人的战略重要性（行业改革/竞争加剧）？
-□ 政策是否在推动发行人的控制权/股权结构变化？
-□ 同一地区是否有其他国企违约的先例？
-□ 发行人是否有核心资产被划转的信号？
+□ Does the policy affect the supporter's fiscal revenue/debt capacity?
+□ Does the policy change the supporter's rescue incentives (accountability/assessment orientation changes)?
+□ Does the policy reduce the issuer's strategic importance (industry reform/intensified competition)?
+□ Is the policy driving changes in the issuer's control/equity structure?
+□ Are there precedents of other SOE defaults in the same region?
+□ Are there signals that the issuer's core assets may be transferred?
 
-结论：
-- 支持能力变化：增强 / 减弱 / 不变
-- 支持意愿变化：增强 / 减弱 / 不变
-- 综合判断：外部支持大概率 维持/增强/减弱
+Conclusion:
+- Support Capability Change: Enhanced / Weakened / Unchanged
+- Support Willingness Change: Enhanced / Weakened / Unchanged
+- Overall Assessment: External support will likely be Maintained/Enhanced/Weakened
 ```
 
 ---
 
-### 3.5 政策波动性评估框架
+### 3.5 Policy Volatility Assessment Framework
 
-对政策驱动型行业（光伏、半导体），政策波动性是信用分析的核心变量。定性分析需评估：
+For policy-driven industries (solar PV, semiconductor), policy volatility is a core variable in credit analysis. Qualitative analysis should assess:
 
-| 维度 | 评估方法 | 低波动特征 | 高波动特征 |
-|------|---------|-----------|-----------|
-| **政策频率** | 过去12个月重大政策数量 | <3次/年 | >6次/年 |
-| **方向一致性** | 前后政策方向是否一致 | 连续支持或连续限制 | 短期反复（支持→限制→再支持） |
-| **执行可预测性** | 政策是否提前征求意见 | 征求意见→试行→正式实施（渐进式） | 突然发布、无征求意见期 |
-| **国际约束** | 受国际博弈影响程度 | 不涉及国际关系 | 与地缘政治高度绑定 |
-| **换届影响** | 与政府换届周期的关联 | 跨周期稳定 | 换周期即换方向 |
+| Dimension | Assessment Method | Low Volatility Characteristics | High Volatility Characteristics |
+|-----------|-----------------|-------------------------------|-------------------------------|
+| **Policy Frequency** | Number of major policies in past 12 months | <3 times/year | >6 times/year |
+| **Directional Consistency** | Whether successive policies are directionally consistent | Continuous support or continuous restriction | Repeated reversal (support → restrict → re-support) |
+| **Enforcement Predictability** | Whether policies are published for public comment in advance | Public comment → Trial → Formal Implementation (gradual) | Sudden release, no public comment period |
+| **International Constraints** | Degree of impact from international dynamics | Does not involve international relations | Highly tied to geopolitics |
+| **Administrative Transition Impact** | Correlation with government transition cycles | Stable across cycles | Direction changes with each cycle |
 
-**政策波动性综合评级：**
+**Policy Volatility Composite Rating:**
 
-| 评级 | 行业示例 | 对信用分析的影响 |
-|------|---------|----------------|
-| **高波动** | 光伏（D4=4） | 所有信用判断附带"政策风险溢价"；评分区间应加宽 |
-| **中波动** | 半导体（D4=3） | 政策方向稳定但执行细节多变；关注部委层面实施细则 |
-| **低波动** | 数据中心（D4=3） | 政策变化可预测（东数西算4年规划）；按规划节奏分析 |
+| Rating | Industry Example | Impact on Credit Analysis |
+|--------|-----------------|--------------------------|
+| **High Volatility** | Solar PV (D4=4) | All credit judgments carry a "policy risk premium"; scoring ranges should be widened |
+| **Medium Volatility** | Semiconductor (D4=3) | Policy direction stable but implementation details variable; focus on ministerial implementation rules |
+| **Low Volatility** | Data Centers (D4=3) | Policy changes predictable (Eastern Data Western Computing 4-year plan); analyze according to planning cadence |
 
-### 3.5 实例：136号电价文件 → 光伏组件企业传导链
+### 3.6 Example: Electricity Tariff Document No. 136 → Solar PV Module Manufacturer Transmission Chain
 
-**背景：** 假设国家发改委发布《关于进一步完善新能源上网电价政策的通知》（发改价格〔2026〕136号），明确2026年新建光伏项目上网电价下调5%。
+**Background:** Assume the National Development and Reform Commission issues a "Notice on Further Improving the On-Grid Electricity Pricing Policy for New Energy" (NDRC Price [2026] No. 136), specifying a 5% reduction in on-grid electricity prices for new solar PV projects in 2026.
 
-**Step 1：政策文本解析**
+**Step 1: Policy Text Analysis**
 
-| 维度 | 解析结果 |
-|------|---------|
-| D1 发文机关 | 国家发改委（部委级别，权重中） |
-| D2 文件类型 | 通知（约束力中上——但"通知"在中国行政体系中具有较强约束力） |
-| D3 约束力等级 | 条件性（"2026年新建项目适用""存量项目不追溯"） |
-| D4 行业影响路径 | 需求端（电站IRR下降→装机意愿降低）+ 成本端（组件企业面临降价压力） |
-| D5 执行力度 | 强：有量化幅度（5%）+ 明确适用范围（新建项目） |
+| Dimension | Analysis Result |
+|-----------|----------------|
+| D1 Issuing Authority | National Development and Reform Commission (Ministerial level, medium weight) |
+| D2 Document Type | Notice (medium-high binding force — "notices" have relatively strong binding force in China's administrative system) |
+| D3 Binding Force Level | Conditional ("applicable to new 2026 projects," "existing projects not retroactively affected") |
+| D4 Industry Impact Pathway | Demand side (power station IRR declines → reduced installation willingness) + Cost side (module manufacturers face price pressure) |
+| D5 Enforcement Strength | Strong: quantified magnitude (5%) + clear scope of application (new projects) |
 
-**Step 2：传导链分析**
-
-```
-国家发改委发布136号文（电价下调5%）
-    │
-    │  政策意图：降低补贴压力，推动行业平价
-    │  └─ 不是负面信号——这是"行业已成熟的标志"而非"打压"
-    ▼
-省级执行层面
-    │
-    │  各省配套方案差异：
-    │  ├── 东部省份（江苏/广东）：可能直接执行，因为光伏已平价
-    │  └── 西部省份（甘肃/新疆）：可能有延迟或折中（弃光率高、项目IRR本就低）
-    │
-    ▼
-电站投资方（五大发电/地方能源集团）
-    │
-    │  投资决策影响：
-    │  ├── 电价下调5% → 新建电站全投资IRR从6.5%降至5.8%
-    │  ├── IR低于6% → 部分央企内部收益率门槛被突破 → 项目推迟
-    │  └── 但组件成本持续下降可部分对冲电价下调
-    │
-    ▼
-组件制造企业
-    │
-    │  竞争格局影响：
-    │  ├── 龙头企业（隆基/晶科）：成本领先 → 仍能维持利润
-    │  ├── 二线企业：利润进一步压缩 → 可能亏损
-    │  ├── 组件价格：预计继续下降5-10%（传导压力）
-    │  └── 产能出清：加速尾部企业退出
-    │
-    ▼
-信用影响
-    ├── 行业整体：中性（电价下调预期中，行业已消化）
-    ├── 龙头企业：偏正面（加速出清弱竞争者）
-    ├── 二线企业：偏负面（利润率承压）
-    └── 纯电站运营企业：偏负面（项目IRR下降，扩张放缓）
-```
-
-**Step 3：定性结论**
+**Step 2: Transmission Chain Analysis**
 
 ```
-136号电价文件综合评估：
-├── 政策强度评分：4.2（强信号）
-├── 方向判断：并非"利空"——电价下调是行业成熟的标志，龙头企业反而受益于出清效应
-├── 时间窗口：短期（1-3月）投资观望 → 中期（3-6月）价格调整到位 → 长期出清
-├── 对不同企业的影响分化：
-│   ├── 隆基绿能：影响轻微（成本领先 + 海外收入占比高 + BC技术溢价）
-│   ├── 一道新能：影响较大（成本劣势 + 国内客户为主 + 未上市融资受限）
-│   └── 集中式电站占比较高的企业：影响较大（分布式受电价影响较小）
-└── 需要持续跟踪的数据：
-    ├── 组件价格走势（PVInfoLink周度数据）
-    ├── 央企集采招标价格
-    └── 各省配套执行文件（是否上浮或下浮）
+NDRC issues Document No. 136 (electricity price reduction of 5%)
+    │
+    │   Policy intent: Reduce subsidy pressure, promote industry grid parity
+    │  └─ Not a negative signal — this is a sign the "industry has matured," not "suppression"
+    ▼
+Provincial Implementation Level
+    │
+    │   Differences in provincial supporting measures:
+    │  ├── Eastern provinces (Jiangsu/Guangdong): Likely to implement directly, as solar PV already at grid parity
+    │  └── Western provinces (Gansu/Xinjiang): May delay or compromise (high curtailment rates, already low project IRR)
+    │
+    ▼
+Power Station Investors (Major Power Generators/Local Energy Groups)
+    │
+    │   Investment Decision Impact:
+    │  ├── 5% electricity price reduction → New station full-investment IRR drops from 6.5% to 5.8%
+    │  ├── IRR below 6% → Some central SOE internal rate of return thresholds breached → project delays
+    │  └── But continued decline in module costs may partially offset electricity price reduction
+    │
+    ▼
+Module Manufacturing Enterprises
+    │
+    │   Competitive Landscape Impact:
+    │  ├── Leading enterprises (LONGi Green Energy/JinkoSolar): Cost leadership → Still able to maintain profits
+    │  ├── Second-tier enterprises: Further profit compression → May face losses
+    │  ├── Module prices: Expected to continue declining 5-10% (pass-through pressure)
+    │  └── Capacity rationalization: Accelerates exit of marginal players
+    │
+    ▼
+Credit Impact
+    ├── Industry overall: Neutral (electricity price reduction was anticipated, industry has priced it in)
+    ├── Leading enterprises: Somewhat positive (accelerates rationalization of weaker competitors)
+    ├── Second-tier enterprises: Somewhat negative (margin pressure)
+    └── Pure power station operators: Somewhat negative (project IRR declines, expansion slows)
+```
+
+**Step 3: Qualitative Conclusion**
+
+```
+Document No. 136 Electricity Tariff Comprehensive Assessment:
+├── Policy Strength Score: 4.2 (Strong Signal)
+├── Direction Judgment: Not "negative" — electricity price reduction is a sign of industry maturity, leading enterprises actually benefit from rationalization effects
+├── Time Window: Short-term (1-3 months) investment wait-and-see → Medium-term (3-6 months) price adjustment completion → Long-term rationalization
+├── Differential Impact on Enterprises:
+│   ├── LONGi Green Energy: Minimal impact (cost leadership + high overseas revenue share + BC technology premium)
+│   ├── Yidao New Energy: Greater impact (cost disadvantage + primarily domestic customers + unlisted, limited financing)
+│   └── Enterprises with high centralized power station share: Greater impact (distributed generation less affected by electricity price changes)
+└── Data Requiring Ongoing Monitoring:
+    ├── Module price trends (PVInfoLink weekly data)
+    ├── Central SOE centralized procurement tender prices
+    └── Provincial supporting implementation documents (whether adjustments are upward or downward)
 ```
 
 ---
 
-## 四、行业知识的结构化供给
+## 4. Structured Provision of Industry Knowledge
 
-### 4.1 行业认知框架构建流程
+### 4.1 Industry Cognitive Framework Construction Process
 
-定性分析的行业认知不是漫无目的的"了解行业"，而是按照固定框架收集和组织的结构化知识。每个行业的认知框架按以下六步构建：
-
-```
-Step 1：产业链 → 知道钱在谁手里
-Step 2：成本结构 → 知道钱花在哪
-Step 3：利润分配 → 知道谁在赚钱
-Step 4：竞争格局 → 知道谁能活下去
-Step 5：技术迭代 → 知道谁会死
-Step 6：监管周期 → 知道规则怎么变
-```
-
-**每步的分析模板：**
-
-| 步骤 | 核心问题 | 结构化框架 | 输出格式 |
-|------|---------|-----------|---------|
-| **1. 产业链** | 价值链从原材料到终端用户如何流转？ | 五力模型 + 价值链嵌入位置 | 产业链图谱（上游→中游→下游→终端） |
-| **2. 成本结构** | 每单位产品的成本中，最大项是什么？ | 成本漏斗（顶部=直接材料，底部=折旧+费用） | 成本构成饼图 + 各项目的波动性评估 |
-| **3. 利润分配** | 产业链哪个环节利润率最高？ | 每个环节的毛利率/净利率区间 | 利润分布图（"微笑曲线"或"倒微笑曲线"判断） |
-| **4. 竞争格局** | CR5有多少？进入壁垒是什么？ | 集中度（CR5/CR10）+ 有效壁垒 | 竞争象限（领导者/挑战者/追随者/利基者） |
-| **5. 技术迭代** | 当前技术路线还有几年生命周期？替代技术在哪？ | 技术S曲线 + 替代威胁评估 | 技术成熟度 + 切换成本评估 |
-| **6. 监管周期** | 行业处于监管放松还是收紧周期？ | 政策波动性（见3.4节） | 监管周期位置 + 前瞻判断 |
-
-**AI Agent行业知识初始化检查清单：**
+Industry knowledge in qualitative analysis is not aimless "learning about an industry," but structured knowledge collected and organized according to a fixed framework. The cognitive framework for each industry is built in the following six steps:
 
 ```
-行业：[行业名称] 的初始认知框架检查清单：
-
-[ ] 产业链图谱是否完成？（上游3-5个环节 + 中游2-3个环节 + 下游2-3个环节）
-[ ] 各环节的核心上市公司是否已标注（每家标注：A股/港股/未上市）
-[ ] 成本结构中的Top 3成本项是否已识别？
-[ ] 利润分配环节——毛利率最高的环节是哪一个？毛利润总盘约多少？
-[ ] 竞争格局——CR5数据是否已获取？（来源标注）
-[ ] 技术路线——当前主流路线及替代路线的成熟度评估是否完成？
-[ ] 监管周期——近3年重大监管变化是否已梳理？
-[ ] 信息来源——每个结构化项是否标注了信源级别？
-[ ] 缺口清单——有哪些关键数据未获取？
-
-处理规则：
-  完成80%+ → 行业知识框架"就绪"，可支持评分
-  完成50-80% → 标注"框架待完善"，评分附带更宽区间
-  完成<50% → 暂停该行业分析，优先补全框架
+Step 1: Industry Chain → Know where the money is
+Step 2: Cost Structure → Know where the money goes
+Step 3: Profit Distribution → Know who is making money
+Step 4: Competitive Landscape → Know who will survive
+Step 5: Technology Evolution → Know who will be disrupted
+Step 6: Regulatory Cycle → Know how the rules change
 ```
 
-### 4.2 行业基准数据比对
+**Analysis Template for Each Step:**
 
-行业知识的结构化供给最终要服务于**比对标尺**——判断一家企业的好坏，必须知道"好"的标准是什么。本引擎使用三类对标：
+| Step | Core Question | Structured Framework | Output Format |
+|------|--------------|---------------------|--------------|
+| **1. Industry Chain** | How does the value chain flow from raw materials to end users? | Five Forces Model + Value Chain Positioning | Industry chain map (Upstream → Midstream → Downstream → End Users) |
+| **2. Cost Structure** | What is the largest cost item per unit of product? | Cost funnel (top = direct materials, bottom = depreciation + expenses) | Cost composition pie chart + volatility assessment for each item |
+| **3. Profit Distribution** | Which link in the value chain has the highest margin? | Gross margin/Net margin range for each link | Profit distribution map ("smile curve" or "inverted smile curve" assessment) |
+| **4. Competitive Landscape** | What is the CR5? What are the entry barriers? | Concentration (CR5/CR10) + Effective barriers | Competitive quadrant (Leaders/Challengers/Followers/Niche players) |
+| **5. Technology Evolution** | How many years of lifecycle does the current technology have? Where is the replacement technology? | Technology S-curve + Substitution threat assessment | Technology maturity + switching cost assessment |
+| **6. Regulatory Cycle** | Is the industry in a deregulation or tightening cycle? | Policy volatility (see Section 3.4) | Regulatory cycle position + forward-looking judgment |
 
-| 对标类型 | 方法 | 实例 | 适用场景 |
-|---------|------|------|---------|
-| **上市公司对标** | 找出同行业可比上市公司，在关键指标上逐一对比 | 隆基绿能 vs 晶科能源 vs 天合光能（组件业务的毛利率对比） | 最精准——但仅适用于有上市可比公司的情况 |
-| **行业均值对标** | 使用行业协会/L5数据源获取行业均值 | CPIA公布的行业平均毛利率/平均产能利用率 | 适用于无精确竞争数据时 |
-| **历史自身对标** | 同一企业的当前水平 vs 自身过去3年的水平 | 通威股份2026年毛利率 vs 2024年毛利率 | 适用于周期性行业（判断当前处于周期什么位置） |
-
-**AI Agent基准数据对标的执行规则：**
-
-```
-对标流程：
-1. 确定对标类型（优先上市公司对标 > 行业均值 > 历史自身）
-2. 选择对标指标（取决于当前分析维度）
-3. 构建对标表格（行=企业/指标，列=数值/来源/时间戳）
-4. 标注数据质量（每个单元格标注信源级别）
-5. 判断位置（"高于行业中位数" / "处于行业后25%"）
-6. 输出偏差分析和解释
-
-实例（光伏组件毛利率对标，2025年年报数据）：
-| 企业 | 毛利率 | 来源 | 时间戳 | 行业内位置 |
-|------|--------|------|--------|-----------|
-| 隆基绿能 | 18.5% | 年报(L2) | 2025-Q4 | 行业Top 3 |
-| 晶科能源 | 16.2% | 年报(L2) | 2025-Q4 | 行业中上 |
-| 天合光能 | 15.8% | 年报(L2) | 2025-Q4 | 行业中位 |
-| 行业均值 | 14.5% | CPIA(L5) | 2025-Q4 | — |
-| 一道新能 | 约10-12% | 券商估算(L4) | 2025-Q4 | 行业后25% ← 关注 |
-```
-
-### 4.3 行业特有红旗信号
-
-每个行业有独特的红旗信号（red flags），它们是特定于该行业结构特征的早期预警指标。定性分析的判断力很大程度上来自于对这些行业特有红旗的敏感度。
-
-| 行业 | 红旗信号 | 信源级别 | 预警窗口 | 严重程度 |
-|------|---------|---------|---------|---------|
-| **光伏** | PERC产能占比>70%（技术路线被淘汰信号） | 企业披露(L2) | 12-24个月 | 🔴 一票否决 |
-| | 央企集采未入围或份额持续下降 | 招标公告(L6-L5) | 6-12个月 | 🟠 重大 |
-| | 应收账款周转天数连续3季度上升 | 季报(L2) | 3-6个月 | 🟡 关注 |
-| **半导体** | 被列入实体清单或SDN清单 | 美国商务部(L6) | 0（即时） | 🔴 一票否决 |
-| | 关键设备/EDA断供风险 | 企业披露+新闻(L2/L3) | 0-6个月 | 🔴 生存性 |
-| | 核心技术人员连续离职 | 公司公告(L2) | 6-12个月 | 🟠 重大 |
-| **新能源车-OEM** | 月销量<1万台且连续3月下降 | 乘联会(L5) | 3-6个月 | 🔴 生存性 |
-| | 现金跑道<12个月 | 财报(L2) | 6-12个月 | 🔴 生存性 |
-| | 经销商库存>2个月 | 渠道调研(L4) | 3-6个月 | 🟠 重大 |
-| **高端装备** | 数控系统+主轴+伺服全部外采无国内替代 | 技术拆解+年报(L4/L2) | 12-24个月 | 🔴 一票否决 |
-| | R&D资本化率>40% | 年报(L2) | 12-24个月 | 🟠 重大 |
-| | Q4收入占比>40%持续2年 | 年报(L2) | 6-12个月 | 🟡 关注 |
-| **生物医药** | 核心管线III期临床失败 | 公司公告(L2) | 即时 | 🔴 一票否决 |
-| | 现金跑道<6个月且无新的BD首付款 | 财报(L2) | 3-6个月 | 🔴 生存性 |
-| | FDA/NDA审批被拒或延迟 | FDA公告(L6) | 即时 | 🟠 重大 |
-| **数据中心** | 核心客户租约到期且确认不续约 | 公司披露(L2) | 6-12个月 | 🔴 一票否决 |
-| | 上架率连续2季度下降 | 公司披露(L2) | 6-12个月 | 🟠 重大 |
-| | PUE持续高于同行0.15+ | 行业报告(L4/L5) | 12-24个月 | 🟡 关注 |
-| **医疗器械** | 三类注册证到期且无法续期 | 药监局官网(L6) | 0-12个月 | 🔴 一票否决 |
-| | 集采落标或价格降幅>80% | 集采公告(L6) | 0-3个月 | 🟠 重大 |
-| | 医院应收账龄>1年比例上升 | 年报(L2) | 6-12个月 | 🟡 关注 |
-
-**AI Agent红旗处理规则：**
+**AI Agent Industry Knowledge Initialization Checklist:**
 
 ```
-当检测到红旗信号时：
-1. 立即升级该信号的优先级（从常规监测升级为重点关注）
-2. 检查该红旗是否属于该行业的一票否决条件
-3. 若是一票否决条件 → 立即暂停后续分析，输出"一票否决触发"
-4. 若不是一票否决但属于重大级别（🔴 / 🟠）→
-   a. 对该维度评分上限设置为4（满分10分）
-   b. 在交叉对撞中标记该维度的低置信度
-   c. 要求在报告中单独列示该红旗及其可能影响
-5. 持续监测（设置为周度检查频率，而非季度）
+Industry: [Industry Name] Initial Cognitive Framework Checklist:
+
+[ ] Is the industry chain map complete? (3-5 upstream links + 2-3 midstream links + 2-3 downstream links)
+[ ] Are the core listed companies at each link labeled (each labeled: A-share/H-share/Unlisted)?
+[ ] Are the Top 3 cost items in the cost structure identified?
+[ ] Profit distribution — which link has the highest gross margin? What is the approximate total gross profit pool?
+[ ] Competitive landscape — Has CR5 data been obtained? (Source labeled)
+[ ] Technology pathway — Has maturity assessment been completed for current mainstream pathway and alternative pathways?
+[ ] Regulatory cycle — Have major regulatory changes in the past 3 years been reviewed?
+[ ] Information sources — Is each structured item labeled with its source level?
+[ ] Gap list — What key data has not been obtained?
+
+Processing Rules:
+  Completed 80%+ → Industry knowledge framework "ready," can support scoring
+  Completed 50-80% → Label "framework pending improvement," scoring includes wider range
+  Completed <50% → Suspend analysis for this industry, prioritize framework completion
 ```
 
-### 4.4 跨行业通用红旗信号
+### 4.2 Industry Benchmark Data Comparison
 
-有些红旗信号在所有行业中都适用。这些信号通常是**治理层面**的问题，不属于行业特异性知识，但需要作为定性分析的标准检查项：
+The structured provision of industry knowledge ultimately serves as a **benchmarking yardstick** — to judge whether an enterprise is good or bad, one must know what "good" means. This engine uses three types of benchmarking:
 
-| 红旗信号 | 检测方法 | 信源级别 | 严重程度 |
-|---------|---------|---------|---------|
-| **大股东高比例质押（>70%）** | 公司公告/季报 | L2 | 🔴 重大——大股东资金链断裂风险 |
-| **控股股东/实控人变更** | 公司公告 | L2 | 🟠 关注——控制权不稳定 |
-| **审计师非标准意见/变更** | 年报审计意见 | L2 | 🔴 重大——可能存在财务问题 |
-| **交易所问询函/监管关注** | 交易所公告 | L6 | 🟠 关注——监管已注意异常 |
-| **资产重组/剥离核心资产** | 公司公告 | L2 | 🟠 关注——可能掏空上市公司 |
-| **关联交易占比跳升（>营收20%）** | 年报关联交易披露 | L2 | 🟠 关注——利益输送可能 |
-| **高管/核心技术人员集中离职** | 公司公告 | L2 | 🟠 重大——人才流失信号 |
-| **被申请仲裁/诉讼频率骤增** | 裁判文书网(L6) | L6 | 🟠 关注——反映经营纠纷增多 |
-| **股权融资失败/IPO终止** | 交易所公告 | L6 | 🟠 重大——资本市场信心不足 |
-| **净资产为负/资不抵债** | 年报 | L2 | 🔴 一票否决（事实上的D级） |
+| Benchmarking Type | Method | Example | Applicable Scenarios |
+|------------------|--------|---------|---------------------|
+| **Listed Company Benchmarking** | Identify comparable listed companies in the same industry and compare key indicators one by one | LONGi Green Energy vs. JinkoSolar vs. Trina Solar (module gross margin comparison) | Most precise — but only applicable when comparable listed companies exist |
+| **Industry Average Benchmarking** | Use industry associations/L5 data sources to obtain industry averages | CPIA published industry average gross margin / average capacity utilization | Applicable when precise competitive data is unavailable |
+| **Historical Self-Benchmarking** | Current level of the same enterprise vs. its own past 3 years | Tongwei Co. 2026 gross margin vs. 2024 gross margin | Applicable for cyclical industries (determine where in the cycle the company currently stands) |
 
-**通用红旗的叠加效应：**
+**AI Agent Benchmark Data Comparison Execution Rules:**
 
 ```
-两个以上通用红旗同时出现 → 严重程度自动升级一级
-三个以上通用红旗同时出现 → 无论行业评分如何，综合评级上限自动降至B
+Benchmarking Process:
+1. Determine benchmarking type (priority: Listed Company > Industry Average > Historical Self)
+2. Select benchmarking indicators (depends on current analysis dimension)
+3. Construct benchmarking table (rows = enterprises/indicators, columns = values/sources/timestamps)
+4. Label data quality (each cell labeled with source level)
+5. Determine position ("above industry median" / "in bottom 25% of industry")
+6. Output deviation analysis and explanation
 
-示例：
-  企业A：大股东质押75%（🔴）+ 审计师变更（🔴）+ 关联交易占比25%（🟠）
-  → 3个通用红旗同时出现 → 严重升级
-  → 即使基本面评分表现良好（例如L1-L4评分均>6），综合评级上限降至B
-  → 标注："多重治理红旗信号叠加，存在隐藏风险未被基本面框架覆盖"
+Example (Solar PV module gross margin benchmarking, FY2025 data):
+| Enterprise | Gross Margin | Source | Timestamp | Position in Industry |
+|-----------|-------------|--------|-----------|--------------------|
+| LONGi Green Energy | 18.5% | Annual Report (L2) | 2025-Q4 | Industry Top 3 |
+| JinkoSolar | 16.2% | Annual Report (L2) | 2025-Q4 | Industry Upper-Mid |
+| Trina Solar | 15.8% | Annual Report (L2) | 2025-Q4 | Industry Median |
+| Industry Average | 14.5% | CPIA (L5) | 2025-Q4 | — |
+| Yidao New Energy | ~10-12% | Brokerage Estimate (L4) | 2025-Q4 | Industry Bottom 25% ← Watch |
+```
+
+### 4.3 Industry-Specific Red Flags
+
+Each industry has unique red flags — early warning indicators specific to that industry's structural characteristics. The judgment capability of qualitative analysis largely comes from sensitivity to these industry-specific red flags.
+
+| Industry | Red Flag | Source Level | Warning Window | Severity |
+|----------|---------|-------------|---------------|----------|
+| **Solar PV** | PERC capacity share >70% (signal of technology pathway obsolescence) | Corporate Disclosure (L2) | 12-24 months | 🔴 Veto |
+| | Failed to qualify for central SOE centralized procurement or market share continuously declining | Tender Announcements (L6-L5) | 6-12 months | 🟠 Major |
+| | Accounts receivable turnover days increasing for 3 consecutive quarters | Quarterly Reports (L2) | 3-6 months | 🟡 Watch |
+| **Semiconductor** | Placed on Entity List or SDN List | U.S. Department of Commerce (L6) | 0 (immediate) | 🔴 Veto |
+| | Key equipment/EDA supply disruption risk | Corporate Disclosure + News (L2/L3) | 0-6 months | 🔴 Survival |
+| | Consecutive departures of core technical personnel | Company Announcements (L2) | 6-12 months | 🟠 Major |
+| **NEV-OEM** | Monthly sales <10,000 units and declining for 3 consecutive months | CPCA (L5) | 3-6 months | 🔴 Survival |
+| | Cash runway <12 months | Financial Reports (L2) | 6-12 months | 🔴 Survival |
+| | Dealer inventory >2 months | Channel Research (L4) | 3-6 months | 🟠 Major |
+| **Advanced Manufacturing** | CNC system + spindle + servo all externally sourced without domestic alternative | Technical Teardown + Annual Reports (L4/L2) | 12-24 months | 🔴 Veto |
+| | R&D capitalization rate >40% | Annual Reports (L2) | 12-24 months | 🟠 Major |
+| | Q4 revenue share >40% for 2 consecutive years | Annual Reports (L2) | 6-12 months | 🟡 Watch |
+| **Biopharma** | Core pipeline Phase III clinical trial failure | Company Announcements (L2) | Immediate | 🔴 Veto |
+| | Cash runway <6 months and no new BD upfront payments | Financial Reports (L2) | 3-6 months | 🔴 Survival |
+| | FDA/NDA approval rejected or delayed | FDA Announcements (L6) | Immediate | 🟠 Major |
+| **Data Centers** | Core customer lease expires with confirmed non-renewal | Company Disclosure (L2) | 6-12 months | 🔴 Veto |
+| | Utilization rate declining for 2 consecutive quarters | Company Disclosure (L2) | 6-12 months | 🟠 Major |
+| | PUE consistently 0.15+ above industry peers | Industry Reports (L4/L5) | 12-24 months | 🟡 Watch |
+| **Medical Devices** | Class III registration certificate expired and cannot be renewed | NMPA Official Website (L6) | 0-12 months | 🔴 Veto |
+| | Failed volume-based procurement bid or price reduction >80% | Volume-Based Procurement Announcements (L6) | 0-3 months | 🟠 Major |
+| | Share of hospital accounts receivable aging >1 year increasing | Annual Reports (L2) | 6-12 months | 🟡 Watch |
+
+**AI Agent Red Flag Processing Rules:**
+
+```
+When a red flag signal is detected:
+1. Immediately escalate the priority of that signal (upgrade from routine monitoring to focused attention)
+2. Check whether the red flag belongs to a veto condition for that industry
+3. If a veto condition → Immediately suspend subsequent analysis, output "Veto Triggered"
+4. If not a veto condition but classified as Major level (🔴 / 🟠) →
+   a. Set the maximum score for that dimension to 4 (out of 10)
+   b. Mark that dimension's low confidence in the cross-validation matrix
+   c. Require the red flag and its potential impact to be separately listed in the report
+5. Continuous monitoring (set to weekly check frequency, not quarterly)
+```
+
+### 4.4 Cross-Industry Universal Red Flags
+
+Some red flags apply across all industries. These signals are typically **governance-level** issues, not industry-specific knowledge, but need to be standard check items in qualitative analysis:
+
+| Red Flag | Detection Method | Source Level | Severity |
+|----------|-----------------|-------------|----------|
+| **Major shareholder high pledge ratio (>70%)** | Company announcements/Quarterly reports | L2 | 🔴 Major — Risk of major shareholder capital chain rupture |
+| **Controlling shareholder/actual controller change** | Company announcements | L2 | 🟠 Watch — Control instability |
+| **Auditor non-standard opinion/change** | Annual report audit opinion | L2 | 🔴 Major — Possible financial issues |
+| **Exchange inquiry letter/regulatory attention** | Exchange announcements | L6 | 🟠 Watch — Regulators have noted anomalies |
+| **Asset restructuring/core asset divestiture** | Company announcements | L2 | 🟠 Watch — Possible asset stripping |
+| **Related party transaction share jump (>20% of revenue)** | Annual report related party transaction disclosure | L2 | 🟠 Watch — Possible tunneling |
+| **Concentrated departures of executives/core technical personnel** | Company announcements | L2 | 🟠 Major — Talent drain signal |
+| **Sharp increase in arbitration/litigation filings** | Judgment documents website (L6) | L6 | 🟠 Watch — Reflects increasing business disputes |
+| **Equity financing failure/IPO termination** | Exchange announcements | L6 | 🟠 Major — Capital market confidence insufficient |
+| **Net assets negative/insolvent** | Annual reports | L2 | 🔴 Veto (de facto D rating) |
+
+**Cumulative Effect of Universal Red Flags:**
+
+```
+Two or more universal red flags appearing simultaneously → Severity automatically escalates one level
+Three or more universal red flags appearing simultaneously → Regardless of industry score, composite rating cap automatically lowered to B
+
+Example:
+  Enterprise A: Major shareholder pledge 75% (🔴) + Auditor change (🔴) + Related party transactions 25% (🟠)
+  → 3 universal red flags appearing simultaneously → Severity escalation
+  → Even if fundamental scoring appears good (e.g., L1-L4 scores all >6), composite rating cap lowered to B
+  → Label: "Multiple governance red flags superimposed, hidden risks not covered by fundamental framework"
 ```
 
 ---
 
-## 五、马赛克拼图的实操方法论
+## 5. Practical Methodology of Mosaic Assembly
 
-### 5.1 碎片→信号→画面：五步流程
+### 5.1 Fragment → Signal → Picture: Five-Step Process
 
-马赛克拼图是将多个碎片化信息聚合成信用判断的核心方法论。这个过程不是线性的，而是循环迭代的——每加入一片新碎片，都可能修正之前的判断。
-
-```
-五步流程：
-
-Step 1: 碎片收集
-    ├── 来源：多维度WebSearch（政策/行业/企业/市场/司法）
-    ├── 输出：原始碎片清单（每条含来源URL + 时间戳 + 信源级别）
-    └── 关键约束：不得预设立场——"先收集，后判断"
-
-Step 2: 信号提取
-    ├── 操作：从每条碎片中提取结构化信号
-    ├── 输出：信号对象（内容 + 维度 + 方向 + 强度 + 可信度）
-    └── 关键约束：LLM提取但不做判断——"只做结构化，不做评价"
-
-Step 3: 分维度聚合
-    ├── 操作：按行业金字塔维度（L1-L4）对信号做分组聚合
-    ├── 同方向叠加：同维度同方向的信号互相强化（置信度提升一级）
-    ├── 矛盾信号标注：同维度反方向信号需解释矛盾原因
-    └── 输出：每个维度的信号包（信号数 + 方向 + 置信度 + 强度）
-
-Step 4: 跨维度交叉验证
-    ├── 操作：检查不同维度的信号是否相互支持或矛盾
-    ├── 强化机制：L1看多 + L2看多 = 判断强化（置信度大幅提升）
-    ├── 矛盾机制：L1看多 + L4（财务）看空 = 分歧信号 → 检查框架遗漏
-    └── 输出：跨维度一致性评分（一致/部分一致/显著分歧）
-
-Step 5: 画面构建
-    ├── 操作：基于各维度的信号包和跨维度一致性，撰写完整信用画像
-    ├── 输出：综合判断 + 置信度标注 + 残余不确定性
-    └── 关键约束：必须标注"不知道什么"——"知道的要讲清楚，不知道更要讲清楚"
-```
-
-### 5.2 信号叠加规则
-
-信号叠加定性规则用于判断多个同方向信号组合后的强度：
-
-| 叠加组合 | 叠加结果 | 实例 |
-|---------|---------|------|
-| 1个L5 + 1个L4 同方向 | 判定为"L4+可信"（无需升级为L5，但置信度大幅提升） | CPIA数据(L5) + 券商研报(L4) 均显示产能过剩 |
-| 2个L4 同方向 | 可升级为"L4交叉验证"（相当于L5的置信度） | 中信+中金研报均预测某企业亏损 |
-| 1个L4 + 1个L3 同方向 | 判定为"部分确认"（需更多信源支持） | 券商研报(L4) + 财经新闻报道(L3) 均提及某企业资金链紧张 |
-| 3个L3 同方向 | 可升级为"多源媒体报道确认"（但仍低于L4） | 3家不同媒体均报道某企业停工 |
-| 1个L6 + 1个L2 | 以L6为准，L2作为补充 | 发改委文件(L6) + 企业公告(L2) 关于补贴退坡的表述一致 |
-| L4 + L4 反方向 | 标注为"该维度存在严重分歧" | 中信看多、中金看空同一行业2026年装机量 |
-
-**强度升级规则（自动触发）：**
+Mosaic assembly is the core methodology for aggregating multiple pieces of fragmented information into a credit judgment. This process is not linear but iterative — each new fragment may revise previous judgments.
 
 ```
-强度升级：同维度获得≥2个独立同方向信号 → 该维度的信号强度自动提升一级
-  L4(单源) → L4(交叉验证) 
-  L3(单源) → L3(多源确认)
+Five-Step Process:
 
-强度降级：同维度出现矛盾信号 → 该维度的置信度自动降低一级
-  所有信号标注分歧状态
+Step 1: Fragment Collection
+    ├── Source: Multi-dimensional WebSearch (policy/industry/enterprise/market/legal)
+    ├── Output: Raw fragment list (each item includes source URL + timestamp + source level)
+    └── Key Constraint: No pre-set positions — "collect first, judge later"
+
+Step 2: Signal Extraction
+    ├── Operation: Extract structured signals from each fragment
+    ├── Output: Signal object (content + dimension + direction + strength + credibility)
+    └── Key Constraint: LLM extracts but does not judge — "only structure, no evaluation"
+
+Step 3: Dimension-Based Aggregation
+    ├── Operation: Group and aggregate signals by industry pyramid dimensions (L1-L4)
+    ├── Same direction accumulation: Same-dimension, same-direction signals reinforce each other (confidence level upgraded one tier)
+    ├── Contradictory signal labeling: Same-dimension, opposite-direction signals require explanation of contradiction
+    └── Output: Signal package for each dimension (signal count + direction + confidence + strength)
+
+Step 4: Cross-Dimension Cross-Validation
+    ├── Operation: Check whether signals from different dimensions support or contradict each other
+    ├── Reinforcement mechanism: L1 bullish + L2 bullish = Judgment strengthened (confidence greatly increased)
+    ├── Contradiction mechanism: L1 bullish + L4 (financial) bearish = Divergent signal → check for framework omissions
+    └── Output: Cross-dimension consistency score (Consistent/Partially Consistent/Significant Divergence)
+
+Step 5: Picture Construction
+    ├── Operation: Based on signal packages from each dimension and cross-dimension consistency, write a complete credit profile
+    ├── Output: Comprehensive judgment + confidence label + residual uncertainty
+    └── Key Constraint: Must label "what is not known" — "what you know must be explained clearly, what you don't know even more so"
 ```
 
-### 5.3 缺失碎片处理
+### 5.2 Signal Accumulation Rules
 
-信息不完整是常态而不是例外。马赛克方法论的核心原则是：**"不知道"本身就是重要信号**。
+Signal accumulation qualitative rules are used to determine the combined strength of multiple same-direction signals:
 
-| 缺失类型 | 含义 | 处理规则 |
-|---------|------|---------|
-| **可知但未获取** | 数据存在于公开领域但未被本次搜索覆盖 | 标注"数据可获取但本次分析未覆盖"→ 建议后续补充搜索 |
-| **理论上存在但未公开** | 企业持有该数据但未公开披露 | 标注"企业未公开披露"→ 这本身是风险信号（选择性披露怀疑） |
-| **根本上不可知** | 该数据不公开存在（如未经审计的运营数据） | 标注"数据不可获取"→ 使用替代近似或接受该维度的降低置信度 |
+| Accumulation Combination | Accumulation Result | Example |
+|----------------|-----------|---------|
+| 1 L5 + 1 L4 same direction | Assessed as "L4+ credible" (not upgraded to L5, but confidence greatly increased) | CPIA data (L5) + brokerage research (L4) both indicating overcapacity |
+| 2 L4 same direction | Can be upgraded to "L4 cross-validated" (equivalent to L5 confidence) | CITIC Securities + CICC research both predicting losses for a specific enterprise |
+| 1 L4 + 1 L3 same direction | Assessed as "partially confirmed" (requires more source support) | Brokerage research (L4) + financial news report (L3) both mentioning capital chain strain at a specific enterprise |
+| 3 L3 same direction | Can be upgraded to "multi-source media confirmation" (still below L4) | 3 different media outlets all reporting work stoppage at a specific enterprise |
+| 1 L6 + 1 L2 | Favor L6, with L2 as supplement | NDRC document (L6) + company announcement (L2) consistent on subsidy phase-down statements |
+| L4 + L4 opposite direction | Label as "significant disagreement on this dimension" | CITIC Securities bullish, CICC bearish on same industry's 2026 installed capacity |
 
-**AI Agent缺失碎片处理流程：**
+**Strength Upgrade Rules (Auto-Trigger):**
 
 ```
-对于每个分析维度，检查信号密度（已有信号数 / 应有信号数）：
+Strength Upgrade: Same dimension receives ≥2 independent same-direction signals → Signal strength for that dimension automatically upgraded one level
+  L4 (single source) → L4 (cross-validated)
+  L3 (single source) → L3 (multi-source confirmed)
 
-信号密度 > 80% → 直接输出该维度判断，置信度"高"
-信号密度 50-80% → 输出判断附带"部分数据缺失，置信度中等"
-信号密度 20-50% → 仅输出"方向性判断"，标注"信息不足，待补充"
-信号密度 < 20% → 不输出该维度判断，标注"该维度无法评估"
+Strength Downgrade: Same dimension has contradictory signals → Confidence for that dimension automatically downgraded one level
+  All signals labeled with disagreement status
+```
 
-缺失碎片的标注格式：
-  [维度名称] 缺失的关键信号：
-  1. [具体缺失数据] — 来源：[理应存在于何处] — 影响：[缺失带来的不确定性]
-  2. [具体缺失数据] — 来源：[理应存在于何处] — 影响：[缺失带来的不确定性]
+### 5.3 Missing Fragment Handling
+
+Incomplete information is the norm, not the exception. The core principle of the mosaic methodology is: **"Not knowing" is itself an important signal.**
+
+| Missing Type | Meaning | Processing Rules |
+|-------------|---------|-----------------|
+| **Knowable but not obtained** | Data exists in the public domain but was not covered by this search | Label "data obtainable but not covered in this analysis" → Suggest supplementary search |
+| **Theoretically exists but not disclosed** | The enterprise holds the data but has not publicly disclosed it | Label "not publicly disclosed by enterprise" → This itself is a risk signal (suspicion of selective disclosure) |
+| **Fundamentally unknowable** | The data does not publicly exist (e.g., unaudited operational data) | Label "data unavailable" → Use alternative proxies or accept reduced confidence for this dimension |
+
+**AI Agent Missing Fragment Handling Process:**
+
+```
+For each analysis dimension, check signal density (number of signals obtained / number of signals expected):
+
+Signal density > 80% → Directly output judgment for this dimension, confidence "High"
+Signal density 50-80% → Output judgment with "partial data missing, confidence Medium"
+Signal density 20-50% → Output only "directional judgment," label "insufficient information, pending supplementation"
+Signal density < 20% → Do not output judgment for this dimension, label "this dimension cannot be assessed"
+
+Missing Fragment Labeling Format:
+  [Dimension Name] Key Missing Signals:
+  1. [Specific missing data] — Source: [where it should exist] — Impact: [uncertainty caused by absence]
+  2. [Specific missing data] — Source: [where it should exist] — Impact: [uncertainty caused by absence]
   
-  缺口综合评估：
-  ├── 信号密度：[%]
-  ├── 对最终评分的影响：[±区间]
-  └── 建议补充方式：[额外的搜索、付费数据源接入等]
+  Gap Composite Assessment:
+  ├── Signal density: [%]
+  ├── Impact on final score: [± range]
+  └── Recommended supplementation method: [additional searches, paid data source access, etc.]
 ```
 
-### 5.4 叙事 vs 事实分离技术
+### 5.4 Narrative vs. Fact Separation Technique
 
-中国信用市场存在大量"市场叙事"——广泛传播但未经验证的集体信念。定性的核心能力之一是从叙事中分离事实。
+China's credit market is awash with "market narratives" — widely circulated but unverified collective beliefs. One of the core capabilities of qualitative analysis is separating facts from narratives.
 
-**常见市场叙事清单：**
+**Common Market Narrative Inventory:**
 
-| 市场叙事 | 对应行业 | 叙事分析 | 信源级别警示 |
-|---------|---------|---------|-------------|
-| "国家半导体舰队" | 半导体 | 国家支持但不代表个体企业不会违约——紫光集团已被验证 | L4-L2信号被过度解读为L6级确定性 |
-| "国企信仰" | 所有国企 | 国企身份不保证不违约——永煤已被验证 | L6（国企身份）被错误关联到信用质量 |
-| "大而不倒" | 各行业龙头 | 规模大不代表不会出风险——恒大已被验证 | 规模指标(L2)被错误解读为安全信号 |
-| "赛道好所以企业好" | 高景气行业 | 繁荣行业里也有亏损企业——光伏行业2025年过半亏损 | 行业信号(L5)被错误映射到个体企业(L2) |
-| "IPO过会=信用背书" | 拟上市公司 | IPO通过不代表财务真实性被确认 | L2（招股书）被错误赋值为高于其实际可信度 |
-| "技术领先=护城河" | 科技企业 | 技术领先可能被快速追赶——专利的时间窗口有限 | L2技术数据被过誉 |
+| Market Narrative | Corresponding Industry | Narrative Analysis | Source Level Warning |
+|-----------------|----------------------|-------------------|---------------------|
+| "National Semiconductor Fleet" | Semiconductor | State support does not guarantee individual enterprises won't default — Tsinghua Unigroup has been proven | L4-L2 signals over-interpreted as L6-level certainty |
+| "SOE Faith" | All SOEs | SOE status does not guarantee no default — Yongcheng Coal has been proven | L6 (SOE status) incorrectly linked to credit quality |
+| "Too Big to Fail" | Leading enterprises across industries | Large scale does not guarantee no risk — Evergrande has been proven | Scale indicators (L2) misinterpreted as safety signals |
+| "Good sector means good company" | High-growth industries | Profitable industries still have loss-making enterprises — over half of solar PV industry was loss-making in 2025 | Industry signals (L5) incorrectly mapped to individual enterprises (L2) |
+| "IPO approval = credit endorsement" | Pre-IPO companies | IPO approval does not confirm financial statement accuracy | L2 (prospectus) incorrectly valued above its actual credibility |
+| "Technology leadership = moat" | Technology companies | Technology leadership can be quickly caught up — patent time windows are limited | L2 technology data overvalued |
 
-**叙事检查清单（每次输出判断前执行）：**
-
-```
-[ ] 这个判断是建立在"公开可验证的事实"还是"行业共识"上？
-[ ] 如果撤掉所有媒体报道和券商研报，仅看官方数据和行业数据，结论是否变化？
-[ ] 当前市场上大多数人是如何看待这个企业的？我们和主流观点一致还是不同？
-[ ] 如果结论与市场共识不同，我们有什么依据支撑逆向判断？
-[ ] 有没有"因为所有人都在这么说所以我照搬"的嫌疑？
-
-判定规则：
-  若判断主要建立在"行业共识/市场叙事"而非独立交叉验证的事实上 →
-    标注"此判断受市场叙事影响，独立事实支撑不足"
-    置信度自动降一级
-    评分区间加宽（±1 → ±2）
-```
-
-**叙事 vs 事实分离实例："国企信仰"在永煤案例中的操作：**
-
-| 叙事层（市场相信的） | 事实层（公开数据揭示的） |
-|--------------------|----------------------|
-| "河南国企，AAA评级，AAA由政府信用背书" | 母公司负债率94.87%（年报数据） |
-| "虽盈利能力下滑但国企总能融资" | 归母净利润-114.4亿（年报数据） |
-| "短融发行顺利，市场认可" | 短债占比59.14%，存在严重短债长投（年报数据） |
-| "河南省政府会救助" | 关联应收225亿——资金已被占用（年报数据） |
-
-**分离技术操作：** 将L2（企业年报数据）和L6+L3（市场叙事）分别列示，明确标注"市场共识与公开数据之间存在根本性冲突"→ 以L6+L2为判断基础，L4+L3为参考但不主导。
-
-### 5.5 完整实例：通威股份五片碎片拼出"偿债能力恶化+评级滞后"
-
-此实例在马赛克引擎文档中已有信号层分析，这里从**定性判断的构建过程**角度重新展示方法论。
-
-**分析目标：** 在不依赖精确财务模型的前提下，通过碎片拼接判断通威股份的信用趋势。
-
-**碎片收集阶段：**
-
-| 碎片编号 | 碎片内容 | 来源 | 级别 | 时间戳 |
-|---------|---------|------|------|--------|
-| A | 通威短融2025年发行利率从2.60%降至2.02%（-58bp） | 中国货币网 | L5 | 2025/Q1-Q3 |
-| B | 通威短融2026年1月发行利率从2.02%反弹至2.15%（+13bp） | 中国货币网 | L5 | 2026-01 |
-| C | 通威2025年业绩预告：亏损90-100亿元 | 公司公告 | L2 | 2026-01 |
-| D | 通威应收账款从Q3到Q4跳升（公告数据） | 公司公告 | L2 | 2025-Q4 |
-| E | 外部评级维持AAA/稳定 | 评级公司公告 | L5 | 2026-03 |
-
-**第一步：分类聚合（按L4财务维度）**
-
-| 信号 | 方向 | 强度 | 可信度 |
-|------|------|------|--------|
-| A: 发行利率持续下行 | 正面（成本在降） | 弱（货币环境整体宽松，非企业自身改善） | L5 |
-| B: 发行利率反弹13bp | 负面 | 中等（拐点信号） | L5 |
-| C: 亏损90-100亿 | 负面 | 强（量化的、重大的负面信号） | L2 |
-| D: 应收账款跳升 | 负面 | 中等（需要与历史数据对比确认不是季节性） | L2 |
-| E: AAA/稳定维持 | 正面 | 弱（已知评级滞后——该信号可信度需向下修正） | L5（但信用低） |
-
-**第二步：信号叠加**
+**Narrative Checklist (Execute Before Each Judgment Output):**
 
 ```
-碎片A（正面） + 碎片B（负面） = 拐点信号
-  ├── 碎片A的"正面"是货币环境驱动的（非企业自身好转）
-  ├── 碎片B的"负面"不能被货币环境解释（同期货币市场利率平稳）
-  └── 叠加结论：A→B的变化是信用溢价独立上升的信号
+[ ] Is this judgment based on "publicly verifiable facts" or "industry consensus"?
+[ ] If all media reports and brokerage research were removed, and only official data and industry data were examined, would the conclusion change?
+[ ] How do most people in the current market view this enterprise? Are we consistent with or different from the mainstream view?
+[ ] If the conclusion differs from market consensus, what basis do we have to support a contrarian judgment?
+[ ] Is there any suspicion of "copying because everyone is saying this"?
 
-碎片C（亏损） + 碎片D（应收跳升） = 双杀信号叠加
-  ├── C：盈利层面恶化（亏损）
-  ├── D：现金流层面恶化（回款变慢）
-  └── 叠加结论：不仅是"亏钱"——而是"亏钱+收不到钱"的双杀
-
-碎片E（AAA维持） vs 碎片A-D = 信号矛盾
-  ├── A-D全部指向"信用恶化"
-  ├── E指向"一切正常"
-  └── 矛盾处理：以A-D（正面+负面交叉验证）为准 → E被视为"滞后信号"
+Determination Rules:
+  If the judgment is primarily based on "industry consensus/market narrative" rather than independently cross-verified facts →
+    Label "this judgment is influenced by market narrative, insufficient independent factual support"
+    Confidence automatically downgraded one level
+    Scoring range widened (±1 → ±2)
 ```
 
-**第三步：跨维度交叉验证**
+**Narrative vs. Fact Separation Example: "SOE Faith" in the Yongcheng Coal Case:**
+
+| Narrative Layer (What the market believed) | Fact Layer (What public data revealed) |
+|-------------------------------------------|--------------------------------------|
+| "Henan SOE, AAA rated, AAA backed by government credit" | Parent company debt ratio 94.87% (annual report data) |
+| "Although profitability declining, SOEs can always refinance" | Net profit attributable to parent -11.44 billion (annual report data) |
+| "Short-term bond issuance smooth, market accepted" | Short-term debt ratio 59.14%, severe maturity mismatch (annual report data) |
+| "Henan provincial government will provide rescue" | Related party receivables 22.5 billion — funds already tied up (annual report data) |
+
+**Separation Technique Operation:** List L2 (enterprise annual report data) and L6+L3 (market narrative) separately, clearly labeling "fundamental conflict between market consensus and public data" → Use L6+L2 as judgment basis, L4+L3 as reference but not dominant.
+
+### 5.5 Complete Example: Five Fragments of Tongwei Co. Piecing Together "Deteriorating Debt Servicing Capacity + Lagging Ratings"
+
+This example already has signal-level analysis in the mosaic engine document. Here it is presented from the perspective of the **qualitative judgment construction process** to demonstrate the methodology.
+
+**Analysis Objective:** Assess Tongwei Co.'s credit trend through fragment assembly without relying on precise financial models.
+
+**Fragment Collection Phase:**
+
+| Fragment ID | Fragment Content | Source | Level | Timestamp |
+|------------|-----------------|--------|-------|-----------|
+| A | Tongwei short-term bond issuance rate decreased from 2.60% to 2.02% (-58bp) in 2025 | China Money Network | L5 | 2025/Q1-Q3 |
+| B | Tongwei short-term bond issuance rate rebounded from 2.02% to 2.15% (+13bp) in January 2026 | China Money Network | L5 | 2026-01 |
+| C | Tongwei 2025 performance forecast: loss of 9-10 billion RMB | Company Announcement | L2 | 2026-01 |
+| D | Tongwei accounts receivable jumped from Q3 to Q4 (announcement data) | Company Announcement | L2 | 2025-Q4 |
+| E | External rating maintained at AAA/Stable | Rating Agency Announcement | L5 | 2026-03 |
+
+**Step 1: Classification and Aggregation (by L4 Financial Dimension)**
+
+| Signal | Direction | Strength | Credibility |
+|--------|-----------|----------|-------------|
+| A: Issuance rate continuously declining | Positive (cost decreasing) | Weak (broad monetary easing, not the enterprise's own improvement) | L5 |
+| B: Issuance rate rebounding 13bp | Negative | Medium (inflection point signal) | L5 |
+| C: Loss of 9-10 billion | Negative | Strong (quantified, significant negative signal) | L2 |
+| D: Accounts receivable jumping | Negative | Medium (requires comparison with historical data to confirm not seasonal) | L2 |
+| E: AAA/Stable maintained | Positive | Weak (known rating lag — this signal's credibility should be downwardly revised) | L5 (but low credibility) |
+
+**Step 2: Signal Accumulation**
 
 ```
-L4（财务层）信号汇总：
-  ├── 📉 巨额亏损（3/5强度）
-  ├── 📉 应收跳升（3/5强度）
-  ├── 📉 融资成本出现拐点（4/5强度——因为这是市场信号，最实时）
-  ├── 📗 外部评级维持（2/5强度——滞后问题严重）
-  └── 综合：L4方向为明显的"负面"，置信度中高
+Fragment A (Positive) + Fragment B (Negative) = Inflection Point Signal
+  ├── Fragment A's "positive" is driven by monetary environment (not the enterprise's own improvement)
+  ├── Fragment B's "negative" cannot be explained by monetary environment (money market rates were stable)
+  └── Accumulation Conclusion: The A→B change is a signal of independently rising credit premium
 
-L1（政策层）检查：光伏政策在2025-2026年无重大变化 → 行业层面对通威的额外压力不大
-L2（技术层）检查：通威的TOPCon产能占比高，技术路线未淘汰 → 无技术风险
-L3（供应链层）检查：客户集中度中等偏高但可控 → 无供应链危机
+Fragment C (Loss) + Fragment D (Receivables Jump) = Double Negative Signal Accumulation
+  ├── C: Profitability deterioration (losses)
+  ├── D: Cash flow deterioration (slower collection)
+  └── Accumulation Conclusion: Not just "losing money" — but a double hit of "losing money + not collecting cash"
 
-跨维度一致性评估：
-  └── L1/L2/L3无重大负面信号 + L4强烈负面 → 非系统性风险，是个体企业财务恶化
-  └── 结论：通威的偿债能力恶化是"个体层面"的，而非"行业层面"的
+Fragment E (AAA Maintained) vs. Fragments A-D = Signal Contradiction
+  ├── A-D all point to "credit deterioration"
+  ├── E points to "everything is normal"
+  └── Contradiction handling: Favor A-D (positive + negative cross-validated) → E treated as "lagging signal"
 ```
 
-**第四步：综合画像**
+**Step 3: Cross-Dimension Cross-Validation**
 
 ```
-通威股份信用定性判断（2026-03时点）：
-├── 核心趋势：偿债能力在恶化（方向明确）
-├── 恶化性质：个体性而非系统性（行业无重大利空）
-├── 恶化速度：中速——是渐进式而非突发式
-├── 信号结构：
-│   ├── ✅ 亏损+应收+融资拐点：三个独立源指向同一方向（高置信度）
-│   ├── ⚠️ AAA维持：与前述三个信号矛盾——已判断为评级滞后（本框架的已知缺陷）
-│   └── ❌ 母公司单体报表不可获取：无法精确判断母公司层面的真实偿债能力
-├── 残余不确定性：
-│   ├── 母公司财务数据缺失 → 评分区间±1.5
-│   └── 评级调整的时间点不确定 → 但不影响方向判断
-└── 定性结论：通威实际信用质量已低于AAA，但与CCC之间还有较大距离
-    → 估计在BB-B区间（后验：2026年5月被下调至AA，再后进一步下调）
+L4 (Financial Layer) Signal Summary:
+  ├── 📉 Massive losses (3/5 strength)
+  ├── 📉 Receivables jump (3/5 strength)
+  ├── 📉 Financing cost inflection point appears (4/5 strength — because this is a market signal, most real-time)
+  ├── 📗 External rating maintained (2/5 strength — serious lag issue)
+  └── Composite: L4 direction is clearly "negative," confidence medium-high
+
+L1 (Policy Layer) Check: No major solar PV policy changes in 2025-2026 → Industry-level additional pressure on Tongwei is limited
+L2 (Technology Layer) Check: Tongwei's TOPCon capacity share is high, technology pathway not obsolete → No technology risk
+L3 (Supply Chain Layer) Check: Customer concentration medium-high but controllable → No supply chain crisis
+
+Cross-Dimension Consistency Assessment:
+  └── L1/L2/L3: No major negative signals + L4: Strongly negative → Not systemic risk, but individual enterprise financial deterioration
+  └── Conclusion: Tongwei's debt servicing capacity deterioration is "enterprise-specific," not "industry-wide"
+```
+
+**Step 4: Comprehensive Picture**
+
+```
+Tongwei Co. Credit Qualitative Assessment (as of 2026-03):
+├── Core Trend: Debt servicing capacity deteriorating (direction clear)
+├── Nature of Deterioration: Enterprise-specific rather than systemic (no major negative industry factors)
+├── Deterioration Speed: Medium-paced — gradual rather than sudden
+├── Signal Structure:
+│   ├── ✅ Losses + Receivables + Financing inflection point: three independent sources pointing to the same direction (high confidence)
+│   ├── ⚠️ AAA maintained: contradictory to the above three signals — assessed as rating lag (known deficiency of this framework)
+│   └── ❌ Parent company individual financial statements unavailable: cannot precisely assess true debt servicing capacity at parent level
+├── Residual Uncertainty:
+│   ├── Parent company financial data missing → Scoring range ±1.5
+│   └── Timing of rating adjustment uncertain → But does not affect direction judgment
+└── Qualitative Conclusion: Tongwei's actual credit quality has fallen below AAA, but there is still significant distance to CCC
+    → Estimated in BB-B range (ex post: downgraded to AA in May 2026, further downgraded later)
 ```
 
 ---
 
-## 六、信息时效性管理
+## 6. Information Timeliness Management
 
-### 6.1 不同信息类型的衰减曲线
+### 6.1 Decay Curves for Different Information Types
 
-每类信息在进入分析框架后，其"有效寿命"不同。定性分析必须清楚每类信息的时效窗口，并在过期后标记或替换。
+Each type of information has a different "useful life" after entering the analysis framework. Qualitative analysis must clearly understand the timeliness window for each type of information and label or replace it after expiration.
 
-| 信息类型 | 有效寿命 | 衰减特征 | 过期处理 |
-|---------|---------|---------|---------|
-| **宏观政策文件** | 1-2年（重大政策） / 6-12月（执行细则） | 缓慢衰减——但新文件发布时旧文件立即失效 | 新文件发布后24小时内旧信号降级为"已过时" |
-| **行业统计数据** | 1个统计周期（季度数据=3个月，年度数据=12个月） | 阶梯式衰减——新周期数据发布时失效 | 新数据发布后立即替换 |
-| **企业财务数据** | 至下一期财报发布 | 阶梯式衰减——半年度财务数据在Q3季报发布后部分失效 | 季报/半年报/年报发布后更新 |
-| **市场数据（利差/价格）** | 以周为窗口 | 快速连续衰减——2周前的利差数据对当前判断价值有限 | 滚动窗口——超过60交易日的历史数据仅用于趋势分析 |
-| **新闻事件** | 3-7天（事件性信息） / 1-3月（结构性信息） | 快速衰减——事件发生1周后，作为"新闻"的价值基本消失 | 但事件中的"事实"部分（如公告内容）可保留，转化为结构化信号 |
-| **传闻/社交媒体** | 1-7天 | 极快衰减——需要追踪"是否被证实或被证伪" | 超过7天未验证的传闻自动降级为"失效信号" |
-| **券商研报** | 1-3个月 | 缓慢衰减——研报中的行业判断每月有效性递减 | 超过3个月标记为"可能过时"，需检查是否有更新报告 |
+| Information Type | Useful Life | Decay Characteristics | Expiration Handling |
+|-----------------|------------|----------------------|-------------------|
+| **Macro Policy Documents** | 1-2 years (major policies) / 6-12 months (implementation rules) | Slow decay — but when new documents are issued, old documents immediately become invalid | Within 24 hours of new document issuance, old signal downgraded to "expired" |
+| **Industry Statistics** | 1 statistical period (quarterly data = 3 months, annual data = 12 months) | Stepped decay — becomes invalid when new period data is released | Immediately replaced when new data is released |
+| **Enterprise Financial Data** | Until next financial report release | Stepped decay — semi-annual financial data partially invalidated upon Q3 report release | Updated upon quarterly/semi-annual/annual report release |
+| **Market Data (Spreads/Prices)** | Weekly window | Fast continuous decay — spread data from 2 weeks ago has limited value for current judgment | Rolling window — historical data beyond 60 trading days used only for trend analysis |
+| **News Events** | 3-7 days (event information) / 1-3 months (structural information) | Fast decay — 1 week after the event, value as "news" essentially disappears | But "factual" parts of events (e.g., announcement content) can be retained, converted to structured signals |
+| **Rumors/Social Media** | 1-7 days | Very fast decay — needs tracking of "whether confirmed or disproven" | Rumors unverified beyond 7 days automatically downgraded to "invalid signal" |
+| **Brokerage Research Reports** | 1-3 months | Slow decay — industry judgments in reports lose effectiveness monthly | Beyond 3 months, mark as "possibly outdated," check for updated reports |
 
-### 6.2 触发重新评估的事件类型
+### 6.2 Event Types Triggering Reassessment
 
-不是所有新信息都值得触发完整的重新评估。以下事件类型应触发不同程度的重新评估：
+Not all new information warrants triggering a full reassessment. The following event types should trigger different levels of reassessment:
 
-| 事件类型 | 触发等级 | 动作 | 时效要求 |
-|---------|---------|------|---------|
-| **政策突变**（如补贴骤停、出口禁令） | 🔴 全面重新评估 | 重新运行完整分析流程（L1-L4全部重新评分） | 收到信息后24小时内 |
-| **一票否决条件触发** | 🔴 立即暂停 | 停止后续分析，输出"一票否决" | 收到信息后立即 |
-| **评级调整**（上调或下调） | 🟠 部分重评 | 更新轨道B信号，检查轨道A是否需要修正 | 评级公告后1周内 |
-| **财报发布** | 🟠 季度重评 | 更新财务层评分，检查上层判断是否需要修正 | 财报发布后2周内 |
-| **重大经营事件**（停产/召回/大客户流失） | 🟠 部分重评 | 相关维度的信号重新评估 | 事件确认后1周内 |
-| **管理层/股东重大变化** | 🟡 关注级 | 更新治理评估，纳入监测 | 2周内 |
-| **行业数据更新**（CPIA季度数据等） | 🟡 监测级 | 更新行业对标数据 | 数据发布后2周内 |
-| **市场传闻**（未经证实的重大负面） | 🟢 提醒级 | 标注"待核实"，启动搜索验证 | 1周内判断是否需要升级 |
+| Event Type | Trigger Level | Action | Timeliness Requirement |
+|-----------|--------------|--------|----------------------|
+| **Policy Sudden Change** (e.g., subsidy suspension, export ban) | 🔴 Full Reassessment | Re-run complete analysis process (L1-L4 all rescored) | Within 24 hours of receiving information |
+| **Veto Condition Triggered** | 🔴 Immediate Suspension | Stop subsequent analysis, output "Veto" | Immediately upon receiving information |
+| **Rating Adjustment** (upgrade or downgrade) | 🟠 Partial Reassessment | Update Track B signals, check whether Track A needs revision | Within 1 week of rating announcement |
+| **Financial Report Release** | 🟠 Quarterly Reassessment | Update financial layer scores, check whether upper-level judgments need revision | Within 2 weeks of financial report release |
+| **Major Operational Event** (production halt/recall/major customer loss) | 🟠 Partial Reassessment | Reassess signals for relevant dimensions | Within 1 week of event confirmation |
+| **Major Management/Shareholder Change** | 🟡 Watch Level | Update governance assessment, incorporate into monitoring | Within 2 weeks |
+| **Industry Data Update** (CPIA quarterly data, etc.) | 🟡 Monitoring Level | Update industry benchmark data | Within 2 weeks of data release |
+| **Market Rumors** (unverified major negative) | 🟢 Alert Level | Label "pending verification," initiate search verification | Determine whether upgrade needed within 1 week |
 
-**AI Agent触发规则：**
+**AI Agent Trigger Rules:**
 
 ```
-当接收到新信号时：
+When a new signal is received:
 
-1. 检查是否属于"全面重评"事件（政策突变/一票否决）
-   ├── 是 → 立即暂停当前分析，启动全面重评流程
-   └── 否 → 继续
+1. Check if it belongs to a "Full Reassessment" event (policy sudden change/veto)
+   ├── Yes → Immediately suspend current analysis, initiate full reassessment process
+   └── No → Continue
 
-2. 检查是否属于"部分重评"事件（评级调整/财报/重大经营事件）
-   ├── 是 → 在当前分析基础上更新相关维度
-   └── 否 → 继续
+2. Check if it belongs to a "Partial Reassessment" event (rating adjustment/financial report/major operational event)
+   ├── Yes → Update relevant dimensions on basis of current analysis
+   └── No → Continue
 
-3. 检查是否属于"关注级"事件（管理层变化/行业数据更新）
-   ├── 是 → 更新相关监测清单，不触发重新评分
-   └── 否 → 继续
+3. Check if it belongs to a "Watch Level" event (management change/industry data update)
+   ├── Yes → Update relevant monitoring list, does not trigger rescoring
+   └── No → Continue
 
-4. 默认处理：低优先级的信号纳入监测清单，随下次定期重评处理
+4. Default handling: Low-priority signals incorporated into monitoring list, processed at next routine reassessment
 ```
 
-### 6.3 过期信息标注和替换规则
+### 6.3 Expired Information Labeling and Replacement Rules
 
-信息一旦超过其有效寿命，必须显式标注而非静默移除——**过期信息仍提供历史参照价值**。
+Once information exceeds its useful life, it must be explicitly labeled rather than silently removed — **expired information still provides historical reference value**.
 
-| 过期状态 | 标注方式 | 使用限制 |
-|---------|---------|---------|
-| **已更新** | 标注"已被[新数据源][时间戳]更新" | 旧数据仍保留在历史记录中，但评分以新数据为准 |
-| **部分过时** | 标注"数据源自[时间戳]，可能不完全反映当前情况" | 仅用作趋势参考，不用于精准评分 |
-| **完全过时** | 标注"信息已过时——超过有效寿命的[倍]倍" | 不用于当前评分，仅保留历史记录 |
-| **被证伪** | 标注"已被[来源]证伪" | 从有效信号列表中移除，保留在"已证伪信号"记录中 |
+| Expiration Status | Labeling Method | Usage Restrictions |
+|------------------|----------------|-------------------|
+| **Updated** | Label "has been updated by [new data source][timestamp]" | Old data retained in historical records, but scoring based on new data |
+| **Partially Outdated** | Label "data source from [timestamp], may not fully reflect current situation" | Used only for trend reference, not for precise scoring |
+| **Fully Outdated** | Label "information expired — exceeds useful life by [X] times" | Not used for current scoring, only retained in historical records |
+| **Disproven** | Label "disproven by [source]" | Removed from valid signal list, retained in "disproven signals" record |
 
-**定期重评周期：**
+**Routine Reassessment Cycles:**
 
-| 行业类型 | 推荐重评周期 | 说明 |
-|---------|------------|------|
-| **政策驱动型**（光伏/半导体） | 月度 | 政策变化频繁，需高频跟踪 |
-| **技术壁垒型**（高端装备/生物医药/医疗器械） | 季度 | 重大管线/产品事件触发重评 |
-| **存量博弈型**（新能源车-OEM） | 月度 | 销量/价格变化快 |
-| **资产租约型**（数据中心） | 季度 | 租约结构稳定，变化较慢 |
+| Industry Type | Recommended Reassessment Cycle | Explanation |
+|--------------|------------------------------|-------------|
+| **Policy-Driven** (solar PV/semiconductor) | Monthly | Frequent policy changes require high-frequency tracking |
+| **Technology Barrier** (advanced manufacturing/biopharma/medical devices) | Quarterly | Major pipeline/product events trigger reassessment |
+| **Volume Competition** (NEV-OEM) | Monthly | Sales/price changes rapidly |
+| **Asset Lease** (data centers) | Quarterly | Stable lease structure, slower changes |
 
-**通用规则：任何行业在触发全面重评事件时，无论周期如何，立即执行重新评估。**
+**General Rule: When any industry triggers a full reassessment event, immediately execute reassessment regardless of the cycle.**
 
 ---
 
-## 七、定性分析的输出标准
+## 7. Qualitative Analysis Output Standards
 
-### 7.1 每项判断的输出规范
+### 7.1 Output Specification for Each Judgment
 
-定性分析的输出不是"感觉""判断"——而是带有完整支撑链的结构化结论。**每项定性判断必须附带以下五个要素：**
+The output of qualitative analysis is not "feelings" or "opinions" — but structured conclusions with a complete supporting chain. **Each qualitative judgment must include the following five elements:**
 
 ```
-[判断内容] — 简明的结论性语句
+[Judgment Content] — Concise conclusive statement
 
-├── 1. 支撑信号列表
-│   ├── 信号A：[内容] — 信源级别：[Lx] — 时间戳
-│   ├── 信号B：[内容] — 信源级别：[Lx] — 时间戳
-│   └── 信号C：[内容] — 信源级别：[Lx] — 时间戳
+├── 1. Supporting Signal List
+│   ├── Signal A: [content] — Source Level: [Lx] — Timestamp
+│   ├── Signal B: [content] — Source Level: [Lx] — Timestamp
+│   └── Signal C: [content] — Source Level: [Lx] — Timestamp
 │
-├── 2. 信源可信度综合评估
-│   ├── 整体可信度水平：[高/中高/中等/中低/低]
-│   ├── 最高质量信号：[哪个信号、什么级别]
-│   └── 最弱信号/[疑点]：[哪个信号可能有偏差]
+├── 2. Source Credibility Composite Assessment
+│   ├── Overall Credibility Level: [High/Medium-High/Medium/Medium-Low/Low]
+│   ├── Highest Quality Signal: [which signal, what level]
+│   └── Weakest Signal/[Concern]: [which signal may have bias]
 │
-├── 3. 交叉验证状态
-│   ├── ✅ 已验证：[多少个独立源确认]
-│   ├── ⏳ 部分验证：[哪些信号仅有单源]
-│   └── ⚠️ 待验证：[哪些信号需进一步核实]
+├── 3. Cross-Validation Status
+│   ├── ✅ Verified: [number of independent sources confirming]
+│   ├── ⏳ Partially Verified: [which signals have only single source]
+│   └── ⚠️ Pending Verification: [which signals require further investigation]
 │
-├── 4. 不确定性标注
-│   ├── 已知的不确定性来源：[具体列出]
-│   ├── 对判断的影响程度：[轻微影响/中等影响/可能颠覆判断]
-│   ├── 关键数据缺口：[缺失了哪些数据]
-│   └── 如果判断错误，最可能的原因：[反向验证思考]
+├── 4. Uncertainty Labeling
+│   ├── Known Sources of Uncertainty: [specifically list]
+│   ├── Degree of Impact on Judgment: [Minor Impact/Medium Impact/Could Reverse Judgment]
+│   ├── Key Data Gaps: [which data is missing]
+│   └── If the judgment is wrong, the most likely reason: [reverse validation consideration]
 │
-└── 5. 时间戳和有效期
-    ├── 判断形成时间：[日期]
-    ├── 有效期至：[日期]（或"下次财报发布后"）
-    └── 触发更新的条件：[什么事件需要更新此判断]
+└── 5. Timestamp and Validity Period
+    ├── Judgment Formation Time: [date]
+    ├── Valid Until: [date] (or "after next financial report release")
+    └── Conditions Triggering Update: [what events require this judgment to be updated]
 ```
 
-**输出示例：**
+**Output Example:**
 
 ```
-判断：通威股份的偿债能力在逐步恶化，AAA评级存在滞后风险
+Judgment: Tongwei Co.'s debt servicing capacity is gradually deteriorating, AAA rating has lagging risk
 
-1. 支撑信号列表：
-   ├── A: 2025年预亏90-100亿元 — 公司公告(L2) — 2026-01
-   ├── B: 应收账款从Q3跳升至Q4 — 公司公告(L2) — 2025-Q4
-   ├── C: 短融发行利率在2026年1月出现13bp拐点 — 中国货币网(L5) — 2026-01
-   └── D: AAA/稳定评级维持 — 评级公司(L5) — 2026-03（但此信号与A-C矛盾）
+1. Supporting Signal List:
+   ├── A: 2025 pre-loss of 9-10 billion RMB — Company Announcement (L2) — 2026-01
+   ├── B: Accounts receivable jumped from Q3 to Q4 — Company Announcement (L2) — 2025-Q4
+   ├── C: Short-term bond issuance rate showed 13bp inflection point in January 2026 — China Money Network (L5) — 2026-01
+   └── D: AAA/Stable rating maintained — Rating Agency (L5) — 2026-03 (but this signal contradicts A-C)
 
-2. 信源可信度综合评估：
-   ├── 整体可信度：中高（L2+L5多源覆盖）
-   ├── 最高质量信号：C（L5级发行利率数据，客观且实时）
-   └── 最弱信号：D（AAA评级——有已知滞后问题，使用向下修正判断）
+2. Source Credibility Composite Assessment:
+   ├── Overall Credibility: Medium-High (L2+L5 multi-source coverage)
+   ├── Highest Quality Signal: C (L5-level issuance rate data, objective and real-time)
+   └── Weakest Signal: D (AAA rating — known lag issue, use downward-revised assessment)
 
-3. 交叉验证状态：
-   ├── ✅ 已验证：盈利恶化（A+C交叉验证，亏损+融资成本上升）
-   ├── ⏳ 部分验证：应收账款跳升（D单源，需确认是否为季节性因素）
-   └── ⚠️ 待验证：母公司偿债能力（无母公司单体报表数据）
+3. Cross-Validation Status:
+   ├── ✅ Verified: Profit deterioration (A+C cross-validated, losses + financing cost increase)
+   ├── ⏳ Partially Verified: Accounts receivable jump (D single source, needs confirmation of whether seasonal)
+   └── ⚠️ Pending Verification: Parent company debt servicing capacity (no parent company individual financial statement data)
 
-4. 不确定性标注：
-   ├── 已知的不确定性来源：母公司财务数据不可获取
-   ├── 影响程度：中等——合并报表已显示明显恶化信号，但母公司精确杠杆率未知
-   ├── 关键数据缺口：母公司单体报表（负债率/现金流/短债覆盖）
-   └── 如果判断错误，最可能的原因：2026年光伏行业超预期复苏，通威盈利大幅回升
+4. Uncertainty Labeling:
+   ├── Known Sources of Uncertainty: Parent company financial data unavailable
+   ├── Degree of Impact: Medium — consolidated statements already show clear deterioration signals, but parent company precise leverage ratio unknown
+   ├── Key Data Gaps: Parent company individual financial statements (debt ratio/cash flow/short-term debt coverage)
+   └── If the judgment is wrong, the most likely reason: 2026 solar PV industry recovers beyond expectations, Tongwei's profitability rebounds significantly
 
-5. 时间戳和有效期：
-   ├── 判断形成时间：2026-03-15
-   ├── 有效期至：2026年Q1季报发布后（约2026-04）
-   └── 触发更新条件：新季报发布、评级调整、行业政策重大变化
+5. Timestamp and Validity Period:
+   ├── Judgment Formation Time: 2026-03-15
+   ├── Valid Until: After Q1 2026 quarterly report release (approximately 2026-04)
+   └── Trigger Update Conditions: New quarterly report release, rating adjustment, major industry policy change
 ```
 
-### 7.2 禁止输出清单
+### 7.2 Prohibited Output List
 
-以下类型的输出在任何情况下均不得出现在定性分析报告中：
+The following types of output must not appear in qualitative analysis reports under any circumstances:
 
-| 禁止类型 | 示例 | 为什么禁止 | 应替换为 |
-|---------|------|-----------|---------|
-| **无支撑断言** | "这家公司资不抵债" | 没有附上支持这个判断的具体数据和来源 | "基于2025年报数据（L2），该公司净资产为-X亿，资产负债率XX%" |
-| **无时间戳判断** | "隆基绿能是行业龙头" | 未标注判断的时间依据（龙头地位可能随时间变化） | "截至2025年末，隆基绿能组件出货量位居全球第X位（PVInfoLink/L5）" |
-| **不标注不确定性的确定性结论** | "通威肯定会违约" | 信用分析中没有100%的结论 | "基于当前信号（亏损+融资拐点+应收上升），通威的信用质量正在恶化，但违约与否取决于[关键变量]" |
-| **主观感受** | "管理层看起来很靠谱" | 无法验证的主观判断 | "管理层在2025年业绩说明会上表示[具体表态]，此前[具体承诺]的实现情况是[结果]" |
-| **预测财务数据** | "2026年净利润估计50亿" | 未标注预测依据和假设条件 | "如果组件价格稳定在当前水平（0.8元/W），隆基2026毛利率可能在18-20%（基于[依据]）" |
-| **公司股价建议** | "建议买入" | 本引擎做信用分析，不做权益投资建议 | "基于当前利差水平（258bp，高于行业中位数），该债券在光伏行业内处于偏贵区间" |
-| **来源模糊的引用** | "有消息称""据业内人士" | 来源不可验证 | 标注确切来源或明确标注L1"匿名来源，不可验证" |
-| **评级机构的结论复制** | "外部评级AAA，信用质量好" | 外部评级是输入不是输出，且已知滞后 | 独立分析后的判断，可引用外部评级但需标注已知问题 |
+| Prohibited Type | Example | Why Prohibited | Should Be Replaced With |
+|----------------|---------|----------------|------------------------|
+| **Unsupported Assertion** | "This company is insolvent" | No specific data and sources attached to support this judgment | "Based on FY2025 annual report data (L2), the company's net assets are -X billion, debt ratio XX%" |
+| **Untimestamped Judgment** | "LONGi Green Energy is an industry leader" | No timestamp basis for the judgment (leader status may change over time) | "As of end of 2025, LONGi Green Energy's module shipments rank X globally (PVInfoLink/L5)" |
+| **Certainty Conclusion Without Uncertainty Labeling** | "Tongwei will definitely default" | There are no 100% conclusions in credit analysis | "Based on current signals (losses + financing inflection point + receivables rising), Tongwei's credit quality is deteriorating, but default depends on [key variables]" |
+| **Subjective Impression** | "Management seems very reliable" | Unverifiable subjective judgment | "Management stated [specific statements] at the 2025 earnings call, and the fulfillment status of [specific past commitments] is [result]" |
+| **Projected Financial Data** | "Estimated net profit of 5 billion in 2026" | No projection basis and assumption conditions labeled | "If module prices remain at current levels (0.8 RMB/W), LONGi's 2026 gross margin may be 18-20% (based on [basis])" |
+| **Stock Price Advice** | "Recommend buying" | This engine does credit analysis, not equity investment advice | "Based on current spread level (258bp, above industry median), this bond is in the relatively expensive range within the solar PV industry" |
+| **Vague Source Citation** | "According to sources" / "According to industry insiders" | Source unverifiable | Label exact source or explicitly label L1 "anonymous source, unverifiable" |
+| **Rating Agency Conclusion Replication** | "External rating AAA, good credit quality" | External ratings are input not output, and are known to lag | Independently analyzed judgment; may cite external rating but must label known issues |
 
-### 7.3 输出质量检查清单
+### 7.3 Output Quality Checklist
 
-每次输出定性判断前，必须执行以下检查：
-
-```
-[ ] 每项判断是否已附带支撑信号列表（≥2个独立源）？
-[ ] 每个信号是否标注了信源级别（L1-L6）？
-[ ] 每个信号是否标注了时间戳？
-[ ] 是否标注了交叉验证状态（已验证/部分验证/待验证/矛盾）？
-[ ] 是否标注了不确定性来源和影响程度？
-[ ] 是否标注了判断有效期和触发更新条件？
-[ ] 是否区分了"事实"和"解读"（事实是什么 + 我基于事实判断了什么）？
-[ ] 是否排除了市场叙事的影响？（执行叙事检查清单）
-[ ] 如果存在矛盾信号，是否解释了矛盾原因和处理方式？
-[ ] 是否标注了关键数据缺口？
-[ ] 是否避免了所有禁止输出类型？
-[ ] 如果涉及预测性判断，是否标注了前置假设条件？
-```
-
-### 7.4 定性分析在综合报告中的位置
-
-定性分析不单独输出——它作为轨道A（基本面评分）的底层方法论，体现在报告的以下部分：
-
-| 报告位置 | 定性分析的具体内容 | 格式要求 |
-|---------|-----------------|---------|
-| **核心结论** | 对信用趋势的定性判断（恶化/稳定/改善） | 一句提炼 + 置信度标注 |
-| **各层评分依据** | 每层评分的定性支撑（行业趋势、政策影响、竞争位势） | 每个信号标明来源和级别 |
-| **跨维度交叉验证** | 不同层级信号的一致性/分歧性判断 | 一致性评分 + 分歧原因 |
-| **不确定性声明** | 已知不确定性和数据缺口 | 结构化缺项列表 |
-| **马赛克完备性报告** | 每个维度的信号密度和缺口 | 信号密度条形图 + 缺口清单 |
-
-**报告中的定性分析段落标准格式：**
+Before each qualitative judgment output, the following checks must be performed:
 
 ```
-## [维度名称] 定性分析
-
-### 行业背景判断（1-2段）
-基于L6/L5数据的行业趋势概述，不超过100字。
-
-### 企业在该维度的位置
-具体信号支撑，每条信号标注来源和时间戳。
-
-### 关键不确定性（如适用）
-明确标注分析中的盲点和假设。
-
-### 定性判断结论
-方向 + 强度 + 置信度的一体化输出。
+[ ] Is each judgment accompanied by a supporting signal list (≥2 independent sources)?
+[ ] Is each signal labeled with its source level (L1-L6)?
+[ ] Is each signal labeled with a timestamp?
+[ ] Is the cross-validation status labeled (Verified/Partially Verified/Pending Verification/Contradiction)?
+[ ] Are sources of uncertainty and degree of impact labeled?
+[ ] Are the judgment validity period and trigger update conditions labeled?
+[ ] Is there a distinction between "fact" and "interpretation" (what the facts are + what I judged based on the facts)?
+[ ] Has the influence of market narrative been excluded? (Execute narrative checklist)
+[ ] If contradictory signals exist, is the contradiction cause and handling method explained?
+[ ] Are key data gaps labeled?
+[ ] Are all prohibited output types avoided?
+[ ] If the judgment involves a predictive element, are the underlying assumptions labeled?
 ```
 
-### 7.5 定性分析的置信度等级
+### 7.4 Position of Qualitative Analysis in Comprehensive Reports
 
-所有定性判断必须标注置信度。置信度不是对判断正确性的保证，而是对**支撑信号充分性**的评估：
+Qualitative analysis is not output independently — it serves as the underlying methodology for Track A (Fundamental Pyramid Scoring), reflected in the following parts of the report:
 
-| 置信度等级 | 含义 | 适用条件 | 在报告中的表示 |
-|-----------|------|---------|--------------|
-| **高** | 信号充分，趋势明确，多个独立源交叉验证完成 | ≥3个独立L4+级信号指向同一方向，无未解决的矛盾 | 绿色标注 |
-| **中高** | 信号较充分，趋势可辨，主要信号已交叉验证 | ≥2个L4+级信号 + 无致命矛盾，但有1个次要矛盾信号 | 蓝色标注 |
-| **中等** | 信号存在但不够充分，方向可辨但幅度不确定 | 1个L4+级信号 + 1-2个L3级信号，无严重矛盾 | 黄色标注 |
-| **中低** | 信号稀疏，方向判断有较大不确定性 | 仅L3及以下信号支撑，或存在未解决的矛盾信号 | 橙色标注 |
-| **低** | 信号严重不足，仅有方向性推测 | 信号密度<30%，或主要判断基于L1-L2信号 | 红色标注——考虑"不输出此判断" |
+| Report Position | Specific Qualitative Analysis Content | Format Requirements |
+|----------------|--------------------------------------|-------------------|
+| **Core Conclusion** | Qualitative judgment on credit trend (deteriorating/stable/improving) | One-sentence summary + confidence label |
+| **Each Layer's Scoring Basis** | Qualitative support for each layer's scoring (industry trend, policy impact, competitive position) | Each signal labeled with source and level |
+| **Cross-Dimension Cross-Validation** | Consistency/divergence judgment across different levels of signals | Consistency score + divergence reasons |
+| **Uncertainty Statement** | Known uncertainties and data gaps | Structured gap list |
+| **Mosaic Completeness Report** | Signal density and gaps for each dimension | Signal density bar chart + gap list |
 
-**置信度对评分的约束：**
+**Standard Format for Qualitative Analysis Sections in Reports:**
 
-| 置信度 | 对评分的约束 |
-|-------|------------|
-| 高 | 精确评分可输出（±0.5区间） |
-| 中高 | 评分区间±1.0 |
-| 中等 | 评分区间±1.5 |
-| 中低 | 仅输出方向性评分（如"评分≤4"或"评分≥6"） |
-| 低 | 不输出该维度评分，标注"信息不足以评分" |
+```
+## [Dimension Name] Qualitative Analysis
+
+### Industry Background Assessment (1-2 paragraphs)
+Overview of industry trends based on L6/L5 data, no more than 100 words.
+
+### Enterprise Position in This Dimension
+Specific signal support, each signal labeled with source and timestamp.
+
+### Key Uncertainties (if applicable)
+Clearly label blind spots and assumptions in the analysis.
+
+### Qualitative Judgment Conclusion
+Integrated output of direction + strength + confidence.
+```
+
+### 7.5 Confidence Levels for Qualitative Analysis
+
+All qualitative judgments must be labeled with a confidence level. Confidence is not a guarantee of judgment correctness, but an assessment of the **sufficiency of supporting signals**:
+
+| Confidence Level | Meaning | Applicable Conditions | Representation in Reports |
+|-----------------|---------|----------------------|--------------------------|
+| **High** | Sufficient signals, clear trend, multiple independent sources cross-validated | ≥3 independent L4+ signals pointing to same direction, no unresolved contradictions | Green labeling |
+| **Medium-High** | Relatively sufficient signals, trend discernible, main signals already cross-validated | ≥2 L4+ signals + no fatal contradictions, but 1 minor contradictory signal | Blue labeling |
+| **Medium** | Signals exist but not sufficient, direction discernible but magnitude uncertain | 1 L4+ signal + 1-2 L3 signals, no serious contradictions | Yellow labeling |
+| **Medium-Low** | Sparse signals, direction judgment has significant uncertainty | Only L3 and below signal support, or unresolved contradictory signals exist | Orange labeling |
+| **Low** | Severely insufficient signals, only directional speculation | Signal density <30%, or judgment primarily based on L1-L2 signals | Red labeling — consider "not outputting this judgment" |
+
+**Confidence Constraints on Scoring:**
+
+| Confidence Level | Constraint on Scoring |
+|-----------------|----------------------|
+| High | Precise score can be output (±0.5 range) |
+| Medium-High | Scoring range ±1.0 |
+| Medium | Scoring range ±1.5 |
+| Medium-Low | Only directional score output (e.g., "score ≤4" or "score ≥6") |
+| Low | Do not output score for this dimension, label "insufficient information to score" |
 
 ---
 
-## 附录
+## Appendix
 
-### A. 定性分析的全流程集成
+### A. Full-Process Integration of Qualitative Analysis
 
-定性分析作为引擎方法论的一部分，与现有框架的集成关系：
+Qualitative analysis as part of the engine methodology, its integration with the existing framework:
 
 ```
-信息输入（各类数据和信号）
+Information Input (Various data and signals)
     │
     ▼
-第二章：信息可信度评估
-    │  └─ 六级分类 + 交叉验证 + 矛盾处理
+Chapter 2: Information Credibility Assessment
+    │  └─ Six-level classification + Cross-validation + Contradiction handling
     ▼
-第三章 + 第四章：行业知识框架
-    │  └─ 政策解读 + 行业认知 + 红旗监测
+Chapters 3 + 4: Industry Knowledge Framework
+    │  └─ Policy interpretation + Industry cognition + Red flag monitoring
     ▼
-第五章：马赛克拼图
-    │  └─ 五步流程 + 信号叠加 + 叙事分离
+Chapter 5: Mosaic Assembly
+    │  └─ Five-step process + Signal accumulation + Narrative separation
     ▼
-第六章：时效性检查
-    │  └─ 衰减曲线 + 触发重评 + 过期替换
+Chapter 6: Timeliness Check
+    │  └─ Decay curves + Trigger reassessment + Expiration replacement
     ▼
-第七章：输出标准
-    │  └─ 五项要素 + 禁止清单 + 检查清单
+Chapter 7: Output Standards
+    │  └─ Five elements + Prohibited list + Checklist
     ▼
-轨道A（基本面金字塔评分）
+Track A (Fundamental Pyramid Scoring)
     │
-    └─→ 交叉对撞矩阵 → 综合评级输出
+    └─→ Cross-Validation Matrix → Composite Rating Output
 ```
 
-### B. 核心原则总结
+### B. Core Principles Summary
 
-| # | 原则 | 含义 |
-|---|------|------|
-| 1 | **定性判断方向，定量校准精度** | 双轨框架的核心分工，不可混淆 |
-| 2 | **信源分级是一切的基础** | 未标注信源级别的信号不得进入分析框架 |
-| 3 | **单个信号不构成判断** | 所有关键判断需要≥2个独立源交叉验证 |
-| 4 | **政策是最大变量但最容易被误读** | 政策解读遵循五维框架，量化强度评分后再纳入 |
-| 5 | **行业知识是结构化的，不是感觉** | 六步行业认知框架确保覆盖全面 |
-| 6 | **马赛克拼图追求完整而非精确** | 承认残缺，把"不知道"变成输出的一部分 |
-| 7 | **叙事和事实必须分离** | 市场共识不等于事实，训练识别常见叙事陷阱 |
-| 8 | **信息有时效，过期必须标注** | 不标注时间戳的判断等于无效判断 |
-| 9 | **每个判断都带不确定性格印** | 没有100%确定的信用判断 |
-| 10 | **定性分析是方法论，不是直觉** | 每一步都有结构化流程，可追溯、可验证、可改进 |
+| # | Principle | Meaning |
+|---|-----------|---------|
+| 1 | **Qualitative judges direction, quantitative calibrates precision** | Core division of the dual-track framework, not to be confused |
+| 2 | **Source classification is the foundation of everything** | Signals not labeled with source level shall not enter the analysis framework |
+| 3 | **A single signal does not constitute a judgment** | All key judgments require ≥2 independent sources for cross-validation |
+| 4 | **Policy is the biggest variable but the most easily misinterpreted** | Policy interpretation follows the five-dimensional framework, quantify strength score before incorporation |
+| 5 | **Industry knowledge is structured, not felt** | Six-step industry cognitive framework ensures comprehensive coverage |
+| 6 | **Mosaic assembly pursues completeness, not precision** | Acknowledge gaps, make "not knowing" part of the output |
+| 7 | **Narrative and facts must be separated** | Market consensus is not fact; train to recognize common narrative traps |
+| 8 | **Information has timeliness, expiration must be labeled** | Untimestamped judgments are equivalent to invalid judgments |
+| 9 | **Every judgment carries an uncertainty imprint** | There is no 100% certain credit judgment |
+| 10 | **Qualitative analysis is methodology, not intuition** | Every step has a structured process, traceable, verifiable, improvable |
 
-### C. 与现有文档的交叉引用
+### C. Cross-References with Existing Documents
 
-| 现有文档 | 与本文档的关系 | 关键结合点 |
-|---------|--------------|-----------|
-| [双轨分析方法论](dual-track-methodology.md) | 双轨框架的顶层设计 | 定性分析是轨道A（基本面评分）的方法论基础 |
-| [马赛克引擎](mosaic-engine.md) | 信号提取与拼图的技术实现 | 本文件第五章（马赛克拼图实操）是马赛克引擎的定性配套方法论 |
-| [定量分析方法论](quantitative-analysis.md) | 轨道B的定量分析规范 | 定性判断方向（本文件）→ 定量校准精度（定量文件）= 完整双轨 |
-| [引擎架构总览](engine-overview.md) | 引擎全局架构 | 本文件是轨道A的底层方法论之一 |
-| [多利益相关者视角框架](multi-stakeholder.md) | M0-M6的角色视角 | 本文件1.3节详述了定性分析在各角色中的权重差异 |
-| [行业分类与分析框架](industry-framework.md) | 行业类型与金字塔规格 | 本文件4.3节（行业特有红旗）与各行业金字塔的一票否决条件直接关联 |
+| Existing Document | Relationship with This Document | Key Integration Points |
+|-----------------|-------------------------------|----------------------|
+| [Dual-Track Analysis Methodology](dual-track-methodology.md) | Top-level design of the dual-track framework | Qualitative analysis is the methodological foundation of Track A (Fundamental Scoring) |
+| [Mosaic Engine](mosaic-engine.md) | Technical implementation of signal extraction and assembly | Chapter 5 (Mosaic Assembly Practice) is the qualitative supporting methodology for the Mosaic Engine |
+| [Quantitative Analysis Methodology](quantitative-analysis.md) | Track B quantitative analysis standards | Qualitative judges direction (this document) → Quantitative calibrates precision (quantitative document) = complete dual-track |
+| [Engine Architecture Overview](engine-overview.md) | Engine global architecture | This document is one of the underlying methodologies for Track A |
+| [Multi-Stakeholder Perspective Framework](multi-stakeholder.md) | M0-M6 role perspectives | Section 1.3 of this document details the weight differences of qualitative analysis across roles |
+| [Industry Classification and Analysis Framework](industry-framework.md) | Industry types and pyramid specifications | Section 4.3 (Industry-Specific Red Flags) directly relates to veto conditions for each industry pyramid |
 
-### D. 文档版本记录
+### D. Document Version History
 
-| 版本 | 日期 | 变更内容 |
-|------|------|---------|
-| v0.1.0 | 2026-07-08 | 初始发布：七章定性分析方法论 |
-| — | — | 涵盖：定位、信源分级、政策解读、行业知识、马赛克拼图、时效性、输出标准 |
-| — | — | 实例：136号电价政策传导、通威多碎片拼图、政策信号vs噪音区分、国企叙事分离 |
+| Version | Date | Changes |
+|---------|------|---------|
+| v0.1.0 | 2026-07-08 | Initial release: Seven-chapter qualitative analysis methodology |
+| — | — | Coverage: Positioning, source classification, policy interpretation, industry knowledge, mosaic assembly, timeliness, output standards |
+| — | — | Examples: Electricity tariff Document No. 136 policy transmission, Tongwei multi-fragment mosaic, policy signal vs. noise differentiation, SOE narrative separation |

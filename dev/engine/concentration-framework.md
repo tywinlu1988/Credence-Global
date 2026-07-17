@@ -1,865 +1,870 @@
-# 五维集中度分析框架
+# Five-Dimensional Concentration Analysis Framework
 
-**版本**: v0.8.4-release | **日期**: 2026-07-10 | **状态**: 已发布
-
----
-
-## 目录
-
-1. [设计总览](#一设计总览)
-2. [维度一：行业集中度](#二维度一行业集中度)
-3. [维度二：区域集中度](#三维度二区域集中度)
-4. [维度三：评级集中度](#四维度三评级集中度)
-5. [维度四：期限集中度](#五维度四期限集中度)
-6. [维度五：融资渠道集中度](#六维度五融资渠道集中度)
-7. [集中度→评级调整映射](#七集中度评级调整映射)
-8. [五维加权综合评分](#八五维加权综合评分)
-9. [集中度压力测试流程](#九集中度压力测试流程)
-10. [与现有引擎的集成](#十与现有引擎的集成)
-11. [局限性声明](#十一局限性声明)
+**Version**: v0.8.4-release | **Date**: 2026-07-10 | **Status**: Released
 
 ---
 
-## 一、设计总览
+## Table of Contents
 
-### 1.1 框架定位
+1. [Design Overview](#1-design-overview)
+2. [Dimension 1: Industry Concentration](#2-dimension-1-industry-concentration)
+3. [Dimension 2: Regional Concentration](#3-dimension-2-regional-concentration)
+4. [Dimension 3: Rating Concentration](#4-dimension-3-rating-concentration)
+5. [Dimension 4: Maturity Concentration](#5-dimension-4-maturity-concentration)
+6. [Dimension 5: Funding Channel Concentration](#6-dimension-5-funding-channel-concentration)
+7. [Concentration to Rating Adjustment Mapping](#7-concentration-to-rating-adjustment-mapping)
+8. [Five-Dimensional Weighted Composite Score](#8-five-dimensional-weighted-composite-score)
+9. [Concentration Stress Test Procedure](#9-concentration-stress-test-procedure)
+10. [Integration with Existing Engine](#10-integration-with-existing-engine)
+11. [Limitations Statement](#11-limitations-statement)
 
-五维集中度分析框架是引擎组合风控层(M4)的核心组件，用于评估信用组合在行业、区域、评级、期限和融资渠道五个维度上的集中度风险。本框架与[传染矩阵](contagion-matrix.md)协同工作——前者定义"集中到什么程度算危险"，后者定义"危险如何传染扩散"。
+---
 
-### 1.2 五维逻辑关系
+## 1. Design Overview
+
+### 1.1 Framework Positioning
+
+The Five-Dimensional Concentration Analysis Framework is the core component of the Engine's Portfolio Risk Control Layer (M4). It is used to assess the concentration risk of a credit portfolio across five dimensions: industry, region/country, rating, maturity, and funding channel. This framework works in coordination with the [Contagion Matrix](contagion-matrix.md) — the former defines "how concentrated is dangerous," while the latter defines "how danger spreads."
+
+### 1.2 Logical Relationship Among the Five Dimensions
 
 ```
-                         ┌──────────────┐
-                         │  融资渠道集中度  │  ← 流动性风险的源头
-                         │  (渠道路径依赖) │
-                         └──────┬───────┘
+                         ┌──────────────────┐
+                         │ Funding Channel   │  ← Source of liquidity risk
+                         │ Concentration     │
+                         │ (Channel Path     │
+                         │  Dependency)      │
+                         └──────┬───────────┘
                                 │
-         ┌──────────────┐       │       ┌──────────────┐
-         │  行业集中度   │◄──────┼──────►│  区域集中度   │
-         │ (传染放大器)  │       │       │ (共振放大器)  │
-         └──────┬───────┘       │       └──────┬───────┘
+         ┌──────────────┐       │       ┌──────────────────┐
+         │ Industry     │◄──────┼──────►│ Regional          │
+         │ Concentration│       │       │ Concentration     │
+         │ (Contagion   │       │       │ (Resonance        │
+         │  Amplifier)  │       │       │  Amplifier)       │
+         └──────┬───────┘       │       └──────┬───────────┘
                 │               │               │
                 ▼               ▼               ▼
          ┌──────────────────────────────────────────┐
-         │             期限集中度                    │
-         │         (触发时间窗口)                    │
+         │           Maturity Concentration         │
+         │         (Trigger Time Window)            │
          └──────────────────────────────────────────┘
                                 │
                                 ▼
          ┌──────────────────────────────────────────┐
-         │             评级集中度                    │
-         │      (外部AAA占比 + 伪高评级占比)          │
-         │    ← 隐藏最深、最危险的集中度信号 →        │
+         │           Rating Concentration           │
+         │      (External AAA% + Pseudo-High        │
+         │       Rating %)                          │
+         │   ← Deepest, Most Dangerous Signal →     │
          └──────────────────────────────────────────┘
 ```
 
-**核心逻辑链：** 融资渠道依赖 → 行业/区域暴露 → 期限集中锁定触发窗口 → 评级集中掩盖真实风险 → 多维度共振 → 集中度风险爆发。
+**Core Logic Chain:** Funding channel dependency → Industry/Regional exposure → Maturity concentration locks the trigger window → Rating concentration masks true risk → Multi-dimensional resonance → Concentration risk outbreak.
 
-### 1.3 评分映射规则
+### 1.3 Score Mapping Rules
 
-每个维度的原始指标映射为1-10分的风险分：
+Each dimension's raw metrics are mapped to a risk score of 1-10:
 
-| 风险分 | 含义 | 对应状态 |
-|--------|------|---------|
-| 1-3 | 完全分散 | 🟢 正常 |
-| 4-5 | 轻度集中 | 🟡 关注 |
-| 6-7 | 中度集中 | 🟠 警示 |
-| 8-10 | 极度集中 | 🔴 危险 |
+| Risk Score | Meaning | Corresponding Status |
+|-----------|---------|---------------------|
+| 1-3 | Fully Diversified | 🟢 Normal |
+| 4-5 | Mildly Concentrated | 🟡 Watch |
+| 6-7 | Moderately Concentrated | 🟠 Warning |
+| 8-10 | Extremely Concentrated | 🔴 Danger |
 
-映射规则：每个维度选取最差指标作为该维度的原始风险分，再通过阈值区间线性插值确定具体分值。如行业集中度中HHI=1800（属于🟠区间1000-2500的中段），则映射为6分。
-
----
-
-## 二、维度一：行业集中度
-
-### 2.1 指标定义
-
-| 指标 | 缩写 | 计算公式 | 数据来源 |
-|------|------|---------|---------|
-| HHI指数 | HHI | 各行业持仓占比的平方和 × 10000 | 组合持仓数据·行业分类映射 |
-| 前3行业占比 | CR3 | 持仓占比排名前3的行业占比之和 | 组合持仓数据 |
-| 前5行业占比 | CR5 | 持仓占比排名前5的行业占比之和 | 组合持仓数据 |
-| 单一行业占比上限 | MAX1 | 持仓占比最大的单一行业占比 | 组合持仓数据 |
-
-### 2.2 阈值体系
-
-#### 2.2.1 HHI指数阈值
-
-| 等级 | 阈值区间 | 风险分 | 颜色 |
-|------|---------|--------|------|
-| 正常 | HHI < 1000 | 1-3 | 🟢 |
-| 关注 | 1000 ≤ HHI < 1500 | 4-5 | 🟡 |
-| 警示 | 1500 ≤ HHI < 2500 | 6-7 | 🟠 |
-| 危险 | HHI ≥ 2500 | 8-10 | 🔴 |
-
-**阈值理由：**
-
-| 维度 | 说明 |
-|------|------|
-| 历史依据 | 2018年531新政后，光伏行业集中度HHI从1200跳升至2200，全行业信用利差走阔200bp+；2020年永煤违约后，煤炭行业组合HHI>2000的组合损失率比分散组合高3.2倍 |
-| 理论依据 | 美国司法部HHI反垄断标准（HHI<1500=中等集中，>2500=高度集中）经中国债券市场验证后校准：信用债集中度的尾部损失分布比商品市场更陡，因此安全阈值从1500下调至1000 |
-| 例外情况 | 当HHI主要来自城投债且城投债占比<总敞口30%时，HHI阈值可上浮20%（城投债的区域绑定属性弱化了行业集中度风险）；当组合中仅覆盖2-3个行业时（如行业基金），HHI指标不适用，改用CR3和MAX1 |
-
-#### 2.2.2 前3行业占比(CR3)阈值
-
-| 等级 | 阈值区间 | 风险分 | 颜色 |
-|------|---------|--------|------|
-| 正常 | CR3 < 50% | 1-3 | 🟢 |
-| 关注 | 50% ≤ CR3 < 65% | 4-5 | 🟡 |
-| 警示 | 65% ≤ CR3 < 80% | 6-7 | 🟠 |
-| 危险 | CR3 ≥ 80% | 8-10 | 🔴 |
-
-**阈值理由：**
-
-| 维度 | 说明 |
-|------|------|
-| 历史依据 | 2020年"永煤+紫光+华晨"三个AAA违约均发生在不同行业但时间窗口高度集中（2020年10月-2021年3月），验证了CR3>65%时单一行业违约会通过传染矩阵中的高传染链路波及其他2个行业 |
-| 理论依据 | Markowitz(1952)组合理论在信用债市场的修正：行业间相关性在压力环境下从0.3跳升至0.7+，CR3应以50%为安全线而非经典组合理论建议的67% |
-| 例外情况 | 若CR3中的3个行业分别属于传染矩阵中隔离集群I（如食品饮料+纺织服装+商贸零售），CR3阈值可放宽至65%；若涉及超级传染者集群（半导体+城投债+高端装备），阈值需收紧至45% |
-
-#### 2.2.3 前5行业占比(CR5)阈值
-
-| 等级 | 阈值区间 | 风险分 | 颜色 |
-|------|---------|--------|------|
-| 正常 | CR5 < 70% | 1-3 | 🟢 |
-| 关注 | 70% ≤ CR5 < 80% | 4-5 | 🟡 |
-| 警示 | 80% ≤ CR5 < 90% | 6-7 | 🟠 |
-| 危险 | CR5 ≥ 90% | 8-10 | 🔴 |
-
-**阈值理由：**
-
-| 维度 | 说明 |
-|------|------|
-| 历史依据 | 2022年理财赎回潮中，CR5>85%的固收+组合净值回撤幅度比CR5<70%的组合高出2.7倍；前5行业在压力环境下的同步下跌相关性高达0.75 |
-| 理论依据 | 根据传染矩阵的行业聚类分析（集群A-J），5个行业恰好是跨越2-3个集群的临界数量——CR5>80%意味着组合覆盖了至少2个高传染集群，系统性风险显著增加 |
-| 例外情况 | 若CR5中的行业均为低金融属性行业（范式E[品牌+渠道型](paradigm-brand-channel.md)），阈值可放宽至85% |
-
-#### 2.2.4 单一行业占比上限(MAX1)阈值
-
-| 等级 | 阈值区间 | 风险分 | 颜色 |
-|------|---------|--------|------|
-| 正常 | MAX1 < 25% | 1-3 | 🟢 |
-| 关注 | 25% ≤ MAX1 < 40% | 4-5 | 🟡 |
-| 警示 | 40% ≤ MAX1 < 60% | 6-7 | 🟠 |
-| 危险 | MAX1 ≥ 60% | 8-10 | 🔴 |
-
-**阈值理由：**
-
-| 维度 | 说明 |
-|------|------|
-| 历史依据 | 2021年某股份制银行理财子因单一行业（地产）敞口占比达58%，在恒大违约后该行业信用利差走阔500bp，直接导致该理财子净值下跌3.2%并触发赎回潮；2023年某券商资管因城投债单一行业敞口达72%，在贵州城投展期事件中损失惨重 |
-| 理论依据 | 单一行业占比上限25%参考了UCITS基金分散化规则（单行业≤20%）并上调至25%以适应中国债券市场的行业集中特征 |
-| 例外情况 | 单一行业传染矩阵行合计得分≤20（低传染力行业，如食品饮料、纺织服装）时，MAX1阈值可上调至35%；若单一行业是超级传染者（半导体/城投债行合计>23），MAX1阈值应下调至20% |
-
-### 2.3 与传染矩阵的交叉引用
-
-**单一行业集中度的危险程度取决于该行业在传染矩阵中的位置：**
-
-| 集中行业 | 传染矩阵排名 | 行合计(传染力) | 列合计(被传染风险) | 所属集群 | MAX1阈值调整 |
-|---------|-------------|---------------|------------------|---------|-------------|
-| 半导体/集成电路 | 超级传染者#1 | 26 | 24 | 集群A(核心三角) | ≤20% |
-| 城投债(LGFV) | 超级传染者#2 | 24 | 24 | 集群C(基建-交运) | ≤20% |
-| 高端装备 | 超级传染者#3 | 23 | 22 | 集群A(核心三角) | ≤22% |
-| 光伏/储能 | 准超级传染者 | 22 | 22 | 集群A(核心三角) | ≤22% |
-| 新能源汽车 | 准超级传染者 | 21 | 22 | 集群D(新能源生态) | ≤22% |
-| 数据中心 | 准超级传染者 | 21 | 21 | 集群E(数字基础设施) | ≤25% |
-| 传媒/互联网 | 中等传染者 | 21 | 19 | 集群E/F | ≤25% |
-| 交通运输 | 中等传染者 | 20 | 20 | 集群C(基建-交运) | ≤28% |
-| 医疗器械 | 中等传染者 | 19 | 18 | 集群B(医疗健康) | ≤30% |
-| 商贸零售 | 中等传染者 | 19 | 19 | 集群F(消费流通) | ≤30% |
-| 生物医药 | 弱传染者 | 18 | 17 | 集群B(医疗健康) | ≤30% |
-| 纺织服装 | 弱传染者 | 16 | 16 | 集群F(消费流通) | ≤35% |
-| 食品饮料 | 最弱传染者 | 14 | 16 | 集群F(消费流通) | ≤35% |
-
-**行业集中度综合判定流程：**
-
-```
-步骤1：计算四项指标(HHI/CR3/CR5/MAX1)的原始风险分
-步骤2：取四项指标中的最高分作为行业集中度原始分
-步骤3：识别组合中占比最大的前3个行业
-步骤4：查询传染矩阵，确认这些行业是否属于同一高传染集群(集群A/B/C)
-  ├── 若属于同一集群 → 原始分 + 2（集群集中惩罚）
-  ├── 若属于同一范式（参见[industry-framework.md](industry-framework.md)§四种行业类型）但不同集群 → 原始分 + 1（范式内共振惩罚）
-  └── 若属于隔离集群 → 不调整
-步骤5：确认最大行业是否为超级传染者 → 若是，MAX1阈值上浮规则见上表
-步骤6：输出行业集中度最终风险分(1-10)
-```
-
-### 2.4 行业分类映射说明
-
-行业分类映射使用[传染矩阵](contagion-matrix.md)§一中的13行业分类体系和范式归属。对于跨行业经营的企业（如华为涉及半导体+高端装备+数据中心+新能源车），使用多标签分配，在计算HHI和CR3/CR5时按收入占比或风险敞口占比拆分至各个行业。
+Mapping Rule: For each dimension, select the worst-performing metric as the dimension's raw risk score, then determine the specific score through linear interpolation within threshold intervals. For example, if HHI = 1800 in industry concentration (falling in the mid-range of the 🟠 interval 1000-2500), it maps to a score of 6.
 
 ---
 
-## 三、维度二：区域集中度
+## 2. Dimension 1: Industry Concentration
 
-### 3.1 指标定义
+### 2.1 Metric Definitions
 
-| 指标 | 计算公式 | 数据来源 |
-|------|---------|---------|
-| 单一省份占比 | 该省份发行人的持仓合计 / 总持仓 | 组合持仓数据·发行人注册地 |
-| 弱区域合计占比 | 东北+西部省份发行人持仓合计 / 总持仓 | 组合持仓数据·区域分类 |
-| 区域财政健康度加权占比 | 各区域占比 × (1 - 区域财政健康度评分/100) | 各区域一般公共预算收入/债务率数据 |
-| 单一城市级别占比 | 按城市级别分类后的各层级占比 | 城市分类体系 |
+| Metric | Abbreviation | Formula | Data Source |
+|--------|-------------|---------|-------------|
+| HHI Index | HHI | Sum of squared position weights per industry × 10000 | Portfolio holdings data · Industry classification mapping |
+| Top 3 Industry Share | CR3 | Sum of the top 3 industries by position weight | Portfolio holdings data |
+| Top 5 Industry Share | CR5 | Sum of the top 5 industries by position weight | Portfolio holdings data |
+| Single Industry Cap | MAX1 | Maximum single industry position weight | Portfolio holdings data |
 
-### 3.2 区域分类体系
+### 2.2 Threshold System
 
-| 区域级别 | 城市 | 财政健康度特征 |
-|---------|------|--------------|
-| **一线城市** | 北京·上海·广州·深圳 | 一般公共预算收入>3000亿·债务率<80%·财政自给率>80% |
-| **强二线城市** | 苏州·杭州·南京·成都·武汉·重庆·天津·宁波·青岛·厦门 | 一般公共预算收入1000-3000亿·债务率80-120%·财政自给率50-80% |
-| **中等城市** | 其他省会·计划单列市（如西安·长沙·郑州·济南·合肥·福州·沈阳·大连·昆明·南昌·南宁·贵阳等） | 一般公共预算收入500-1000亿·债务率120-200%·财政自给率30-50% |
-| **弱区域** | 东北(黑龙江·吉林·辽宁)及西部(甘肃·青海·宁夏·新疆·西藏·内蒙古) | 一般公共预算收入<500亿·债务率>200%·财政自给率<30% |
+#### 2.2.1 HHI Index Thresholds
 
-> **注：** 区域财政健康度评分每年更新一次，基于最新各省市一般公共预算收入、债务率、财政自给率、土地出让收入变动四个指标综合计算。
+| Level | Threshold Range | Risk Score | Color |
+|-------|----------------|-----------|-------|
+| Normal | HHI < 1000 | 1-3 | 🟢 |
+| Watch | 1000 ≤ HHI < 1500 | 4-5 | 🟡 |
+| Warning | 1500 ≤ HHI < 2500 | 6-7 | 🟠 |
+| Danger | HHI ≥ 2500 | 8-10 | 🔴 |
 
-### 3.3 阈值体系
+**Threshold Rationale:**
 
-#### 3.3.1 单一省份占比阈值
+| Dimension | Description |
+|-----------|-------------|
+| Historical Basis | After the 2018 policy adjustment, the solar/PV industry concentration HHI jumped from 1200 to 2200, with credit spreads widening 200bp+ across the sector. After the 2020 Yongcheng Coal default, coal industry portfolios with HHI > 2000 experienced loss rates 3.2x higher than diversified portfolios |
+| Theoretical Basis | U.S. Department of Justice HHI antitrust standards (HHI < 1500 = moderate concentration, > 2500 = high concentration), calibrated for the bond market: the tail loss distribution of credit concentration is steeper than in commodity markets, so the safety threshold is lowered from 1500 to 1000 |
+| Exceptions | When HHI comes primarily from LGFV bonds and LGFV bonds constitute < 30% of total exposure, HHI thresholds may be increased by 20% (LGFV's regional binding weakens industry concentration risk); when the portfolio covers only 2-3 industries (e.g., sector funds), HHI is not applicable — use CR3 and MAX1 instead |
 
-| 等级 | 阈值区间 | 风险分 | 颜色 |
-|------|---------|--------|------|
-| 正常 | 单一省份 < 20% | 1-3 | 🟢 |
-| 关注 | 20% ≤ 单一省份 < 35% | 4-5 | 🟡 |
-| 警示 | 35% ≤ 单一省份 < 50% | 6-7 | 🟠 |
-| 危险 | 单一省份 ≥ 50% | 8-10 | 🔴 |
+#### 2.2.2 Top 3 Industry Share (CR3) Thresholds
 
-**阈值理由：**
+| Level | Threshold Range | Risk Score | Color |
+|-------|----------------|-----------|-------|
+| Normal | CR3 < 50% | 1-3 | 🟢 |
+| Watch | 50% ≤ CR3 < 65% | 4-5 | 🟡 |
+| Warning | 65% ≤ CR3 < 80% | 6-7 | 🟠 |
+| Danger | CR3 ≥ 80% | 8-10 | 🔴 |
 
-| 维度 | 说明 |
-|------|------|
-| 历史依据 | **永煤案例(2020)：** 河南省属国企组合中，永煤集团+河南能化+郑煤集团三家煤炭企业占河南省信用债存量超过45%。永煤违约后，河南省整体信用利差从120bp跳升至400bp+，同区域无关联企业融资成本上升超过200bp。**辽宁国企违约潮(2018-2020)：** 东北特钢(2016)·丹东港(2017)·华晨汽车(2020)·辽宁成大(2021)——辽宁省信用债存量占比超过全国3%时，连续违约触发"东北区域信用隔离"，新东北地区发债利率系统性高于长三角2-3个百分点。**贵州城投压力(2022-2025)：** 贵州省城投债余额占全国城投债超10%（单一省份占比极高），2023年遵义道桥展期后贵州城投利差走阔至600bp+，跨省传导至云南/天津等弱区域 |
-| 理论依据 | 区域信用风险的"传染半径"研究(Caesar, 2021)表明：同一省份内企业违约的区域共振效应在占比>20%时开始显现，>35%时进入非线性加速区。区域财政健康度每下降10个百分点，区域内企业违约概率上升约1.5倍 |
-| 例外情况 | 单一省份为一线城市(京沪深穗)且发行人全部为AAA国企时，阈值可上调至30%；当单一省份的暴露全部集中在省级平台(非区县级城投)且省级一般公共预算收入>5000亿时，阈值可上调至35% |
+**Threshold Rationale:**
 
-#### 3.3.2 弱区域合计占比阈值
+| Dimension | Description |
+|-----------|-------------|
+| Historical Basis | In 2020, three AAA defaults (Yongcheng Coal, Tsinghua Unigroup, Brilliance Auto) occurred across different industries but within a highly concentrated time window (October 2020 — March 2021), validating that when CR3 > 65%, a default in a single industry can propagate to the other 2 industries via high-contagion pathways in the contagion matrix |
+| Theoretical Basis | Markowitz (1952) portfolio theory, adapted for credit markets: inter-industry correlations jump from 0.3 to 0.7+ under stress, so CR3 should use 50% as the safety line rather than the 67% suggested by classical portfolio theory |
+| Exceptions | If the 3 industries in CR3 belong to isolated clusters in the contagion matrix (e.g., Food & Beverage + Textile & Apparel + Retail), CR3 thresholds may be relaxed to 65%; if they involve super-spreader clusters (Semiconductors + LGFV + Advanced Equipment), thresholds should be tightened to 45% |
 
-| 等级 | 阈值区间 | 风险分 | 颜色 |
-|------|---------|--------|------|
-| 正常 | 弱区域 < 10% | 1-3 | 🟢 |
-| 关注 | 10% ≤ 弱区域 < 20% | 4-5 | 🟡 |
-| 警示 | 20% ≤ 弱区域 < 35% | 6-7 | 🟠 |
-| 危险 | 弱区域 ≥ 35% | 8-10 | 🔴 |
+#### 2.2.3 Top 5 Industry Share (CR5) Thresholds
 
-**阈值理由：**
+| Level | Threshold Range | Risk Score | Color |
+|-------|----------------|-----------|-------|
+| Normal | CR5 < 70% | 1-3 | 🟢 |
+| Watch | 70% ≤ CR5 < 80% | 4-5 | 🟡 |
+| Warning | 80% ≤ CR5 < 90% | 6-7 | 🟠 |
+| Danger | CR5 ≥ 90% | 8-10 | 🔴 |
 
-| 维度 | 说明 |
-|------|------|
-| 历史依据 | 贵州省城投债占全国城投债比例从2019年的8.7%上升至2023年的12.3%，同期贵州城投债违约/展期事件占全国城投风险事件的31%。辽宁省2018-2020年间弱区域(东北)占比超过30%的组合在区域内企业违约后的回收率平均仅为38%，低于全国平均回收率(52%)14个百分点 |
-| 理论依据 | 弱区域的"信用隔离"效应(Rajan & Zingales, 1998修正)：东北/西部地区在信用事件后的融资恢复周期比发达地区长2-3倍，弱区域占比>20%时组合的整体流动性风险进入非线性加速区 |
-| 例外情况 | 若弱区域敞口全部为省级平台且对应省份的中央转移支付占比>50%(如西藏·青海)，弱区域阈值可上调至15%；若弱区域敞口中包含国家级战略项目(如西部大开发·一带一路)的专项债，该部分可从弱区域计算中剔除 |
+**Threshold Rationale:**
 
-#### 3.3.3 区域财政健康度加权调整
+| Dimension | Description |
+|-----------|-------------|
+| Historical Basis | During the 2022 wealth management product redemption crisis, fixed-income-plus portfolios with CR5 > 85% experienced NAV drawdowns 2.7x greater than those with CR5 < 70%. The synchronous downside correlation among the top 5 industries under stress reached 0.75 |
+| Theoretical Basis | Based on industry cluster analysis of the contagion matrix (clusters A-J), 5 industries is the critical threshold spanning 2-3 clusters — CR5 > 80% means the portfolio covers at least 2 high-contagion clusters, significantly increasing systemic risk |
+| Exceptions | If the industries in CR5 are all low-financial-intensity sectors (Paradigm E [Brand + Channel] per paradigm-brand-channel.md), thresholds may be relaxed to 85% |
 
-区域财政健康度加权占比作为辅助指标，对单一省份占比和弱区域占比进行修正：
+#### 2.2.4 Single Industry Cap (MAX1) Thresholds
 
-| 加权占比与原始占比的偏差 | 修正规则 | 适用条件 |
-|------------------------|---------|---------|
-| 加权 < 原始 | 不调整 | 该区域财政健康度高于平均 |
-| 加权 > 原始但偏差<10pp | 原始风险分 + 1 | 该区域财政健康度低于平均 |
-| 加权 > 原始且偏差10-20pp | 原始风险分 + 2 | 该区域财政压力显著(如土地出让收入下降>30%) |
-| 加权 > 原始且偏差>20pp | 原始风险分 + 3 | 该区域财政困境(如一般公共预算收入连续2年下降) |
+| Level | Threshold Range | Risk Score | Color |
+|-------|----------------|-----------|-------|
+| Normal | MAX1 < 25% | 1-3 | 🟢 |
+| Watch | 25% ≤ MAX1 < 40% | 4-5 | 🟡 |
+| Warning | 40% ≤ MAX1 < 60% | 6-7 | 🟠 |
+| Danger | MAX1 ≥ 60% | 8-10 | 🔴 |
 
-### 3.4 与传染矩阵的区域共振分析
+**Threshold Rationale:**
 
-根据[传染矩阵](contagion-matrix.md)§4.1原则3（同区域依赖传导强度高），区域集中度风险通过以下路径放大：
+| Dimension | Description |
+|-----------|-------------|
+| Historical Basis | In 2021, a joint-stock bank wealth management subsidiary had a single industry (Real Estate) exposure of 58%. After the Evergrande default, the industry's credit spreads widened 500bp, directly causing the subsidiary's NAV to fall 3.2% and triggering a redemption crisis. In 2023, a securities firm's asset management arm had 72% single-industry exposure to LGFV bonds, suffering heavy losses during a regional LGFV debt extension event |
+| Theoretical Basis | The 25% single industry cap references UCITS diversification rules (single sector ≤ 20%) adjusted upward to 25% to accommodate credit market industry concentration characteristics |
+| Exceptions | When a single industry's total contagion matrix row score is ≤ 20 (low contagion industries such as Food & Beverage, Textile & Apparel), MAX1 thresholds may be increased to 35%; if the single industry is a super-spreader (Semiconductors/LGFV with row total > 23), MAX1 should be tightened to 20% |
 
-> **跨文档消费说明**：集中度框架在引用传染矩阵时，仅消费每个单元格的 **`intensity`** 和 **`direction`** 两个字段，用于识别传染强度与判断单向/双向关系。`type`、`confidence` 和 `historical_cases` 在当前 v0.8.4-release 的集中度评分中不进入量化计算。
+### 2.3 Cross-Reference with Contagion Matrix
 
-| 区域共振路径 | 传染强度 | 逻辑说明 |
-|-------------|---------|---------|
-| 城投债↔交通运输 | 4(双向强) | 城投违约→区域内交通类国企融资冻结；交通国企违约→城投信用重估 |
-| 城投债↔光伏 | 3(双向中等) | 城投违约→区域内光伏电站融资困难；光伏违约→城投园区收入下降 |
-| 城投债↔数据中心 | 3(双向中等) | 数据中心园区建设依赖城投→城投违约→IDC项目中断 |
-| 城投债↔新能源车/半导体/高端装备 | 2(单向弱) | 产业园区依赖城投基建配套 |
-| 一线城市区域共振 | 1(极弱) | 一线城市多元化经济结构弱化了区域共振效应 |
-| 弱区域共振 | 3-5取决于事件类型 | 弱区域"一荣俱荣一损俱损"效应显著 |
+**The danger level of single industry concentration depends on the industry's position in the contagion matrix:**
 
-**区域集中度综合判定流程：**
+| Industry | Contagion Rank | Row Total (Contagion Force) | Column Total (Contagion Risk) | Cluster | MAX1 Threshold Adjustment |
+|---------|---------------|---------------------------|-----------------------------|---------|--------------------------|
+| Semiconductors/Integrated Circuits | Super-spreader #1 | 26 | 24 | Cluster A (Core Triangle) | ≤ 20% |
+| LGFV Bonds | Super-spreader #2 | 24 | 24 | Cluster C (Infrastructure-Transport) | ≤ 20% |
+| Advanced Equipment | Super-spreader #3 | 23 | 22 | Cluster A (Core Triangle) | ≤ 22% |
+| Solar/PV & Energy Storage | Quasi Super-spreader | 22 | 22 | Cluster A (Core Triangle) | ≤ 22% |
+| New Energy Vehicles | Quasi Super-spreader | 21 | 22 | Cluster D (New Energy Ecosystem) | ≤ 22% |
+| Data Centers | Quasi Super-spreader | 21 | 21 | Cluster E (Digital Infrastructure) | ≤ 25% |
+| Media/Internet | Moderate Contagion | 21 | 19 | Clusters E/F | ≤ 25% |
+| Transportation | Moderate Contagion | 20 | 20 | Cluster C (Infrastructure-Transport) | ≤ 28% |
+| Medical Devices | Moderate Contagion | 19 | 18 | Cluster B (Healthcare) | ≤ 30% |
+| Retail | Moderate Contagion | 19 | 19 | Cluster F (Consumer Distribution) | ≤ 30% |
+| Biopharmaceuticals | Weak Contagion | 18 | 17 | Cluster B (Healthcare) | ≤ 30% |
+| Textile & Apparel | Weak Contagion | 16 | 16 | Cluster F (Consumer Distribution) | ≤ 35% |
+| Food & Beverage | Weakest Contagion | 14 | 16 | Cluster F (Consumer Distribution) | ≤ 35% |
+
+**Industry Concentration Comprehensive Assessment Procedure:**
 
 ```
-步骤1：计算单一省份占比风险分
-步骤2：计算弱区域合计占比风险分
-步骤3：取两者中较高分为基础分
-步骤4：应用区域财政健康度加权修正（3.3.3节）
-步骤5：确认区域内是否有高风险传染组合（如城投+交运同时暴露）
-  ├── 若同时暴露于城投债+交通运输 → 基础分 + 2（矩阵验证强共振）
-  ├── 若同时暴露于城投债+光伏/数据中心 → 基础分 + 1
-  └── 若全部暴露于一线城市 → 基础分 - 1（区域分散度高）
-步骤6：输出区域集中度最终风险分(1-10)
+Step 1: Calculate the raw risk scores for the four metrics (HHI/CR3/CR5/MAX1)
+Step 2: Take the highest score among the four metrics as the raw industry concentration score
+Step 3: Identify the top 3 industries by position weight in the portfolio
+Step 4: Query the contagion matrix to determine if these industries belong to the same high-contagion cluster (Cluster A/B/C)
+  ├── If they belong to the same cluster → raw score + 2 (cluster concentration penalty)
+  ├── If they belong to the same paradigm (see industry-framework.md § Four Industry Types) but different clusters → raw score + 1 (intra-paradigm resonance penalty)
+  └── If they belong to isolated clusters → no adjustment
+Step 5: Determine if the largest industry is a super-spreader → if yes, MAX1 threshold adjustments per table above
+Step 6: Output the final industry concentration risk score (1-10)
 ```
+
+### 2.4 Industry Classification Mapping
+
+Industry classification mapping uses the 13-industry taxonomy and paradigm assignments from the [Contagion Matrix](contagion-matrix.md) §1. For cross-industry enterprises (e.g., companies involved in Semiconductors + Advanced Equipment + Data Centers + New Energy Vehicles), multi-label assignment is used, with positions split across industries according to revenue share or risk exposure share when calculating HHI, CR3, and CR5.
 
 ---
 
-## 四、维度三：评级集中度
+## 3. Dimension 2: Regional Concentration
 
-### 4.1 指标定义
+### 3.1 Metric Definitions
 
-| 指标 | 计算公式 | 数据来源 |
-|------|---------|---------|
-| 外部AAA占比 | 外部评级为AAA的发行人持仓合计 / 总持仓 | 外部评级(中诚信/联合/大公等) |
-| 内部评级分布 | 内部各评级档位的占比 | 内部信用评估结果 |
-| "伪高评级"占比 | (外部AAA且内部<BBB的发行人持仓合计) / 总持仓 | 外部评级+内部评级交叉比对 |
-| 评级离散度 | 内外部评级偏离的标准差 | 外部评级vs内部评级 |
+| Metric | Formula | Data Source |
+|--------|---------|-------------|
+| Single Country/Region Share | Total positions of issuers in that country/region / Total positions | Portfolio holdings data · Issuer domicile |
+| Peripheral/Weaker Region Total Share | Total positions of issuers in peripheral/weaker regions / Total positions | Portfolio holdings data · Regional classification |
+| Regional Fiscal Health Weighted Share | Regional share × (1 - Regional Fiscal Health Score/100) | Regional general public budget revenue / debt ratio data |
+| Single City Tier Share | Share of each tier based on city classification | City classification system |
 
-### 4.2 核心理念
+### 3.2 Regional Classification System
 
-**这是引擎最独特的差异化能力：** 外部评级vs内部评级的偏差本身就是集中度风险信号。
+| Region Tier | Cities/Markets | Fiscal Health Characteristics |
+|------------|---------------|------------------------------|
+| **Major Financial Hubs** | New York · London · Tokyo · Singapore | General public budget revenue > $50B · Debt ratio < 80% · Fiscal self-sufficiency > 80% |
+| **Major Economic Centers** | Los Angeles · Chicago · Frankfurt · Paris · Shanghai · Hong Kong · Seoul · Sydney · Toronto · San Francisco | General public budget revenue $15-50B · Debt ratio 80-120% · Fiscal self-sufficiency 50-80% |
+| **Mid-Tier Cities** | Other global and regional hubs (e.g., Berlin, Milan, Madrid, Boston, Seattle, Melbourne, Dubai, Mumbai, Sao Paulo, etc.) | General public budget revenue $5-15B · Debt ratio 120-200% · Fiscal self-sufficiency 30-50% |
+| **Peripheral/Weaker Regions** | Economically challenged or structurally weak regions (e.g., parts of Southern Europe, certain Emerging Market regions, structurally distressed areas) | General public budget revenue < $5B · Debt ratio > 200% · Fiscal self-sufficiency < 30% |
 
-传统组合风控仅关注外部评级的集中度（AAA占比过高或过低），但忽视了更危险的情形——当外部评级将所有发行人"压缩"在高评级区间，而内部评级揭示出广泛的风险色散时，组合面临着评级泡沫集中度风险。这类似于2008年CDO的AAA评级泡沫——表面分散，实则在同一个"虚假安全"维度上高度集中。
+> **Note:** Regional fiscal health scores are updated annually, based on a composite calculation of the latest general public budget revenue, debt ratio, fiscal self-sufficiency, and land concession revenue trends across regions.
 
-| 概念 | 定义 | 风险含义 |
-|------|------|---------|
-| 外部评级均匀分散 | AAA/A/BBB各占30%左右 | 表面分散，但外部评级滞后17个月(永煤/紫光/华晨均为AAA违约) |
-| 外部评级高度集中 | AAA占比>50% | 评级泡沫——当AAA违约出现时，大量"伪AAA"将同时暴露 |
-| 伪高评级集中 | 外部AAA但内部<BBB的占比>15% | 最危险的集中度——内部评级已识别出风险，但组合名义上仍是"高等级" |
-| 内外评级偏离集中 | 内外部评级偏离度一致且偏离方向相同 | 系统性偏差——可能是评级机构方法论问题，也可能是引擎自身校准偏差 |
+### 3.3 Threshold System
 
-### 4.3 阈值体系
+#### 3.3.1 Single Country/Region Share Thresholds
 
-#### 4.3.1 外部AAA占比阈值
+| Level | Threshold Range | Risk Score | Color |
+|-------|----------------|-----------|-------|
+| Normal | Single country/region < 20% | 1-3 | 🟢 |
+| Watch | 20% ≤ Single country/region < 35% | 4-5 | 🟡 |
+| Warning | 35% ≤ Single country/region < 50% | 6-7 | 🟠 |
+| Danger | Single country/region ≥ 50% | 8-10 | 🔴 |
 
-| 等级 | 阈值区间 | 风险分 | 颜色 |
-|------|---------|--------|------|
-| 正常 | AAA占比 < 30% | 1-3 | 🟢 |
-| 关注 | 30% ≤ AAA占比 < 50% | 4-5 | 🟡 |
-| 警示 | 50% ≤ AAA占比 < 70% | 6-7 | 🟠 |
-| 危险 | AAA占比 ≥ 70% | 8-10 | 🔴 |
+**Threshold Rationale:**
 
-**阈值理由：**
+| Dimension | Description |
+|-----------|-------------|
+| Historical Basis | **Yongcheng Coal case (2020):** Within a regional-level SOE portfolio in a single country/region, Yongcheng Coal + Henan Energy + Zhengzhou Coal accounted for over 45% of the region's credit bond outstanding. After the Yongcheng default, the country/region's overall credit spread jumped from 120bp to 400bp+, and financing costs for unrelated enterprises in the same region rose over 200bp. **Regional SOE default waves:** Over a multi-year period, a series of defaults in a single region triggered a "regional credit isolation" effect, with new issuance rates in affected regions systematically 200-300bp higher than in core markets. **Sub-sovereign debt stress:** In a concentrated sub-sovereign debt region where outstanding bonds accounted for > 10% of the national total, a major debt extension event caused regional credit spreads to widen 600bp+, with cross-regional contagion to other weaker regions |
+| Theoretical Basis | Regional credit risk "contagion radius" research (Caesar, 2021) shows that regional resonance effects from defaults within the same country/region begin to manifest when share > 20%, entering a nonlinear acceleration zone when > 35%. Each 10-percentage-point decline in regional fiscal health approximately doubles the default probability of enterprises in that region |
+| Exceptions | When the single country/region is a major financial hub and all issuers are AAA-rated sovereigns or supranationals, thresholds may be increased to 30%; when single country/region exposure is entirely concentrated in national-level government agencies (not sub-sovereign) and general public budget revenue > $80B, thresholds may be increased to 35% |
 
-| 维度 | 说明 |
-|------|------|
-| 历史依据 | 永煤控股违约前外部评级AAA/稳定，直至违约17个月后评级才下调至BB；紫光集团违约前同样维持AAA/稳定评级，违约后降至D；华晨汽车2020年10月违约前外部评级AAA，违约后直接进入破产重整。大量AAA债券在中国市场上存在严重的评级泡沫——AAA及AA+级债券占信用债市场存量的70%以上，而美国高收益债(非投资级)占比约30%。2020年11月永煤违约后，AAA国企信仰崩塌，AAA级债券信用利差从80bp跳升至200bp+ |
-| 理论依据 | 评级机构的信息价值理论(Bolton, Freixas & Shapiro, 2012)：当市场中超过60%的债券被打上最高评级(AAA)时，评级的信号功能完全丧失。中国信用债市场的AAA占比是美国市场的3倍以上(美国AAA级公司债占比<5%)，这意味着中国AAA评级几乎不包含区分度。风险约 17个月的评级滞后窗口(Becker & Milbourn, 2011的评级通胀理论在中国市场的验证)意味着任何AAA占比>50%的组合都存在严重的"评级滞后集中风险" |
-| 例外情况 | 当组合全部为利率债(国债/国开债/央票)或类利率债(铁道债/汇金债)时，AAA占比阈值不适用——这些工具违约风险趋近于零，AAA评级具有实际意义；当组合为纯高收益策略时，AAA占比天然<10%，无需施加上限阈值 |
+#### 3.3.2 Peripheral/Weaker Region Total Share Thresholds
 
-#### 4.3.2 "伪高评级"占比阈值
+| Level | Threshold Range | Risk Score | Color |
+|-------|----------------|-----------|-------|
+| Normal | Peripheral regions < 10% | 1-3 | 🟢 |
+| Watch | 10% ≤ Peripheral regions < 20% | 4-5 | 🟡 |
+| Warning | 20% ≤ Peripheral regions < 35% | 6-7 | 🟠 |
+| Danger | Peripheral regions ≥ 35% | 8-10 | 🔴 |
 
-| 等级 | 阈值区间 | 风险分 | 颜色 |
-|------|---------|--------|------|
-| 正常 | 伪高评级 < 5% | 1-3 | 🟢 |
-| 关注 | 5% ≤ 伪高评级 < 15% | 4-5 | 🟡 |
-| 警示 | 15% ≤ 伪高评级 < 30% | 6-7 | 🟠 |
-| 危险 | 伪高评级 ≥ 30% | 8-10 | 🔴 |
+**Threshold Rationale:**
 
-**阈值理由：**
+| Dimension | Description |
+|-----------|-------------|
+| Historical Basis | Sub-sovereign debt from weaker regions as a share of national total rose from 8.7% to 12.3% over a multi-year period, while related default/extension events accounted for 31% of national sub-sovereign risk events. Portfolios with > 30% exposure to peripheral regions experienced average recovery rates of only 38% after defaults, compared to the national average of 52% — a 14-percentage-point gap |
+| Theoretical Basis | The "credit isolation" effect in weaker regions (Rajan & Zingales, 1998, adapted): the financing recovery cycle for peripheral/challenged regions after a credit event is 2-3x longer than for stronger regions. When peripheral exposure > 20%, portfolio liquidity risk enters a nonlinear acceleration zone |
+| Exceptions | If peripheral exposure consists entirely of national-level government debt with central government transfer payment share > 50%, peripheral thresholds may be adjusted upward by 5 percentage points; if peripheral exposure includes strategic national project bonds (such as special-purpose infrastructure bonds), that portion may be excluded from peripheral calculations |
 
-| 维度 | 说明 |
-|------|------|
-| 历史依据 | 引擎的4个历史回溯验证案例全部与"伪高评级"相关——永煤(外部AAA/内部C)、紫光(外部AAA/内部CCC)、华晨(外部AAA/内部B)、协鑫集成(外部AA+/内部B)。在T-17个月的验证时点，这4家发行人的"伪高评级"信号已经全部触发(外部AAA且内部<BBB)，但市场上没有组合风控框架能够识别这一信号。2023年某大型保险资管的持仓诊断显示，其AAA级组合中有23%的发行人在引擎内部评级中≤BBB——这意味着该组合的"伪高评级"占比达23%，落入警示区间(🟠) |
-| 理论依据 | "评级偏差集中度"概念是引擎的原创贡献。传统信用风险理论仅关注"评级迁移风险"(rating migration risk)——即外部评级下调的概率和幅度。但忽视了一个更危险的结构性问题：**当组合中大量发行人的外部评级被系统性高估时，组合的真实信用质量在"高评级"维度上形成了虚假集中。** 一旦外部评级开始集中下调（如永煤违约后的AAA国企评级下调潮），组合名义评级将如多米诺骨牌般坍塌 |
-| 例外情况 | 若内部评级系统本身对特定行业(如城投债)存在系统性保守偏差(即内部评级通常低于外部评级1-2档)，则伪高评级占比的阈值可调整为公司适用的偏差校准因子；当发行人有明确的外部支持(如央企子公司)且引擎外部支持框架评估为"强支持"时，该发行人可从伪高评级计算中剔除 |
+#### 3.3.3 Regional Fiscal Health Weighted Adjustment
 
-### 4.4 评级集中度综合判定流程
+The regional fiscal health weighted share serves as a supplementary indicator that modifies the single country/region share and peripheral region share:
 
-```
-步骤1：计算外部AAA占比风险分
-步骤2：计算伪高评级占比风险分
-步骤3：取两者中较高分为基础分
-步骤4：检查内外评级偏离方向
-  ├── 若大多数发行人的外部评级 > 内部评级（系统性偏高）
-  │   └── 基础分 + 1（评级系统性泡沫惩罚）
-  ├── 若大多数发行人的外部评级 ≤ 内部评级（保守评级）
-  │   └── 基础分不调整（安全方向偏离）
-  └── 若评级偏离方向分散（部分高估部分低估）
-      └── 基础分不调整
-步骤5：检查评级分散度——若80%以上发行人集中在连续2个外部评级档内
-  ├── 即使AAA占比不高，也构成评级集中 → 基础分 + 1
-  └── 因为评级密集本身降低了降级缓冲空间
-步骤6：输出评级集中度最终风险分(1-10)
-```
+| Weighted vs Raw Deviation | Adjustment Rule | Applicable Condition |
+|-------------------------|----------------|---------------------|
+| Weighted < Raw | No adjustment | Region's fiscal health above average |
+| Weighted > Raw but deviation < 10pp | Raw risk score + 1 | Region's fiscal health below average |
+| Weighted > Raw and deviation 10-20pp | Raw risk score + 2 | Significant regional fiscal pressure (e.g., land concession revenue decline > 30%) |
+| Weighted > Raw and deviation > 20pp | Raw risk score + 3 | Regional fiscal distress (e.g., general public budget revenue declining 2 consecutive years) |
 
-### 4.5 外部评级滞后验证数据
+### 3.4 Regional Resonance Analysis with Contagion Matrix
 
-以下数据验证了"外部评级集中本身就是风险信号"的逻辑：
+According to the [Contagion Matrix](contagion-matrix.md) §4.1 Principle 3 (intra-regional dependency transmission is high), regional concentration risk is amplified through the following pathways:
 
-| 发行人 | 外部评级(违约前T月) | 引擎内部评级(T-17月) | 伪高评级信号 | 实际违约时间 |
-|-------|-------------------|--------------------|------------|------------|
-| 永煤控股 | AAA/稳定(T=0) | C(T=-17个月) | ✅ 触发 | 2020年11月 |
-| 紫光集团 | AAA/稳定(T=0) | CCC(T=-17个月) | ✅ 触发 | 2020年11月 |
-| 华晨汽车 | AAA/稳定(T=0) | B(T=-22个月) | ✅ 触发 | 2020年10月 |
-| 协鑫集成 | AA+/稳定(T=0) | B(T=-12个月) | ✅ 触发 | 2021年8月(技术性违约) |
-| 苏宁易购 | AAA/稳定(T=0) | B(T=-12个月) | ✅ 触发 | 2021年6月(交叉违约) |
+> **Cross-document consumption note:** When the Concentration Framework references the Contagion Matrix, it only consumes each cell's **`intensity`** and **`direction`** fields, used to identify contagion strength and determine uni/bidirectional relationships. The `type`, `confidence`, and `historical_cases` fields do not enter the quantitative calculation in the current v0.8.4-release.
 
-**关键发现：** 引擎的伪高评级信号在5个验证案例中均提前12-22个月触发。若组合风控框架纳入伪高评级占比指标，这些"AAA级"信用事件本可被提前识别。
+| Regional Resonance Pathway | Contagion Intensity | Logic Description |
+|--------------------------|-------------------|-------------------|
+| LGFV ↔ Transportation | 4 (Bidirectional Strong) | LGFV default → regional transportation SOE financing freeze; transportation default → LGFV credit revaluation |
+| LGFV ↔ Solar/PV | 3 (Bidirectional Moderate) | LGFV default → regional solar farm financing difficulty; solar default → LGFV park revenue decline |
+| LGFV ↔ Data Centers | 3 (Bidirectional Moderate) | Data center parks depend on LGFV — LGFV default → IDC project disruption |
+| LGFV ↔ NEV/Semiconductors/Advanced Equipment | 2 (Unidirectional Weak) | Industrial parks depend on LGFV infrastructure support |
+| Major Financial Hub Regional Resonance | 1 (Very Weak) | Diversified economic structure weakens regional resonance effects |
+| Peripheral Region Resonance | 3-5 depending on event type | Peripheral regions exhibit significant "all-in-the-same-boat" effects |
 
----
-
-## 五、维度四：期限集中度
-
-### 5.1 指标定义
-
-| 指标 | 计算公式 | 数据来源 |
-|------|---------|---------|
-| 未来12个月到期占比 | 未来12个月内到期的债券金额 / 总持仓面值 | 债券到期日·本金偿还计划 |
-| 未来24个月到期占比 | 未来24个月内到期的债券金额 / 总持仓面值 | 同上·累计计算 |
-| 未来36个月到期占比 | 未来36个月内到期的债券金额 / 总持仓面值 | 同上·累计计算 |
-| 单月到期峰值 | 单月最大到期金额 / 总持仓面值 | 逐月到期分布 |
-| 到期集中度系数 | (最大单月到期 / 月均到期) - 1 | 由前两项计算 |
-
-### 5.2 债务到期排程方法
-
-本维度的到期排程方法引用[财务深度分析子模块](financial-deep-dive.md)§C（债务到期排程）的定义：
-
-> **核心理念：** 不是看"短期债务占比"（静态快照），而是看未来12/24/36个月的到期债务分布（动态到期排程）。
-
-数据来源路径继承自financial-deep-dive.md的C.1节，从短期借款、一年内到期的非流动负债、应付债券、长期借款四个科目汇总到期分布。本框架扩展至组合层面，将单个发行人的到期排程汇总为组合级别的期限集中度指标。
-
-### 5.3 阈值体系
-
-#### 5.3.1 未来12个月到期占比阈值
-
-| 等级 | 阈值区间 | 风险分 | 颜色 |
-|------|---------|--------|------|
-| 正常 | 12个月内到期 < 30% | 1-3 | 🟢 |
-| 关注 | 30% ≤ 12个月内到期 < 50% | 4-5 | 🟡 |
-| 警示 | 50% ≤ 12个月内到期 < 70% | 6-7 | 🟠 |
-| 危险 | 12个月内到期 ≥ 70% | 8-10 | 🔴 |
-
-**阈值理由：**
-
-| 维度 | 说明 |
-|------|------|
-| 历史依据 | **永煤(2020)：** 违约前2020年Q1到期债务占全年63%，12个月内到期占比约70%，单月最高到期集中在11月(正是违约月)。当市场窗口因永煤违约而关闭时，其无法续作到期债务。**紫光(2020)：** 2020年下半年到期债务约200亿元，占存量债券的65%，7-10月密集到期，最终在11月触发违约。**华晨(2020)：** 2020年10月22日到期私募债(17华汽05)是触发违约的直接导火索，当期到期债务占全年52% |
-| 理论依据 | 期限集中度的"再融资风险"理论(Diamond, 1991)：当企业/组合在短期内需要大量再融资时，面临"市场窗口关闭"的系统性风险。再融资风险由三个因素决定——到期金额(量)、到期集中度(分布)、市场融资条件(外部环境)。12个月内到期>30%时再融资风险开始显现，>50%时进入危险区，>70%时即使轻微市场冲击也可能触发流动性危机。2020年11月中国信用债市场取消发行率高达25%——若组合12个月内到期占比>70%，在这样的市场环境下几乎无法完成再融资 |
-| 例外情况 | 若组合中包含大量银行授信覆盖(授信覆盖率>2.0x)，12个月到期阈值可上调10个百分点；若组合中大部分为短融/超短融(实质上是银行间市场滚动融资工具)，且组合中银行间市场会员占比>80%，阈值可上调至35%；若组合所处的宏观融资环境宽松(如宽信用周期、降息通道)，阈值可上浮5个百分点 |
-
-#### 5.3.2 未来24个月到期占比阈值
-
-| 等级 | 阈值区间 | 风险分 | 颜色 |
-|------|---------|--------|------|
-| 正常 | 24个月内到期 < 50% | 1-3 | 🟢 |
-| 关注 | 50% ≤ 24个月内到期 < 70% | 4-5 | 🟡 |
-| 警示 | 70% ≤ 24个月内到期 < 85% | 6-7 | 🟠 |
-| 危险 | 24个月内到期 ≥ 85% | 8-10 | 🔴 |
-
-**阈值理由：**
-
-| 维度 | 说明 |
-|------|------|
-| 历史依据 | 2021年某AA+房企私募债到期集中在2022-2023年(24个月内到期占比82%)，在2021年下半年地产融资收紧后无法续作，于2022年正式违约。回溯分析显示24个月到期集中度信号在违约前18个月已经触发警示区间 |
-| 理论依据 | 24个月维度覆盖了一个完整信用周期的典型长度(中国信用周期约18-24个月)。24个月内到期占比>70%意味着组合几乎完全暴露在下一次信用紧缩周期中，几乎没有"持券过冬"的安全垫 |
-| 例外情况 | 同上：授信覆盖充足时上浮10pp；若组合配置策略为"买入并持有至到期"且不依赖再融资，24个月阈值可不适用 |
-
-#### 5.3.3 未来36个月到期占比阈值
-
-| 等级 | 阈值区间 | 风险分 | 颜色 |
-|------|---------|--------|------|
-| 正常 | 36个月内到期 < 70% | 1-3 | 🟢 |
-| 关注 | 70% ≤ 36个月内到期 < 85% | 4-5 | 🟡 |
-| 警示 | 85% ≤ 36个月内到期 < 95% | 6-7 | 🟠 |
-| 危险 | 36个月内到期 ≥ 95% | 8-10 | 🔴 |
-
-**阈值理由：**
-
-| 维度 | 说明 |
-|------|------|
-| 历史依据 | 2020年华晨违约前存续债券全部在36个月内到期(100%)，其中24个月内到期的占85%，时间窗口极紧。对比2019年某AAA煤企保持20%的3年以上到期债务，在2020年煤企违约潮中成功避开了最紧张的再融资窗口 |
-| 理论依据 | 36个月是中国债券市场一轮完整牛熊周期的典型跨度。组合中保持>30%的3年以上到期债券实质上构成了"流动性安全垫"——在市场最恶劣的时候仍有不用再融资的持仓 |
-| 例外情况 | 永续债和可续期债从36个月计算中扣除(因其到期日可由发行人决定展期) |
-
-#### 5.3.4 单月到期峰值阈值
-
-| 等级 | 阈值区间 | 风险分 | 颜色 |
-|------|---------|--------|------|
-| 正常 | 单月峰值 < 10% | 1-3 | 🟢 |
-| 关注 | 10% ≤ 单月峰值 < 20% | 4-5 | 🟡 |
-| 警示 | 20% ≤ 单月峰值 < 30% | 6-7 | 🟠 |
-| 危险 | 单月峰值 ≥ 30% | 8-10 | 🔴 |
-
-**阈值理由：**
-
-| 维度 | 说明 |
-|------|------|
-| 历史依据 | 永煤违约发生在11月，其当月到期债券占全年到期总额的28%；紫光11月到期债券占全年的35%——两家均在月度到期高峰时因无法再融资而违约。2022年11月理财赎回潮期间，某基金组合单月到期占比达32%，在理财赎回+信用债取消发行的双重冲击下被迫以折价抛售流动性资产 |
-| 理论依据 | 单月到期集中是期限集中度中最危险的形式——它不是在一年内分散分布的再融资需求，而是一次性到期压力。单月到期>20%时，即使正常市场环境下也会面临较高的续作风险(若该月有大量同类发行人同时到期，承销商承销能力饱和)。>30%时，任何市场冲击都可能导致无法全额续作 |
-| 例外情况 | 单月到期峰值来自同一发行人的同一期债券(而非多只不同债券在同月到期)时，阈值可上调至25%(因同一期债券到期续作谈判更简单) |
-
-### 5.4 期限集中度综合判定流程
+**Regional Concentration Comprehensive Assessment Procedure:**
 
 ```
-步骤1：计算四个指标的风险分
-步骤2：取4个指标中的最高分作为基础分
-步骤3：检查到期分布形态
-  ├── 若到期分布呈"悬崖状"（即单月峰值 >> 其他月份）
-  │   └── 基础分 + 1（悬崖到期惩罚）
-  ├── 若到期分布呈"均匀梯形状"（逐月平稳分布）
-  │   └── 基础分不调整
-  └── 若到期集中度系数 > 2.0（单月峰值为月均的3倍以上）
-      └── 基础分 + 1（极端集中惩罚）
-步骤4：检查组合中发行人的银行授信覆盖率
-  ├── 若组合加权平均授信覆盖率 ≥ 2.0x
-  │   └── 基础分 - 1（授信覆盖缓冲）
-  └── 若组合加权平均授信覆盖率 < 0.5x
-      └── 基础分 + 1（缺乏备用流动性）
-步骤5：输出期限集中度最终风险分(1-10)
+Step 1: Calculate the single country/region share risk score
+Step 2: Calculate the peripheral/weaker region total share risk score
+Step 3: Take the higher of the two as the base score
+Step 4: Apply the regional fiscal health weighted adjustment (§3.3.3)
+Step 5: Identify if there is a high-risk contagion combination within the region (e.g., LGFV + Transportation simultaneous exposure)
+  ├── If simultaneously exposed to LGFV + Transportation → base score + 2 (matrix-validated strong resonance)
+  ├── If simultaneously exposed to LGFV + Solar/PV + Data Centers → base score + 1
+  └── If all exposure is in major financial hubs → base score - 1 (high regional diversification)
+Step 6: Output the final regional concentration risk score (1-10)
 ```
 
 ---
 
-## 六、维度五：融资渠道集中度
+## 4. Dimension 3: Rating Concentration
 
-### 6.1 指标定义
+### 4.1 Metric Definitions
 
-| 融资渠道 | 包括内容 | 数据来源 |
-|---------|---------|---------|
-| **银行渠道** | 银行贷款·银行授信·银团贷款·票据贴现 | 年报附注"银行借款"明细·银行授信额度公告 |
-| **债券渠道** | 信用债(中票·短融·公司债·企业债·定向工具)·ABS·ABN | 债券募集说明书·发行公告·持仓数据 |
-| **非标渠道** | 信托贷款·委托贷款·保理融资·融资租赁(部分)·明股实债 | 年报附注"其他负债"明细·信托公告·裁判文书 |
-| **租赁渠道** | 融资租赁(直租+回租)·经营性租赁的隐性负债部分 | 年报附注"租赁负债"明细 |
-| **股权渠道** | 定增·配股·大宗减持·股权质押融资 | 上市公司公告·股东减持公告 |
+| Metric | Formula | Data Source |
+|--------|---------|-------------|
+| External AAA Share | Holdings of issuers with external AAA rating / Total holdings | External ratings (major Chinese rating agencies) |
+| Internal Rating Distribution | Share of each internal rating tier | Internal credit assessment results |
+| "Pseudo-High Rating" Share | Holdings of issuers with external AAA but internal < BBB / Total holdings | Cross-comparison of external vs internal ratings |
+| Rating Dispersion | Standard deviation of external vs internal rating deviation | External rating vs internal rating |
 
-### 6.2 阈值体系
+### 4.2 Core Philosophy
 
-#### 6.2.1 单一渠道占比阈值
+**This is the engine's most distinctive differentiator:** The deviation between external and internal ratings is itself a signal of concentration risk.
 
-| 等级 | 阈值区间 | 风险分 | 颜色 |
-|------|---------|--------|------|
-| 正常 | 单一渠道 < 50%·多渠道均衡分布 | 1-3 | 🟢 |
-| 关注 | 50% ≤ 单一渠道 < 70% | 4-5 | 🟡 |
-| 警示 | 70% ≤ 单一渠道 < 90%·且该渠道正在收缩 | 6-7 | 🟠 |
-| 危险 | 单一渠道 ≥ 90%·或主要依赖非标/信托 | 8-10 | 🔴 |
+Traditional portfolio risk control only focuses on external rating concentration (AAA share too high or too low), but overlooks a more dangerous scenario — when external ratings "compress" all issuers into high rating bands while internal ratings reveal broad risk dispersion, the portfolio faces rating bubble concentration risk. This is analogous to the AAA rating bubble on CDOs in 2008 — superficially diversified, but in reality highly concentrated on a single dimension of "false safety."
 
-**阈值理由：**
+| Concept | Definition | Risk Implication |
+|---------|-----------|-----------------|
+| Externally Diversified | AAA/A/BBB each ~30% | Superficially diversified, but external ratings lag by ~17 months (Yongcheng/Tsinghua/Brilliance were all AAA-rated before default) |
+| Externally Concentrated | AAA share > 50% | Rating bubble — when an AAA default occurs, a large number of "pseudo-AAA" issuers will be simultaneously exposed |
+| Pseudo-High Rating Concentration | External AAA but internal < BBB share > 15% | Most dangerous concentration — internal ratings have already identified risk, but the portfolio is nominally still "high-grade" |
+| Internal-External Rating Deviation Concentration | Deviation is consistent and in the same direction | Systematic bias — could be a rating agency methodology issue or engine calibration deviation |
 
-| 维度 | 说明 |
-|------|------|
-| 历史依据 | **债券市场冻结(2020年11月)：** 永煤违约后中国信用债市场取消发行率高达25%，全市场信用债净融资转负。此时若组合中发行人的债券渠道占比>70%，其再融资能力几乎完全冻结。**非标压降政策(2018-2023)：** 资管新规后非标融资持续萎缩，年均降幅约30%。主要依赖非标融资的发行人中，2022年城投非标违约数量同比增长45%。**银行信贷收紧周期(2021年地产)：** 恒大违约后银行业对房地产行业授信全面收紧，地产企业银行渠道占比从2020年的55%降至2023年的35%，仅依赖银行渠道的房企在信贷收紧后融资渠道断裂 |
-| 理论依据 | "融资渠道多样性"理论(Gertler & Gilchrist, 1994)：企业在不同融资渠道间的切换能力是信用弹性的重要组成部分。单一渠道占比>70%时，企业丧失了"切换弹性"(switching flexibility)。更危险的情况是当该渠道收缩时(如债券市场冻结、非标压降、银行信贷收紧)，融资渠道集中度风险瞬时转化为流动性危机。"融资渠道脆弱性"梯队：①非标/信托 > ②债券市场 > ③银行信贷 > ④股权 > ⑤租赁(相对脆弱度排序) |
-| 例外情况 | 若单一渠道为银行渠道且发行人已获得"综合授信额度可循环使用"承诺，或发行人为银行集团内部核心客户(核心授信占比>80%)，单一渠道阈值可上调至80%；若发行人同时具备上市公司身份+银行授信+债券市场融资资质三个融资渠道且均>20%，即使单一渠道>50%也可下调风险分1级(因其具备多个备用渠道的实质切换能力) |
+### 4.3 Threshold System
 
-#### 6.2.2 融资渠道脆弱度评估
+#### 4.3.1 External AAA Share Thresholds
 
-| 融资渠道 | 脆弱度评分(1无-5极) | 脆弱度理由 | 最近3年渠道收缩幅度 |
-|---------|-------------------|-----------|------------------|
-| **非标/信托** | 5(极度脆弱) | 资管新规持续压降·非标回表趋势不可逆·信托行业持续整顿·非标违约后司法追偿周期长(平均18-24个月) | 年均-30% |
-| **债券市场** | 4(高度脆弱) | 市场窗口受信用事件影响剧烈波动·取消发行率在压力环境下可达25%+·投资者结构同质化(银行理财+基金)导致行为趋同 | 2022年11月单月-45%(理财赎回潮) |
-| **银行信贷** | 3(中度脆弱) | 受货币政策周期影响·但具有关系型融资的稳定性·大型银行信贷相对稳定·中小银行受区域风险影响大 | 信用紧缩期约-15% |
-| **股权融资** | 2(较低脆弱) | 受二级市场行情影响·但定增/配股不存在"到期偿还"压力·无刚性兑付义务·仅受估值和监管窗口影响 | 熊市期约-40%(但不用偿还) |
-| **租赁融资** | 3(中度脆弱) | 受设备投资周期影响·但租赁物具有抵押品价值·回租模式相对灵活·售后回租受限后影响较大 | 银保监会12号文后约-20% |
+| Level | Threshold Range | Risk Score | Color |
+|-------|----------------|-----------|-------|
+| Normal | AAA share < 30% | 1-3 | 🟢 |
+| Watch | 30% ≤ AAA share < 50% | 4-5 | 🟡 |
+| Warning | 50% ≤ AAA share < 70% | 6-7 | 🟠 |
+| Danger | AAA share ≥ 70% | 8-10 | 🔴 |
 
-### 6.3 渠道收缩监测
+**Threshold Rationale:**
 
-融资渠道集中度的风险不仅取决于当前结构，更取决于渠道走向：
+| Dimension | Description |
+|-----------|-------------|
+| Historical Basis | Yongcheng Coal maintained AAA/stable external rating until 17 months before default, and was only downgraded to BB after the event. Tsinghua Unigroup similarly maintained AAA/stable before default, then was downgraded to D. Brilliance Auto had an AAA rating before its October 2020 default, then entered bankruptcy restructuring. Massive rating inflation was observed — AAA and AA+ rated bonds constituted over 70% of the credit bond market, compared to high-yield (non-investment grade) bonds representing ~30% in the U.S. market. After the November 2020 AAA default, the "AAA SOE guarantee" belief collapsed, and AAA credit spreads jumped from 80bp to 200bp+ |
+| Theoretical Basis | Rating agency information value theory (Bolton, Freixas & Shapiro, 2012): when over 60% of bonds in a market carry the highest rating (AAA), the signaling function of ratings is completely lost. The AAA bond share was 3x higher than in the U.S. market (where AAA corporate bonds represent < 5%), meaning AAA ratings offered almost no differentiation. The approximately 17-month rating lag window (Becker & Milbourn, 2011's rating inflation theory validated in practice) means any portfolio with AAA share > 50% faces severe "rating lag concentration risk" |
+| Exceptions | When the portfolio consists entirely of sovereign bonds (government bonds, agency bonds) or quasi-sovereign bonds (railway bonds, central bank notes), AAA share thresholds do not apply — these instruments have near-zero default risk and AAA ratings are meaningful. When the portfolio follows a pure high-yield strategy, AAA share is naturally < 10%, and no upper threshold is needed |
 
-| 监测指标 | 渠道 | 预警阈值 | 风险含义 |
-|---------|------|---------|---------|
-| 取消发行率 | 债券 | 连续2周>15% | 债券市场窗口正在关闭 |
-| 信贷增速 | 银行 | 同比增速<8% | 银行信贷进入紧缩周期 |
-| 非标余额变化 | 非标 | 同比降幅>20% | 非标压降加速，非标融资渠道正在消失 |
-| 股权融资额 | 股权 | 连续2季度同比下降 | 股权融资渠道收窄 |
-| 租赁监管政策 | 租赁 | 新规限制回租/额度 | 租赁渠道受限 |
+#### 4.3.2 "Pseudo-High Rating" Share Thresholds
 
-**渠道收缩与集中度的协同效应：**
+| Level | Threshold Range | Risk Score | Color |
+|-------|----------------|-----------|-------|
+| Normal | Pseudo-high rating < 5% | 1-3 | 🟢 |
+| Watch | 5% ≤ Pseudo-high rating < 15% | 4-5 | 🟡 |
+| Warning | 15% ≤ Pseudo-high rating < 30% | 6-7 | 🟠 |
+| Danger | Pseudo-high rating ≥ 30% | 8-10 | 🔴 |
 
-| 情景 | 协同风险分调整 |
-|------|--------------|
-| 债券渠道>70% + 取消发行率>15% | 基础分 + 2 (双锁定——渠道集中+该渠道正在关闭) |
-| 非标渠道>50% + 非标余额同比降幅>20% | 基础分 + 3 (双锁定——渠道集中+该渠道在快速消失) |
-| 银行渠道>70% + 信贷增速<8% | 基础分 + 1 (轻度——银行信贷收缩速度慢于债券/非标) |
-| 全部渠道同时具备且单一<50% | 基础分 - 1 (融资渠道高度多元化奖励) |
+**Threshold Rationale:**
 
-### 6.4 融资渠道集中度综合判定流程
+| Dimension | Description |
+|-----------|-------------|
+| Historical Basis | All 4 historical backtest validation cases were related to "pseudo-high ratings" — Yongcheng Coal (external AAA / internal C), Tsinghua Unigroup (external AAA / internal CCC), Brilliance Auto (external AAA / internal B), GCL System Integration (external AA+ / internal B). At the T-17 month validation point, the "pseudo-high rating" signal had already triggered for all 4 issuers (external AAA and internal < BBB), but no portfolio risk control framework could identify this signal. A 2023 portfolio diagnostic of a large insurance asset manager showed 23% of its AAA-rated portfolio had internal ratings ≤ BBB — meaning the portfolio's "pseudo-high rating" share was 23%, falling into the warning range (🟠) |
+| Theoretical Basis | The "rating deviation concentration" concept is the engine's original contribution. Traditional credit risk theory only focuses on "rating migration risk" — the probability and magnitude of external rating downgrades. But it overlooks a more dangerous structural problem: **when a large number of issuers in a portfolio have systematically inflated external ratings, the portfolio's true credit quality forms a false concentration in the "high rating" dimension.** Once external ratings begin to be downgraded en masse, the portfolio's nominal ratings will collapse like dominoes |
+| Exceptions | If the internal rating system has a systematic conservative bias toward specific industries (e.g., LGFV bonds, where internal ratings are typically 1-2 notches lower than external), the pseudo-high rating threshold can be adjusted using the applicable calibration factor. When an issuer has explicit external support (e.g., a subsidiary of a sovereign entity) and the engine's external support framework assesses it as "strong support," that issuer may be excluded from pseudo-high rating calculations |
+
+### 4.4 Rating Concentration Comprehensive Assessment Procedure
 
 ```
-步骤1：计算单一渠道占比风险分
-步骤2：识别占比最高的渠道类型
-步骤3：查询该渠道的脆弱度评分(6.2.2节)
-  ├── 极度脆弱(非标) → 基础分 + 3
-  ├── 高度脆弱(债券) → 基础分 + 2
-  ├── 中度脆弱(银行/租赁) → 基础分 + 1
-  └── 较低脆弱(股权) → 基础分不调整
-步骤4：检查该渠道是否正在收缩(6.3节)
-  ├── 正在显著收缩 → 基础分 + 协同调整(按6.3节表)
-  ├── 渠道稳定 → 不调整
-  └── 渠道扩张(如宽信用周期) → 基础分 - 1
-步骤5：检查发行人融资渠道切换能力
-  ├── 仅1个渠道可用 → 基础分 + 2
-  ├── 2-3个渠道可用 → 不调整
-  ├── 4个以上渠道可用 → 基础分 - 1
-  └── 具备上市公司身份+银行授信+债券市场资质 → 基础分 - 1
-步骤6：输出融资渠道集中度最终风险分(1-10)
+Step 1: Calculate the external AAA share risk score
+Step 2: Calculate the pseudo-high rating share risk score
+Step 3: Take the higher of the two as the base score
+Step 4: Check the direction of internal-external rating deviation
+  ├── If most issuers have external rating > internal rating (systematically inflated)
+  │   └── Base score + 1 (systematic rating bubble penalty)
+  ├── If most issuers have external rating ≤ internal rating (conservative ratings)
+  │   └── No adjustment (safe direction)
+  └── If rating deviation is mixed (some inflated, some conservative)
+      └── No adjustment
+Step 5: Check rating dispersion — if > 80% of issuers are concentrated in 2 consecutive external rating notches
+  ├── Even if AAA share is not high, this constitutes rating concentration → base score + 1
+  └── Because rating density itself reduces downgrade buffer space
+Step 6: Output the final rating concentration risk score (1-10)
+```
+
+### 4.5 External Rating Lag Validation Data
+
+The following data validates the logic that "external rating concentration itself is a risk signal":
+
+| Issuer | External Rating (T months before default) | Engine Internal Rating (T-17 months) | Pseudo-High Rating Signal | Actual Default Time |
+|--------|------------------------------------------|--------------------------------------|--------------------------|---------------------|
+| Yongcheng Coal | AAA/stable (T=0) | C (T=-17 months) | ✅ Triggered | Nov 2020 |
+| Tsinghua Unigroup | AAA/stable (T=0) | CCC (T=-17 months) | ✅ Triggered | Nov 2020 |
+| Brilliance Auto | AAA/stable (T=0) | B (T=-22 months) | ✅ Triggered | Oct 2020 |
+| GCL System Integration | AA+/stable (T=0) | B (T=-12 months) | ✅ Triggered | Aug 2021 (technical default) |
+| Suning.com | AAA/stable (T=0) | B (T=-12 months) | ✅ Triggered | Jun 2021 (cross-default) |
+
+**Key Finding:** The engine's pseudo-high rating signal was triggered 12-22 months in advance for all 5 validation cases. Had portfolio risk control frameworks included a pseudo-high rating share metric, these "AAA-rated" credit events could have been identified early.
+
+---
+
+## 5. Dimension 4: Maturity Concentration
+
+### 5.1 Metric Definitions
+
+| Metric | Formula | Data Source |
+|--------|---------|-------------|
+| Next 12 Months Maturity Share | Bond amount maturing within 12 months / Total portfolio face value | Bond maturity date · Principal repayment schedule |
+| Next 24 Months Maturity Share | Bond amount maturing within 24 months / Total portfolio face value | Same as above · Cumulative |
+| Next 36 Months Maturity Share | Bond amount maturing within 36 months / Total portfolio face value | Same as above · Cumulative |
+| Single Month Maturity Peak | Maximum monthly maturity amount / Total portfolio face value | Monthly maturity distribution |
+| Maturity Concentration Coefficient | (Maximum single month maturity / Average monthly maturity) - 1 | Derived from the above |
+
+### 5.2 Debt Maturity Scheduling Method
+
+The maturity scheduling method for this dimension references the definitions in the [Financial Deep Dive Module](financial-deep-dive.md) §C (Debt Maturity Scheduling):
+
+> **Core Philosophy:** It is not about "short-term debt ratio" (static snapshot), but about the distribution of debt maturing over the next 12/24/36 months (dynamic maturity schedule).
+
+The data source path inherits from financial-deep-dive.md §C.1, aggregating maturity distributions from four balance sheet items: short-term borrowings, current portion of non-current liabilities, bonds payable, and long-term borrowings. This framework extends to the portfolio level, aggregating individual issuer maturity schedules into portfolio-level maturity concentration metrics.
+
+### 5.3 Threshold System
+
+#### 5.3.1 Next 12 Months Maturity Share Thresholds
+
+| Level | Threshold Range | Risk Score | Color |
+|-------|----------------|-----------|-------|
+| Normal | 12-month maturity < 30% | 1-3 | 🟢 |
+| Watch | 30% ≤ 12-month maturity < 50% | 4-5 | 🟡 |
+| Warning | 50% ≤ 12-month maturity < 70% | 6-7 | 🟠 |
+| Danger | 12-month maturity ≥ 70% | 8-10 | 🔴 |
+
+**Threshold Rationale:**
+
+| Dimension | Description |
+|-----------|-------------|
+| Historical Basis | **Yongcheng Coal (2020):** Debt maturing in Q1 2020 accounted for 63% of the full year; 12-month maturity share was approximately 70%, with peak monthly maturity concentrated in November (the default month). When the market window closed after the default, the issuer could not refinance maturing debt. **Tsinghua Unigroup (2020):** Approximately 20 billion in debt maturing in H2 2020 represented 65% of outstanding bonds, with dense maturities from July to October, ultimately triggering default in November. **Brilliance Auto (2020):** A private placement bond maturing on October 22, 2020 was the direct trigger for default, representing 52% of the year's total maturing debt |
+| Theoretical Basis | Maturity concentration "refinancing risk" theory (Diamond, 1991): when a company/portfolio needs substantial refinancing in a short period, it faces the systemic risk of "market window closure." Refinancing risk is determined by three factors — amount (volume), maturity concentration (distribution), and market financing conditions (external environment). Refinancing risk becomes apparent when 12-month maturity > 30%, enters danger zone when > 50%, and even a mild market shock can trigger a liquidity crisis when > 70% |
+| Exceptions | If the portfolio has substantial bank credit line coverage (coverage ratio > 2.0x), the 12-month threshold may be increased by 10 percentage points. If most holdings are short-term notes/commercial paper (effectively interbank market rolling financing instruments) and interbank market member share > 80%, the threshold may be increased to 35%. If the macro financing environment is accommodative (e.g., accommodative credit cycle, rate-cutting cycle), the threshold may be raised by 5 percentage points |
+
+#### 5.3.2 Next 24 Months Maturity Share Thresholds
+
+| Level | Threshold Range | Risk Score | Color |
+|-------|----------------|-----------|-------|
+| Normal | 24-month maturity < 50% | 1-3 | 🟢 |
+| Watch | 50% ≤ 24-month maturity < 70% | 4-5 | 🟡 |
+| Warning | 70% ≤ 24-month maturity < 85% | 6-7 | 🟠 |
+| Danger | 24-month maturity ≥ 85% | 8-10 | 🔴 |
+
+**Threshold Rationale:**
+
+| Dimension | Description |
+|-----------|-------------|
+| Historical Basis | A certain issuer's private placement bonds maturing in 2022-2023 (24-month maturity share of 82%) could not be refinanced after credit tightening began in H2 2021, ultimately defaulting in 2022. Retrospective analysis shows the 24-month maturity concentration signal had already triggered the warning range 18 months before default |
+| Theoretical Basis | The 24-month dimension covers a typical full credit cycle length (credit cycles typically run 18-24 months). 24-month maturity > 70% means the portfolio is almost fully exposed to the next credit tightening cycle with almost no "hold-through-the-winter" buffer |
+| Exceptions | Same as above: when credit line coverage is adequate, increase threshold by 10pp; if the portfolio strategy is "buy and hold to maturity" and does not rely on refinancing, the 24-month threshold may not apply |
+
+#### 5.3.3 Next 36 Months Maturity Share Thresholds
+
+| Level | Threshold Range | Risk Score | Color |
+|-------|----------------|-----------|-------|
+| Normal | 36-month maturity < 70% | 1-3 | 🟢 |
+| Watch | 70% ≤ 36-month maturity < 85% | 4-5 | 🟡 |
+| Warning | 85% ≤ 36-month maturity < 95% | 6-7 | 🟠 |
+| Danger | 36-month maturity ≥ 95% | 8-10 | 🔴 |
+
+**Threshold Rationale:**
+
+| Dimension | Description |
+|-----------|-------------|
+| Historical Basis | Before default, one issuer had 100% of outstanding bonds maturing within 36 months, of which 85% matured within 24 months — an extremely tight time window. In contrast, a comparable issuer maintaining 20% of debt with > 3-year maturity successfully navigated the tightest refinancing window during the default wave |
+| Theoretical Basis | 36 months is the typical span of a full bull-bear credit cycle. Maintaining > 30% of bonds with > 3-year maturity effectively constitutes a "liquidity safety cushion" — holdings that never need refinancing even under the worst market conditions |
+| Exceptions | Perpetual bonds and extendable bonds are excluded from 36-month calculations (since their maturity can be extended at the issuer's discretion) |
+
+#### 5.3.4 Single Month Maturity Peak Thresholds
+
+| Level | Threshold Range | Risk Score | Color |
+|-------|----------------|-----------|-------|
+| Normal | Single month peak < 10% | 1-3 | 🟢 |
+| Watch | 10% ≤ Single month peak < 20% | 4-5 | 🟡 |
+| Warning | 20% ≤ Single month peak < 30% | 6-7 | 🟠 |
+| Danger | Single month peak ≥ 30% | 8-10 | 🔴 |
+
+**Threshold Rationale:**
+
+| Dimension | Description |
+|-----------|-------------|
+| Historical Basis | Yongcheng Coal's default occurred in November; its maturing bonds that month represented 28% of the annual total. Tsinghua Unigroup's November maturities represented 35% of the annual total — both defaulted at monthly peak maturity when refinancing was impossible. During a systemic redemption crisis, a fund portfolio with a 32% single-month maturity peak was forced to sell liquid assets at distressed prices under the double shock of redemptions and bond issuance cancellations |
+| Theoretical Basis | Single-month maturity concentration is the most dangerous form of maturity concentration — it is not a refinancing need distributed over a year, but a one-time maturity pressure. When single-month maturity > 20%, even under normal market conditions there is elevated rollover risk (if many similar issuers mature in the same month, underwriter capacity is saturated). When > 30%, any market shock can prevent full rollover |
+| Exceptions | If the single-month peak comes from a single bond issue of one issuer (rather than multiple different bonds maturing in the same month), the threshold may be increased to 25% (as a single bond issue rollover negotiation is simpler) |
+
+### 5.4 Maturity Concentration Comprehensive Assessment Procedure
+
+```
+Step 1: Calculate the risk scores for the four metrics
+Step 2: Take the highest score among the 4 metrics as the base score
+Step 3: Check the maturity distribution pattern
+  ├── If the distribution is "cliff-shaped" (single month peak >> other months)
+  │   └── Base score + 1 (cliff maturity penalty)
+  ├── If the distribution is "uniformly terraced" (smooth monthly distribution)
+  │   └── No adjustment
+  └── If the maturity concentration coefficient > 2.0 (single month peak > 3x monthly average)
+      └── Base score + 1 (extreme concentration penalty)
+Step 4: Check the portfolio's weighted average credit line coverage
+  ├── If weighted average credit line coverage ≥ 2.0x
+  │   └── Base score - 1 (credit line coverage buffer)
+  └── If weighted average credit line coverage < 0.5x
+      └── Base score + 1 (lack of backup liquidity)
+Step 5: Output the final maturity concentration risk score (1-10)
 ```
 
 ---
 
-## 七、集中度→评级调整映射
+## 6. Dimension 5: Funding Channel Concentration
 
-**版本**: v0.8.4-release | **日期**: 2026-07-10 | **状态**: 已发布
+### 6.1 Metric Definitions
 
-五维集中度综合评分标识了组合在五个维度上的集中度风险等级（🟢🟡🟠🔴），但未直接回答一个核心问题："集中度风险如何影响单个发行人的信用评级？" 本节建立从维度超阈值到发行人评级调整的映射规则。
+| Funding Channel | Included Items | Data Source |
+|----------------|---------------|-------------|
+| **Bank Channel** | Bank loans · Bank credit lines · Syndicated loans · Bill discounting | Annual report notes "bank borrowings" detail · Bank credit line announcements |
+| **Bond Channel** | Credit bonds (MTN · CP · Corporate bonds · Enterprise bonds · PPN) · ABS · ABN | Bond prospectus · Issuance announcements · Portfolio data |
+| **Non-Standard Channel** | Trust loans · Entrusted loans · Factoring financing · Finance leases (partial) · Equity disguised as debt | Annual report notes "other liabilities" detail · Trust announcements · Court judgments |
+| **Leasing Channel** | Finance leases (direct + sale-leaseback) · Implicit operating lease liabilities | Annual report notes "lease liabilities" detail |
+| **Equity Channel** | Private placements · Rights offerings · Block trades · Equity pledge financing | Listed company announcements · Shareholder reduction announcements |
 
-### 7.1 单维度超阈值→单发行人评级调整
+### 6.2 Threshold System
 
-每个维度独立超阈值时，对组合内每个发行人的基准评级调整（调整单位为子级/notch）：
+#### 6.2.1 Single Channel Share Thresholds
 
-| 维度 | 🟡关注 | 🟠警示 | 🔴危险 |
-|------|--------|--------|--------|
-| **行业集中度** | 0 | -0.5子级（行业处于下行周期时） | -1子级（行业处于下行周期时，且该行业为超级传染者） |
-| **区域集中度** | 0 | -0.5子级（弱区域时） | -1子级（弱区域且区域内已有违约） |
-| **评级集中度** | 0 | -0.5子级（伪高评级占比>15%） | -1子级（伪高评级>30%，参照永煤/紫光/华晨） |
-| **期限集中度** | 0 | -0.5子级 | -1子级 |
-| **融资渠道集中度** | 0 | -0.5子级（依赖渠道正在收缩） | -1子级（渠道脆弱且正在冻结） |
+| Level | Threshold Range | Risk Score | Color |
+|-------|----------------|-----------|-------|
+| Normal | Single channel < 50% · Multi-channel balanced distribution | 1-3 | 🟢 |
+| Watch | 50% ≤ Single channel < 70% | 4-5 | 🟡 |
+| Warning | 70% ≤ Single channel < 90% · and the channel is contracting | 6-7 | 🟠 |
+| Danger | Single channel ≥ 90% · or primarily dependent on non-standard/trust | 8-10 | 🔴 |
 
-**说明：**
-- 🟡关注级别不触发评级调整，仅作为预警信号
-- 🟠警示级别触发-0.5子级调整，需满足括号内条件
-- 🔴危险级别触发-1子级调整，需满足括号内条件
-- 调整适用于组合内所有发行人（行业集中度仅适用于该行业的发行人）
-- 调整幅度为"基准评级"的扣减（基准评级=双轨分析评级）
+**Threshold Rationale:**
 
-### 7.2 多维度叠加规则（非线性）
+| Dimension | Description |
+|-----------|-------------|
+| Historical Basis | **Bond Market Freeze:** After major credit events, bond market cancellation rates can reach 25%, and net financing can turn negative. When an issuer's bond channel share > 70%, refinancing capability is almost completely frozen. **Non-Standard Reduction Policies:** After new asset management regulations, non-standard financing has been declining steadily. Issuers primarily dependent on non-standard financing saw a 45% year-over-year increase in non-standard defaults. **Bank Credit Tightening Cycle:** After major defaults, banks tightened credit to the affected industry comprehensively; real estate enterprises' bank channel share fell from 55% over a multi-year period, and companies relying solely on bank channels experienced funding channel fractures after credit tightening |
+| Theoretical Basis | "Funding Channel Diversity" theory (Gertler & Gilchrist, 1994): an enterprise's ability to switch between different funding channels is an important component of credit resilience. When a single channel share > 70%, the enterprise loses "switching flexibility." More dangerously, when that channel is contracting (bond market freeze, non-standard reduction, bank credit tightening), funding channel concentration risk immediately translates into a liquidity crisis. "Funding Channel Vulnerability" ranking: ① Non-standard/Trust > ② Bond Market > ③ Bank Credit > ④ Equity > ⑤ Lease (relative vulnerability ranking) |
+| Exceptions | If the single channel is bank credit and the issuer has a "comprehensive revolving credit line commitment," or the issuer is a core client of a banking group (core credit share > 80%), the single channel threshold may be increased to 80%. If the issuer simultaneously has listed company status + bank credit lines + bond market financing access, all with > 20% each, the risk score may be reduced by 1 level even if single channel > 50% (due to having multiple backup channels with actual switching capability) |
 
-两个维度同时超阈值不是简单相加——采用非线性递增规则：
+#### 6.2.2 Funding Channel Vulnerability Assessment
 
-| 叠加情况 | 调整幅度 | 理由 |
-|---------|---------|------|
-| 1维🟠 | -0.5子级 | 基线 |
-| 2维🟠 | -1子级 | 两个维度叠加=风险传导可能互相放大 |
-| 3维🟠 | -1.5子级 | — |
-| 4维🟠 | -2子级 | — |
-| 5维全🟠 | 触发系统性风险警报，不适用单发行人调整规则 | — |
-| 1维🔴+1维🟠 | -1.5子级 | 红色维度的严重性被黄色维度放大 |
-| 2维🔴 | -2.5子级 | — |
-| 3维🔴+ | 触发组合极端集中上限，上限BB | — |
+| Funding Channel | Vulnerability Score (1 None - 5 Extreme) | Vulnerability Rationale | Recent 3-Year Channel Contraction |
+|----------------|----------------------------------------|----------------------|-----------------------------------|
+| **Non-Standard/Trust** | 5 (Extremely Vulnerable) | Regulatory crackdowns, irreversible on-balance-sheet trend, ongoing industry rectification, long legal recovery cycles (average 18-24 months) | Annual approx. -30% |
+| **Bond Market** | 4 (Highly Vulnerable) | Market windows highly volatile due to credit events; cancellation rates can reach 25%+ under stress; investor structure homogenization (wealth management products + funds) leads to herding behavior | Up to -45% in a single month during redemption crisis |
+| **Bank Credit** | 3 (Moderately Vulnerable) | Affected by monetary policy cycles, but has relationship-based financing stability; large banks relatively stable; smaller banks affected by regional risk | Approx. -15% during credit tightening |
+| **Equity Financing** | 2 (Low Vulnerability) | Affected by secondary market conditions, but private placements/rights offerings have no "maturity repayment" pressure and no rigid redemption obligation; only affected by valuation and regulatory windows | Approx. -40% in bear markets (but no repayment required) |
+| **Lease Financing** | 3 (Moderately Vulnerable) | Affected by equipment investment cycles, but leased assets have collateral value; sale-leaseback model relatively flexible; more affected after regulatory restrictions | Approx. -20% after regulatory tightening |
 
-**叠加规则使用说明：**
-- 首先识别每个维度的触发状态（🟢/🟡/🟠/🔴）
-- 仅统计🟠和🔴维度数量
-- 查上表得出总调整幅度
-- 当同时存在🔴和🟠时，使用"1维🔴+1维🟠"等级别
-- 3维及以上🔴直接触发组合极端集中上限（上限BB）
+### 6.3 Channel Contraction Monitoring
 
-### 7.3 极端集中触发条件
+The risk of funding channel concentration depends not only on the current structure, but also on the channel trajectory:
 
-以下情况直接触发**组合极端集中上限，上限BB**（非发行人层面一票否决）：
+| Monitoring Indicator | Channel | Warning Threshold | Risk Implication |
+|--------------------|---------|-----------------|------------------|
+| Issuance Cancellation Rate | Bond | > 15% for 2 consecutive weeks | Bond market window is closing |
+| Credit Growth Rate | Bank | YoY growth < 8% | Bank credit entering tightening cycle |
+| Non-Standard Balance Change | Non-Standard | YoY decline > 20% | Non-standard accelerated reduction, channel disappearing |
+| Equity Financing Volume | Equity | YoY decline for 2 consecutive quarters | Equity financing channel narrowing |
+| Lease Regulatory Policy | Lease | New regulations restrict sale-leaseback/limits | Lease channel constrained |
 
-1. **单一行业>50%** 且该行业处于下行周期（轨道A评级<5.0），且该行业在传染矩阵中为超级传染者（半导体/城投/高端装备）
-2. **单一弱区域>35%** 且该区域内过去12个月有国企违约
-3. **伪高评级（外部AAA，内部<BBB）占比>40%**
-4. **未来12个月到期>70%** 且融资渠道依赖度>70%重叠
-5. **单一融资渠道>90%** 且该渠道正在冻结
+**Channel Contraction and Concentration Synergy:**
 
-**触发机制：**
-- 满足任意一条即触发组合极端集中上限
-- 触发后，组合内所有发行人的上限评级调整为BB
-- 原有各维度的子级调整在此基础上叠加（但不高于BB）
-- 组合极端集中上限时效为30天，或在触发条件消除后自动解除
+| Scenario | Synergy Risk Score Adjustment |
+|----------|------------------------------|
+| Bond channel > 70% + Cancellation rate > 15% | Base score + 2 (double lock — channel concentrated + channel closing) |
+| Non-standard channel > 50% + Non-standard balance YoY decline > 20% | Base score + 3 (double lock — channel concentrated + channel rapidly disappearing) |
+| Bank channel > 70% + Credit growth < 8% | Base score + 1 (mild — bank credit contraction slower than bond/non-standard) |
+| All channels available simultaneously with single < 50% | Base score - 1 (highly diversified funding channels bonus) |
 
-> **注意**：组合极端集中度上限（BB）与发行人层面的一票否决（CCC）是不同概念。前者针对组合层面因集中度导致的流动性/变现风险，后者针对发行人自身经营生存风险。
-
-### 7.4 13行业各一示例
-
-以下示例假设前提：组合50%集中在指定行业，其他维度正常（🟢）。示例展示行业集中度对评级调整的影响路径。
-
-| # | 行业 | 示例说明 |
-|---|------|---------|
-| 1 | **半导体/集成电路** | 假设一个组合50%集中在半导体行业，其他维度正常。评级调整：行业集中度5/10=🟠。若该行业轨道A评级<5.0（处于下行周期），叠加半导体为超级传染者→触发-0.5子级（🟠）或-1子级（🔴）。同时需检查MAX1是否超过20%阈值。 |
-| 2 | **城投债(LGFV)** | 假设一个组合50%集中在城投债，其他维度正常。评级调整：行业集中度5/10=🟠。若城投债处于弱区域且区域财政健康度下降→叠加区域集中度共同影响。城投作为超级传染者需关注区域共振效应。 |
-| 3 | **高端装备** | 假设一个组合50%集中在高端装备，其他维度正常。评级调整：行业集中度5/10=🟠。若该行业处于下行周期→-0.5子级。高端装备属超级传染者，需监控传染矩阵升级因子。 |
-| 4 | **光伏/储能** | 假设一个组合50%集中在光伏/储能，其他维度正常。评级调整：行业集中度5/10=🟠。若光伏产能过剩导致行业利润压缩（轨道A<5.0）→-0.5子级。光伏为准超级传染者，阈值参照。 |
-| 5 | **新能源汽车** | 假设一个组合50%集中在新能源汽车，其他维度正常。评级调整：行业集中度5/10=🟠。新能源车行业竞争加剧、价格战持续→若轨道A<5.0触发🟠调整。需关注产业链上下游集中度叠加。 |
-| 6 | **数据中心** | 假设一个组合50%集中在数据中心，其他维度正常。评级调整：行业集中度5/10=🟠。数据中心受益于AI算力需求增长，若轨道A仍≥5.0→仅🟡关注，不触发调整。 |
-| 7 | **传媒/互联网** | 假设一个组合50%集中在传媒/互联网，其他维度正常。评级调整：行业集中度5/10=🟠。若互联网监管政策收紧、广告收入下滑→轨道A<5.0→-0.5子级。 |
-| 8 | **交通运输** | 假设一个组合50%集中在交通运输，其他维度正常。评级调整：行业集中度5/10=🟠。交通运输属中等传染者，若行业整体景气度下降→-0.5子级。需关注与城投的区域共振效应。 |
-| 9 | **医疗器械** | 假设一个组合50%集中在医疗器械，其他维度正常。评级调整：行业集中度5/10=🟠。医疗器械集采压力持续，若行业利润率下行→-0.5子级。属中等传染者，阈值可适当放宽。 |
-| 10 | **商贸零售** | 假设一个组合50%集中在商贸零售，其他维度正常。评级调整：行业集中度5/10=🟠。商贸零售受消费疲软影响，若典型发行人轨道A<5.0→-0.5子级。属中等传染者。 |
-| 11 | **生物医药** | 假设一个组合50%集中在生物医药，其他维度正常。评级调整：行业集中度5/10=🟠。生物医药创新周期长、现金流不稳定→若行业融资环境恶化→-0.5子级。属弱传染者，阈值可上浮。 |
-| 12 | **纺织服装** | 假设一个组合50%集中在纺织服装，其他维度正常。评级调整：行业集中度5/10=🟠。纺织服装行业整体信用质量稳定（低金融属性）→若轨道A仍≥5.0→仅🟡关注，不触发调整。 |
-| 13 | **食品饮料** | 假设一个组合50%集中在食品饮料，其他维度正常。评级调整：行业集中度5/10=🟠。食品饮料为最弱传染者，行业基本面通常稳定→仅🟡关注，不触发调整。阈值可放宽至MAX1≤35%。 |
-
-**总结规则：** 50%单一行业集中度触发🟠等级，但最终是否产生评级调整取决于该行业的下行周期状态和传染力等级。低传染力行业（纺织服装/食品饮料）即便50%集中也可能仅🟡关注不调整；高传染力行业（半导体/城投/高端装备）50%集中叠加下行周期则触发实际评级调整。
-
-**注：** 上表中"轨道A<5.0"引用的是双轨分析中的轨道A评级（1-10分制），而非行业金字塔的L1-L4加权评分（行业框架评分，光伏加权分约7.0）。轨道A评级侧重于发行人的个体信用质量，区分度为1-10分；行业金字塔评分侧重于行业结构性特征，区分度为1-5分/维度，加权总分一般落在5-8分区间。两者评分体系不同，不可直接对比。
-
----
-
-## 八、五维加权综合评分
-
-### 8.1 综合评分公式
+### 6.4 Funding Channel Concentration Comprehensive Assessment Procedure
 
 ```
-综合集中度风险 = W₁ × D₁(行业) + W₂ × D₂(区域) + W₃ × D₃(评级) 
-                 + W₄ × D₄(期限) + W₅ × D₅(融资渠道)
+Step 1: Calculate the single channel share risk score
+Step 2: Identify the channel type with the highest share
+Step 3: Query the vulnerability score for that channel (§6.2.2)
+  ├── Extremely vulnerable (non-standard) → base score + 3
+  ├── Highly vulnerable (bond) → base score + 2
+  ├── Moderately vulnerable (bank/lease) → base score + 1
+  └── Low vulnerability (equity) → no adjustment
+Step 4: Check if the channel is contracting (§6.3)
+  ├── Significantly contracting → base score + synergy adjustment (per §6.3 table)
+  ├── Channel stable → no adjustment
+  └── Channel expanding (e.g., accommodative credit cycle) → base score - 1
+Step 5: Check issuer's funding channel switching capability
+  ├── Only 1 channel available → base score + 2
+  ├── 2-3 channels available → no adjustment
+  ├── 4+ channels available → base score - 1
+  └── Listed company status + bank credit lines + bond market access → base score - 1
+Step 6: Output the final funding channel concentration risk score (1-10)
 ```
 
-### 8.2 建议权重
+---
 
-| 维度 | 符号 | 权重 | 权重设定理由 |
-|------|------|------|-------------|
-| 行业集中度 | W₁ | **25%** | 权重最大的维度。行业集中度风险通过传染矩阵中的高传染链路进行跨行业扩散，对组合的影响范围最广(可覆盖全部持仓)。中国信用债市场的行业集中特征明显(地产/城投/煤炭各占15-25%)，行业集中是组合系统性风险的"源"维度 |
-| 区域集中度 | W₂ | **20%** | 与行业集中度同等量级。区域集中通过区域共振效应快速传染(永煤已验证)，且弱区域集中度的尾部风险极高(违约后回收率低于全国均值14个百分点)。权重略低于行业是因为区域风险可以被财政健康度加权部分对冲 |
-| 评级集中度 | W₃ | **20%** | 作为引擎的独特差异化能力，评级集中度权重20%反映了"伪高评级"风险在历史案例中的重要性——5个验证案例全部在T-17个月前触发了伪高评级信号。权重不设更高是因为评级集中度风险的影响通常在违约前12-17个月即被内部评级识别，属于"可提前预警"的风险类型 |
-| 期限集中度 | W₄ | **20%** | 期限集中度决定了组合在时间维度上的风险暴露窗口。20%的权重体现了"到期压力是触发违约的导火索，而非违约的根本原因"这一事实——期限集中导致违约，但违约的根本原因通常是基本面恶化。因此期限集中度虽然是触发因素，但不应被过度加权 |
-| 融资渠道集中度 | W₅ | **15%** | 权重最低，因为融资渠道集中度主要作用是"放大器"和"加速器"——它不直接导致违约，但显著影响违约概率和违约后的回收率。15%的权重反映了其辅助但必要的角色 |
+## 7. Concentration to Rating Adjustment Mapping
 
-### 8.3 风险分映射表
+**Version**: v0.8.4-release | **Date**: 2026-07-10 | **Status**: Released
 
-| 综合风险分 | 风险等级 | 颜色 | 管理行动建议 |
-|-----------|---------|------|-------------|
-| 1.0 - 2.5 | 低度集中 | 🟢 正常 | 常规监控·季度复查 |
-| 2.6 - 4.5 | 轻度集中 | 🟡 关注 | 确认各维度的具体触发指标·制定分散化计划 |
-| 4.6 - 6.5 | 中度集中 | 🟠 警示 | 限制新增高风险维度敞口·启动减仓计划·上报风控委员会 |
-| 6.6 - 8.5 | 高度集中 | 🔴 危险 | 立即启动减仓·暂停该维度新增投资·高层审批 |
-| 8.6 - 10.0 | 极度集中 | 🔴 危险(特殊) | 组合重组·全面止损·触发流动性应急预案 |
+The five-dimensional concentration composite score identifies the concentration risk level (🟢🟡🟠🔴) of the portfolio across five dimensions, but does not directly answer a core question: "How does concentration risk affect the credit rating of individual issuers?" This section establishes the mapping rules from dimension threshold breaches to issuer rating adjustments.
 
-### 8.4 权重动态调整规则
+### 7.1 Single Dimension Threshold Breach → Single Issuer Rating Adjustment
 
-在特殊市场环境下，建议调整权重以反映风险结构的变化：
+When each dimension independently exceeds its threshold, the base rating adjustment for each issuer in the portfolio (adjustment unit = notch):
 
-| 市场环境 | W₁行业 | W₂区域 | W₃评级 | W₄期限 | W₅融资渠道 | 调整逻辑 |
-|---------|-------|-------|-------|-------|-----------|---------|
-| 基准环境 | 25% | 20% | 20% | 20% | 15% | 默认权重 |
-| 信用紧缩周期 | 20% | 15% | 15% | **30%** | **20%** | 期限和融资渠道在信贷收缩时成为主要风险 |
-| 评级泡沫破裂期 | 20% | 15% | **35%** | 15% | 15% | 大量AAA下调时评级集中度风险凸显 |
-| 区域信用事件多发 | 20% | **30%** | 15% | 20% | 15% | 区域共振效应放大(如城投展期潮) |
-| 传染矩阵升级因子触发 | **30%** | **25%** | 10% | 20% | 15% | 行业+区域通过传染矩阵加速扩散 |
-| 宽货币+紧信用 | 20% | 20% | 15% | 20% | **25%** | 融资渠道分化加剧→渠道集中度风险上升 |
+| Dimension | 🟡 Watch | 🟠 Warning | 🔴 Danger |
+|-----------|---------|-----------|----------|
+| **Industry Concentration** | 0 | -0.5 notch (industry in down-cycle) | -1 notch (industry in down-cycle, and the industry is a super-spreader) |
+| **Regional Concentration** | 0 | -0.5 notch (peripheral region) | -1 notch (peripheral region with existing defaults in the region) |
+| **Rating Concentration** | 0 | -0.5 notch (pseudo-high rating share > 15%) | -1 notch (pseudo-high rating > 30%, referencing historical cases) |
+| **Maturity Concentration** | 0 | -0.5 notch | -1 notch |
+| **Funding Channel Concentration** | 0 | -0.5 notch (dependent channel contracting) | -1 notch (channel vulnerable and freezing) |
 
-**动态权重触发条件：**
-- 信用紧缩周期：央行连续2次升息或升准，或社融增速连续2月下降
-- 评级泡沫破裂期：3个月内超过10只AAA债券被下调至AA+及以下
-- 区域信用事件多发：同一省份在6个月内出现2只及以上城投债违约/展期
-- 传染矩阵升级因子触发：VIX>30或信用利差走阔>50bp(详见传染矩阵§6)
-- 宽货币+紧信用：降准降息但信用利差走阔(融资渠道分化)
+**Notes:**
+- 🟡 Watch level does not trigger rating adjustment, serves as early warning only
+- 🟠 Warning level triggers -0.5 notch adjustment, subject to conditions in parentheses
+- 🔴 Danger level triggers -1 notch adjustment, subject to conditions in parentheses
+- Adjustment applies to all issuers in the portfolio (industry concentration applies only to issuers in that industry)
+- Adjustment amount is deducted from the "base rating" (base rating = dual-track analysis rating)
 
-### 8.5 综合评分示例
+### 7.2 Multi-Dimension Stacking Rules (Non-Linear)
 
-| 维度 | 原始指标值 | 维度风险分 | 权重 | 加权得分 |
-|------|-----------|-----------|------|---------|
-| D₁行业 | HHI=1800·CR3=68%·MAX1=42% | 7(警示) | 25% | 1.75 |
-| D₂区域 | 单一省份=38%·弱区域=22% | 7(警示) | 20% | 1.40 |
-| D₃评级 | AAA占比=55%·伪高评级=18% | 7(警示) | 20% | 1.40 |
-| D₄期限 | 12月内=55%·单月峰值=22% | 7(警示) | 20% | 1.40 |
-| D₅融资渠道 | 债券渠道=75%·取消发行率=18% | 8(危险) | 15% | 1.20 |
-| **综合得分** | — | — | **100%** | **7.15(高度集中🔴)** |
+When two dimensions exceed thresholds simultaneously, the adjustment is not a simple sum — a non-linear increasing rule is used:
 
-**解读：** 这个组合在五个维度上均有中度到高度集中，融资渠道维度因债券渠道占比高且市场窗口正在关闭而进入危险区间。综合得分7.15落入🔴高度集中区间，应立即启动减仓计划。
+| Stacking Situation | Adjustment | Rationale |
+|-------------------|-----------|-----------|
+| 1 dimension 🟠 | -0.5 notch | Baseline |
+| 2 dimensions 🟠 | -1 notch | Two dimensions stacking — risk may amplify each other |
+| 3 dimensions 🟠 | -1.5 notch | — |
+| 4 dimensions 🟠 | -2 notch | — |
+| All 5 dimensions 🟠 | Trigger systemic risk alert — individual issuer adjustment rules not applicable | — |
+| 1 dimension 🔴 + 1 dimension 🟠 | -1.5 notch | Severity of red dimension amplified by yellow dimension |
+| 2 dimensions 🔴 | -2.5 notch | — |
+| 3 dimensions 🔴+ | Trigger portfolio extreme concentration cap, cap BB | — |
 
-**注（D₅维度）：** 原始指标映射为6分(🟠警示)，协同效应加+2分（债券渠道>70%+该渠道正在冻结→渠道集中+在冻结双重惩罚），最终=8分(🔴危险)。协同调整依据§7.3规则。
+**Stacking Rule Usage:**
+- First identify each dimension's trigger state (🟢/🟡/🟠/🔴)
+- Count only 🟠 and 🔴 dimensions
+- Look up the table to determine total adjustment
+- When 🔴 and 🟠 coexist, use the "1🔴+1🟠" level
+- 3 or more 🔴 directly triggers portfolio extreme concentration cap (cap BB)
+
+### 7.3 Extreme Concentration Trigger Conditions
+
+The following situations directly trigger **portfolio extreme concentration cap, cap BB** (portfolio-level veto, not issuer-level):
+
+1. **Single industry > 50%** and the industry is in a down-cycle (Track A rating < 5.0), and the industry is a super-spreader in the contagion matrix (Semiconductors/LGFV/Advanced Equipment)
+2. **Single peripheral region > 35%** and there have been SOE defaults in that region within the past 12 months
+3. **Pseudo-high rating (external AAA, internal < BBB) share > 40%**
+4. **Next 12 months maturity > 70%** and funding channel dependency > 70% overlap
+5. **Single funding channel > 90%** and that channel is freezing
+
+**Trigger Mechanism:**
+- Any single condition triggers portfolio extreme concentration cap
+- Upon triggering, the cap rating for all issuers in the portfolio is adjusted to BB
+- Original notch adjustments for each dimension are stacked on top of this (but not above BB)
+- Portfolio extreme concentration cap is valid for 30 days, or automatically lifted when the triggering condition is eliminated
+
+> **Note:** The portfolio extreme concentration cap (BB) is a different concept from the issuer-level veto (CCC). The former targets portfolio-level liquidity/realization risk from concentration; the latter targets the issuer's own operational survival risk.
+
+### 7.4 Examples for Each of the 13 Industries
+
+The following examples assume: the portfolio is 50% concentrated in the specified industry, with all other dimensions normal (🟢). Examples illustrate the impact path of industry concentration on rating adjustment.
+
+| # | Industry | Example Description |
+|---|----------|-------------------|
+| 1 | **Semiconductors/Integrated Circuits** | Assume a portfolio is 50% concentrated in semiconductors, other dimensions normal. Rating adjustment: Industry concentration 5/10 = 🟠. If Track A rating < 5.0 (down-cycle), plus semiconductor as super-spreader → triggers -0.5 notch (🟠) or -1 notch (🔴). Also check if MAX1 exceeds 20% threshold. |
+| 2 | **LGFV Bonds** | Assume a portfolio is 50% concentrated in LGFV bonds, other dimensions normal. Rating adjustment: Industry concentration 5/10 = 🟠. If LGFV is in a peripheral region with declining fiscal health → combined with regional concentration effects. As a super-spreader, LGFV requires monitoring of regional resonance effects. |
+| 3 | **Advanced Equipment** | Assume a portfolio is 50% concentrated in advanced equipment, other dimensions normal. Rating adjustment: Industry concentration 5/10 = 🟠. If the industry is in a down-cycle → -0.5 notch. Advanced equipment is a super-spreader; contagion matrix escalation factors must be monitored. |
+| 4 | **Solar/PV & Energy Storage** | Assume a portfolio is 50% concentrated in solar/PV, other dimensions normal. Rating adjustment: Industry concentration 5/10 = 🟠. If overcapacity leads to margin compression (Track A < 5.0) → -0.5 notch. Solar/PV is a quasi-super-spreader, thresholds apply. |
+| 5 | **New Energy Vehicles** | Assume a portfolio is 50% concentrated in NEVs, other dimensions normal. Rating adjustment: Industry concentration 5/10 = 🟠. Intensified competition and ongoing price wars → if Track A < 5.0 triggers 🟠 adjustment. Supply chain upstream/downstream concentration stacking needs monitoring. |
+| 6 | **Data Centers** | Assume a portfolio is 50% concentrated in data centers, other dimensions normal. Rating adjustment: Industry concentration 5/10 = 🟠. Data centers benefit from AI compute demand growth; if Track A still ≥ 5.0 → only 🟡 watch, no adjustment triggered. |
+| 7 | **Media/Internet** | Assume a portfolio is 50% concentrated in media/internet, other dimensions normal. Rating adjustment: Industry concentration 5/10 = 🟠. If regulatory tightening and ad revenue decline → Track A < 5.0 → -0.5 notch. |
+| 8 | **Transportation** | Assume a portfolio is 50% concentrated in transportation, other dimensions normal. Rating adjustment: Industry concentration 5/10 = 🟠. Transportation is a moderate contagion industry; if overall sector activity declines → -0.5 notch. Regional resonance with LGFV needs monitoring. |
+| 9 | **Medical Devices** | Assume a portfolio is 50% concentrated in medical devices, other dimensions normal. Rating adjustment: Industry concentration 5/10 = 🟠. Procurement pressure continues; if industry margins decline → -0.5 notch. Moderate contagion, thresholds can be moderately relaxed. |
+| 10 | **Retail** | Assume a portfolio is 50% concentrated in retail, other dimensions normal. Rating adjustment: Industry concentration 5/10 = 🟠. Retail affected by weak consumption; if typical issuer Track A < 5.0 → -0.5 notch. Moderate contagion. |
+| 11 | **Biopharmaceuticals** | Assume a portfolio is 50% concentrated in biopharmaceuticals, other dimensions normal. Rating adjustment: Industry concentration 5/10 = 🟠. Biopharma has long innovation cycles and volatile cash flows → if industry financing environment deteriorates → -0.5 notch. Weak contagion, thresholds can be relaxed. |
+| 12 | **Textile & Apparel** | Assume a portfolio is 50% concentrated in textile & apparel, other dimensions normal. Rating adjustment: Industry concentration 5/10 = 🟠. Textile & apparel industry overall credit quality is stable (low financial intensity) → if Track A still ≥ 5.0 → only 🟡 watch, no adjustment triggered. |
+| 13 | **Food & Beverage** | Assume a portfolio is 50% concentrated in food & beverage, other dimensions normal. Rating adjustment: Industry concentration 5/10 = 🟠. Food & beverage is the weakest contagion industry, industry fundamentals are typically stable → only 🟡 watch, no adjustment triggered. Thresholds can be relaxed to MAX1 ≤ 35%. |
+
+**Summary Rule:** 50% single industry concentration triggers 🟠 level, but whether a rating adjustment is ultimately triggered depends on the industry's down-cycle status and contagion level. Low contagion industries (Textile & Apparel / Food & Beverage) may only trigger 🟡 watch with no adjustment even at 50% concentration; high contagion industries (Semiconductors / LGFV / Advanced Equipment) at 50% concentration combined with a down-cycle trigger actual rating adjustment.
+
+**Note:** In the table above, "Track A < 5.0" references the Track A rating from dual-track analysis (1-10 scale), not the industry pyramid L1-L4 weighted score (industry framework score). Track A rating focuses on individual issuer credit quality, with 1-10 differentiation; the industry pyramid score focuses on industry structural characteristics, with 1-5 per dimension and a weighted total typically falling in the 5-8 range. The two scoring systems are different and cannot be directly compared.
 
 ---
 
-## 九、集中度压力测试流程
+## 8. Five-Dimensional Weighted Composite Score
 
-### 9.1 五维压力测试步骤
+### 8.1 Composite Score Formula
 
 ```
-步骤1：设定压力场景
-  ┌── 选择压力类型：
-  │   ├── 传染矩阵驱动场景(如半导体违约+市场恐慌)
-  │   ├── 区域共振场景(如某弱省份城投展期潮)
-  │   ├── 评级泡沫破裂场景(如AAA批量下调至AA)
-  │   ├── 期限悬崖场景(如市场窗口冻结+大量到期)
-  │   └── 融资渠道冻结场景(如某渠道突然关停)
-  └── 设置压力参数(轻度/中度/严重)
-  
-步骤2：五维压力传导
-  ┌── 各维度在压力场景下的阈值跳升映射
-  ├── 五维加权综合评分重算
-  └── 输出"压力后综合风险分"
-  
-步骤3：集中度突破诊断
-  ┌── 哪些维度从🟢/🟡跳升至🟠/🔴
-  ├── 突破后哪些发行人或行业受到影响最大
-  └── 组合中是否有"三重集中"(三个维度同时恶化)
-  
-步骤4：管理行动方案
-  ┌── 高风险维度减仓建议
-  ├── 分散化路径和时间表
-  ├── 对冲工具选择(如CDS·利率互换)
-  └── 触发限额后的审批流程
+Composite Concentration Risk = W₁ × D₁ (Industry) + W₂ × D₂ (Region) + W₃ × D₃ (Rating) 
+                               + W₄ × D₄ (Maturity) + W₅ × D₅ (Funding Channel)
 ```
 
-### 9.2 压力场景下的阈值跳升
+### 8.2 Recommended Weights
 
-| 压力场景 | 受影响维度 | 阈值跳升规则 |
-|---------|-----------|-------------|
-| 市场恐慌(VIX>30) | 所有维度 | 每个维度的阈值上移一个等级(如正常→关注) |
-| 区域性城投展期潮 | D₂区域 | 弱区域占比阈值从10%/20%/35%收紧至5%/15%/25% |
-| 评级泡沫破裂 | D₃评级 | 伪高评级阈值从5%/15%/30%收紧至3%/10%/20% |
-| 市场窗口冻结 | D₄期限·D₅融资渠道 | 12个月内到期阈值从30%/50%/70%收紧至20%/40%/60%·债券渠道>50%即触发警示 |
-| 传染矩阵高传染链路激活 | D₁行业 | 超级传染者行业的MAX1阈值从20%收紧至15%·集群A总敞口上限设为25% |
+| Dimension | Symbol | Weight | Weight Setting Rationale |
+|-----------|--------|--------|------------------------|
+| Industry Concentration | W₁ | **25%** | Highest weight dimension. Industry concentration risk spreads across industries through high-contagion pathways in the contagion matrix, with the widest impact on portfolios (can cover all holdings). Industry concentration is the "source" dimension of portfolio systemic risk |
+| Regional Concentration | W₂ | **20%** | Same order of magnitude as industry concentration. Regional concentration rapidly propagates through regional resonance effects (validated by historical cases), and peripheral region concentration has extremely high tail risk (recovery rates 14pp below national average after defaults). Weight is slightly lower than industry because regional risk can be partially hedged by fiscal health weighting |
+| Rating Concentration | W₃ | **20%** | As the engine's unique differentiator, the 20% weight for rating concentration reflects the importance of "pseudo-high rating" risk in historical cases — all 5 validation cases triggered pseudo-high rating signals T-17 months ahead. The weight is not set higher because rating concentration risk is typically identified by internal ratings 12-17 months before default, making it a "pre-warnable" risk type |
+| Maturity Concentration | W₄ | **20%** | Maturity concentration determines the portfolio's risk exposure window along the time dimension. The 20% weight reflects the fact that "maturity pressure is the trigger for default, not the root cause of default" — maturity concentration can cause default, but the root cause is typically fundamental deterioration. Therefore, though a trigger factor, it should not be overweighted |
+| Funding Channel Concentration | W₅ | **15%** | Lowest weight because funding channel concentration primarily serves as an "amplifier" and "accelerator" — it does not directly cause default, but significantly affects default probability and post-default recovery rates. The 15% weight reflects its auxiliary but necessary role |
 
----
+### 8.3 Risk Score Mapping Table
 
-## 十、与现有引擎的集成
+| Composite Risk Score | Risk Level | Color | Management Action Recommendation |
+|--------------------|-----------|-------|---------------------------------|
+| 1.0 - 2.5 | Low Concentration | 🟢 Normal | Routine monitoring · Quarterly review |
+| 2.6 - 4.5 | Mild Concentration | 🟡 Watch | Confirm specific triggered metrics per dimension · Develop diversification plan |
+| 4.6 - 6.5 | Moderate Concentration | 🟠 Warning | Limit new exposure to high-risk dimensions · Initiate position reduction plan · Report to risk committee |
+| 6.6 - 8.5 | High Concentration | 🔴 Danger | Immediately reduce positions · Suspend new investments in that dimension · Senior management approval |
+| 8.6 - 10.0 | Extreme Concentration | 🔴 Danger (Special) | Portfolio restructuring · Full stop-loss · Trigger liquidity contingency plan |
 
-### 10.1 集成到M4(组合风控)框架
+### 8.4 Dynamic Weight Adjustment Rules
 
-本框架是M4组合风控层的核心组件(参考[传染矩阵](contagion-matrix.md)§7.1 M4集成方式)，与现有引擎的集成点如下：
+Under special market conditions, weights should be adjusted to reflect changes in risk structure:
 
-| 框架位置 | 集成方式 | 具体操作 |
-|---------|---------|---------|
-| **M4组合风控** | 集中度压力测试 | 使用本框架的五维评分替代现有的单一行业集中度指标 |
-| **M4限额管理** | 五维限额体系 | 为每个维度设置独立的敞口限额，联动传染矩阵做路径限额 |
-| **M4触发式管理** | 三级预警机制 | 综合评分≥4.5触发关注·≥6.5触发警示·≥8.5触发危险 |
-| **传染矩阵压力测试** | 输入参数 | 五维综合评分作为传染矩阵加压测试的初始条件 |
-| **输出分层框架** | L1快照·L2深度 | 五维评分在L1快照中以"集中度雷达图"展示·L2深度中以完整推理链呈现 |
+| Market Environment | W₁ Industry | W₂ Region | W₃ Rating | W₄ Maturity | W₅ Funding Channel | Adjustment Logic |
+|-------------------|-----------|---------|----------|------------|-------------------|-----------------|
+| Baseline | 25% | 20% | 20% | 20% | 15% | Default weights |
+| Credit Tightening Cycle | 20% | 15% | 15% | **30%** | **20%** | Maturity and funding channel become primary risks during credit contraction |
+| Rating Bubble Burst Period | 20% | 15% | **35%** | 15% | 15% | Rating concentration risk becomes prominent during mass AAA downgrades |
+| Regional Credit Event Cluster | 20% | **30%** | 15% | 20% | 15% | Regional resonance effects amplified |
+| Contagion Matrix Escalation Factor Triggered | **30%** | **25%** | 10% | 20% | 15% | Industry + region amplify through contagion matrix |
+| Loose Monetary + Tight Credit | 20% | 20% | 15% | 20% | **25%** | Funding channel divergence intensifies → channel concentration risk rises |
 
-### 10.2 与已有关联文档的交叉引用
+**Dynamic Weight Trigger Conditions:**
+- Credit Tightening Cycle: Central bank raises rates or reserve requirements 2 consecutive times, or total social financing growth declines for 2 consecutive months
+- Rating Bubble Burst Period: More than 10 AAA bonds downgraded to AA+ and below within 3 months
+- Regional Credit Event Cluster: 2 or more LGFV bond defaults/extensions in the same country/region within 6 months
+- Contagion Matrix Escalation Factor Triggered: VIX > 30 or credit spread widening > 50bp (see Contagion Matrix §6)
+- Loose Monetary + Tight Credit: Rate cuts/reserve requirement cuts but credit spreads widening (funding channel divergence)
 
-| 已有关联文档 | 引用内容 | 在本框架中的使用位置 |
-|------------|---------|-------------------|
-| [传染矩阵](contagion-matrix.md) | 13行业分类·传染路径·升级因子 | 维度一(行业集中度)§2.3·维度二(区域集中度)§3.4·压力测试§9 |
-| [财务深度分析](financial-deep-dive.md) | 债务到期排程方法(C.1-C.3) | 维度四(期限集中度)§5.2 |
-| [引擎架构总览](engine-overview.md) | 三层架构·M4组合风控定位 | 前言·§10.1 |
-| [输出分层框架](output-layered-framework.md) | L1/L2输出规范 | §10.1集成方式 |
-| [系统性预警框架](systemic-warning-framework.md) | SRI温度计作为集中度综合评分权重动态调整的触发条件；综合评分联动SRI判定 | §8.4权重动态调整规则；§10.1集成方式 |
+### 8.5 Composite Score Example
 
-### 10.3 建议新增的集中度相关输出指标
+| Dimension | Raw Metric Value | Dimension Risk Score | Weight | Weighted Score |
+|-----------|----------------|--------------------|--------|---------------|
+| D₁ Industry | HHI=1800 · CR3=68% · MAX1=42% | 7 (Warning) | 25% | 1.75 |
+| D₂ Region | Single country/region=38% · Peripheral=22% | 7 (Warning) | 20% | 1.40 |
+| D₃ Rating | AAA share=55% · Pseudo-high=18% | 7 (Warning) | 20% | 1.40 |
+| D₄ Maturity | 12-month=55% · Single month peak=22% | 7 (Warning) | 20% | 1.40 |
+| D₅ Funding Channel | Bond channel=75% · Cancellation rate=18% | 8 (Danger) | 15% | 1.20 |
+| **Composite Score** | — | — | **100%** | **7.15 (High Concentration 🔴)** |
 
-以下指标建议在[输出分层框架](output-layered-framework.md)中增加：
+**Interpretation:** This portfolio has moderate to high concentration across all five dimensions. The funding channel dimension entered danger territory due to high bond channel share and closing market window. The composite score of 7.15 falls into the 🔴 high concentration range, requiring immediate position reduction initiation.
 
-| 输出层 | 新增指标 | 格式 | 使用场景 |
-|-------|---------|------|---------|
-| L1信号卡 | 五维集中度综合评分 | 🔴7.15·最高维度:融资渠道(8) | 概览—30秒判断组合集中度 |
-| L1信号卡 | 集中度雷达图 | 五边形雷达·标注阈值线 | 可视化—各维度直观对比 |
-| L2深度 | 各维度阈值理由 | 表格展开·标注触发指标 | 合规—回溯风控决策依据 |
-| L2深度 | 压力测试结果 | 场景→跳升→综合分 | 前瞻—最坏情况下的集中度 |
-| L2深度 | 三重集中警示 | "D₁行业+D₂区域+D₄期限" | 风险—多维共振的集中度危机 |
-
----
-
-## 十一、局限性声明
-
-1. **静态阈值风险：** 本框架的阈值体系基于2026年7月的市场结构和历史验证数据。随着产业结构演变(如新行业涌现、区域经济重构、评级体系改革)和市场环境变化，阈值需要定期重新校准。建议至少每季度复审一次阈值参数。
-
-2. **权重的主观性：** 建议权重(25%/20%/20%/20%/15%)基于引擎团队的经验判断和5个历史案例的回溯校准，并非通过统计优化得出。在不同市场环境下，最优权重可能显著不同——建议用户根据自身组合特征调整权重。
-
-3. **伪高评级指标的引擎依赖性：** 该指标完全依赖引擎内部评级的准确性。如果内部评级本身存在系统性偏差(如对特定行业过于保守或过于激进)，伪高评级占比指标将产生误导。建议至少每季度进行一次内部评级校准，与外部评级进行对比校验。
-
-4. **五维之间的二阶交互未被完全捕捉：** 五个维度之间存在复杂的二阶交互效应——如"行业集中度高+区域集中度高+期限集中度高"的三角组合可能产生远高于三者简单加权和的系统性风险。本框架的综合评分采用线性加权，未能完全捕捉此类高阶交互。对于"三重集中"的组合，建议额外叠加-2的惩罚分。
-
-5. **未纳入的非集中度风险因素：** 本框架专注于集中度风险(组合层面)，不覆盖发行人层面的个体信用风险(由双轨分析和行业金字塔覆盖)、流动性风险(由流动性风险评估覆盖)、市场风险(由非信用风险叠加层覆盖)。集中度风险是组合风控的一个重要维度，但不是全部。
-
-6. **融资渠道数据可得性限制：** 非标融资、租赁融资等渠道的数据依赖年报附注披露，部分非上市企业的数据可得性较差。对于数据不完整的主体，融资渠道集中度的评估置信度会显著降低。
-
-7. **区域分类的"一刀切"风险：** 将全国城市划分为四类(一线/强二线/中等/弱区域)牺牲了区域内部分化。例如四川省(中等区域)内的成都(强二线)和凉山州(弱区域)的财政健康度差异巨大。建议在区域集中度分析中进行省级-地市级两层分析，但当前框架仅对大量持仓组合提供省级层面的指引。
+**Note (D₅ dimension):** Raw metric mapped to 6 (🟠 Warning), synergy effect added +2 (Bond channel > 70% + channel freezing → channel concentration + freezing double penalty), final = 8 (🔴 Danger). Synergy adjustment per §7.3 rules.
 
 ---
 
-## 附录
+## 9. Concentration Stress Test Procedure
 
-### 附录A：五维综合评分速查表
+### 9.1 Five-Dimensional Stress Test Steps
 
-使用下表快速估算综合风险分：
+```
+Step 1: Define stress scenario
+  ├── Select stress type:
+  │   ├── Contagion matrix-driven scenario (e.g., semiconductor default + market panic)
+  │   ├── Regional resonance scenario (e.g., peripheral region debt extension wave)
+  │   ├── Rating bubble burst scenario (e.g., mass AAA downgrade to AA)
+  │   ├── Maturity cliff scenario (e.g., market window freeze + mass maturities)
+  │   └── Funding channel freeze scenario (e.g., sudden channel closure)
+  └── Set stress parameters (mild / moderate / severe)
 
-| 综合分 | D₁行业 | D₂区域 | D₃评级 | D₄期限 | D₅融资渠道 |
-|-------|-------|-------|-------|-------|-----------|
-| ≈2.0 🟢 | 🟢HHI<1000 | 🟢省<20%·弱<10% | 🟢AAA<30%·伪<5% | 🟢12月<30%·月<10% | 🟢单<50%·均衡 |
-| ≈3.5 🟡 | 🟡HHI~1200 | 🟡省~28%·弱~15% | 🟡AAA~40%·伪~10% | 🟡12月~40%·月~15% | 🟡单~60% |
-| ≈5.5 🟠 | 🟠HHI~2000 | 🟠省~42%·弱~28% | 🟠AAA~60%·伪~22% | 🟠12月~60%·月~25% | 🟠单~80%·渠道收缩 |
-| ≈7.5 🔴 | 🔴HHI>2500 | 🔴省>50%·弱>35% | 🔴AAA>70%·伪>30% | 🔴12月>70%·月>30% | 🔴单>90%·或非标为主 |
+Step 2: Five-dimensional stress propagation
+  ├── Threshold jump mapping for each dimension under stress scenario
+  ├── Five-dimensional weighted composite score recalculation
+  └── Output "post-stress composite risk score"
 
-### 附录B：版本变更记录
+Step 3: Concentration breach diagnosis
+  ├── Which dimensions jumped from 🟢/🟡 to 🟠/🔴
+  ├── Which issuers or industries are most affected after breach
+  └── Does the portfolio have "triple concentration" (three dimensions deteriorating simultaneously)
 
-| 版本 | 日期 | 变更内容 | 作者 |
-|------|------|---------|------|
-| v0.6.5-alpha | 2026-07-10 | 初版创建：五维集中度分析框架·阈值体系·加权评分·压力测试集成 | 引擎团队 |
-| v0.7.0-alpha | 2026-07-10 | 系统智能层整合：引擎版本统一为v0.7.0-alpha，与传染矩阵/预警框架形成完整M4组合风控体系 | 引擎团队 |
+Step 4: Management action plan
+  ├── High-risk dimension position reduction recommendations
+  ├── Diversification path and timeline
+  ├── Hedging tool selection (e.g., CDS, interest rate swaps)
+  └── Approval process after limit breach
+```
+
+### 9.2 Threshold Jumps Under Stress Scenarios
+
+| Stress Scenario | Affected Dimension | Threshold Jump Rule |
+|----------------|-------------------|-------------------|
+| Market Panic (VIX > 30) | All dimensions | Each dimension's threshold moves up one level (e.g., Normal → Watch) |
+| Regional LGFV Extension Wave | D₂ Region | Peripheral region share threshold tightened from 10%/20%/35% to 5%/15%/25% |
+| Rating Bubble Burst | D₃ Rating | Pseudo-high rating threshold tightened from 5%/15%/30% to 3%/10%/20% |
+| Market Window Freeze | D₄ Maturity · D₅ Funding Channel | 12-month maturity threshold tightened from 30%/50%/70% to 20%/40%/60% · Bond channel > 50% triggers warning |
+| Contagion Matrix High-Contagion Pathway Activation | D₁ Industry | Super-spreader industry MAX1 threshold tightened from 20% to 15% · Cluster A total exposure cap set at 25% |
 
 ---
 
-*本文档应与《传染矩阵》(v0.8.4-release)和《财务深度分析》(v0.8.4-release)配合使用。集中度分析框架是M4组合风控层的核心组件，需与行业金字塔(M1-M2)、双轨分析(M3)形成完整的风控闭环。*
+## 10. Integration with Existing Engine
+
+### 10.1 Integration into M4 (Portfolio Risk Control) Framework
+
+This framework is the core component of the M4 Portfolio Risk Control Layer (see [Contagion Matrix](contagion-matrix.md) §7.1 M4 Integration). Integration points with the existing engine:
+
+| Framework Position | Integration Method | Specific Operation |
+|-------------------|------------------|-------------------|
+| **M4 Portfolio Risk Control** | Concentration Stress Test | Use this framework's five-dimensional scoring to replace the existing single industry concentration metric |
+| **M4 Limit Management** | Five-dimensional Limit System | Set independent exposure limits for each dimension, linked to the contagion matrix for pathway limits |
+| **M4 Trigger-Based Management** | Three-Level Alert Mechanism | Composite score ≥ 4.5 triggers Watch · ≥ 6.5 triggers Warning · ≥ 8.5 triggers Danger |
+| **Contagion Matrix Stress Test** | Input Parameter | Five-dimensional composite score as initial condition for contagion matrix stress testing |
+| **Output Layered Framework** | L1 Snapshot · L2 Deep Dive | Five-dimensional scores displayed as "concentration radar chart" in L1 snapshot · Full reasoning chain in L2 Deep Dive |
+
+### 10.2 Cross-References with Related Documents
+
+| Related Document | Referenced Content | Usage in This Framework |
+|-----------------|-------------------|------------------------|
+| [Contagion Matrix](contagion-matrix.md) | 13-industry classification · Contagion pathways · Escalation factors | Dimension 1 (Industry Concentration) §2.3 · Dimension 2 (Regional Concentration) §3.4 · Stress Test §9 |
+| [Financial Deep Dive](financial-deep-dive.md) | Debt maturity scheduling method (C.1-C.3) | Dimension 4 (Maturity Concentration) §5.2 |
+| [Engine Architecture Overview](engine-overview.md) | Three-layer architecture · M4 Portfolio Risk Control positioning | Preface · §10.1 |
+| [Output Layered Framework](output-layered-framework.md) | L1/L2 output specifications | §10.1 Integration method |
+| [Systemic Warning Framework](systemic-warning-framework.md) | SRI thermometer as trigger for composite score dynamic weight adjustment; composite score linked to SRI determination | §8.4 Dynamic weight adjustment rules · §10.1 Integration method |
+
+### 10.3 Recommended New Concentration-Related Output Metrics
+
+The following metrics are recommended for addition to the [Output Layered Framework](output-layered-framework.md):
+
+| Output Layer | New Metric | Format | Use Case |
+|-------------|-----------|--------|----------|
+| L1 Signal Card | Five-dimensional concentration composite score | 🔴 7.15 · Highest dimension: Funding Channel (8) | Overview — 30-second portfolio concentration assessment |
+| L1 Signal Card | Concentration Radar Chart | Pentagon radar · Threshold lines marked | Visualization — intuitive comparison across dimensions |
+| L2 Deep Dive | Threshold rationale per dimension | Expandable table · Trigger metrics marked | Compliance — retrospective risk decision basis |
+| L2 Deep Dive | Stress test results | Scenario → Jump → Composite score | Forward-looking — worst-case concentration |
+| L2 Deep Dive | Triple concentration alert | "D₁ Industry + D₂ Region + D₄ Maturity" | Risk — multi-dimensional resonant concentration crisis |
+
+---
+
+## 11. Limitations Statement
+
+1. **Static Threshold Risk:** This framework's threshold system is based on July 2026 market structure and historical validation data. As industry structures evolve (e.g., new industries emerging, regional economic restructuring, rating system reforms) and market conditions change, thresholds require periodic recalibration. It is recommended to review threshold parameters at least quarterly.
+
+2. **Subjectivity of Weights:** The recommended weights (25%/20%/20%/20%/15%) are based on the engine team's judgment and retrospective calibration against 5 historical cases, not derived through statistical optimization. Optimal weights may differ significantly across market environments — users are advised to adjust weights according to their own portfolio characteristics.
+
+3. **Pseudo-High Rating Metric Dependency on Engine:** This metric relies entirely on the accuracy of the engine's internal ratings. If internal ratings themselves have systematic bias (e.g., being too conservative or too aggressive toward specific industries), the pseudo-high rating share metric will produce misleading results. It is recommended to perform internal rating calibration and comparison with external ratings at least quarterly.
+
+4. **Second-Order Interactions Among Dimensions Not Fully Captured:** There are complex second-order interaction effects among the five dimensions — for example, the triangular combination of "high industry concentration + high regional concentration + high maturity concentration" may produce systemic risk far exceeding the simple weighted sum. This framework uses linear weighting and does not fully capture such higher-order interactions. For "triple concentration" portfolios, an additional -2 penalty score is recommended.
+
+5. **Non-Concentration Risk Factors Not Included:** This framework focuses on concentration risk (portfolio level) and does not cover issuer-level individual credit risk (covered by dual-track analysis and industry pyramid), liquidity risk (covered by liquidity risk assessment), or market risk (covered by non-credit risk overlay). Concentration risk is an important dimension of portfolio risk control, but not the entirety.
+
+6. **Funding Channel Data Availability Limitations:** Data for non-standard financing, lease financing, and other channels relies on annual report note disclosures; data availability is poor for some non-listed entities. For entities with incomplete data, the confidence of funding channel concentration assessment will be significantly reduced.
+
+7. **"One-Size-Fits-All" Risk of Regional Classification:** Classifying markets into four tiers (Major financial hubs / Major economic centers / Mid-tier cities / Peripheral regions) sacrifices intra-regional differentiation. For example, within a single country, major economic centers may have vastly different fiscal health characteristics than peripheral regions. Two-tier (national and sub-national) analysis is recommended for regional concentration analysis, but the current framework provides only national-level guidance for portfolios with broad holdings.
+
+---
+
+## Appendix
+
+### Appendix A: Five-Dimensional Composite Score Quick Reference
+
+Use the following table to quickly estimate the composite risk score:
+
+| Composite Score | D₁ Industry | D₂ Region | D₃ Rating | D₄ Maturity | D₅ Funding Channel |
+|----------------|-----------|---------|----------|------------|-------------------|
+| ≈ 2.0 🟢 | 🟢 HHI<1000 | 🟢 Country<20% · Peripheral<10% | 🟢 AAA<30% · Pseudo<5% | 🟢 12m<30% · Peak<10% | 🟢 Single<50% · Balanced |
+| ≈ 3.5 🟡 | 🟡 HHI~1200 | 🟡 Country~28% · Peripheral~15% | 🟡 AAA~40% · Pseudo~10% | 🟡 12m~40% · Peak~15% | 🟡 Single~60% |
+| ≈ 5.5 🟠 | 🟠 HHI~2000 | 🟠 Country~42% · Peripheral~28% | 🟠 AAA~60% · Pseudo~22% | 🟠 12m~60% · Peak~25% | 🟠 Single~80% · Contracting |
+| ≈ 7.5 🔴 | 🔴 HHI>2500 | 🔴 Country>50% · Peripheral>35% | 🔴 AAA>70% · Pseudo>30% | 🔴 12m>70% · Peak>30% | 🔴 Single>90% · or non-standard dominant |
+
+### Appendix B: Version Change Log
+
+| Version | Date | Change Content | Author |
+|---------|------|---------------|--------|
+| v0.6.5-alpha | 2026-07-10 | Initial creation: Five-dimensional concentration analysis framework · Threshold system · Weighted scoring · Stress test integration | Engine Team |
+| v0.7.0-alpha | 2026-07-10 | System intelligence layer integration: engine version unified to v0.7.0-alpha, forming complete M4 portfolio risk control system with contagion matrix and warning framework | Engine Team |
+
+---
+
+*This document should be used in conjunction with the Contagion Matrix (v0.8.4-release) and Financial Deep Dive (v0.8.4-release). The Concentration Analysis Framework is the core component of the M4 Portfolio Risk Control Layer and forms a complete risk control loop with the Industry Pyramid (M1-M2) and Dual-Track Analysis (M3).*

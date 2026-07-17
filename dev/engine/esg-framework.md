@@ -1,692 +1,692 @@
-# ESG风险评估框架（中国固收市场适用）
+# ESG Risk Assessment Framework (Applicable to Global Fixed Income Markets)
 
-**版本**: v0.8.4-release | **日期**: 2026-07-10 | **状态**: 已发布 | **类型**: 非信用风险叠加层子模块
+**Version**: v0.8.4-release | **Date**: 2026-07-10 | **Status**: Published | **Type**: Non-Credit Risk Overlay Sub-Module
 
 ---
 
-> **设计定位**：本框架不是独立的ESG评级体系，而是针对中国信用债市场的ESG→信用传导评估工具。ESG风险最终映射为信用影响——评估ESG事件是否以及如何影响企业的偿债能力或融资渠道。
+> **Design Intent**: This framework is not a standalone ESG rating system, but rather an ESG-to-credit transmission assessment tool designed for the global credit bond market. ESG risks are ultimately mapped to credit impact -- assessing whether and how ESG events affect an issuer's debt servicing capacity or access to financing.
 >
-> **叠加层属性**：与non-credit-risk-overlay.md一致，本框架作为叠加层使用，不改变基准评级，最多±1子级调整。ESG信号汇入非信用风险叠加层的"声誉风险"和"操作风险"维度。
+> **Overlay Attribute**: Consistent with non-credit-risk-overlay.md, this framework serves as an overlay layer, not altering base ratings, with a maximum +/-1 notch adjustment. ESG signals feed into the "Reputational Risk" and "Operational Risk" dimensions of the non-credit-risk-overlay.
 
 ---
 
-## 目录
+## Table of Contents
 
-- [一、中国ESG市场的特殊性与框架设计原则](#一中国esg市场的特殊性与框架设计原则)
-- [二、E（环境）风险评估](#二e环境风险评估)
-- [三、S（社会）风险评估](#三s社会风险评估)
-- [四、G（治理）风险评估](#四g治理风险评估)
-- [五、ESG→信用映射表](#五esg信用映射表)
-- [六、叠加调整规则](#六叠加调整规则)
-- [七、数据可得性诚实标注](#七数据可得性诚实标注)
-- [八、与现有框架的集成](#八与现有框架的集成)
-- [附录A：各行业ESG敏感度对照](#附录a各行业esg敏感度对照)
-- [附录B：公开数据来源清单](#附录b公开数据来源清单)
+- [1. ESG Market Specificities and Framework Design Principles](#1-esg-market-specificities-and-framework-design-principles)
+- [2. E (Environmental) Risk Assessment](#2-e-environmental-risk-assessment)
+- [3. S (Social) Risk Assessment](#3-s-social-risk-assessment)
+- [4. G (Governance) Risk Assessment](#4-g-governance-risk-assessment)
+- [5. ESG-to-Credit Mapping](#5-esg-to-credit-mapping)
+- [6. Overlay Adjustment Rules](#6-overlay-adjustment-rules)
+- [7. Data Availability Honest Labeling](#7-data-availability-honest-labeling)
+- [8. Integration with Existing Frameworks](#8-integration-with-existing-frameworks)
+- [Appendix A: Industry ESG Sensitivity Cross-Reference](#appendix-a-industry-esg-sensitivity-cross-reference)
+- [Appendix B: Public Data Source List](#appendix-b-public-data-source-list)
 
 ---
 
-## 一、中国ESG市场的特殊性与框架设计原则
+## 1. ESG Market Specificities and Framework Design Principles
 
-### 1.1 中国ESG市场与成熟市场的关键差异
+### 1.1 Key Differences Between Emerging and Mature ESG Markets
 
-| 维度 | 成熟市场（欧美） | 中国市场 | 对信用分析的影响 |
+| Dimension | Mature Markets (EU/US) | Emerging Markets | Impact on Credit Analysis |
 |---|---|---|---|
-| **ESG信息披露覆盖率** | 上市公司+大型非上市企业普遍披露（~90%） | 仅上市公司+发债企业强制披露（~30-40%），区县级城投/非上市中小企业几乎不披露 | **数据严重不足**——无法做前瞻性ESG评分，只能做负面事件扫描 |
-| **监管环境** | ESG监管从自愿走向强制（CSRD/ISSB） | 以"双碳"政策驱动为主，ESG信息披露指引为非强制性（2024年三大交易所发布可持续发展报告指引，但尚在过渡期） | **政策波动大**——ESG主题投资常受政策风向影响 |
-| **ESG评级机构** | MSCI、Sustainalytics等国际机构主导 | 华证、商道融绿、中财绿金、嘉实等国内机构，评级结果一致性低（各机构间相关系数<0.5） | **评级不可靠**——不直接引用中国ESG评级作为信用判断依据 |
-| **ESG事件披露** | 环境/社会事件由媒体和NGO主动曝光 | 环境处罚由官方公示（生态环境部/省厅），社会事件披露不充分（劳工纠纷/供应链问题报道受限） | **信息披露严重不对称**——部分ESG负面事件在公共领域几乎不可见 |
-| **投资者关注度** | 大型资产所有者将ESG纳入投资决策 | 信用债投资者对ESG关注度低（主要在权益市场），但ESG因素已在部分违约案例中证实有实质信用影响 | **市场尚未充分定价ESG风险**——ESG套利机会存在 |
+| **ESG Information Disclosure Coverage** | Listed companies + large non-listed enterprises generally disclose (~90%) | Only listed + bond-issuing enterprises mandatory disclosure (~30-40%), sub-national LGFVs / non-listed SMEs rarely disclose | **Severe data insufficiency** -- unable to perform forward-looking ESG scoring, can only conduct negative event screening |
+| **Regulatory Environment** | ESG regulation moving from voluntary to mandatory (CSRD/ISSB) | Primarily driven by carbon neutrality / dual carbon goals; ESG disclosure guidelines are non-mandatory (sustainability reporting guidelines published by major exchanges in recent years but still in transition) | **High policy volatility** -- ESG-themed investing often influenced by policy direction shifts |
+| **ESG Rating Agencies** | MSCI, Sustainalytics, Bloomberg ESG and other international institutions dominate | Domestic ESG rating agencies (e.g., SinoCarbon, SynTao Green Finance, Harvest) show low rating consistency (inter-agency correlation coefficient < 0.5) | **Ratings unreliable** -- domestic ESG ratings are not directly cited as credit judgment inputs |
+| **ESG Event Disclosure** | Environmental/social events actively exposed by media and NGOs | Environmental penalties officially published by environmental protection authorities; social event disclosure insufficient (labor disputes / supply chain issues reporting may be limited) | **Severe information asymmetry** -- some ESG negative events barely visible in the public domain |
+| **Investor Attention** | Large asset owners integrate ESG into investment decisions | Credit bond investors show low ESG attention (primarily in equity markets), but ESG factors have been confirmed to have material credit impact in some default cases | **Market has not yet fully priced ESG risk** -- ESG arbitrage opportunities exist |
 
-### 1.2 设计原则
+### 1.2 Design Principles
 
-| # | 原则 | 含义 |
+| # | Principle | Implication |
 |---|---|---|
-| 1 | **事件驱动为主，前瞻评估为辅** | 当前阶段以"负面事件检测"为核心（环保处罚/安全事故/产品质量丑闻等已发生的外部化事件），而非"前瞻性ESG评分"（因数据覆盖率不足） |
-| 2 | **ESG→信用传导路径必须明确** | 每个ESG信号都必须对应明确的信用传导路径（现金流/融资渠道/偿债能力），不纳入"仅有ESG意义但无信用影响"的指标 |
-| 3 | **±1子级调整上限** | 与non-credit-risk-overlay.md一致，ESG叠加调整不超过±1子级（除非触发一票否决） |
-| 4 | **非对称调整** | ESG信号以下调（负面）为主——因为ESG事件几乎总是负面信用影响。极少情况下上调（如绿色金融支持带来的融资成本下降） |
-| 5 | **行业差异化** | 高碳行业（煤炭/钢铁/化工）的环境权重高；消费类企业（食品/医药/零售）的社会权重高；科技类企业（半导体/软件）的治理权重高 |
-| 6 | **不复制国际ESG评级** | 不采用MSCI/Sustainalytics的ESG评分体系——专门针对中国信用债市场的特征设计 |
+| 1 | **Event-driven primary, forward-looking assessment secondary** | Current phase centers on "negative event detection" (environmental penalties / safety accidents / product quality scandals that are already externalized events), rather than "forward-looking ESG scoring" (due to insufficient data coverage) |
+| 2 | **ESG-to-credit transmission path must be explicit** | Every ESG signal must correspond to a clear credit transmission path (cash flow / financing channels / debt service capacity); indicators with "ESG significance only but no credit impact" are not included |
+| 3 | **+/-1 notch adjustment cap** | Consistent with non-credit-risk-overlay.md, ESG overlay adjustments do not exceed +/-1 notch (unless a veto condition is triggered) |
+| 4 | **Asymmetric adjustment** | ESG signals are predominantly downward (negative) -- because ESG events almost always carry negative credit implications. Rare upward adjustments (e.g., financing cost reduction from green finance support) |
+| 5 | **Industry differentiation** | High-carbon industries (coal/steel/chemicals) have high environmental weight; consumer-facing enterprises (food/pharma/retail) have high social weight; technology enterprises (semiconductor/software) have high governance weight |
+| 6 | **Do not replicate international ESG ratings** | Does not adopt MSCI/Sustainalytics ESG scoring systems -- specifically designed for credit bond market characteristics |
 
-### 1.3 本框架在引擎架构中的位置
+### 1.3 Position of This Framework in the Engine Architecture
 
 ```
-标准分析流程（含ESG叠加）：
+Standard Analysis Workflow (with ESG Overlay):
 
-步骤 1: 行业分类 → 选择金字塔模板
-步骤 2: 金字塔评分 → L1-L4/L5逐层评分 → 加权综合得分 → 基准信用等级
-步骤 3: 外部支持评估（如需） → 上调基准评级（0~3子级）
-步骤 4: 非信用风险叠加（含ESG）
-   ├── 3a: 市场风险评估
-   ├── 3b: 操作风险评估（含治理ESG信号）
-   ├── 3c: 声誉风险评估（含环境+社会ESG信号）
-   ├── 3d: ★ ESG专项评估（本框架）
-   │     ├── E: 环境事件扫描 + 转型风险评估
-   │     ├── S: 社会事件扫描 + 利益冲突评估
-   │     └── G: 治理结构评估（与governance-fraud-risk.md联动）
-   └── 3e: 流动性风险评估
-步骤 5: 叠加调整 → 基准评级 ±0~±1子级
-步骤 6: 轨道B市场定价交叉验证
-步骤 7: 输出综合评级 + ESG标注
+Step 1: Industry Classification -> Select Pyramid Template
+Step 2: Pyramid Scoring -> L1-L4/L5 Layer-by-Layer Scoring -> Weighted Composite Score -> Base Credit Grade
+Step 3: External Support Assessment (if needed) -> Upgrade Base Rating (0-3 notches)
+Step 4: Non-Credit Risk Overlay (including ESG)
+   ├── 4a: Market Risk Assessment
+   ├── 4b: Operational Risk Assessment (including governance ESG signals)
+   ├── 4c: Reputational Risk Assessment (including environmental + social ESG signals)
+   ├── 4d: ★ ESG Specialized Assessment (this framework)
+   │     ├── E: Environmental Event Scan + Transition Risk Assessment
+   │     ├── S: Social Event Scan + Stakeholder Conflict Assessment
+   │     └── G: Governance Structure Assessment (linked with governance-fraud-risk.md)
+   └── 4e: Liquidity Risk Assessment
+Step 5: Overlay Adjustment -> Base Rating +/-0~+/-1 notch
+Step 6: Track B Market Pricing Cross-Validation
+Step 7: Output Composite Rating + ESG Annotation
 ```
 
 ---
 
-## 二、E（环境）风险评估
+## 2. E (Environmental) Risk Assessment
 
-### 2.1 环境风险分类体系
+### 2.1 Environmental Risk Classification System
 
-| 类别 | 子类 | 信用影响强度 | 适用行业 | 数据可观测性 |
+| Category | Sub-Category | Credit Impact Intensity | Applicable Industries | Data Observability |
 |---|---|---|---|---|
-| **高碳行业转型风险** | 碳排放成本/碳配额缺口 | 高（长期累积） | 煤炭/钢铁/化工/水泥/电力/铝业 | **部分可观测**（需估算碳配额成本） |
-| **环保处罚风险** | 超标排放/未批先建/固废违规 | 中-高（短期冲击） | 制造业/化工/采矿/造纸 | **可观测**（生态环境部公示） |
-| **停产整顿风险** | 环保督查被责令停产/限产 | 高（直接现金流中断） | 化工/钢铁/水泥/采矿 | **可观测**（生态环境部/省市环保厅公示） |
-| **环境事故风险** | 化学品泄漏/爆炸/环境污染事件 | 高（赔偿+停产+修复） | 化工/采矿/运输/石化 | **可观测**（重大事件有媒体报道+官方通报） |
-| **绿色转型机遇** | 绿色金融支持/碳减排收益 | 低-中（正面，需实际落地） | 新能源/节能环保/电动车 | **可观测**（绿色债券发行/碳交易数据） |
+| **High-Carbon Industry Transition Risk** | Carbon emission cost / carbon allowance gap | High (long-term cumulative) | Coal/Steel/Chemicals/Cement/Power/Aluminum | **Partially observable** (requires carbon allowance cost estimation) |
+| **Environmental Penalty Risk** | Excessive emissions / construction without approval / solid waste violations | Medium-High (short-term shock) | Manufacturing/Chemicals/Mining/Pulp & Paper | **Observable** (environmental protection authority disclosures) |
+| **Production Suspension Risk** | Ordered suspension/production curtailment due to environmental inspection | High (direct cash flow interruption) | Chemicals/Steel/Cement/Mining | **Observable** (environmental protection authority announcements) |
+| **Environmental Accident Risk** | Chemical leakage / explosion / environmental pollution incidents | High (compensation + suspension + remediation) | Chemicals/Mining/Transportation/Petrochemicals | **Observable** (major events covered by media + official notifications) |
+| **Green Transition Opportunity** | Green finance support / carbon reduction revenue | Low-Medium (positive, requires actual implementation) | Renewable Energy/Energy Efficiency/EV | **Observable** (green bond issuance / carbon trading data) |
 
-### 2.2 高碳行业转型风险（E1）
+### 2.2 High-Carbon Industry Transition Risk (E1)
 
-#### 2.2.1 碳配额成本传导路径
+#### 2.2.1 Carbon Allowance Cost Transmission Path
 
 ```
-碳配额成本传导（中国全国碳市场2021年启动，2025年行业扩展）：
+Carbon Allowance Cost Transmission (National carbon market launched 2021, industry expansion 2025+):
 
-碳配额价格上升
-  ├── 覆盖行业（电力→钢铁→水泥→铝业→化工，逐步扩围）
-  │     ├── 碳配额缺口企业 → 需购入配额 → 运营成本上升
-  │     │     ├── 碳成本能传导给客户？—— 是 → 毛利率稳定但终端需求可能下降
-  │     │     └── 不能传导 —— 毛利率压缩 → EBITDA减少 → FCF减少
-  │     └── 碳配额盈余企业 → 出售碳配额获得额外收益（如电力企业通过节能改造获得盈余）
+Carbon allowance price increase
+  ├── Covered industries (Power -> Steel -> Cement -> Aluminum -> Chemicals, phased expansion)
+  │     ├── Carbon allowance deficit enterprises -> Must purchase allowances -> Operating cost increases
+  │     │     ├── Can carbon cost be passed to customers? -- Yes -> Gross margin stable but terminal demand may decline
+  │     │     └── Cannot pass through -- Gross margin compressed -> EBITDA reduction -> FCF reduction
+  │     └── Carbon allowance surplus enterprises -> Sell allowances for additional revenue (e.g., power companies achieving surplus through efficiency upgrades)
   │
-  ├── 非覆盖行业（短期内无直接碳成本，但面临供应链传导）
-  │     └── 上游供应商碳成本上升 → 传导至采购价 → 间接成本上升
+  ├── Non-covered industries (no direct carbon cost in short term, but face supply chain pass-through)
+  │     └── Upstream supplier carbon cost increase -> Pass-through to procurement prices -> Indirect cost increase
   │
-  └── 政策加速风险
-        └── 碳配额免费分配比例逐年下降（2025年电力行业免费比例已降至95%，2030年预计进一步下降）
-              → 碳成本逐年上升，且不可逆
+  └── Policy acceleration risk
+        └── Free carbon allowance allocation ratio declining year by year (free allocation ratio for power sector declining ~1-2pp annually)
+              -> Carbon cost rising year by year, and irreversible
 ```
 
-#### 2.2.2 行业碳成本冲击评估
+#### 2.2.2 Industry Carbon Cost Impact Assessment
 
-| 行业 | 碳排放强度（吨CO2/万元营收，估算） | 免费配额覆盖率（2025年估算） | 碳成本/EBITDA（碳价100元/吨情景） | 信用影响评级 |
+| Industry | Carbon Emission Intensity (tCO2/CNY 10K revenue, est.) | Free Allowance Coverage (2025 est.) | Carbon Cost/EBITDA (Carbon price CNY 100/ton scenario) | Credit Impact Rating |
 |---|---|---|---|---|
-| **火电** | 8-12 | 95%~97%（逐年下降1-2pp） | 2%~5% | **低-中**（当前免费配额充足，长期上升） |
-| **钢铁（长流程）** | 4-6 | 90%~93% | 3%~8% | **中**（免费配额下降+碳价上升趋势） |
-| **水泥** | 5-7 | 90%~92% | 4%~10% | **中-高**（行业亏损面大，碳成本敏感） |
-| **化工（煤化工）** | 6-10 | 85%~90% | 5%~15% | **高**（碳密集+产品差异化低） |
-| **电解铝** | 3-5 | 85%~90% | 3%~8% | **中**（电力成本已含间接碳排放） |
-| **造纸** | 2-4 | 90%~95% | 1%~4% | **低-中** |
+| **Thermal Power** | 8-12 | 95%-97% (declining 1-2pp annually) | 2%-5% | **Low-Medium** (current free allowances sufficient, rising long-term) |
+| **Steel (long process)** | 4-6 | 90%-93% | 3%-8% | **Medium** (free allowance declining + carbon price rising) |
+| **Cement** | 5-7 | 90%-92% | 4%-10% | **Medium-High** (industry loss-making high, carbon cost sensitive) |
+| **Chemicals (coal chemicals)** | 6-10 | 85%-90% | 5%-15% | **High** (carbon intensive + low product differentiation) |
+| **Electrolytic Aluminum** | 3-5 | 85%-90% | 3%-8% | **Medium** (power cost already includes indirect carbon) |
+| **Pulp & Paper** | 2-4 | 90%-95% | 1%-4% | **Low-Medium** |
 
-**数据限制标注**：行业碳配额覆盖率和免费比例需要跟踪全国碳市场公告和配额分配方案（每年发布）。企业层面的碳配额盈缺情况仅在上市公司ESG报告或CDP报告中部分披露——非上市企业几乎不披露。
+**Data Limitation Note**: Industry carbon allowance coverage and free allocation ratios need tracking of national carbon market announcements and allowance allocation plans (published annually). Enterprise-level carbon allowance surplus/deficit is only partially disclosed in listed company ESG reports or CDP reports -- non-listed enterprises almost never disclose.
 
-#### 2.2.3 转型风险红旗信号清单
+#### 2.2.3 Transition Risk Red Flag Signal List
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 |
+| Red Flag Signal | Detection Condition | Signal Strength | Data Source |
 |---|---|---|---|
-| **产品碳足迹超过行业均值2倍以上** | 企业披露的单位产品碳排放量（如吨钢碳排放）> 行业均值×2 | 中 | ESG报告 / CDP披露（仅部分企业披露） |
-| **无明确的碳减排计划或目标** | 企业未在年报或ESG报告中提及碳减排目标/碳中和路径 | 中 | 年报ESG章节 / 可持续发展报告 |
-| **主要产品碳成本占比 > 5%且持续恶化** | 估算碳成本（碳价×碳排放量）/ EBITDA > 5% | 中-高 | 年报EBITDA + 行业排放系数估算 |
-| **碳配额缺口持续扩大（连续2年）** | 企业实际排放 > 免费配额，需购入配额量同比增长 | 中-高 | 企业碳配额清缴公告（全国碳市场） |
-| **碳市场履约逾期或违约** | 未按时足额清缴碳配额（生态环境部公示） | **强** | 生态环境部"碳排放权交易"栏目 |
-| **被列入重点排放单位后改善缓慢** | 连续2年碳排放强度未下降或上升 | 中 | 企业碳排放报告（全国碳市场） |
+| **Product carbon footprint > 2x industry average** | Enterprise-disclosed per-unit carbon emissions (e.g., ton CO2/ton steel) > industry average x 2 | Medium | ESG report / CDP disclosure (only some enterprises disclose) |
+| **No clear carbon reduction plan or target** | Enterprise does not mention carbon reduction targets / carbon neutrality pathway in annual report or ESG report | Medium | Annual report ESG section / Sustainability report |
+| **Major product carbon cost ratio > 5% and deteriorating** | Estimated carbon cost (carbon price x emissions) / EBITDA > 5% | Medium-High | Annual report EBITDA + industry emission coefficient estimation |
+| **Carbon allowance gap widening (2 consecutive years)** | Enterprise actual emissions > free allowances, purchased allowance volume increasing YoY | Medium-High | Enterprise carbon allowance settlement announcement (national carbon market) |
+| **Carbon market compliance overdue or default** | Failure to settle carbon allowances in full and on time (environmental protection authority disclosure) | **Strong** | Environmental protection authority "Carbon Emissions Trading" section |
+| **Slow improvement after being listed as key emission entity** | Carbon emission intensity not declining or rising for 2 consecutive years | Medium | Enterprise carbon emission report (national carbon market) |
 
-**诚实标注**：企业层面碳排放数据覆盖率极低。全国碳市场仅覆盖发电行业（2021-2025年逐步扩展至钢铁/水泥/铝业），且仅强制要求重点排放单位报告碳排放——中小企业碳数据几乎不可获取。因此，高碳行业转型风险评估的信号密度显著低于环保处罚。
+**Honest Labeling**: Enterprise-level carbon emission data coverage is extremely low. The national carbon market only covers the power generation sector (gradually expanding to steel/cement/aluminum from 2021-2025), and only key emission entities are required to report -- carbon data for SMEs is almost unobtainable. Therefore, the signal density for high-carbon industry transition risk assessment is significantly lower than for environmental penalties.
 
-### 2.3 环保处罚与停产整顿（E2）
+### 2.3 Environmental Penalties and Production Suspension (E2)
 
-#### 2.3.1 环保处罚→信用传导路径
+#### 2.3.1 Environmental Penalty -> Credit Transmission Path
 
 ```
-环保处罚事件
+Environmental penalty event
   │
-  ├── 行政处罚（罚款）
-  │     └── 罚款金额直接减少利润
-  │           金额 <= 10万 —— 财务影响可忽略（不触发信用调整）
-  │           金额 > 100万 —— 财务影响显著（尤其对小微企业）
-  │           金额 > 净利润5% —— 实质性财务影响（需纳入评估）
+  ├── Administrative penalty (fine)
+  │     └── Fine amount directly reduces profit
+  │           Amount <= 10K -- Financial impact negligible (no credit adjustment triggered)
+  │           Amount > 1M -- Significant financial impact (especially for small enterprises)
+  │           Amount > 5% of net profit -- Material financial impact (needs to be included in assessment)
   │
-  ├── 责令停业/停产整顿（最严重的环保处罚）
-  │     ├── 停产期间无收入 —— 现金流中断（每日损失 = 日营收 × 毛利率）
-  │     ├── 复产需要整改投入 —— 额外资本支出
-  │     ├── 客户可能转单（尤其对供应紧张的下游）—— 永久性收入损失
-  │     └── 银行/债券投资者关注 —— 融资渠道可能收紧
+  ├── Ordered business suspension / production halt (most severe environmental penalty)
+  │     ├── No revenue during suspension -- Cash flow interruption (daily loss = daily revenue x gross margin)
+  │     ├── Restart requires remediation investment -- Additional capital expenditure
+  │     ├── Customers may switch suppliers (especially for tight downstream supply) -- Permanent revenue loss
+  │     └── Bank/bond investor attention -- Financing channels may tighten
   │
-  ├── 挂牌督办（生态环境部/省厅）
-  │     ├── 被列为重点监管对象 —— 未来的监管成本上升
-  │     └── 社会公众关注 —— 声誉损失 + 融资成本上升
+  ├── Supervised rectification (environmental protection authority)
+  │     ├── Listed as key supervision target -- Future regulatory costs increase
+  │     └── Public attention -- Reputational damage + financing cost increase
   │
-  └── 刑事追责（环境污染罪）
-        ├── 直接责任人被判刑 —— 管理层稳定性受影响
-        └── 企业被列入环境失信名单 —— 影响银行授信/政府项目投标
+  └── Criminal prosecution (environmental pollution crime)
+        ├── Directly responsible personnel sentenced -- Management stability affected
+        └── Enterprise listed as environmental dishonesty blacklist -- Affects bank credit / government project bidding
 ```
 
-#### 2.3.2 环保处罚红旗信号清单
+#### 2.3.2 Environmental Penalty Red Flag Signal List
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 |
+| Red Flag Signal | Detection Condition | Signal Strength | Data Source |
 |---|---|---|---|
-| **单次罚款 > 100万元** | 生态环境部门出具的行政处罚决定书中罚款金额 > 100万 | 中 | 生态环境部/省环保厅官网"行政处罚"栏目 |
-| **被责令停产/停业整顿** | 处罚决定中包含"责令停产整顿""限产""停业"等字眼 | **强** | 同上 |
-| **被生态环境部挂牌督办** | 被列入生态环境部"挂牌督办"名单 | **强** | 生态环境部官网"挂牌督办"栏目 |
-| **被省级环保部门区域限批** | 项目环评审批被限制或暂停 | 中-强 | 省环保厅公示 |
-| **同一企业反复受罚（近3年≥3次）** | 环保处罚记录累计 ≥3次（即使单次金额小） | 中 | 生态环境部/省环保厅历史处罚记录 |
-| **被列入环保失信企业名单** | 环保信用评价为"不良"或"严重不良" | 中-强 | 企业环保信用评价系统（部分省市已建立） |
-| **污染监测数据造假** | 篡改/伪造自动监测数据被查实 | **强** | 生态环境部"环境监测数据弄虚作假"专栏 |
-| **被中央环保督察通报** | 中央生态环境保护督察组通报典型案例 | **强** | 中央环保督察组公告（生态环境部官网） |
+| **Single fine > 1M** | Fine amount in administrative penalty decision issued by environmental protection authority > 1M | Medium | Environmental protection authority website "Administrative Penalties" section |
+| **Ordered production suspension / business halt** | Penalty decision includes "ordered production suspension," "production curtailment," "business halt" etc. | **Strong** | Same as above |
+| **Listed for supervised rectification** | Listed on environmental protection authority "Supervised Rectification" list | **Strong** | Environmental protection authority website "Supervised Rectification" section |
+| **Regional approval restriction by provincial environmental authority** | Project environmental impact assessment approval restricted or suspended | Medium-Strong | Provincial environmental authority announcements |
+| **Same enterprise repeatedly penalized (3+ times in 3 years)** | Cumulative environmental penalty records >= 3 (even if individual amounts are small) | Medium | Environmental protection authority historical penalty records |
+| **Listed as environmental dishonesty enterprise** | Environmental credit rating "poor" or "severely poor" | Medium-Strong | Enterprise environmental credit evaluation system (established in some jurisdictions) |
+| **Pollution monitoring data falsification** | Tampering/falsifying automatic monitoring data confirmed | **Strong** | Environmental protection authority "Environmental Monitoring Data Fraud" section |
+| **Reported by central environmental inspection** | Central environmental protection inspection team publishes typical cases | **Strong** | Central environmental inspection team announcements |
 
-**数据限制标注**：
-- 环保处罚数据来自各级生态环境部门的主动公开，覆盖面较全（中国自2014年起行政处刊决定书需公开上网）
-- 但以下情形可能不可观测：
-  1. 小额处罚（<5万元）可能仅在地方环保局官网公示，且部分省市公示系统的时效性和可检索性差
-  2. 停产整顿的实际执行情况（是否真停、停了多久）——处罚决定书只写"责令停产"，但实际复产日期不公开
-  3. 环保处罚的严重程度需要专业判断：同样是"罚款20万元"，对年利润10亿的企业无影响，对年利润1000万的中小企业影响重大
+**Data Limitation Note**:
+- Environmental penalty data comes from proactive disclosure by environmental protection authorities at various levels, with relatively comprehensive coverage (administrative penalty decisions required to be published online).
+- However, the following situations may be unobservable:
+  1. Small fines (< 5K) may only be posted on local environmental authority websites, and some jurisdictions' disclosure systems have poor timeliness and searchability
+  2. Actual implementation of production suspension (whether truly suspended, how long) -- penalty decisions only state "ordered suspension," but actual restart dates are not disclosed
+  3. Severity of environmental penalties requires professional judgment: a "fine of 200K" is insignificant for an enterprise with 1B annual profit but material for an SME with 10M annual profit
 
-### 2.4 环境事故与生态修复（E3）
+### 2.4 Environmental Accidents and Ecological Remediation (E3)
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 |
+| Red Flag Signal | Detection Condition | Signal Strength | Data Source |
 |---|---|---|---|
-| **重大环境污染事故** | 化学品泄漏/有毒物质排放导致环境损害，被媒体广泛报道或官方通报 | **强** | 媒体报道 + 生态环境部通报 + 公司公告 |
-| **土壤/地下水污染修复** | 被列入土壤污染修复名录（需承担修复费用） | 中-高 | 生态环境部"土壤污染防治"栏目 |
-| **生态环境损害赔偿** | 被提起生态环境损害赔偿诉讼（可能涉及巨额赔偿） | 中-高 | 裁判文书网 + 生态环境部公示 |
-| **生物多样性影响争议** | 项目选址涉及自然保护区/生态红线被叫停 | 中 | 生态环境部环评公示 + 媒体报道 |
+| **Major environmental pollution accident** | Chemical leakage / toxic substance discharge causing environmental damage, widely reported by media or officially notified | **Strong** | Media reports + environmental protection authority notification + company announcement |
+| **Soil/groundwater pollution remediation** | Listed in soil pollution remediation registry (must bear remediation costs) | Medium-High | Environmental protection authority "Soil Pollution Prevention" section |
+| **Ecological environmental damage compensation** | Subject to ecological environmental damage compensation lawsuit (may involve substantial compensation) | Medium-High | Court judgment database + environmental protection authority disclosure |
+| **Biodiversity impact controversy** | Project location involving nature reserves / ecological red lines, project halted | Medium | Environmental protection authority EIA disclosure + media reports |
 
-### 2.5 绿色转型机遇（E4）——正向信号
+### 2.5 Green Transition Opportunity (E4) -- Positive Signals
 
-| 正向信号 | 检测条件 | 信号强度 | 信用影响 |
+| Positive Signal | Detection Condition | Signal Strength | Credit Impact |
 |---|---|---|---|
-| **发行绿色债券/可持续发展挂钩债券** | 成功发行绿色债券/ESG债券/可持续挂钩债券（SLB） | 中 | 融资渠道拓宽，利率可能有优惠（但目前中国绿色债的利率优惠不明显，约10-30bp） |
-| **产品/技术有明确的碳减排收益** | 光伏组件/风电/电动车等产品直接贡献碳排放减少，下游需求刚性 | 中-高 | 收入增长确定性高（政策驱动），融资可得性强 |
-| **节能改造完成且效果可验证** | 完成重大节能改造，单位产品能耗显著下降（下降>20%） | 中 | 运营成本下降 + 碳配额盈余可能产生额外收益 |
-| **进入绿色金融支持目录** | 被纳入人民银行"绿色贷款"支持目录或相关行业名单 | 低-中 | 获得绿色贷款额度，融资成本降低 |
-| **CCER收益实现** | 成功注册CCER（国家核证自愿减排量）项目并产生收益 | 低 | 额外收入来源，但规模通常有限 |
+| **Issuance of green bonds / sustainability-linked bonds** | Successfully issued green bonds / ESG bonds / sustainability-linked bonds (SLBs) | Medium | Financing channels broadened, interest rates may have preferential treatment (green bond rate advantage currently ~10-30bp) |
+| **Products/technology with clear carbon reduction benefits** | Solar PV components / wind power / EVs directly contribute to carbon emission reduction, downstream demand inelastic | Medium-High | High revenue growth certainty (policy-driven), strong financing accessibility |
+| **Energy efficiency upgrade completed with verifiable results** | Major energy efficiency upgrade completed, per-unit energy consumption significantly reduced (>20% reduction) | Medium | Operating cost reduction + carbon allowance surplus may generate additional revenue |
+| **Included in green finance support catalog** | Included in central bank "green loan" support catalog or relevant industry list | Low-Medium | Access to green loan facilities, financing cost reduction |
+| **Carbon credit revenue realized** | Successfully registered carbon credit project and generating revenue | Low | Additional revenue source, but typically limited in scale |
 
 ---
 
-## 三、S（社会）风险评估
+## 3. S (Social) Risk Assessment
 
-### 3.1 社会风险分类体系
+### 3.1 Social Risk Classification System
 
-| 类别 | 子类 | 信用影响强度 | 适用行业 | 数据可观测性 |
+| Category | Sub-Category | Credit Impact Intensity | Applicable Industries | Data Observability |
 |---|---|---|---|---|
-| **安全生产风险** | 重大安全事故/矿难/火灾/爆炸 | 高（停产+赔偿+一把手问责） | 采矿/化工/建筑/制造/运输 | **可观测**（应急管理部通报+媒体报道） |
-| **劳工纠纷风险** | 大规模罢工/欠薪/社保违规 | 中-高 | 制造业/建筑/物流/餐饮 | **部分可观测**（仅大规模事件被报道） |
-| **产品质量安全** | 产品召回/食品安全/药品安全 | 高 | 消费/医药/食品/汽车 | **可观测**（市场监管总局公示） |
-| **供应链社会责任** | 供应商环境/劳工违规 | 中（间接） | 品牌商/零售商/电子制造 | **低可观测性**（通常不可公开获取） |
-| **数据隐私/客户保护** | 数据泄露/用户权益侵害 | 中（科技/金融企业） | 互联网/金融/大数据 | **部分可观测**（仅监管介入后） |
-| **区域/社区关系** | 项目征地矛盾/强制拆迁/社区冲突 | 中（项目延期的间接影响） | 房地产/基础设施/采矿 | **部分可观测**（媒体报道） |
+| **Workplace Safety Risk** | Major safety accidents / mine disasters / fires / explosions | High (suspension + compensation + management accountability) | Mining/Chemicals/Construction/Manufacturing/Transportation | **Observable** (emergency management authority notification + media reports) |
+| **Labor Dispute Risk** | Large-scale strikes / wage arrears / social insurance violations | Medium-High | Manufacturing/Construction/Logistics/F&B | **Partially observable** (only large-scale events reported) |
+| **Product Quality Safety** | Product recalls / food safety / drug safety | High | Consumer/Pharma/Food/Automotive | **Observable** (market regulator announcements) |
+| **Supply Chain Social Responsibility** | Supplier environmental/labor violations | Medium (indirect) | Brand owners/Retailers/Electronics manufacturing | **Low observability** (typically not publicly available) |
+| **Data Privacy / Customer Protection** | Data breaches / infringement of user rights | Medium (tech/financial enterprises) | Internet/Finance/Big Data | **Partially observable** (only after regulatory intervention) |
+| **Regional/Community Relations** | Project land acquisition conflicts / forced eviction / community conflicts | Medium (indirect impact of project delays) | Real Estate/Infrastructure/Mining | **Partially observable** (media reports) |
 
-### 3.2 安全生产风险（S1）
+### 3.2 Workplace Safety Risk (S1)
 
-#### 3.2.1 安全事故→信用传导路径
+#### 3.2.1 Safety Accident -> Credit Transmission Path
 
 ```
-重大安全事故
+Major safety accident
   │
-  ├── 立即后果
-  │     ├── 被责令停产整顿（无时间表，视整改验收情况）
-  │     ├── 人员伤亡赔偿（工亡赔偿标准：约100-150万/人）
-  │     ├── 设备修复/安全改造投入
-  │     └── 善后费用
+  ├── Immediate consequences
+  │     ├── Ordered production suspension (no timeline, depends on remediation inspection)
+  │     ├── Casualty compensation (fatality compensation standard: ~100K-150K/person)
+  │     ├── Equipment repair / safety upgrade investment
+  │     └── Remediation costs
   │
-  ├── 监管层面
-  │     ├── 被应急管理部/国家矿山安监局列为重点监管
-  │     ├── 安全生产许可证可能被暂扣/吊销
-  │     └── 主要负责人被约谈/问责/免职
+  ├── Regulatory level
+  │     ├── Listed as key supervision target by emergency management authority
+  │     ├── Safety production license may be suspended/revoked
+  │     └── Senior management summoned for questioning / held accountable / dismissed
   │
-  ├── 融资渠道
-  │     ├── 银行对该企业/集团授信可能收紧
-  │     ├── 债券发行计划可能推迟或取消
-  │     └── 保险公司可能提高保费/拒绝承保
+  ├── Financing channels
+  │     ├── Bank credit to the enterprise/group may tighten
+  │     ├── Bond issuance plans may be delayed or cancelled
+  │     └── Insurance companies may raise premiums / refuse coverage
   │
-  └── 长期影响
-        ├── 需要大规模安全投入 → 资本支出上升 → FCF减少
-        ├── 企业声誉受损 → 招聘困难/客户流失/供应商要求预付款
-        └── 如果有定性评价或责任认定 → 可能面临刑事追责（重大责任事故罪）
+  └── Long-term impact
+        ├── Requires large-scale safety investment -> Capital expenditure increase -> FCF reduction
+        ├── Enterprise reputation damaged -> Recruitment difficulty / customer loss / suppliers demand prepayment
+        └── If criminal negligence established -> May face criminal prosecution
 ```
 
-#### 3.2.2 安全事故红旗信号清单
+#### 3.2.2 Workplace Safety Red Flag Signal List
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 |
+| Red Flag Signal | Detection Condition | Signal Strength | Data Source |
 |---|---|---|---|
-| **重大/特别重大安全事故** | 一次事故造成 ≥10人死亡（重大）或 ≥30人死亡（特别重大） | **强** | 应急管理部通报 + 国务院事故调查报告 |
-| **较大安全事故** | 一次事故造成 3-9人死亡 | 中-强 | 应急管理部/省应急厅通报 |
-| **一般安全事故** | 一次事故造成 1-2人死亡 | 中 | 省/市应急管理局通报 |
-| **同一企业近3年发生2次以上安全事故** | 累计安全事故次数 ≥2次（即使单次规模较小） | 中 | 应急管理部历史事故记录 |
-| **被列入安全生产"黑名单"** | 国家应急管理部公示的安全生产失信联合惩戒名单 | **强** | 应急管理部官网"安全生产不良记录"栏目 |
-| **安全生产许可证被暂扣/吊销** | 公告确认许可证被暂扣或吊销 | **强** | 应急管理部/省应急厅公告 |
-| **被国务院安委会约谈** | 国务院安委会办公室约谈企业主要负责人 | 中 | 应急管理部官网 + 媒体报道 |
+| **Major / extremely major safety accident** | Single accident causing >= 10 deaths (major) or >= 30 deaths (extremely major) | **Strong** | Emergency management authority notification + state council accident investigation report |
+| **Severe safety accident** | Single accident causing 3-9 deaths | Medium-Strong | National/provincial emergency management authority notification |
+| **General safety accident** | Single accident causing 1-2 deaths | Medium | Provincial/municipal emergency management authority notification |
+| **Same enterprise with 2+ safety accidents in 3 years** | Cumulative safety accident count >= 2 (even if individual scale is small) | Medium | Emergency management authority historical accident records |
+| **Listed on safety production "blacklist"** | Listed on safety production dishonesty joint punishment list | **Strong** | Emergency management authority website "Safety Production Bad Records" section |
+| **Safety production license suspended/revoked** | Confirmed suspension or revocation of license | **Strong** | National/provincial emergency management authority announcement |
+| **Summoned for questioning by state council safety committee** | State Council Safety Committee Office summons senior management | Medium | Emergency management authority website + media reports |
 
-**数据限制标注**：
-- 安全生产事故的官方通报数据较为完整（国务院《生产安全事故报告和调查处理条例》要求逐级上报）
-- 但以下情形不可观测：
-  1. 未造成人员死亡的一般事故（仅受伤或财产损失）——可能不公开通报
-  2. 停产整顿的实际时长和复产进度——通常不公开
-  3. 事故对保险/授信的实际影响——仅在企业内部体现
+**Data Limitation Note**:
+- Official notification data for safety production accidents is relatively complete (regulations require hierarchical reporting)
+- However, the following situations may be unobservable:
+  1. General accidents without fatalities (injury or property damage only) -- may not be publicly reported
+  2. Actual duration of production suspension and restart progress -- typically not disclosed
+  3. Actual impact of accidents on insurance/credit -- only reflected internally within enterprises
 
-### 3.3 劳工纠纷风险（S2）
+### 3.3 Labor Dispute Risk (S2)
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 |
+| Red Flag Signal | Detection Condition | Signal Strength | Data Source |
 |---|---|---|---|
-| **大规模罢工/集体维权** | 媒体报道确认发生100人以上罢工或集体维权 | 中-强 | 媒体报道 + 地方劳动监察通报 |
-| **欠薪事件** | 被劳动监察部门认定存在欠薪，且金额 > 员工月工资总额 | 中 | 劳动监察公示 + 媒体报道（建筑行业欠薪较常见） |
-| **社保违规** | 未依法足额缴纳社保被社保部门处罚（尤其制造业密集用工企业） | 中 | 社保部门公示（部分省市） |
-| **劳动仲裁/诉讼批量增加** | 一年内劳动争议案件量同比激增>100%（信号：劳资关系恶化） | 低-中 | 裁判文书网（劳动仲裁裁决公开） |
-| **涉及强迫劳动/童工** | 被媒体/NGO曝光使用童工或强迫劳动（国际关注时影响更大） | **强** | 媒体报道 + NGO调查报告（如HRW/ILO） |
-| **裁员补偿争议** | 大规模裁员中的补偿方案引发纠纷（如裁员导致的生产中断） | 中 | 媒体报道 + 公司公告 |
+| **Large-scale strike / collective action** | Media-confirmed strike or collective action involving 100+ people | Medium-Strong | Media reports + local labor inspection notifications |
+| **Wage arrears incident** | Confirmed wage arrears by labor inspection authorities, amount > monthly total payroll | Medium | Labor inspection disclosure + media reports (wage arrears more common in construction industry) |
+| **Social insurance violations** | Penalized for failing to pay social insurance in full (especially manufacturing with intensive labor use) | Medium | Social insurance authority disclosure (some jurisdictions) |
+| **Batch increase in labor arbitration/lawsuits** | Labor dispute cases YoY surge > 100% in one year (signal: deteriorating labor relations) | Low-Medium | Court judgment database (labor arbitration rulings are public) |
+| **Involvement in forced labor / child labor** | Exposed by media/NGO for using child labor or forced labor (greater impact with international attention) | **Strong** | Media reports + NGO investigation reports (e.g., HRW/ILO) |
+| **Layoff compensation dispute** | Disputes over compensation scheme during mass layoffs (e.g., production disruption due to layoffs) | Medium | Media reports + company announcements |
 
-**数据限制标注**：劳工纠纷是中国ESG信息披露最薄弱的领域之一。媒体报道受限于报道空间，劳动监察公示覆盖面有限，裁判文书网检索效率低。对于非上市企业，劳工纠纷信号几乎不可观测——除非事件升级到社会关注级别。
+**Data Limitation Note**: Labor disputes are one of the weakest areas of ESG information disclosure. Media reports are limited by reporting space, labor inspection disclosure coverage is limited, and court judgment database search efficiency is low. For non-listed enterprises, labor dispute signals are almost unobservable -- unless the event escalates to socially concerning levels.
 
-### 3.4 产品质量安全风险（S3）
+### 3.4 Product Quality Safety Risk (S3)
 
-#### 3.4.1 产品质量事件的信用影响
+#### 3.4.1 Credit Impact of Product Quality Events
 
 ```
-产品质量丑闻
+Product quality scandal
   │
-  ├── 短期影响
-  │     ├── 产品召回成本（召回数量 × 单位召回成本）
-  │     ├── 监管罚款（食品安全法最高可罚货值30倍）
-  │     ├── 库存报废（已生产但无法销售的产品）
-  │     └── 退货/退款支出
+  ├── Short-term impact
+  │     ├── Product recall cost (recall quantity x unit recall cost)
+  │     ├── Regulatory fines (food safety law: maximum fine up to 30x product value)
+  │     ├── Inventory write-off (produced but unsalable products)
+  │     └── Returns / refund expenses
   │
-  ├── 中期影响
-  │     ├── 销售额下降（消费者信任丧失，通常持续3-12个月）
-  │     ├── 渠道去库存（经销商退货/不再进货）
-  │     ├── 品牌价值受损（需要长期修复）
-  │     └── 监管加强（被列为重点检测对象，合规成本上升）
+  ├── Medium-term impact
+  │     ├── Sales decline (consumer trust loss, typically lasting 3-12 months)
+  │     ├── Channel de-stocking (distributors return goods / stop ordering)
+  │     ├── Brand value damage (requires long-term restoration)
+  │     └── Regulatory tightening (listed as key inspection target, compliance costs rise)
   │
-  └── 对信用的传导
-        ├── 短期：现金流一次性支出（召回+罚款+退货）→ 流动性压力
-        ├── 中期：收入下降 → 营运资金自生能力下降 → FCF减少
-        └── 长期：如果核心产品品牌损伤不可逆 → 盈利能力永久性下降
+  └── Credit transmission
+        ├── Short-term: One-time cash flow expenditure (recall + fine + returns) -> Liquidity pressure
+        ├── Medium-term: Revenue decline -> Working capital self-generation capacity declines -> FCF reduction
+        └── Long-term: If core product brand damage is irreversible -> Permanent profitability decline
 ```
 
-#### 3.4.2 产品质量红旗信号清单
+#### 3.4.2 Product Quality Red Flag Signal List
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 |
+| Red Flag Signal | Detection Condition | Signal Strength | Data Source |
 |---|---|---|---|
-| **食品/药品安全事件** | 被市场监管总局/国家药监局认定为存在安全隐患（如"三聚氰胺"类事件） | **强** | 市场监管总局/药监局公告 |
-| **汽车产品召回** | 因安全缺陷实施大规模产品召回（涉及车型为核心收入来源） | 中-强 | 国家市场监督管理总局缺陷产品管理中心 |
-| **消费品批量召回** | 因质量问题向监管部门主动/被动报告召回（家电/儿童用品/电子产品等） | 中 | 市场监管总局缺陷产品管理中心 |
-| **被消费者协会提起公益诉讼** | 中消协或省级消协因产品质量问题提起消费民事公益诉讼 | 中-强 | 中消协官网 + 法院公告 |
-| **媒体曝光质量黑幕** | 被权威媒体（如央视315/财新/第一财经）曝光产品质量问题 | 中 | 媒体报道（需要判断曝光渠道的权威性和扩散程度） |
-| **市场份额因质量问题明显下降** | 行业数据显示公司市场份额连续2个季度下降>2pp，且同行业整体稳定 | 中 | 行业数据（奥维/中怡康/Nielsen等付费数据平台，或上市公司年报分部收入披露） |
-| **产品质量相关的诉讼胜诉率低** | 裁判文书网中产品质量纠纷案件企业败诉率>60% | 中 | 裁判文书网 + 天眼查/企查查诉讼记录 |
+| **Food/drug safety incident** | Identified as having safety risks by market regulator / drug administration (e.g., melamine contamination-type events) | **Strong** | Market regulator / drug administration announcements |
+| **Automotive product recall** | Large-scale product recall due to safety defects (involving core revenue-generating models) | Medium-Strong | National product defect management center |
+| **Consumer goods batch recall** | Voluntary/passive recall report submitted to regulator due to quality issues (appliances/children's products/electronics etc.) | Medium | Product defect management center announcements |
+| **Public interest lawsuit by consumer association** | Consumer association files consumer civil public interest lawsuit over product quality | Medium-Strong | Consumer association website + court announcements |
+| **Media exposure of quality malpractice** | Quality issues exposed by authoritative media (major news outlets / investigative journalism) | Medium | Media reports (requires assessment of channel authority and diffusion extent) |
+| **Market share decline due to quality issues** | Industry data shows company market share declining > 2pp for 2 consecutive quarters while industry overall stable | Medium | Industry data (market data platforms or listed company annual report segment revenue disclosure) |
+| **Low product quality lawsuit win rate** | Enterprise losing > 60% of product quality dispute cases in court judgment database | Medium | Court judgment database + business information platforms litigation records |
 
-**数据限制标注**：
-- 产品召回数据较为完整（《缺陷消费品召回管理办法》要求强制报告并公告）
-- 但食品/药品安全事件的预警窗口极短——通常在监管公告或媒体曝光同日才可知，而在曝光前已存在数月的问题被掩盖（参考2019年某药企"废药回收"事件曝光前，内部问题已存在2年以上）
+**Data Limitation Note**:
+- Product recall data is relatively complete (recall regulations require mandatory reporting and announcement)
+- But the early warning window for food/drug safety incidents is extremely short -- typically only known on the same day as regulatory announcement or media exposure, while problems may have been concealed for months before exposure
 
-### 3.5 社会风险综合判断
+### 3.5 Social Risk Composite Assessment
 
-| 评估 | 条件 |
+| Assessment | Condition |
 |---|---|
-| **无信号** | 近3年无安全事故、无产品质量丑闻、无劳工纠纷报道 |
-| **弱信号** | 单项一般安全事故（1-2人死亡）或单项小额产品质量投诉（无召回） |
-| **中等信号** | 较大安全事故（3-9死）或产品批量召回或劳动争议批量化 |
-| **强信号** | 重大安全事故（10+死）或产品质量丑闻（食品安全/药品安全）或被列入安全生产黑名单 |
-| **极端信号** | 特别重大安全事故（30+死）或产品质量事件导致核心产品停产或企业被吊销许可证 |
+| **No signal** | No safety accidents, no product quality scandals, no labor dispute reports in 3 years |
+| **Weak signal** | Single general safety accident (1-2 deaths) or single minor product quality complaint (no recall) |
+| **Medium signal** | Severe safety accident (3-9 deaths) or product batch recall or batch labor disputes |
+| **Strong signal** | Major safety accident (10+ deaths) or product quality scandal (food safety/drug safety) or listed on safety production blacklist |
+| **Extreme signal** | Extremely major safety accident (30+ deaths) or product quality event leading to core product suspension or enterprise license revocation |
 
 ---
 
-## 四、G（治理）风险评估
+## 4. G (Governance) Risk Assessment
 
-### 4.1 本框架与 governance-fraud-risk.md 的关系
+### 4.1 Relationship Between This Framework and governance-fraud-risk.md
 
-governance-fraud-risk.md 已覆盖以下治理维度：
-- 财务欺诈红旗信号（收入质量/利润质量/资产负债质量/审计意见）
-- 管理层治理红旗（实际控制人风险、管理层稳定性、董事会独立性）
-- 关联交易异常检测
-- 逃废债风险信号
+governance-fraud-risk.md already covers the following governance dimensions:
+- Financial fraud red flag signals (revenue quality / profit quality / asset-liability quality / audit opinion)
+- Management governance red flags (controlling person risk, management stability, board independence)
+- Related party transaction anomaly detection
+- Debt evasion risk signals
 
-本框架的治理部分**不重复上述内容**，而是增加 governance-fraud-risk.md 未充分覆盖的以下维度：
+The governance section of this framework **does not duplicate the above**, but adds the following dimensions not fully covered by governance-fraud-risk.md:
 
-| 治理维度 | governance-fraud-risk.md 覆盖情况 | 本框架新增内容 |
+| Governance Dimension | Coverage in governance-fraud-risk.md | New Additions in This Framework |
 |---|---|---|
-| 股权结构稳定性 | 仅涉及实控人变更（2.1节） | **扩展**：股权争夺、一致行动人解体、外资退出 |
-| 董事会独立性 | 有基础覆盖（独立董事占比/不独立信号，2.3节） | **扩展**：独董履职质量、专委会有效性 |
-| 信息披露质量 | 仅涉及违规记录（2.4节） | **深度扩展**：披露完整性/可比性/时效性评价 |
-| 中小股东保护 | **未覆盖** | **新增**：分红政策、分类表决、关联交易中小股东投票 |
+| Equity structure stability | Only covers controlling person change (Section 2.1) | **Expanded**: Control contest, concerted action dissolution, foreign investor exit |
+| Board independence | Basic coverage (independent director ratio / non-independence signals, Section 2.3) | **Expanded**: Independent director performance quality, committee effectiveness |
+| Information disclosure quality | Only covers violation records (Section 2.4) | **Deep expansion**: Disclosure completeness / comparability / timeliness evaluation |
+| Minority shareholder protection | **Not covered** | **New**: Dividend policy, classified voting, minority shareholder voting on related party transactions |
 
-### 4.2 股权结构稳定性（G1新增）
+### 4.2 Equity Structure Stability (G1 New)
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 |
+| Red Flag Signal | Detection Condition | Signal Strength | Data Source |
 |---|---|---|---|
-| **股权争夺/控制权之争** | 根据公告/媒体报道，公司出现公开的股权争夺（如两名以上股东同时主张控制权、董事会组成争议） | **强** | 公司公告 + 媒体报道 + 交易所关注函 |
-| **一致行动人协议到期不续** | 一致行动人协议到期后未续签，导致实际控制人持股比例降至<30%或无实际控制人 | 中-强 | 公司公告（权益变动报告书） |
-| **大股东同步减持** | 多家主要股东（非关联方）在同一季度内集中减持（可能信号：内部人集体看空） | 中 | 公司公告（股东减持计划披露） |
-| **战略投资者退出** | 知名战投（如国家级基金/产业资本）在锁定期满后快速全额退出 | 中 | 公司公告 + 季报股东变化 |
-| **外资股东系统性退出** | 沪深港通持股比例连续3个月下降 > 50%（仅适用于沪深港通标的） | 中 | 沪深港通每日数据 |
-| **股权质押爆仓风险** | 实控人质押的股权市场价格跌破平仓线（governance-fraud-risk.md已有质押率检测，此处增加"已跌破平仓线"的红色警报） | **强** | 公司公告（补充质押/质押展期公告）+ 股价数据 |
-| **上市公司被举牌** | 外部投资者通过二级市场增持至>5%（非敌意收购——取决于举牌方意图和公司反制措施） | 中 | 公司公告（简式/详式权益变动报告书） |
+| **Control contest / control dispute** | Based on announcements / media reports, company has open control contest (e.g., two or more shareholders simultaneously claiming control, board composition dispute) | **Strong** | Company announcements + media reports + exchange inquiry letters |
+| **Concerted action agreement expires without renewal** | Concerted action agreement expires without renewal, leading to controlling person's shareholding falling to < 30% or no controlling person | Medium-Strong | Company announcements (equity change report) |
+| **Major shareholders simultaneously reducing holdings** | Multiple major shareholders (non-related parties) concentrated reduction in same quarter (possible signal: insiders collectively bearish) | Medium | Company announcements (shareholder reduction plan disclosure) |
+| **Strategic investor exit** | Well-known strategic investor (e.g., sovereign investment fund / industrial capital) rapidly exits in full after lock-up period expires | Medium | Company announcements + quarterly report shareholder changes |
+| **Systematic foreign investor exit** | Cross-border stock connect program holdings continuously declining > 50% for 3 months (only applicable to connect-eligible stocks) | Medium | Cross-border stock connect daily data |
+| **Equity pledge margin call risk** | Market price of pledged equity falls below forced liquidation line (governance-fraud-risk.md already has pledge ratio detection; this adds "already breached margin call line" red alert) | **Strong** | Company announcements (supplementary pledge / pledge extension) + stock price data |
+| **Listed company subject to hostile takeover bid** | External investor increases holdings via secondary market to > 5% (not necessarily hostile -- depends on bidder intent and company countermeasures) | Medium | Company announcements (simplified/detailed equity change report) |
 
-**数据限制标注**：股权结构数据的可得性较高——上市公司须披露持股5%以上股东及其变动。但以下情形不可观测：
-- 一致行动协议的幕后安排（抽屉协议、代持行为）——仅在被监管质疑或诉讼中才可能暴露
-- 特定对象的股权转让意愿——仅当达到披露阈值（5%以上的变动）时才公告
-- 非上市企业（城投/民营企业）的股权结构几乎无公开数据
+**Data Limitation Note**: Equity structure data accessibility is relatively high -- listed companies must disclose shareholders with >= 5% shareholding and changes. However, the following situations may be unobservable:
+- Arrangements behind concerted action agreements (side letters, nominee holdings) -- only exposed when challenged by regulators or in litigation
+- Specific investors' willingness to transfer shares -- only announced when reaching disclosure threshold (changes > 5%)
+- Non-listed enterprises (LGFVs / private enterprises) -- equity structure almost no public data
 
-### 4.3 董事会独立性与专委会有效性（G2扩展）
+### 4.3 Board Independence and Committee Effectiveness (G2 Expanded)
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 |
+| Red Flag Signal | Detection Condition | Signal Strength | Data Source |
 |---|---|---|---|
-| **独立董事连续缺席会议** | 独立董事连续3次以上缺席董事会会议（说明独董未勤勉尽责） | 中 | 年报"董事会会议召开情况"章节 |
-| **独立董事对议案投反对/弃权票** | 独立董事在年报/半年报中对重要议案（如关联交易、对外担保、利润分配）投反对票或弃权票 | **强** | 公司公告（独立董事对相关事项的独立意见） |
-| **审计委员会召开频率异常低** | 年度审计委员会会议次数 < 2次（年报审计应至少2次：审前+审后） | 中 | 年报"公司治理"章节 |
-| **薪酬与考核委员会形同虚设** | 高管薪酬方案明显不合理（如亏损年份薪酬总额仍增长）且未见薪酬委员会反对意见 | 中 | 年报 + 薪酬委员会报告 |
-| **提名委员会职能弱化** | 董事候选人全部由大股东提名而非提名委员会遴选（治理独立性弱） | 中 | 年报 + 股东大会公告 |
-| **内部审计直接向管理层报告** | 内部审计负责人向CFO或CEO报告，而非向审计委员会报告（governance-fraud-risk.md已有提及，此处确认） | 中 | 年报"公司治理"章节内审制度说明 |
+| **Independent director repeated absence from meetings** | Independent director absent from board meetings 3+ consecutive times (indicating non-diligence) | Medium | Annual report "Board Meeting Convening" section |
+| **Independent director votes against / abstains on proposals** | Independent director votes against or abstains on important proposals (e.g., related transactions, external guarantees, profit distribution) in annual/semi-annual report | **Strong** | Company announcements (independent director opinions on relevant matters) |
+| **Audit committee meeting frequency abnormally low** | Annual audit committee meetings < 2 times (annual audit should have at least 2: pre-audit + post-audit) | Medium | Annual report "Corporate Governance" section |
+| **Remuneration and appraisal committee ineffective** | Executive compensation scheme clearly unreasonable (e.g., total compensation still growing in loss-making years) with no committee objection | Medium | Annual report + Remuneration committee report |
+| **Nomination committee role weakened** | All director candidates nominated by major shareholder rather than nomination committee selection (weak governance independence) | Medium | Annual report + shareholder meeting announcements |
+| **Internal audit reports directly to management** | Internal audit head reports to CFO or CEO rather than audit committee (already mentioned in governance-fraud-risk.md, confirmed here) | Medium | Annual report "Corporate Governance" section internal audit system description |
 
-### 4.4 信息披露质量评估（G3新增）
+### 4.4 Information Disclosure Quality Assessment (G3 New)
 
-| 评估维度 | 检测指标 | 信号强度 | 数据来源 |
+| Assessment Dimension | Detection Indicator | Signal Strength | Data Source |
 |---|---|---|---|
-| **完整性** | 年报是否存在"重要缺失项"（如未披露前5大客户名称/未披露关联交易明细/未披露研发投入） | 中-强 | 年报逐章节检查 |
-| **完整性** | 是否按交易所要求披露ESG/可持续发展报告（三大交易所2024年起强制要求上证180/科创50/深证100等指数成分股披露） | 中 | 交易所公告 + 公司公告 |
-| **及时性** | 年报/季报是否存在延迟披露记录（governance-fraud-risk.md已覆盖，此处补充） | **强** | 交易所监管记录 + 公司公告 |
-| **及时性** | 重大事项（重大诉讼/担保/关联交易/资产重组）是否在2个交易日内公告 | 中 | 公司公告时间 vs 事件发生时间对比（需交叉验证） |
-| **准确性** | 过往3年内是否有"更正公告"（对已发布的年报/季报进行重大数据更正） | 中-强 | 公司公告中的"更正公告" |
-| **准确性** | 是否收到交易所问询函（年报问询函/重组问询函/关注函）及回复质量 | 中-强 | 交易所官网"问询函回复"栏目 |
-| **一致性** | 同一指标在不同章节披露的数据是否一致（如分部收入与总收入的勾稽关系、附注与主表的一致性） | 中 | 年报交叉核对 |
+| **Completeness** | Annual report has "significant missing items" (e.g., failure to disclose top 5 customer names / related transaction details / R&D investment) | Medium-Strong | Annual report chapter-by-chapter review |
+| **Completeness** | Whether ESG/sustainability report is disclosed as required by exchange (major exchanges now require certain index constituents to disclose) | Medium | Exchange announcements + company announcements |
+| **Timeliness** | Record of delayed annual/quarterly report disclosure (covered in governance-fraud-risk.md, supplemented here) | **Strong** | Exchange regulatory records + company announcements |
+| **Timeliness** | Major matters (major litigation / guarantees / related transactions / asset restructuring) announced within 2 trading days | Medium | Company announcement time vs event time comparison (requires cross-verification) |
+| **Accuracy** | "Correction announcements" in past 3 years (material data corrections to published annual/quarterly reports) | Medium-Strong | Company announcement "Correction Announcements" |
+| **Accuracy** | Whether exchange inquiry letters received (annual report inquiry / restructuring inquiry / attention letters) and response quality | Medium-Strong | Exchange website "Inquiry Letter Response" section |
+| **Consistency** | Whether same indicator data is consistent across different sections (e.g., segment revenue to total revenue reconciliation, notes to main statements consistency) | Medium | Annual report cross-checking |
 
-**数据限制标注**：
-- 信息披露质量的评估高度依赖年报本身的披露完整性——如果企业"按规定不披露"（如非上市企业），或"按规定披露但信息含量极低"（模板化的"管理层分析"），本框架无法做出有效评估
-- 对于城投企业——信息披露质量通常较低（财务数据简单、附注不详细、不披露ESG报告），但这是行业惯例而非个体治理问题的信号
+**Data Limitation Note**:
+- Information disclosure quality assessment is highly dependent on the completeness of the annual report itself -- if the enterprise "does not disclose as per regulations" (e.g., non-listed enterprises), or "discloses as per regulations but with minimal information content" (template-based "management analysis"), this framework cannot make effective assessment
+- For LGFVs -- information disclosure quality is typically low (simple financial data, non-detailed notes, no ESG report disclosure), but this is industry practice rather than a signal of individual governance issues
 
-### 4.5 中小股东保护（G4新增）
+### 4.5 Minority Shareholder Protection (G4 New)
 
-| 红旗信号 | 检测条件 | 信号强度 | 数据来源 |
+| Red Flag Signal | Detection Condition | Signal Strength | Data Source |
 |---|---|---|---|
-| **分红政策异常** | ① 连续3年盈利但不分红（交易所明确鼓励现金分红但无强制要求）② 突然大幅降低分红比例无合理解释 | 中 | 年报利润分配方案 + 股东大会决议 |
-| **分类表决中被否** | 关联交易/对外担保/重大资产重组等事项在分类表决中被中小股东否决 | 中 | 股东大会决议公告 |
-| **增发/配股稀释严重** | 增发/配股摊薄每股收益 > 20% 且增发价格明显低于净资产（损害中小股东利益） | 中 | 增发/配股公告 + 财务数据 |
-| **要约收购中被质疑定价不公允** | 要约收购价格低于每股净资产或显著低于市场价，被独立财务顾问出具"不公允"意见 | 中-强 | 公司公告（独立财务顾问报告）+ 交易所问询函 |
-| **上市公司与关联方之间不平等的资产交易** | 上市公司向关联方高价收购资产/低价出售资产（利益输送嫌疑）——与governance-fraud-risk.md 关联交易检测联动 | **强** | 年报关联交易附注 + 资产评估报告 |
-| **章程中存在损害中小股东权利的条款** | 如限制股东提案权、提高股东大会表决比例的绝对多数条款等 | 中 | 公司章程 |
+| **Abnormal dividend policy** | ① Profitable for 3 consecutive years but no dividends (exchanges encourage cash dividends but no mandatory requirement) ② Suddenly significantly reducing dividend ratio without reasonable explanation | Medium | Annual report profit distribution plan + shareholder meeting resolution |
+| **Defeated in classified voting** | Related transactions / external guarantees / major asset restructuring rejected by minority shareholders in classified voting | Medium | Shareholder meeting resolution announcements |
+| **Severe dilution from rights issue/placement** | Rights issue/placement dilutes EPS > 20% and issue price significantly below net asset value (harming minority shareholder interests) | Medium | Rights issue/placement announcements + financial data |
+| **Takeover offer pricing questioned as unfair** | Takeover offer price below net asset value per share or significantly below market price, with independent financial advisor issuing "unfair" opinion | Medium-Strong | Company announcements (independent financial advisor report) + exchange inquiry letters |
+| **Unequal asset transaction between listed company and related party** | Listed company acquires assets from related party at high price / sells assets at low price (suspicion of benefit transfer) -- linked with governance-fraud-risk.md related transaction detection | **Strong** | Annual report related transaction notes + asset appraisal report |
+| **Articles of association clauses harming minority shareholder rights** | Such as restricting shareholder proposal rights, supermajority voting requirements, etc. | Medium | Company articles of association |
 
-### 4.6 治理风险综合判断
+### 4.6 Governance Risk Composite Assessment
 
-| 评估 | 条件 |
+| Assessment | Condition |
 |---|---|
-| **无信号** | 股权结构稳定 + 独立董事履职正常 + 信息披露及时准确 + 无中小股东权益争议 |
-| **弱信号** | 单一维度出现弱信号（如独董一次缺席/分红率下降/收到交易所问询函但回复充分） |
-| **中等信号** | 股权发生重要变化（一致行动人到期不续/战投退出）+ 或信息披露存在准确性疑点 + 或中小股东投票出现分歧 |
-| **强信号** | 出现股权争夺 + 或独董集体辞职/反对 + 或关联交易不公允被质疑 + 或被监管认定为信息披露违规 |
-| **极端信号** | 与governance-fraud-risk.md的一票否决条件联动（已确认的财务欺诈/实控人被调查/核心资产剥离） |
+| **No signal** | Stable equity structure + independent directors properly performing duties + timely and accurate information disclosure + no minority shareholder rights disputes |
+| **Weak signal** | Single dimension weak signal (e.g., one-time independent director absence / dividend ratio decline / exchange inquiry letter received but response adequate) |
+| **Medium signal** | Significant equity change (concerted action not renewed / strategic investor exit) + or information disclosure accuracy concerns + or minority shareholder voting divergence |
+| **Strong signal** | Control contest + or independent directors collectively resign / vote against + or related transaction unfairness challenged + or regulatory determination of information disclosure violation |
+| **Extreme signal** | Linked with governance-fraud-risk.md veto conditions (confirmed financial fraud / controlling person under investigation / core asset stripping) |
 
 ---
 
-## 五、ESG→信用映射表
+## 5. ESG-to-Credit Mapping
 
-### 5.1 核心映射关系
+### 5.1 Core Mapping Relationships
 
-| ESG事件类型 | 信用传导路径 | 传导速度 | 影响维度 | 调整幅度 |
+| ESG Event Type | Credit Transmission Path | Transmission Speed | Impact Dimension | Adjustment Magnitude |
 |---|---|---|---|---|
-| **重大环保处罚（责令停产）** | 停产→现金流中断→利息覆盖崩溃→融资渠道关闭 | **快（1-3个月）** | 短期现金流 + 融资可得性 | **-0.5~-1子级** |
-| **环保罚款（金额大但未停产）** | 罚款→利润减少→FCF减少（对大体量企业影响有限） | **中（6-12个月）** | 利润表 | **0~-0.5子级**（通常不调整） |
-| **高碳行业转型风险暴露** | 碳成本上升→利润率压缩→竞争力下降→信用质量恶化 | **慢（2-5年）** | 长期盈利能力 + 融资成本 | **-0.5子级**（仅标志性事件触发） |
-| **新增绿色债券发行/绿色金融支持** | 融资渠道拓宽→融资成本略降→流动性改善 | **中（6-12个月）** | 融资结构 | **0~+0.5子级**（极少触发上调） |
-| **重大安全事故（停产）** | 停产→收入中断→赔偿支出→监管处罚→融资收紧 | **快（1-3个月）** | 短期现金流 + 融资可得性 | **-0.5~-1子级** |
-| **产品质量丑闻（食品/药品）** | 召回+罚款+退货→现金流支出→客户流失→收入下降 | **中快（3-6个月）** | 短期现金流 + 中期收入 | **-0.5~-1子级** |
-| **产品召回（非食品/药品）** | 召回成本→品牌受损→未来收入可能下降 | **中（6-12个月）** | 中期收入 + 品牌价值 | **-0.5子级** |
-| **劳工纠纷（罢工/欠薪争议）** | 停工→生产中断→赔偿→声誉损失 | **中（3-6个月）** | 短期生产 + 中期声誉 | **0~-0.5子级**（视规模） |
-| **股权争夺/控制权不稳定** | 管理层不稳定→战略摇摆→投资决策停滞→信用质量不确定性上升 | **慢（12-24个月）** | 战略执行力 + 融资可得性 | **0~-0.5子级** |
-| **信息披露违规被处罚** | 数据可信度受损→资本市场信任下降→融资成本上升 | **中（6-12个月）** | 融资可得性 + 投资者关系 | **-0.5子级** |
-| **独立董事集体辞职/反对票** | 治理信号恶化→投资者质疑→股价/债券价格下跌 | **快（1-3个月）** | 市场信心 + 融资弹性 | **-0.5子级** |
-| **关联交易不公允被质疑** | 利益输送嫌疑→中小股东/债权人信任下降→融资收紧 | **中（6-12个月）** | 融资可得性 + 法律风险 | **-0.5子级** |
+| **Major environmental penalty (production suspension ordered)** | Suspension -> Cash flow interruption -> Interest coverage collapse -> Financing channels closed | **Fast (1-3 months)** | Short-term cash flow + financing accessibility | **-0.5 to -1 notch** |
+| **Environmental fine (large amount but no suspension)** | Fine -> Profit reduction -> FCF reduction (limited impact on large enterprises) | **Medium (6-12 months)** | Income statement | **0 to -0.5 notch** (typically no adjustment) |
+| **High-carbon industry transition risk exposure** | Carbon cost increase -> Profit margin compression -> Competitiveness decline -> Credit quality deterioration | **Slow (2-5 years)** | Long-term profitability + financing cost | **-0.5 notch** (only triggered by landmark events) |
+| **New green bond issuance / green finance support** | Financing channels broadened -> Financing cost slightly reduced -> Liquidity improvement | **Medium (6-12 months)** | Financing structure | **0 to +0.5 notch** (upward trigger rare) |
+| **Major safety accident (suspension)** | Suspension -> Revenue interruption -> Compensation expenditure -> Regulatory penalties -> Financing tightening | **Fast (1-3 months)** | Short-term cash flow + financing accessibility | **-0.5 to -1 notch** |
+| **Product quality scandal (food/drug)** | Recall + fine + returns -> Cash flow expenditure -> Customer loss -> Revenue decline | **Medium-Fast (3-6 months)** | Short-term cash flow + medium-term revenue | **-0.5 to -1 notch** |
+| **Product recall (non-food/drug)** | Recall cost -> Brand damage -> Future revenue may decline | **Medium (6-12 months)** | Medium-term revenue + brand value | **-0.5 notch** |
+| **Labor dispute (strike / wage dispute)** | Work stoppage -> Production disruption -> Compensation -> Reputation damage | **Medium (3-6 months)** | Short-term production + medium-term reputation | **0 to -0.5 notch** (depending on scale) |
+| **Control contest / control instability** | Management instability -> Strategic vacillation -> Investment decision stagnation -> Credit quality uncertainty increases | **Slow (12-24 months)** | Strategic execution + financing accessibility | **0 to -0.5 notch** |
+| **Information disclosure violation penalized** | Data credibility damaged -> Capital market trust declines -> Financing cost increases | **Medium (6-12 months)** | Financing accessibility + investor relations | **-0.5 notch** |
+| **Independent directors collectively resign / vote against** | Governance signal deterioration -> Investor questioning -> Stock/bond price decline | **Fast (1-3 months)** | Market confidence + financing flexibility | **-0.5 notch** |
+| **Related transaction unfairness challenged** | Suspicion of benefit transfer -> Minority shareholder / creditor trust declines -> Financing tightens | **Medium (6-12 months)** | Financing accessibility + legal risk | **-0.5 notch** |
 
-### 5.2 调整幅度判定规则
+### 5.2 Adjustment Magnitude Determination Rules
 
 ```
-调整幅度 = f(事件严重性, 财务弹性, 行业特征, 外部环境)
+Adjustment magnitude = f(Event severity, Financial flexibility, Industry characteristics, External environment)
 
-事件严重性:
-  ├── I级（致命）：核心业务停产/核心产品遭禁/许可证被吊销 → -1子级
-  ├── II级（重大）：重大安全事故/食品/药品安全丑闻/停产 → -0.5~-1子级
-  ├── III级（中等）：批量召回/重罚/股权争议 → -0.5子级
-  ├── IV级（轻微）：小额罚款/轻微通报 → 0（标注但不调整）
-  └── 正向（绿色）：绿色债券/碳减排收益 → +0~+0.5子级（极少）
+Event severity:
+  ├── Level I (Fatal): Core business suspended / core product banned / license revoked -> -1 notch
+  ├── Level II (Major): Major safety accident / food/drug safety scandal / suspension -> -0.5 to -1 notch
+  ├── Level III (Medium): Batch recall / heavy penalty / equity dispute -> -0.5 notch
+  ├── Level IV (Minor): Small fine / minor notification -> 0 (annotate but no adjustment)
+  └── Positive (Green): Green bonds / carbon reduction revenue -> +0 to +0.5 notch (rare)
 
-财务弹性权重:
-  ├── 利息覆盖 > 5x + 现金跑道 > 12个月 → 事件影响缓冲能力强 → 调整幅度减半档
-  └── 利息覆盖 < 2x + 现金跑道 < 6个月 → 缓冲能力弱 → 调整幅度取上限
+Financial flexibility weight:
+  ├── Interest coverage > 5x + cash runway > 12 months -> Strong event impact buffer -> Adjustment magnitude halved
+  └── Interest coverage < 2x + cash runway < 6 months -> Weak buffer -> Adjustment magnitude at upper limit
 
-行业特征权重:
-  ├── 高碳行业（环境事件权重×1.5）
-  ├── 消费品牌（产品质量事件权重×1.5）
-  └── 金融企业（治理/合规事件权重×1.5）
+Industry characteristic weight:
+  ├── High-carbon industries (environmental event weight x 1.5)
+  ├── Consumer brands (product quality event weight x 1.5)
+  └── Financial enterprises (governance/compliance event weight x 1.5)
 ```
 
-### 5.3 调整规则速查表
+### 5.3 Adjustment Rules Quick Reference
 
-| 信号强度 | ESG调整幅度 | 触发条件 |
+| Signal Strength | ESG Adjustment Magnitude | Trigger Condition |
 |---|---|---|
-| 无信号 | 0 | 各维度无异常 |
-| 弱信号 | 0（标注风险，不调整评级） | 单项轻微事件（如小额罚款、独董一次缺席） |
-| 中等信号（单一事件触发） | -0.5子级 | II级事件或2个以上III级事件同时出现 |
-| 强信号（事件叠加或致命级） | -0.5~-1子级 | I级事件或II级事件 + 财务弹性弱 + 行业高敏感 |
-| 极端信号 | 触发非信用风险一票否决 | ESG事件导致核心业务不可逆丧失（如被吊销许可证） |
+| No signal | 0 | No anomalies across dimensions |
+| Weak signal | 0 (annotate risk, no rating adjustment) | Single minor event (e.g., small fine, one-time independent director absence) |
+| Medium signal (single event triggered) | -0.5 notch | Level II event or 2+ Level III events occurring simultaneously |
+| Strong signal (event stacking or fatal level) | -0.5 to -1 notch | Level I event, or Level II event + weak financial flexibility + high industry sensitivity |
+| Extreme signal | Triggers non-credit risk veto | ESG event leads to irreversible loss of core business (e.g., license revoked) |
 
-### 5.4 调整标注模板
+### 5.4 Adjustment Annotation Template
 
 ```yaml
-# ESG叠加调整说明
-esg_adjustment: -0.5                       # ESG叠加调整幅度
-trigger_event: "重大安全事故（3死）"       # 触发事件
-credit_transmission: "停产整顿→现金流中断→利息覆盖恶化→融资收紧"
-financial_elasticity: "中等（利息覆盖3.2x，现金跑道9个月）"
-industry_sensitivity: "高（化工行业，环保/安全历史处罚记录）"
+# ESG overlay adjustment description
+esg_adjustment: -0.5                       # ESG overlay adjustment magnitude
+trigger_event: "Major safety accident (3 fatalities)"       # Triggering event
+credit_transmission: "Production suspension -> Cash flow interruption -> Interest coverage deterioration -> Financing tightening"
+financial_elasticity: "Medium (interest coverage 3.2x, cash runway 9 months)"
+industry_sensitivity: "High (chemicals industry, environmental/safety historical penalty record)"
 data_availability:
-  environment: "可观测（应急管理部通报）"
-  social: "可观测（事故已公开报道）"
-  governance: "部分可观测（工商变更完成，但股权详情不可得）"
-adjustment_rationale: "重大安全事故触发停产整顿+赔偿支出，企业财务弹性中等，化工行业对安全事件敏感，综合判定-0.5子级调整"
+  environment: "Observable (emergency management authority notification)"
+  social: "Observable (accident publicly reported)"
+  governance: "Partially observable (business registration changes completed but equity details unavailable)"
+adjustment_rationale: "Major safety accident triggers production suspension + compensation expenditure; enterprise financial flexibility is medium; chemicals industry is sensitive to safety events; composite judgment: -0.5 notch adjustment"
 ```
 
 ---
 
-## 六、叠加调整规则
+## 6. Overlay Adjustment Rules
 
-### 6.1 ESG叠加与non-credit-risk-overlay的从属关系
+### 6.1 ESG Overlay Subordination to non-credit-risk-overlay
 
-本ESG框架作为 non-credit-risk-overlay.md（非信用风险叠加层）的子模块运行：
+This ESG framework operates as a sub-module of the non-credit-risk-overlay.md:
 
 ```
-非信用风险叠加层（non-credit-risk-overlay.md）
-  ├── 市场风险 (20%)
-  ├── 操作风险 (30%)  ← 包含 governance-fraud-risk.md 的欺诈信号 + ESG治理信号
-  ├── 声誉风险 (15%)  ← 包含 ESG环境+社会事件信号
-  ├── 战略风险 (25%)
-  ├── 流动性风险 (10%)
-  └── ★ ESG专项评估（本框架） ← 整合E/S/G全维度评估，作为独立输入提供给叠加层
-                                       调整幅度已纳入非信用风险叠加层的±1子级限制
+Non-Credit Risk Overlay (non-credit-risk-overlay.md)
+  ├── Market Risk (20%)
+  ├── Operational Risk (30%)  <- Includes governance-fraud-risk.md fraud signals + ESG governance signals
+  ├── Reputational Risk (15%)  <- Includes ESG environmental + social event signals
+  ├── Strategic Risk (25%)
+  ├── Liquidity Risk (10%)
+  └── * ESG Specialized Assessment (this framework) <- Integrates E/S/G full-dimension assessment, provided as independent input to the overlay
+                                       Adjustment magnitude already within +/-1 notch limit of non-credit-risk-overlay
 ```
 
-### 6.2 ESG与既有治理模块的划分
+### 6.2 Division Between ESG and Existing Governance Modules
 
-| 评估内容 | 归属模块 | 说明 |
+| Assessment Content | Assigned Module | Description |
 |---|---|---|
-| 财务欺诈检测 | governance-fraud-risk.md → 操作风险 | 不重复 |
-| 关联交易异常检测 | governance-fraud-risk.md → 操作风险 | 不重复 |
-| 逃废债风险检测 | governance-fraud-risk.md → 操作风险 | 不重复 |
-| 管理层治理（质押/变更/辞职） | governance-fraud-risk.md → 操作风险 | 不重复 |
-| 股权结构稳定性（本框架4.2节新增） | governance-fraud-risk.md（扩展）+ 本框架G1 | 本框架增加g-f-r.md未覆盖的股权争夺、一致行动人、外资退出 |
-| 信息披露质量（本框架4.4节新增） | **本框架G3** | 全新维度 |
-| 中小股东保护（本框架4.5节新增） | **本框架G4** | 全新维度 |
-| 环境评估（E） | **本框架** | 全新维度 |
-| 社会评估（S） | **本框架** | 全新维度 |
+| Financial fraud detection | governance-fraud-risk.md -> Operational Risk | Not duplicated |
+| Related transaction anomaly detection | governance-fraud-risk.md -> Operational Risk | Not duplicated |
+| Debt evasion risk detection | governance-fraud-risk.md -> Operational Risk | Not duplicated |
+| Management governance (pledge/change/resignation) | governance-fraud-risk.md -> Operational Risk | Not duplicated |
+| Equity structure stability (Section 4.2 new) | governance-fraud-risk.md (expanded) + this framework G1 | This framework adds control contest, concerted action, foreign investor exit not covered by g-f-r.md |
+| Information disclosure quality (Section 4.4 new) | **This framework G3** | New dimension |
+| Minority shareholder protection (Section 4.5 new) | **This framework G4** | New dimension |
+| Environmental assessment (E) | **This framework** | New dimension |
+| Social assessment (S) | **This framework** | New dimension |
 
-### 6.3 叠加调整的相互影响
+### 6.3 Interactive Effects of Overlay Adjustments
 
-当ESG信号与non-credit-risk-overlay.md中的其他风险信号同时出现时，遵守non-credit-risk-overlay.md的叠加规则（9.3节）：
+When ESG signals appear simultaneously with other risk signals in non-credit-risk-overlay.md, the overlay rules (Section 9.3) of non-credit-risk-overlay.md apply:
 
-| 情景 | 处理规则 |
+| Scenario | Handling Rule |
 |---|---|
-| **ESG事件同时触发声誉+操作风险** | 计为1次事件，但选择最严重的维度方向计入评分（不重复扣减） |
-| **ESG信号与其他非信用风险信号叠加** | 综合信号强度计算，不超过±1子级累计上限 |
-| **ESG信号与governance-fraud-risk.md信号重叠** | 不重复扣减——同一事件只触发一次调整，选择影响最大的传导路径 |
+| **ESG event simultaneously triggers reputation + operational risk** | Counted as 1 event, but select the most severe dimension direction for scoring (no double deduction) |
+| **ESG signals stacking with other non-credit risk signals** | Composite signal strength calculation, does not exceed +/-1 notch cumulative cap |
+| **ESG signal overlapping with governance-fraud-risk.md signal** | No double deduction -- same event only triggers one adjustment, select the transmission path with greatest impact |
 
 ---
 
-## 七、数据可得性诚实标注
+## 7. Data Availability Honest Labeling
 
-### 7.1 各ESG维度的数据覆盖评估
+### 7.1 Data Coverage Assessment by ESG Dimension
 
-| 维度 | 可观测比例（估算） | 主要数据来源 | 关键缺口 | 空缺的影响 |
+| Dimension | Observable Ratio (est.) | Main Data Sources | Key Gaps | Impact of Gaps |
 |---|---|---|---|---|
-| **E（环境-处罚/事故）** | 60-70% | 生态环境部/省厅公示、应急管理部通报、媒体报道 | 小额处罚（<5万）未上网、停产实际时长不公开、非上市企业环境数据缺失 | **可接受**——重大环境事件基本可检测，遗漏的主要是轻微事件 |
-| **E（环境-碳排放）** | 20-30% | 全国碳市场披露、ESG报告、CDP | 企业层面碳排放数据覆盖率极低，非上市企业/非碳市场覆盖行业无数据 | **严重**——高碳行业转型风险评估的数据基础薄弱 |
-| **E（环境-绿色机遇）** | 70-80% | 绿色债券公告、绿色贷款统计、碳交易数据 | 绿色金融支持的信用影响难以量化（是否带来实质融资成本下降？） | **中等**——正面信号的数据可得性高但信用影响不确定 |
-| **S（安全-重大事故）** | 70-80% | 应急管理部通报、国务院事故调查报告、媒体报道 | 未造成死亡的一般事故不公开、停产复产时间表不公开、赔偿金额不公开 | **可接受**——重大安全事故基本可检测 |
-| **S（劳工纠纷）** | 20-30% | 媒体报道、劳动监察公示、裁判文书网 | 大多数劳资纠纷不可见（未上升到媒体关注水平）、非上市企业无渠道 | **严重**——劳工纠纷检测能力严重不足 |
-| **S（产品质量）** | 50-60% | 市场监管总局缺陷产品管理中心、药监局、媒体报道 | 召回前的质量隐患期不可观测、非强制召回的产品质量问题不可观测 | **中等**——公开召回/处罚可检测，但隐性质量风险不可观测 |
-| **G（股权结构）** | 60-70% | 权益变动报告、季报股东信息、企查查 | 非上市企业股权结构不透明、一致行动人协议抽屉条款不可见 | **中等**——上市企业检测能力强，非上市企业薄弱 |
-| **G（信息披露质量）** | 50-60% | 年报/季报、交易所问询函、更正公告 | 非上市企业无强制披露义务、披露质量的深层问题（模板化披露、选择性披露）难以量化 | **中等**——上市企业可通过问询函/更正公告间接评估 |
-| **G（中小股东保护）** | 40-50% | 股东大会决议、分类表决公告、分红方案 | 大股东与小股东的幕后安排（抽屉协议）不可观测、"用脚投票"（股东减持）是滞后信号 | **中等**——分类表决和分红数据可获取，但利益输送不可直接观测 |
+| **E (Environment - penalties/accidents)** | 60-70% | Environmental protection authority announcements, emergency management authority notifications, media reports | Small fines (< 5K) not published online; actual suspension duration not disclosed; non-listed enterprise environmental data missing | **Acceptable** -- major environmental events essentially detectable, omissions mainly minor events |
+| **E (Environment - carbon emissions)** | 20-30% | National carbon market disclosures, ESG reports, CDP | Enterprise-level carbon emission data coverage extremely low; non-listed enterprises / non-carbon-market-covered industries have no data | **Severe** -- data foundation for high-carbon industry transition risk assessment is weak |
+| **E (Environment - green opportunities)** | 70-80% | Green bond announcements, green loan statistics, carbon trading data | Credit impact of green finance support difficult to quantify (does it materially reduce financing cost?) | **Medium** -- positive signals have high data accessibility but credit impact uncertain |
+| **S (Safety - major accidents)** | 70-80% | Emergency management authority notifications, accident investigation reports, media reports | General accidents without fatalities not disclosed; suspension/restart timeline not disclosed; compensation amounts not disclosed | **Acceptable** -- major safety accidents essentially detectable |
+| **S (Labor disputes)** | 20-30% | Media reports, labor inspection disclosures, court judgment database | Most labor disputes invisible (not escalated to media attention level); non-listed enterprises have no channels | **Severe** -- labor dispute detection capability is seriously insufficient |
+| **S (Product quality)** | 50-60% | Product defect management centers, drug administration, media reports | Pre-recall quality risk period unobservable; non-mandatory-recall product quality issues unobservable | **Medium** -- public recalls/penalties detectable, but hidden quality risks unobservable |
+| **G (Equity structure)** | 60-70% | Equity change reports, quarterly shareholder information, business information platforms | Non-listed enterprise equity structure not transparent; concerted action side letters invisible | **Medium** -- strong detection for listed enterprises, weak for non-listed |
+| **G (Information disclosure quality)** | 50-60% | Annual/quarterly reports, exchange inquiry letters, correction announcements | Non-listed enterprises have no mandatory disclosure obligation; deep issues in disclosure quality (template-style disclosure, selective disclosure) difficult to quantify | **Medium** -- listed enterprises can be indirectly assessed through inquiry letters / correction announcements |
+| **G (Minority shareholder protection)** | 40-50% | Shareholder meeting resolutions, classified voting announcements, dividend plans | Behind-the-scenes arrangements between major and minority shareholders (side letters) unobservable; "voting with feet" (shareholder reduction) is a lagging signal | **Medium** -- classified voting and dividend data accessible, but benefit transfer not directly observable |
 
-### 7.2 不同主体类型下的ESG检测能力
+### 7.2 ESG Detection Capability by Entity Type
 
-| 主体类型 | E环境（处罚/事故） | S社会（安全/质量） | G治理（结构/信披） | 综合ESG检测能力 |
+| Entity Type | E Environment (penalties/accidents) | S Social (safety/quality) | G Governance (structure/disclosure) | Comprehensive ESG Detection Capability |
 |---|---|---|---|---|
-| **A股上市+发债企业** | 较高 | 较高 | 较高 | **最佳**（ESG信息多维可获取） |
-| **A股上市未发债企业** | 较高 | 较高 | 较高 | **良好**（无债券市场ESG定价信号） |
-| **非上市发债企业（国企/城投）** | 较高 | 中 | 中 | **中等**（年报可获取，但ESG专项披露少，治理透明度低） |
-| **非上市发债企业（民企）** | 中 | 低-中 | 低-中 | **薄弱**（ESG数据严重不足，依赖工商信息和处罚记录） |
-| **非上市非发债企业** | 低 | 低 | 低 | **极低**（几乎无公开ESG数据——本框架不适用于此类主体） |
+| **Listed + bond-issuing enterprises** | Relatively high | Relatively high | Relatively high | **Best** (multi-dimensional ESG information accessible) |
+| **Listed non-bond-issuing enterprises** | Relatively high | Relatively high | Relatively high | **Good** (no bond market ESG pricing signal) |
+| **Non-listed bond-issuing enterprises (SOEs/LGFVs)** | Relatively high | Medium | Medium | **Medium** (annual reports accessible, but ESG-specific disclosures limited, governance transparency low) |
+| **Non-listed bond-issuing enterprises (private)** | Medium | Low-Medium | Low-Medium | **Weak** (ESG data severely insufficient, relies on business registration and penalty records) |
+| **Non-listed non-bond-issuing enterprises** | Low | Low | Low | **Extremely low** (almost no public ESG data -- this framework not applicable to such entities) |
 
-### 7.3 诚实声明
+### 7.3 Honest Statement
 
-> **ESG评估声明**：本框架对中国信用债市场发行人的ESG风险评估存在以下固有局限性：
+> **ESG Assessment Statement**: This framework has the following inherent limitations for ESG risk assessment of bond market issuers:
 >
-> 1. **事件驱动而非前瞻性**：受限于中国ESG数据披露覆盖率（仅约30-40%的债券发行人披露足够信息），本框架在当前阶段以"负面事件检测"为主，而非"前瞻性ESG评分"。这意味着：① 未发生公开ESG事件的企业不意味着ESG风险低——可能仅是其ESG数据未被露或事件未被曝光；② ESG前景评估（如碳转型压力）仅适用于特定行业（高碳行业+有碳排放披露的企业），覆盖面有限。
+> 1. **Event-driven rather than forward-looking**: Limited by ESG data disclosure coverage (only approximately 30-40% of bond issuers disclose sufficient information), this framework currently centers on "negative event detection" rather than "forward-looking ESG scoring." This means: ① An enterprise without public ESG events does not imply low ESG risk -- it may simply mean its ESG data is not disclosed or events not exposed; ② ESG forward-looking assessment (e.g., carbon transition pressure) is only applicable to specific industries (high-carbon industries + enterprises with carbon emission disclosures), with limited coverage.
 >
-> 2. **非上市主体ESG检测能力极弱**：对于区县级城投、非上市中小企业，本框架的ESG信号密度极低。投资者的风险判断应主要依赖行业特征和财务分析，而非缺失的ESG数据。
+> 2. **Extremely weak ESG detection capability for non-listed entities**: For sub-national LGFVs and non-listed SMEs, this framework's ESG signal density is extremely low. Investor risk judgment should primarily rely on industry characteristics and financial analysis, rather than missing ESG data.
 >
-> 3. **ESG事件信号存在滞后性**：从ESG事件发生到公开可观测之间存在时间差——环保处罚通常滞后1-3个月（从检查到立案到处罚决定到上网公示），安全事故滞后数天（从发生到通报），产品质量丑闻的预警窗口可能为0（曝光即爆发）。
+> 3. **ESG event signals have lag**: There is a time gap between ESG event occurrence and public observability -- environmental penalties typically lag 1-3 months (from inspection to case filing to penalty decision to online publication), safety accidents lag several days (from occurrence to notification), and the early warning window for product quality scandals may be zero (exposure equals outbreak).
 >
-> 4. **不替代专业的ESG评级**：本框架不提供独立的ESG评级分值或ESG投资建议。其唯一目标是评估ESG事件对信用质量的影响——是信用分析框架中的叠加层，而非独立的ESG评估工具。
+> 4. **Does not substitute professional ESG ratings**: This framework does not provide independent ESG rating scores or ESG investment advice. Its sole objective is to assess the impact of ESG events on credit quality -- it is an overlay layer within the credit analysis framework, not an independent ESG assessment tool.
 >
-> 5. **调整幅度限制**：ESG叠加调整不超过±1子级（与non-credit-risk-overlay.md一致），且不改变governance-fraud-risk.md中治理/欺诈风险的一票否决条件。
+> 5. **Adjustment magnitude limit**: ESG overlay adjustments do not exceed +/-1 notch (consistent with non-credit-risk-overlay.md) and do not alter the governance/fraud risk veto conditions in governance-fraud-risk.md.
 
 ---
 
-## 八、与现有框架的集成
+## 8. Integration with Existing Frameworks
 
-### 8.1 在 non-credit-risk-overlay.md 中的集成
+### 8.1 Integration in non-credit-risk-overlay.md
 
-在本框架发布后，non-credit-risk-overlay.md 的四、操作风险和五、声誉风险章节中的ESG相关信号可直接引用本框架：
+After this framework is published, ESG-related signals in the Operational Risk (Section 4) and Reputational Risk (Section 5) chapters of non-credit-risk-overlay.md can directly reference this framework:
 
-| non-credit-risk-overlay.md 中的信号 | 引用本框架 |
+| Signal in non-credit-risk-overlay.md | Reference to This Framework |
 |---|---|
-| 4.3.2 监管处罚中的"环保行政处罚" | 本框架E2（环保处罚与停产整顿）提供详细传导路径 |
-| 5.3.1 ESG争议事件（重大环境事故、劳工纠纷、产品质量丑闻、供应链ESG违规） | 本框架E2/E3/S1/S2/S3/S4提供分类检测和传导分析 |
-| 4.3.3 关键人员风险中的"CEO/CFO突然离职" | 本框架4.2（股权结构稳定性）和4.5（治理风险综合判断）提供治理视角 |
-| 5.3.3 客户/供应商关系 | 本框架S3（产品质量安全风险）的客户流失传导路径 |
+| 4.3.2 Regulatory penalties -- "environmental administrative penalties" | This framework E2 (Environmental Penalties and Production Suspension) provides detailed transmission path |
+| 5.3.1 ESG controversial events (major environmental accidents, labor disputes, product quality scandals, supply chain ESG violations) | This framework E2/E3/S1/S2/S3/S4 provides categorical detection and transmission analysis |
+| 4.3.3 Key personnel risk -- "sudden departure of CEO/CFO" | This framework 4.2 (Equity Structure Stability) and 4.6 (Governance Risk Composite Assessment) provide governance perspective |
+| 5.3.3 Customer/supplier relationships | This framework S3 (Product Quality Safety Risk) customer loss transmission path |
 
-### 8.2 在 industry-framework.md 中的集成
+### 8.2 Integration in industry-framework.md
 
-在行业金字塔中，L1政策层的环境/社会政策相关内容建议增加ESG敏感性标注：
-
-```
-在各行业金字塔L1层末尾增加：
-  ⚠️ ESG风险敏感性标注：
-  本行业属于 [高/中/低] ESG敏感性行业。
-  环境敏感性：[高/中/低] —— 理由：[如：高碳行业，碳成本影响显著]
-  社会敏感性：[高/中/低] —— 理由：[如：劳动密集型，安全事故频发]
-  治理敏感性：[高/中/低] —— 理由：[如：民营企业，实控人风险突出]
-  详见 esg-framework.md（附录A：各行业ESG敏感度对照）。
-```
-
-### 8.3 在 mosaic-engine.md 中的信号集成
-
-本框架产生的ESG信号应纳入马赛克引擎的信号清单，标记为"ESG"类型：
+In the industry pyramid, L1 policy layer environmental/social policy content should include ESG sensitivity annotation:
 
 ```
-信号类型：ESG（Environmental, Social, Governance）
-信号子类：E（环境）、S（社会）、G（治理）
-信号密度：基于ESG数据可得性（上市公司+高碳行业密度较高，非上市/非敏感行业密度低）
-置信度：
-  高：有官方处罚/监管公告/公司确认的ESG事件
-  中：ESG事件有媒体报道但无官方确认
-  低：间接推断（如行业分析表明企业存在ESG风险敞口但无具体事件）
+At the end of each industry pyramid L1 layer, add:
+  WARNING: ESG Risk Sensitivity Annotation:
+  This industry belongs to [High/Medium/Low] ESG sensitivity industry.
+  Environmental sensitivity: [High/Medium/Low] -- Rationale: [e.g., high-carbon industry, significant carbon cost impact]
+  Social sensitivity: [High/Medium/Low] -- Rationale: [e.g., labor-intensive, frequent safety accidents]
+  Governance sensitivity: [High/Medium/Low] -- Rationale: [e.g., private enterprise, prominent controlling person risk]
+  See esg-framework.md (Appendix A: Industry ESG Sensitivity Cross-Reference).
+```
+
+### 8.3 Signal Integration in mosaic-engine.md
+
+ESG signals generated by this framework should be included in the mosaic engine's signal inventory, tagged as "ESG" type:
+
+```
+Signal type: ESG (Environmental, Social, Governance)
+Signal sub-type: E (Environmental), S (Social), G (Governance)
+Signal density: Based on ESG data availability (listed enterprises + high-carbon industries have higher density; non-listed/non-sensitive industries have lower density)
+Confidence:
+  High: Official penalty / regulatory announcement / company-confirmed ESG events
+  Medium: ESG events with media coverage but no official confirmation
+  Low: Indirect inference (e.g., industry analysis indicates ESG risk exposure but no specific events)
 ```
 
 ---
 
-## 附录A：各行业ESG敏感度对照
+## Appendix A: Industry ESG Sensitivity Cross-Reference
 
-| 行业 | E环境敏感度 | S社会敏感度 | G治理敏感度 | 最敏感的ESG维度 | 备注 |
+| Industry | E Environmental Sensitivity | S Social Sensitivity | G Governance Sensitivity | Most Sensitive ESG Dimension | Notes |
 |---|---|---|---|---|---|
-| **煤炭** | **高**（碳排放+安全+环保） | **高**（矿难风险） | 中 | E+S | 转型风险+安全事故是本行业核心ESG信用因素 |
-| **钢铁** | **高**（碳排放+环保） | **高**（安全+职业病） | 中 | E | 碳成本上升是本行业结构性风险 |
-| **化工** | **高**（环保+碳排放+事故） | **高**（安全+环境事故） | 中 | E+S | 安全和环保处罚是本行业最频繁的ESG事件 |
-| **水泥** | **高**（碳排放+环保） | 中（安全） | 中 | E | 碳成本+环保限产是行业核心风险 |
-| **电力** | **高**（火电碳排放） | 低 | 中 | E | 转型风险因行业而异（火电高、新能源低） |
-| **光伏/风电** | 中（制造环节环保） | 低-中 | 中 | E（正向） | 绿色溢价+碳减排收益是正向信用因素 |
-| **半导体** | 中（制造环节环保+用水） | 低-中 | **高** | G | 治理（股权/信息/技术安全）最为重要 |
-| **生物医药** | 低-中（废水/废气） | **高**（药品安全） | 中 | S | 药品安全是最致命的ESG事件 |
-| **医疗器械** | 低 | **高**（产品质量） | 中 | S | 产品质量安全事件直接导致召回+品牌受损 |
-| **食品饮料** | 低 | **高**（食品安全） | 中 | S | 食品安全事件直接威胁企业生存 |
-| **汽车** | 中（排放+生产环保） | **高**（产品安全+召回） | 中 | S | 汽车召回的成本和声誉影响巨大 |
-| **新能源车** | 中（正向：碳减排） | 中（产品安全） | 中 | E+S | 电池安全+碳减排收益双方向 |
-| **数据中心** | **高**（能耗+碳中和） | 低 | 中 | E | 能耗指标是核心运营约束 |
-| **银行/券商** | 低 | 低-中（数据/客户保护） | **高** | G | 治理（合规+资本）是最敏感的ESG维度 |
-| **房地产** | 中（绿色建筑） | 中（社区/劳工） | **高** | G | 治理（关联交易+资金占用+信披）是关键 |
-| **城投** | 低-中 | 低 | 中 | G（信披质量） | 城投的ESG风险主要来自信息披露不透明 |
-| **物流/运输** | 中（碳排放） | 中（安全+劳工） | 中 | E+S | 碳排放成本+驾驶员安全是主要风险 |
-| **纺织/服装** | 中（环保+供应链ESG） | **高**（劳工+供应链） | 中 | S | 劳工权益和供应链ESG合规是关键 |
-| **造纸** | **高**（环保+水资源） | 中 | 中 | E | 环保处罚是主要ESG风险 |
+| **Coal** | **High** (emissions + safety + environment) | **High** (mine disaster risk) | Medium | E+S | Transition risk + safety accidents are core ESG credit factors for this industry |
+| **Steel** | **High** (emissions + environment) | **High** (safety + occupational disease) | Medium | E | Carbon cost increase is a structural risk for this industry |
+| **Chemicals** | **High** (environment + emissions + accidents) | **High** (safety + environmental accidents) | Medium | E+S | Safety and environmental penalties are the most frequent ESG events in this industry |
+| **Cement** | **High** (emissions + environment) | Medium (safety) | Medium | E | Carbon cost + environmental production curtailment are core industry risks |
+| **Power** | **High** (thermal power emissions) | Low | Medium | E | Transition risk varies by sub-type (high for thermal power, low for renewables) |
+| **Solar/Wind** | Medium (manufacturing environment) | Low-Medium | Medium | E (positive) | Green premium + carbon reduction revenue are positive credit factors |
+| **Semiconductor** | Medium (manufacturing environment + water usage) | Low-Medium | **High** | G | Governance (equity/information/technology security) most important |
+| **Biopharma** | Low-Medium (wastewater/emissions) | **High** (drug safety) | Medium | S | Drug safety is the most fatal ESG event |
+| **Medical Devices** | Low | **High** (product quality) | Medium | S | Product quality events directly lead to recall + brand damage |
+| **Food & Beverage** | Low | **High** (food safety) | Medium | S | Food safety events directly threaten enterprise survival |
+| **Automotive** | Medium (emissions + production environment) | **High** (product safety + recall) | Medium | S | Cost and reputational impact of automotive recalls is enormous |
+| **New Energy Vehicles** | Medium (positive: carbon reduction) | Medium (product safety) | Medium | E+S | Battery safety + carbon reduction benefits, bidirectional |
+| **Data Centers** | **High** (energy consumption + carbon neutrality) | Low | Medium | E | Energy consumption metrics are core operational constraints |
+| **Banks/Brokerages** | Low | Low-Medium (data/customer protection) | **High** | G | Governance (compliance + capital) is the most sensitive ESG dimension |
+| **Real Estate** | Medium (green building) | Medium (community/labor) | **High** | G | Governance (related transactions + fund occupation + information disclosure) is key |
+| **LGFV** | Low-Medium | Low | Medium | G (disclosure quality) | LGFV ESG risk mainly from non-transparent information disclosure |
+| **Logistics/Transportation** | Medium (emissions) | Medium (safety + labor) | Medium | E+S | Carbon emission cost + driver safety are main risks |
+| **Textile/Apparel** | Medium (environment + supply chain ESG) | **High** (labor + supply chain) | Medium | S | Labor rights and supply chain ESG compliance are key |
+| **Pulp & Paper** | **High** (environment + water resources) | Medium | Medium | E | Environmental penalties are main ESG risk |
 
 ---
 
-## 附录B：公开数据来源清单
+## Appendix B: Public Data Source List
 
-### 环境（E）数据来源
+### Environmental (E) Data Sources
 
-| 数据项 | 具体数据源 | 免费/付费 | 获取频率 | 覆盖率 |
+| Data Item | Specific Data Source | Free/Paid | Update Frequency | Coverage |
 |---|---|---|---|---|
-| 环保行政处罚 | 各级生态环境部门官网"行政处罚"栏目 | 免费 | 实时 | 省级以上覆盖率较高，县市级参差不齐 |
-| 生态环境部挂牌督办 | 生态环境部官网"挂牌督办"栏目 | 免费 | 实时 | 覆盖全国 |
-| 中央环保督察通报 | 生态环境部官网"中央生态环境保护督察"栏目 | 免费 | 分批（每批督察结束后公布） | 覆盖全国 |
-| 全国碳市场数据 | 上海环境能源交易所官网、湖北碳排放权交易中心 | 免费（基础数据） | 每日 | 全国碳市场覆盖行业（火电已覆盖，2025年扩展至钢铁/水泥/铝业） |
-| 企业碳排放报告（重点排放单位） | 碳排放权交易注册登记系统（需企业授权查询） | 受限 | 年度 | 仅重点排放单位 |
-| 企业环保信用评级 | 各省市环保信用评价系统（如江苏省企业环保信用评价系统） | 免费 | 年度 | 部分省市已建立 |
-| 土壤污染修复名录 | 生态环境部"土壤污染防治"栏目 | 免费 | 不定期 | 覆盖列入修复名录的地块 |
-| 上市公司ESG报告 | 巨潮资讯网、上交所/深交所官网"可持续发展报告"栏目 | 免费 | 年度 | 仅约30%上市公司发布 |
-| CCER项目备案 | 北京绿色交易所"自愿减排交易信息平台" | 免费 | 不定期 | 覆盖备案的CCER项目 |
+| Environmental administrative penalties | Environmental protection authority websites "Administrative Penalties" section | Free | Real-time | Above provincial level relatively high coverage; municipal/county level varies |
+| Environmental protection authority supervised rectification | Environmental protection authority website "Supervised Rectification" section | Free | Real-time | National coverage |
+| Central environmental inspection reports | Environmental protection authority "Central Environmental Protection Inspection" section | Free | Batch (published after each inspection round) | National coverage |
+| National carbon market data | Carbon emissions exchange websites | Free (basic data) | Daily | National carbon market covered industries (thermal power covered, expanding to steel/cement/aluminum from 2025) |
+| Enterprise carbon emission reports (key emitters) | Carbon emissions trading registration system (requires enterprise authorization) | Restricted | Annual | Only key emission entities |
+| Enterprise environmental credit rating | Provincial environmental credit evaluation systems | Free | Annual | Some jurisdictions established |
+| Soil pollution remediation registry | Environmental protection authority "Soil Pollution Prevention" section | Free | Irregular | Covers sites listed in remediation registry |
+| Listed company ESG reports | Financial information portals, stock exchange "Sustainability Report" sections | Free | Annual | Only ~30% of listed companies publish |
+| Carbon credit project registration | Voluntary emissions trading information platforms | Free | Irregular | Covers registered carbon credit projects |
 
-### 社会（S）数据来源
+### Social (S) Data Sources
 
-| 数据项 | 具体数据源 | 免费/付费 | 获取频率 | 覆盖率 |
+| Data Item | Specific Data Source | Free/Paid | Update Frequency | Coverage |
 |---|---|---|---|---|
-| 安全生产事故通报 | 应急管理部官网"事故查处""预警信息"栏目 | 免费 | 实时 | 重大以上事故全覆盖，较大事故部分覆盖 |
-| 安全生产黑名单 | 应急管理部"安全生产严重失信主体名单" | 免费 | 实时 | 覆盖全国 |
-| 产品召回信息 | 市场监管总局缺陷产品管理中心 | 免费 | 实时 | 强制召回全覆盖 |
-| 食品安全通报 | 国家市场监督管理总局"食品安全"栏目 | 免费 | 实时 | 覆盖全国食品安全抽检 |
-| 药品安全通报 | 国家药品监督管理局"药品飞行检查""药品召回"栏目 | 免费 | 实时 | 覆盖药品安全事件 |
-| 消费者投诉信息 | 中国消费者协会官网 | 免费 | 季度 | 仅汇总数据，无企业维度明细 |
-| 裁判文书（劳动争议/维权诉讼） | 中国裁判文书网 | 免费 | 实时 | 覆盖率在50-70% |
-| 媒体报道 | WebSearch / 新闻数据库 | 免费（基础） | 实时 | 仅重大事件 |
+| Safety accident notifications | Emergency management authority website "Accident Investigation" / "Early Warning" sections | Free | Real-time | Full coverage of major+ accidents, partial coverage of severe accidents |
+| Safety production blacklist | Emergency management authority "Safety Production Severely Dishonest Entity List" | Free | Real-time | National coverage |
+| Product recall information | Product defect management center | Free | Real-time | Full coverage of mandatory recalls |
+| Food safety notifications | Market regulator "Food Safety" section | Free | Real-time | National food safety inspection coverage |
+| Drug safety notifications | Drug administration "Drug Inspection" / "Drug Recall" sections | Free | Real-time | Coverage of drug safety events |
+| Consumer complaint information | Consumer association website | Free | Quarterly | Summary data only, no enterprise-level detail |
+| Court judgments (labor disputes) | Court judgment database | Free | Real-time | Coverage 50-70% |
+| Media reports | WebSearch / News databases | Free (basic) | Real-time | Only major events |
 
-### 治理（G）数据来源
+### Governance (G) Data Sources
 
-| 数据项 | 具体数据源 | 免费/付费 | 获取频率 | 覆盖率 |
+| Data Item | Specific Data Source | Free/Paid | Update Frequency | Coverage |
 |---|---|---|---|---|
-| 公司公告（权益变动/减持/质押） | 巨潮资讯网、上交所/深交所/北交所官网 | 免费 | 实时 | 上市企业全覆盖 |
-| 年报/半年报/季报 | 巨潮资讯网、上交所/深交所披露易 | 免费 | 年度/半年度/季度 | 上市企业全覆盖 |
-| 交易所问询函/监管函 | 上交所/深交所"监管信息公开"栏目 | 免费 | 实时 | 上市企业全覆盖 |
-| 独立董事意见 | 公司公告"独立董事对相关事项的独立意见" | 免费 | 实时 | 上市企业全覆盖 |
-| 股东大会决议（含分类表决结果） | 公司公告"股东大会决议公告" | 免费 | 实时 | 上市企业全覆盖 |
-| 工商变更信息 | 国家企业信用信息公示系统 | 免费（基础） | 实时 | 全量企业覆盖 |
-| 关联方信息 | 年报"关联方关系"章节 + 企查查/天眼查 | 免费（基础） | 年度 | 上市企业全覆盖 |
-| 企业信用报告（含处罚/诉讼） | 国家企业信用信息公示系统"行政处罚/列入经营异常/严重违法失信" | 免费 | 实时 | 全量企业覆盖 |
+| Company announcements (equity changes / reductions / pledges) | Financial information portals, stock exchange websites | Free | Real-time | Full coverage of listed enterprises |
+| Annual / semi-annual / quarterly reports | Financial information portals, exchange disclosure systems | Free | Annual/semi-annual/quarterly | Full coverage of listed enterprises |
+| Exchange inquiry letters / regulatory letters | Stock exchange "Regulatory Information Disclosure" sections | Free | Real-time | Full coverage of listed enterprises |
+| Independent director opinions | Company announcements "Independent Director Opinions on Relevant Matters" | Free | Real-time | Full coverage of listed enterprises |
+| Shareholder meeting resolutions (including classified voting results) | Company announcements "Shareholder Meeting Resolution Announcements" | Free | Real-time | Full coverage of listed enterprises |
+| Business registration changes | National enterprise credit information disclosure system | Free (basic) | Real-time | Full enterprise coverage |
+| Related party information | Annual report "Related Party Relationships" section + business information platforms | Free (basic) | Annual | Full coverage of listed enterprises |
+| Enterprise credit report (including penalties/litigation) | National enterprise credit information disclosure system "Administrative Penalties / Operating Anomalies / Serious Law-Breaking Dishonesty" | Free | Real-time | Full enterprise coverage |
 
 ---
 
-## 相关内容
+## Related Content
 
-- [非信用风险叠加层](non-credit-risk-overlay.md) — ESG信号的汇入点和叠加调整框架
-- [治理与财务欺诈风险分析模块](governance-fraud-risk.md) — 治理维度中的财务欺诈/关联交易/逃废债检测（本框架的治理部分与其联动）
-- [引擎架构总览](engine-overview.md) — 核心理念、总体架构、设计原则
-- [行业分类与分析框架](industry-framework.md) — 各行业ESG敏感度对照（附录A）
-- [马赛克引擎](mosaic-engine.md) — ESG类型信号的纳入与完备性评估
-- [双轨分析方法论](dual-track-methodology.md) — ESG信号在交叉对撞矩阵中的处理
-- [评级展望与持续监控框架](outlook-monitoring-framework.md) — ESG事件的监控触发条件
+- [Non-Credit Risk Overlay](non-credit-risk-overlay.md) -- Entry point for ESG signals and overlay adjustment framework
+- [Governance and Financial Fraud Risk Analysis Module](governance-fraud-risk.md) -- Financial fraud / related transactions / debt evasion detection in governance dimension (this framework's governance section interacts with it)
+- [Engine Architecture Overview](engine-overview.md) -- Core concepts, overall architecture, design principles
+- [Industry Classification and Analysis Framework](industry-framework.md) -- Industry ESG sensitivity cross-reference (Appendix A)
+- [Mosaic Engine](mosaic-engine.md) -- Inclusion and completeness assessment of ESG-type signals
+- [Dual-Track Analysis Methodology](dual-track-methodology.md) -- ESG signal processing in the cross-validation matrix
+- [Rating Outlook and Continuous Monitoring Framework](outlook-monitoring-framework.md) -- ESG event monitoring trigger conditions

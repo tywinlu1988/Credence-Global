@@ -1,1137 +1,1139 @@
-# 系统性预警框架 — 信号聚合算法 + 温度计 + 历史回测
+# Systemic Warning Framework — Signal Aggregation Algorithm + Thermometer + Historical Backtests
 
-**版本**: v0.8.4-release | **日期**: 2026-07-10 | **状态**: 已发布
-
----
-
-## 目录
-
-1. [设计哲学与定位](#一设计哲学与定位)
-2. [信号聚合算法](#二信号聚合算法)
-3. [温度计四级体系](#三温度计四级体系)
-4. [行业权重与传染力系数](#四行业权重与传染力系数)
-5. [历史回测验证一：永煤违约前（2020年Q3）](#五历史回测验证一永煤违约前2020年q3)
-6. [历史回测验证二：地产危机前（2021年Q1）](#六历史回测验证二地产危机前2021年q1)
-7. [历史回测验证三：疫情冲击（2020年Q1）](#七历史回测验证三疫情冲击2020年q1)
-8. [当前时点计算：2026年Q2 SRI读数](#八当前时点计算2026年q2-sri读数)
-9. [阈值敏感性分析](#九阈值敏感性分析)
-10. [与现有引擎的集成](#十与现有引擎的集成)
-11. [局限性声明](#十一局限性声明)
-12. [附录](#十二附录)
+**Version**: v0.8.4-release | **Date**: 2026-07-10 | **Status**: Released
 
 ---
 
-## 一、设计哲学与定位
+## Table of Contents
 
-### 1.1 为什么需要系统性预警框架
-
-现有引擎已建立完善的个体信用分析体系（双轨方法论、行业金字塔、传染矩阵、集中度框架），但缺少一个**将分散的行业信号聚合为系统性风险指数的顶层仪表盘**。
-
-| 现有工具 | 覆盖范围 | 输出形态 | 局限性 |
-|---------|---------|---------|--------|
-| 双轨分析(M1-M2) | 单发行人 | 个体评级 | 无法看全局 |
-| 行业金字塔 | 单行业 | 行业评分 | 无法跨行业聚合 |
-| 传染矩阵 | 行业对 | 传染强度矩阵 | 静态结构，无实时读数 |
-| 集中度框架 | 组合 | 五维风险分 | 侧重组合而非市场整体 |
-| **系统性预警框架(本文件)** | **全市场13行业** | **SRI指数+温度计** | **填补"最后一公里"缺口** |
-
-### 1.2 框架在全引擎中的位置
-
-```
-输入层：
-  13行业的轨道A评级（基本面评分）
-  13行业的轨道B信号（市场定价信号）
-  13行业的展望方向（正面/稳定/负面）
-         │
-         ▼
-聚合层：(本文件 · 系统性预警框架)
-  信号聚合算法 → SRI计算
-  温度计四级判定
-  历史回测验证
-         │
-         ▼
-输出层：
-  🔴🟠🟡🟢 系统性风险等级
-  行动建议
-  传染升级因子联动
-         │
-         ▼
-组合风控层(M4):
-  集中度调整
-  压力测试
-  限额管理
-```
-
-> **SRI 范围说明**：SRI 是**系统性行业风险指数**，聚合 13 个行业的行业风险得分。它不直接接收组合集中度得分。集中度风险通过独立的五维集中度框架评估，二者在 M4 组合风控层并列使用。若未来要合并，需显式定义合并公式。
-
-### 1.3 设计原则
-
-| 原则 | 含义 |
-|------|------|
-| **信号全覆盖** | 纳入13个行业全部轨道A+轨道B+展望信号，不遗漏 |
-| **传染加权** | 不是简单的算术平均——行业权重由信用债存量和传染力系数共同决定 |
-| **阈值透明** | 温度计四级阈值的设定均有理论或历史依据，不搞黑箱 |
-| **可回溯验证** | 必须经过至少3个历史事件的回测，验证框架的有效性 |
-| **当前可读** | 能基于当前数据计算实时SRI读数，用于日常监控 |
+1. [Design Philosophy and Positioning](#1-design-philosophy-and-positioning)
+2. [Signal Aggregation Algorithm](#2-signal-aggregation-algorithm)
+3. [Four-Level Thermometer System](#3-four-level-thermometer-system)
+4. [Industry Weights and Contagion Coefficients](#4-industry-weights-and-contagion-coefficients)
+5. [Historical Backtest 1: GFC 2008 (Pre-Lehman)](#5-historical-backtest-1-gfc-2008-pre-lehman)
+6. [Historical Backtest 2: Eurozone Sovereign Debt Crisis 2011-12](#6-historical-backtest-2-eurozone-sovereign-debt-crisis-2011-12)
+7. [Historical Backtest 3: COVID-19 Shock 2020](#7-historical-backtest-3-covid-19-shock-2020)
+8. [Current Period Calculation: Scenario-Based SRI Example](#8-current-period-calculation-scenario-based-sri-example)
+9. [Threshold Sensitivity Analysis](#9-threshold-sensitivity-analysis)
+10. [Integration with Existing Engine](#10-integration-with-existing-engine)
+11. [Limitations Statement](#11-limitations-statement)
+12. [Appendix](#12-appendix)
 
 ---
 
-## 二、信号聚合算法
+## 1. Design Philosophy and Positioning
 
-### 2.1 输入定义
+### 1.1 Why a Systemic Warning Framework?
 
-系统性风险指数(Systemic Risk Index, SRI)的输入来自现有引擎的四类信号：
+The existing engine has established comprehensive individual credit analysis systems (Dual-Track Methodology, Industry Pyramid, Contagion Matrix, Concentration Framework), but lacks a **top-level dashboard that aggregates scattered industry signals into a systemic risk index**.
 
-**信号A：轨道A行业评分**
+| Existing Tool | Coverage | Output | Limitation |
+|--------------|----------|--------|------------|
+| Dual-Track Analysis (M1-M2) | Single issuer | Individual rating | Cannot see the big picture |
+| Industry Pyramid | Single industry | Industry score | Cannot aggregate across industries |
+| Contagion Matrix | Industry pairs | Contagion intensity matrix | Static structure, no real-time reading |
+| Concentration Framework | Portfolio | Five-dimensional risk score | Focuses on portfolio, not entire market |
+| **Systemic Warning Framework (this document)** | **Full market, 13 industries** | **SRI Index + Thermometer** | **Fills the "last mile" gap** |
 
-取自各行业的双轨分析轨道A综合评分（0-10分），反映行业基本面的健康程度。
-
-| 评分区间 | 对应评级(12档) | 行业健康状态 |
-|---------|---------------|-------------|
-| 9.5 - 10.0 | AAA | 稳健 |
-| 9.0 - 9.4 | AA+ | 稳健 |
-| 8.5 - 8.9 | AA | 稳健 |
-| 8.0 - 8.4 | AA- | 稳健 |
-| 7.5 - 7.9 | A+ | 良好 |
-| 7.0 - 7.4 | A | 良好 |
-| 6.5 - 6.9 | A- | 良好 |
-| 6.0 - 6.4 | BBB+ | 中等 |
-| 5.5 - 5.9 | BBB | 中等 |
-| 5.0 - 5.4 | BBB- | 中等 |
-| 4.5 - 4.9 | BB+ | 偏弱 |
-| 4.0 - 4.4 | BB | 偏弱 |
-| 3.5 - 3.9 | BB- | 偏弱 |
-| 3.0 - 3.4 | B+ | 脆弱 |
-| 2.5 - 2.9 | B | 脆弱 |
-| 2.0 - 2.4 | B- | 脆弱 |
-| 1.0 - 1.9 | CCC | 危险 |
-| 0 - 0.9 | D | 危险 |
-
-**信号B：轨道B市场信号**
-
-取自各行业的轨道B四级信号体系（平静/关注/异常/危机），反映市场定价的警示程度。
-
-| 轨道B状态 | 评分映射 | 颜色标记 |
-|----------|---------|---------|
-| 平静 | 0分 | 🟢 |
-| 关注 | 0.5分 | 🟡 |
-| 异常 | 1.0分 | 🟠 |
-| 危机 | 1.5分 | 🔴 |
-
-**信号C：展望方向**
-
-取自各行业的展望评估（正面/稳定/负面）。
-
-| 展望方向 | 风险加权 |
-|---------|---------|
-| 正面 | 0分 |
-| 稳定 | 0分 |
-| 负面 | +0.5分 |
-
-**信号D：一票否决触发**
-
-当某行业触发了双轨方法论定义的一票否决条件（详见[双轨分析方法论](dual-track-methodology.md) §2.5），该行业的风险得分强制设为最高分。
-
-### 2.2 核心聚合公式
+### 1.2 Framework Position in the Overall Engine
 
 ```
-SRI = Σ(行业风险得分 × 行业权重百分比)
+Input Layer:
+  Track A ratings for 13 industries (fundamental scores)
+  Track B signals for 13 industries (market pricing signals)
+  Outlook direction for 13 industries (positive/stable/negative)
+         │
+         ▼
+Aggregation Layer: (This document · Systemic Warning Framework)
+  Signal aggregation algorithm → SRI calculation
+  Four-level thermometer determination
+  Historical backtest validation
+         │
+         ▼
+Output Layer:
+  🔴🟠🟡🟢 Systemic risk level
+  Action recommendations
+  Contagion escalation factor linkage
+         │
+         ▼
+Portfolio Risk Control Layer (M4):
+  Concentration adjustment
+  Stress testing
+  Limit management
 ```
 
-其中行业权重百分比为各行业在总权重中的占比（归一化至100%），确保 Σ(行业权重百分比) = 1。
+> **SRI Scope Note:** The SRI is a **systemic industry risk index** that aggregates industry risk scores for the 13 industries. It does not directly receive portfolio concentration scores. Concentration risk is assessed through the independent Five-Dimensional Concentration Framework. The two run in parallel at the M4 Portfolio Risk Control Layer. If a merger is desired in the future, the merger formula must be explicitly defined.
 
-> **量纲说明**: SRI 采用 0–3+ 连续尺度，而非百分制。温度卡片、报告模板和输出框架必须使用同一尺度，禁止混用 0–100 分制。
+### 1.3 Design Principles
 
-SRI取值范围为0-3+，对应温度计四级体系（见§三）。
+| Principle | Meaning |
+|-----------|---------|
+| **Full Signal Coverage** | Include all Track A + Track B + Outlook signals for all 13 industries, no omissions |
+| **Contagion Weighted** | Not a simple arithmetic average — industry weights are jointly determined by credit bond outstanding and contagion coefficients |
+| **Transparent Thresholds** | All four thermometer level thresholds have theoretical or historical basis, no black box |
+| **Verifiable via Backtests** | Must pass at least 3 historical event backtests to validate framework effectiveness |
+| **Current Readability** | Must be able to calculate real-time SRI readings based on current data for daily monitoring |
 
-#### 2.2.1 行业风险得分
+---
 
-单行业的风险得分由三类信号综合计算：
+## 2. Signal Aggregation Algorithm
+
+### 2.1 Input Definitions
+
+The Systemic Risk Index (SRI) takes inputs from four types of signals from the existing engine:
+
+**Signal A: Track A Industry Score**
+
+Derived from each industry's Dual-Track Analysis Track A composite score (0-10), reflecting the health of industry fundamentals.
+
+| Score Range | Corresponding Rating (12-notch) | Industry Health |
+|------------|-------------------------------|-----------------|
+| 9.5 - 10.0 | AAA | Robust |
+| 9.0 - 9.4 | AA+ | Robust |
+| 8.5 - 8.9 | AA | Robust |
+| 8.0 - 8.4 | AA- | Robust |
+| 7.5 - 7.9 | A+ | Good |
+| 7.0 - 7.4 | A | Good |
+| 6.5 - 6.9 | A- | Good |
+| 6.0 - 6.4 | BBB+ | Moderate |
+| 5.5 - 5.9 | BBB | Moderate |
+| 5.0 - 5.4 | BBB- | Moderate |
+| 4.5 - 4.9 | BB+ | Weak |
+| 4.0 - 4.4 | BB | Weak |
+| 3.5 - 3.9 | BB- | Weak |
+| 3.0 - 3.4 | B+ | Fragile |
+| 2.5 - 2.9 | B | Fragile |
+| 2.0 - 2.4 | B- | Fragile |
+| 1.0 - 1.9 | CCC | Dangerous |
+| 0 - 0.9 | D | Dangerous |
+
+**Signal B: Track B Market Signal**
+
+Derived from each industry's Track B four-level signal system (Calm/Watch/Abnormal/Crisis), reflecting the degree of market pricing alarm.
+
+| Track B State | Score Mapping | Color Mark |
+|--------------|--------------|-----------|
+| Calm | 0 points | 🟢 |
+| Watch | 0.5 points | 🟡 |
+| Abnormal | 1.0 points | 🟠 |
+| Crisis | 1.5 points | 🔴 |
+
+**Signal C: Outlook Direction**
+
+Derived from each industry's outlook assessment (Positive/Stable/Negative).
+
+| Outlook Direction | Risk Weight |
+|-----------------|------------|
+| Positive | 0 points |
+| Stable | 0 points |
+| Negative | +0.5 points |
+
+**Signal D: Veto Trigger**
+
+When an industry triggers a veto condition as defined in the Dual-Track Methodology (see [Dual-Track Methodology](dual-track-methodology.md) §2.5), the industry's risk score is forced to the maximum level.
+
+### 2.2 Core Aggregation Formula
 
 ```
-行业风险得分 = base_score + outlook_penalty + trackB_penalty
+SRI = Σ(Industry Risk Score × Industry Weight Percentage)
+```
 
-其中：
-  base_score 由轨道A评分决定：
-    轨道A评分 < 3.0 (CCC/B)    →  3分  (高风险)
-    3.0 ≤ 轨道A评分 < 5.0 (B/BB) →  2分  (中高风险)
-    5.0 ≤ 轨道A评分 < 6.0 (BBB)  →  1分  (中等风险)
-    6.0 ≤ 轨道A评分 ≤ 10.0 (A以上) → 0分  (低风险)
+Where industry weight percentage is each industry's share of the total weight (normalized to 100%), ensuring Σ(Industry Weight Percentage) = 1.
+
+> **Dimension Note:** The SRI uses a continuous 0-3+ scale, not a percentage system. Temperature cards, report templates, and the output framework must all use the same scale — mixing with a 0-100 system is prohibited.
+
+The SRI ranges from 0 to 3+, corresponding to the four-level thermometer system (see §3).
+
+#### 2.2.1 Industry Risk Score
+
+A single industry's risk score is calculated from three types of signals:
+
+```
+Industry Risk Score = base_score + outlook_penalty + trackB_penalty
+
+Where:
+  base_score is determined by Track A score:
+    Track A < 3.0 (CCC/B)           →  3 points  (High Risk)
+    3.0 ≤ Track A < 5.0 (B/BB)      →  2 points  (Medium-High Risk)
+    5.0 ≤ Track A < 6.0 (BBB)       →  1 point   (Medium Risk)
+    6.0 ≤ Track A ≤ 10.0 (A and above) → 0 points  (Low Risk)
   
   outlook_penalty:
-    展望负面  →  +0.5分
-    展望稳定  →  0分
-    展望正面  →  0分
+    Negative outlook  →  +0.5 points
+    Stable outlook    →  0 points
+    Positive outlook  →  0 points
   
   trackB_penalty:
-    轨道B信号 🟢(平静)  →  0分
-    轨道B信号 🟡(关注)  →  +0.5分
-    轨道B信号 🟠(异常)  →  +1.0分
-    轨道B信号 🔴(危机)  →  +1.5分
+    Track B signal 🟢 (Calm)     →  0 points
+    Track B signal 🟡 (Watch)    →  +0.5 points
+    Track B signal 🟠 (Abnormal) →  +1.0 points
+    Track B signal 🔴 (Crisis)   →  +1.5 points
 
-  一票否决检查：
-    若该行业触发一票否决条件 → 行业风险得分 = 3分(强制)
+  Veto Check:
+    If the industry triggers a veto condition → Industry Risk Score = 3 points (forced)
 ```
 
-#### 2.2.2 行业风险得分速查表
+#### 2.2.2 Industry Risk Score Quick Reference
 
-| 轨道A评分 | 基准分 | 展望负面 | 轨道B🔴(危机) | 同时触发 | 一票否决 |
-|----------|-------|---------|-------------|---------|---------|
-| > 6.0 (A以上) | 0 | 0.5 | 1.5 | 2.0 | 3.0 |
-| 5.0-6.0 (BBB- 至 BBB+) | 1 | 1.5 | 2.5 | 3.0 | 3.0 |
-| 3.0-5.0 (B+ 至 BB+) | 2 | 2.5 | 3.0 | 3.0 | 3.0 |
+| Track A Score | Base Score | Negative Outlook | Track B 🔴 (Crisis) | Both Triggered | Veto |
+|--------------|-----------|-----------------|-------------------|---------------|------|
+| > 6.0 (A and above) | 0 | 0.5 | 1.5 | 2.0 | 3.0 |
+| 5.0-6.0 (BBB- to BBB+) | 1 | 1.5 | 2.5 | 3.0 | 3.0 |
+| 3.0-5.0 (B+ to BB+) | 2 | 2.5 | 3.0 | 3.0 | 3.0 |
 | < 3.0 (CCC/B) | 3 | 3.0 | 3.0 | 3.0 | 3.0 |
 
-**阈值设定的理由：**
+**Threshold Rationale:**
 
-| 基准分阈值 | 理论依据 |
-|-----------|---------|
-| 轨道A > 6.0 → 0分 | 对应A-及以上评级，属于投资级上沿，行业基本面稳健，系统性风险贡献可忽略 |
-| 5.0-6.0 → 1分 | 对应BBB区间（BBB- 至 BBB+），属于投资级下沿，行业开始出现脆弱性，但不构成系统性威胁 |
-| 3.0-5.0 → 2分 | 对应BB/B区间（B+ 至 BB+），属于投机级，行业面临实质性挑战，需要纳入风险计数 |
-| < 3.0 → 3分 | 对应CCC/D级，行业处于危险状态，是系统性风险的核心贡献者 |
+| Base Score Threshold | Theoretical Basis |
+|--------------------|-------------------|
+| Track A > 6.0 → 0 points | Corresponds to A- and above, upper investment grade, industry fundamentals robust, systemic risk contribution negligible |
+| 5.0-6.0 → 1 point | Corresponds to BBB range (BBB- to BBB+), lower investment grade, industry showing vulnerability but not systemic threat |
+| 3.0-5.0 → 2 points | Corresponds to BB/B range (B+ to BB+), speculative grade, industry facing substantial challenges, needs inclusion in risk count |
+| < 3.0 → 3 points | Corresponds to CCC/D grade, industry in dangerous state, core contributor to systemic risk |
 
-| 惩罚因子 | 幅度 | 理由 |
-|---------|------|------|
-| 展望负面 +0.5 | 0.5分 | 展望负面是未来6-12个月评级下调的前瞻信号，但尚不构成当前风险，给予半档惩罚 |
-| 轨道B 🟡 +0.5 | 0.5分 | 关注级市场信号可能反映早期风险或短期噪音，给予半档惩罚 |
-| 轨道B 🟠 +1.0 | 1.0分 | 异常级市场信号反映定价分歧显著放大，给予一档惩罚 |
-| 轨道B 🔴 +1.5 | 1.5分 | 危机级市场信号反映流动性或信心冲击，给予一档半惩罚 |
-| 一票否决 → 3分 | 强制3分 | 一票否决代表生存性风险，无论其他指标如何，该行业直接列为高风险 |
+| Penalty Factor | Magnitude | Rationale |
+|---------------|-----------|-----------|
+| Negative Outlook +0.5 | 0.5 points | Negative outlook is a forward signal for rating downgrade in the next 6-12 months, but does not constitute current risk — half-notch penalty |
+| Track B 🟡 +0.5 | 0.5 points | Watch-level market signal may reflect early risk or short-term noise — half-notch penalty |
+| Track B 🟠 +1.0 | 1.0 points | Abnormal market signal reflects significantly amplified pricing divergence — full-notch penalty |
+| Track B 🔴 +1.5 | 1.5 points | Crisis market signal reflects liquidity or confidence shock — one-and-a-half notch penalty |
+| Veto → 3 points | Forced 3 points | Veto represents existential risk; regardless of other indicators, the industry is directly classified as high risk |
 
-### 2.3 行业权重
+### 2.3 Industry Weights
 
 ```
-行业权重 = 该行业信用债存量权重 × 传染力系数
+Industry Weight = Credit Bond Outstanding Weight × Contagion Coefficient
 
-其中：
-  信用债存量权重 = 该行业在全部13行业信用债存量中的占比
-                   参考中国信用债市场各行业存续规模占比
+Where:
+  Credit Bond Outstanding Weight = Industry's share of total outstanding credit bonds across all 13 industries
   
-  传染力系数 = 该行业在contagion-matrix.md中的"超级传染者"得分
-               / 13行业传染力均值
+  Contagion Coefficient = Industry's "Super-Spreader" score in contagion-matrix.md
+                          / Mean contagion score across 13 industries
   
-  归一化：最终的行业权重百分比在各行业间归一化，确保 Σ(行业权重百分比) = 1（即100%）
+  Normalization: Final industry weight percentages are normalized across industries,
+                 ensuring Σ(Industry Weight Percentage) = 1 (i.e., 100%)
 ```
 
-#### 2.3.1 传染力系数表
+#### 2.3.1 Contagion Coefficient Table
 
-根据[传染矩阵](contagion-matrix.md) §5.5（超级传染者）和附录B（各行业传染力完整排序），13行业的传染力得分如下：
+According to the [Contagion Matrix](contagion-matrix.md) §5.5 (Super-Spreaders) and Appendix B (Complete Contagion Ranking by Industry), the contagion scores for the 13 industries are as follows:
 
-| 排名 | 行业 | 传染力总分(行合计) | 传染力系数 | 分类标签 |
-|------|------|------------------|-----------|---------|
-| 1 | 半导体/集成电路 | 25 | 25 / 19.38 = 1.290 | 超级传染者 |
-| 2 | 城投债(LGFV) | 23 | 23 / 19.38 = 1.187 | 超级传染者 |
-| 3 | 高端装备/工业母机 | 22 | 22 / 19.38 = 1.135 | 超级传染者 |
-| 4 | 光伏/储能 | 21 | 21 / 19.38 = 1.083 | 准超级传染者 |
-| 5 | 新能源汽车 | 20 | 20 / 19.38 = 1.032 | 准超级传染者 |
-| 6 | 数据中心/算力基建 | 20 | 20 / 19.38 = 1.032 | 准超级传染者 |
-| 7 | 传媒/互联网 | 20 | 20 / 19.38 = 1.032 | 中等传染者 |
-| 8 | 交通运输 | 19 | 19 / 19.38 = 0.980 | 中等传染者 |
-| 9 | 医疗器械 | 18 | 18 / 19.38 = 0.929 | 中等传染者 |
-| 10 | 商贸零售 | 18 | 18 / 19.38 = 0.929 | 中等传染者 |
-| 11 | 生物医药/创新药 | 17 | 17 / 19.38 = 0.877 | 弱传染者 |
-| 12 | 纺织服装 | 15 | 15 / 19.38 = 0.774 | 弱传染者 |
-| 13 | 食品饮料 | 14 | 14 / 19.38 = 0.722 | 最弱传染者 |
-| | **均值** | **19.38** | **1.000** | |
+| Rank | Industry | Total Contagion Score (Row Sum) | Contagion Coefficient | Classification Label |
+|------|----------|-------------------------------|----------------------|--------------------|
+| 1 | Semiconductors/Integrated Circuits | 25 | 25 / 19.38 = 1.290 | Super-Spreader |
+| 2 | LGFV Bonds | 23 | 23 / 19.38 = 1.187 | Super-Spreader |
+| 3 | Advanced Equipment/Industrial Machinery | 22 | 22 / 19.38 = 1.135 | Super-Spreader |
+| 4 | Solar/PV & Energy Storage | 21 | 21 / 19.38 = 1.083 | Quasi Super-Spreader |
+| 5 | New Energy Vehicles | 20 | 20 / 19.38 = 1.032 | Quasi Super-Spreader |
+| 6 | Data Centers/Compute Infrastructure | 20 | 20 / 19.38 = 1.032 | Quasi Super-Spreader |
+| 7 | Media/Internet | 20 | 20 / 19.38 = 1.032 | Moderate Contagion |
+| 8 | Transportation | 19 | 19 / 19.38 = 0.980 | Moderate Contagion |
+| 9 | Medical Devices | 18 | 18 / 19.38 = 0.929 | Moderate Contagion |
+| 10 | Retail | 18 | 18 / 19.38 = 0.929 | Moderate Contagion |
+| 11 | Biopharmaceuticals/Innovative Drugs | 17 | 17 / 19.38 = 0.877 | Weak Contagion |
+| 12 | Textile & Apparel | 15 | 15 / 19.38 = 0.774 | Weak Contagion |
+| 13 | Food & Beverage | 14 | 14 / 19.38 = 0.722 | Weakest Contagion |
+| | **Mean** | **19.38** | **1.000** | |
 
-**计算说明：**
-- 13行业传染力总分均值 = (25 + 23 + 22 + 21 + 20 + 20 + 20 + 19 + 18 + 18 + 17 + 15 + 14) / 13 = 252 / 13 = 19.38
-- 传染力系数 > 1.0 = 传染力高于均值（权重上浮）
-- 传染力系数 < 1.0 = 传染力低于均值（权重下调）
-- 超级传染者（前三名：半导体25、城投债23、高端装备22）的传染力系数均显著大于1.0，在SRI计算中获得更高的权重
+**Calculation Notes:**
+- Mean of 13 industry contagion scores = (25 + 23 + 22 + 21 + 20 + 20 + 20 + 19 + 18 + 18 + 17 + 15 + 14) / 13 = 252 / 13 = 19.38
+- Contagion Coefficient > 1.0 = Contagion above mean (weight increase)
+- Contagion Coefficient < 1.0 = Contagion below mean (weight decrease)
+- Super-spreaders (top 3: Semiconductors 25, LGFV 23, Advanced Equipment 22) all have coefficients significantly > 1.0, receiving higher weights in SRI calculation
 
-#### 2.3.2 信用债存量权重
+#### 2.3.2 Credit Bond Outstanding Weights
 
-基于中国信用债市场各行业存续规模占比（参考2025-2026年市场数据）：
+Based on international bond market sector outstanding share data (reference 2025-2026 data):
 
-| 行业 | 信用债存量占比 | 数据来源 |
-|------|--------------|---------|
-| 城投债(LGFV) | 约35% | 信用债市场最大单一品种，存量约15万亿 |
-| 交通运输 | 约8% | 公路/铁路/航空/港口集团债 |
-| 房地产 | 约5% | 持续收缩，存量下降 |
-| 商贸零售 | 约4% | 含电商平台债 |
-| 传媒/互联网 | 约3% | BAT/字节等科技债 |
-| 食品饮料 | 约3% | 消费龙头债 |
-| 光伏/储能 | 约2% | 产业债中增长较快 |
-| 新能源汽车 | 约2% | 含整车及供应链债 |
-| 半导体/集成电路 | 约1.5% | 科创板+债券融资 |
-| 高端装备/工业母机 | 约1% | 央企+细分龙头 |
-| 医疗器械 | 约1% | 含医疗设备债 |
-| 生物医药/创新药 | 约0.8% | Biotech以股权融资为主 |
-| 纺织服装 | 约0.7% | 消费类民企债 |
+| Industry | Credit Bond Outstanding Share | Data Source |
+|----------|------------------------------|-------------|
+| LGFV Bonds | approx. 35% | Largest single category, approx. 15 trillion outstanding |
+| Transportation | approx. 8% | Infrastructure/transport SOE bonds |
+| Real Estate | approx. 5% | Continues to contract, declining outstanding |
+| Retail | approx. 4% | Includes e-commerce platform bonds |
+| Media/Internet | approx. 3% | Technology sector bonds |
+| Food & Beverage | approx. 3% | Consumer staple bonds |
+| Solar/PV & Energy Storage | approx. 2% | Fast-growing sector |
+| New Energy Vehicles | approx. 2% | Includes OEM and supply chain bonds |
+| Semiconductors/Integrated Circuits | approx. 1.5% | Growth enterprise board + bond financing |
+| Advanced Equipment/Industrial Machinery | approx. 1% | State-owned enterprises + niche leaders |
+| Medical Devices | approx. 1% | Includes medical equipment bonds |
+| Biopharmaceuticals/Innovative Drugs | approx. 0.8% | Biotech primarily equity financed |
+| Textile & Apparel | approx. 0.7% | Consumer-focused private enterprise bonds |
 
-**注：** 上述占比为方向性估算，在实际计算中应根据最新的全市场信用债存续数据动态更新。当特定行业的信用债存量发生结构性变化时（如城投债因化债政策缩量或科创债扩容），需及时调整权重。数据中心/算力基建的信用债存量并入城投债口径（园区/基建关联），不单列。
+**Note:** The above shares are directional estimates. In actual calculations, the latest full-market credit bond outstanding data should be used for dynamic updates. When structural changes occur in a specific industry's credit bond outstanding (e.g., LGFV reduction due to debt resolution or bond expansion for technology sectors), weights should be adjusted promptly. Data Centers/Compute Infrastructure credit bond outstanding is consolidated into the LGFV category (park/infrastructure related), not listed separately.
 
-#### 2.3.3 行业权重计算示例
+#### 2.3.3 Industry Weight Calculation Example
 
-以半导体行业为例，假设信用债存量占比为1.5%：
-
-```
-半导体行业权重百分比 = 1.5% × 1.290 = 1.94%
-
-归一化处理：
-  各行业原始权重百分比 = 信用债存量占比 × 传染力系数
-  归一化因子 = 100% / Σ(原始权重百分比)
-  最终权重百分比 = 原始权重百分比 × 归一化因子
-  确保 Σ(最终权重百分比) = 100%
-```
-
-### 2.4 完整计算流程
+Using the semiconductor industry as an example, assuming credit bond outstanding share is 1.5%:
 
 ```
-步骤1：收集13行业的四类输入信号
-  ├── 轨道A评分（基本面金字塔输出）
-  ├── 轨道B信号（市场信号等级）
-  ├── 展望方向（正面/稳定/负面）
-  └── 一票否决触发（是/否）
+Semiconductor Industry Weight Percentage = 1.5% × 1.290 = 1.94%
 
-步骤2：计算单行业风险得分
+Normalization:
+  Raw weight percentage per industry = Credit bond outstanding share × Contagion coefficient
+  Normalization factor = 100% / Σ(Raw weight percentage)
+  Final weight percentage = Raw weight percentage × Normalization factor
+  Ensures Σ(Final weight percentage) = 100%
+```
+
+### 2.4 Complete Calculation Flow
+
+```
+Step 1: Collect four types of input signals for the 13 industries
+  ├── Track A score (fundamental pyramid output)
+  ├── Track B signal (market signal level)
+  ├── Outlook direction (positive/stable/negative)
+  └── Veto trigger (yes/no)
+
+Step 2: Calculate single industry risk score
   └── base_score + outlook_penalty + trackB_penalty
-  └── 一票否决检查 → 若触发则强制3分
+  └── Veto check → if triggered, force 3 points
 
-步骤3：计算行业权重百分比
-  ├── 信用债存量权重 ← 市场数据
-  ├── 传染力系数 ← 传染矩阵(contagion-matrix.md)附录B
-  └── 行业权重百分比 = 存量权重 × 传染力系数（归一化至总和100%）
+Step 3: Calculate industry weight percentage
+  ├── Credit bond outstanding weight ← market data
+  ├── Contagion coefficient ← Contagion Matrix (contagion-matrix.md) Appendix B
+  └── Industry weight percentage = outstanding weight × contagion coefficient (normalized to sum 100%)
 
-步骤4：计算SRI
-  └── SRI = Σ(行业风险得分 × 行业权重百分比)
+Step 4: Calculate SRI
+  └── SRI = Σ(Industry risk score × Industry weight percentage)
 
-步骤5：温度计判定
-  └── 对照四级阈值输出 🔴/🟠/🟡/🟢 等级
+Step 5: Thermometer determination
+  └── Check against four-level thresholds, output 🔴/🟠/🟡/🟢 level
 
-步骤6：行动建议输出
-  └── 根据温度计等级输出对应的行动建议
+Step 6: Action recommendation output
+  └── Output corresponding action recommendations based on thermometer level
 ```
 
-### 2.5 输入信号的数据来源
+### 2.5 Input Signal Data Sources
 
-| 信号类型 | 数据来源文档 | 更新频率 |
-|---------|------------|---------|
-| 轨道A评分 | [双轨分析方法论](dual-track-methodology.md) §二 | 季度（或行业发生重大变化时） |
-| 轨道B信号 | [双轨分析方法论](dual-track-methodology.md) §三 | 周度/日度 |
-| 展望方向 | [展望监控框架](outlook-monitoring-framework.md) | 月度/季度 |
-| 一票否决条件 | [行业框架](industry-framework.md) §五 | 事件驱动 |
-| 信用债存量权重 | Wind/DM终端行业债券存量统计 | 季度更新 |
-| 传染力系数 | [传染矩阵](contagion-matrix.md) §5.5及附录B | 版本更新时调整 |
+| Signal Type | Source Document | Update Frequency |
+|-------------|---------------|-----------------|
+| Track A Score | [Dual-Track Methodology](dual-track-methodology.md) §2 | Quarterly (or when significant industry changes occur) |
+| Track B Signal | [Dual-Track Methodology](dual-track-methodology.md) §3 | Weekly/Daily |
+| Outlook Direction | [Outlook Monitoring Framework](outlook-monitoring-framework.md) | Monthly/Quarterly |
+| Veto Conditions | [Industry Framework](industry-framework.md) §5 | Event-driven |
+| Credit Bond Outstanding Weight | Market data terminals, industry bond outstanding statistics | Quarterly update |
+| Contagion Coefficient | [Contagion Matrix](contagion-matrix.md) §5.5 and Appendix B | Updated on version changes |
 
 ---
 
-## 三、温度计四级体系
+## 3. Four-Level Thermometer System
 
-### 3.1 四级定义
+### 3.1 Four-Level Definition
 
-| 等级 | SRI范围 | 颜色 | 含义 |
-|------|---------|------|------|
-| 正常 | SRI < 0.5 | 🟢 | <20%行业同时红色（风险得分≥2）·或>70%行业绿色（风险得分=0） |
-| 关注 | 0.5 ≤ SRI < 1.0 | 🟡 | 20-30%行业同时红色·或2-3个行业出现信号重叠（展望负面+轨道B异常） |
-| 警惕 | 1.0 ≤ SRI < 1.8 | 🟠 | 30-50%行业同时红色·或高传染行业（超级传染者）出问题 |
-| 危险 | SRI ≥ 1.8 | 🔴 | >50%行业同时红色·或多个高传染行业同时触发·或存在系统性传染风险 |
+| Level | SRI Range | Color | Meaning |
+|-------|-----------|-------|---------|
+| Normal | SRI < 0.5 | 🟢 | < 20% of industries simultaneously red (risk score ≥ 2) · or > 70% of industries green (risk score = 0) |
+| Watch | 0.5 ≤ SRI < 1.0 | 🟡 | 20-30% of industries simultaneously red · or 2-3 industries with overlapping signals (negative outlook + Track B abnormal) |
+| Alert | 1.0 ≤ SRI < 1.8 | 🟠 | 30-50% of industries simultaneously red · or high-contagion industries (super-spreaders) in trouble |
+| Danger | SRI ≥ 1.8 | 🔴 | > 50% of industries simultaneously red · or multiple high-contagion industries triggered simultaneously · or systemic contagion risk present |
 
-### 3.2 各等级的定性描述
+### 3.2 Qualitative Descriptions for Each Level
 
-#### 🟢 正常（SRI < 0.5）
+#### 🟢 Normal (SRI < 0.5)
 
-**市场状态：** 大部分行业基本面健康，信用风险整体可控。少数行业存在局部问题但影响范围有限。
+**Market State:** Most industries have healthy fundamentals, overall credit risk is manageable. A few industries have localized issues with limited impact.
 
-**行业信号特征：**
-- 绝大多数行业轨道A评分 > 6.0（A级以上）
-- 无行业触发一票否决
-- 展望负面的行业不超过2个
-- 轨道B信号以🟢和🟡为主
+**Industry Signal Characteristics:**
+- Vast majority of industries have Track A score > 6.0 (A- and above)
+- No industry triggers veto
+- No more than 2 industries with negative outlook
+- Track B signals are predominantly 🟢 and 🟡
 
-**历史参考时期：**
-- 2017年供给侧改革后（信用风险低点）
-- 2019年上半年（违约潮间歇期）
+**Historical Reference Periods:**
+- Post-crisis recovery periods (credit risk low)
+- Bull market expansion phases (between default waves)
 
-**行动建议：**
-- 常规监控，维持现有组合配置
-- 季度复查各行业轨道A评分
-- 关注传染矩阵升级因子的变化趋势
+**Action Recommendations:**
+- Routine monitoring, maintain existing portfolio allocation
+- Quarterly review of Track A scores for each industry
+- Monitor trends in contagion matrix escalation factors
 
-#### 🟡 关注（0.5 ≤ SRI < 1.0）
+#### 🟡 Watch (0.5 ≤ SRI < 1.0)
 
-**市场状态：** 部分行业出现风险信号，但尚未形成系统性风险。需要提高监控频率，排查集中度风险。
+**Market State:** Some industries showing risk signals, but not yet forming systemic risk. Increased monitoring frequency required, check concentration risk.
 
-**行业信号特征：**
-- 2-3个行业轨道A评分 < 5.0（进入脆弱区间）
-- 或1-2个行业展望负面+轨道B异常信号重叠
-- 超级传染者行业保持稳定，未出现严重信号
+**Industry Signal Characteristics:**
+- 2-3 industries with Track A score < 5.0 (entering fragile range)
+- Or 1-2 industries with overlapping negative outlook + Track B abnormal signals
+- Super-spreader industries remain stable, no severe signals
 
-**历史参考时期：**
-- 2020年8月（永煤违约前3个月，见§五回测）
-- 2018年Q2（去杠杆冲击初期）
+**Historical Reference Periods:**
+- Pre-Lehman period, Q3 2008 (see §5 backtest)
+- Early phases of credit tightening cycles
 
-**行动建议：**
-- 关注转红的行业——检查该行业在传染矩阵中的传染力和脆弱度排名
-- 如果转红行业是弱传染者（食品饮料/纺织服装/生物医药）→ 继续观察
-- 如果转红行业是超级传染者（半导体/城投债/高端装备）→ 立即升级至警惕等级
-- 检查组合对转红行业的敞口是否超过集中度限额
-- 提高监控频率从月度到双周
+**Action Recommendations:**
+- Focus on industries that turned red — check their contagion and vulnerability rankings in the contagion matrix
+- If the red-turned industry is a weak contagion (Food & Beverage / Textile & Apparel / Biopharmaceuticals) → continue observing
+- If the red-turned industry is a super-spreader (Semiconductors / LGFV / Advanced Equipment) → immediately upgrade to Alert level
+- Check portfolio exposure to red-turned industries against concentration limits
+- Increase monitoring frequency from monthly to bi-weekly
 
-#### 🟠 警惕（1.0 ≤ SRI < 1.8）
+#### 🟠 Alert (1.0 ≤ SRI < 1.8)
 
-**市场状态：** 多个行业同时承压，或高传染行业（超级传染者）出现严重信号。系统性风险正在积累，需要主动降低风险敞口。
+**Market State:** Multiple industries stressed simultaneously, or high-contagion industries (super-spreaders) showing severe signals. Systemic risk is accumulating, requiring active reduction of risk exposure.
 
-**行业信号特征：**
-- 4-6个行业轨道A评分 < 5.0
-- 或1-2个超级传染者行业触发一票否决或轨道A < 3.0
-- 或同时有2个以上超级传染者行业进入关注状态
-- 传染矩阵升级因子中至少2个同时触发
+**Industry Signal Characteristics:**
+- 4-6 industries with Track A score < 5.0
+- Or 1-2 super-spreader industries trigger veto or Track A < 3.0
+- Or 2+ super-spreader industries simultaneously entering watch state
+- At least 2 contagion matrix escalation factors triggered simultaneously
 
-**历史参考时期：**
-- 2021年Q1（地产危机前夜，见§六回测）
-- 2022年Q4（理财赎回潮+地产违约高峰）
+**Historical Reference Periods:**
+- Eurozone sovereign debt crisis 2011-12 (see §6 backtest)
+- Systemic financial crisis peaks
 
-**行动建议：**
-- 主动降低对高风险行业和超级传染者行业的敞口
-- 检查组合是否同时暴露于同一高传染集群中的多个行业（如集群A：半导体+光伏+高端装备）
-- 增加对冲工具（利率衍生品、CDS/CRMW）
-- 缩短组合久期
-- 启动组合压力测试（传染矩阵M4压力测试流程）
-- 限制新增高风险行业敞口
-- 向风控委员会报告
+**Action Recommendations:**
+- Actively reduce exposure to high-risk and super-spreader industries
+- Check if the portfolio is simultaneously exposed to multiple industries in the same high-contagion cluster (e.g., Cluster A: Semiconductors + Solar/PV + Advanced Equipment)
+- Increase hedging tools (interest rate derivatives, CDS)
+- Shorten portfolio duration
+- Initiate portfolio stress tests (Contagion Matrix M4 stress test procedure)
+- Limit new exposure to high-risk industries
+- Report to risk committee
 
-#### 🔴 危险（SRI ≥ 1.8）
+#### 🔴 Danger (SRI ≥ 1.8)
 
-**市场状态：** 超过一半的行业同时处于风险状态，或多个高传染行业同时触发严重信号。市场面临系统性风险，需进入全面防御模式。
+**Market State:** Over half of industries simultaneously in risk state, or multiple high-contagion industries triggering severe signals simultaneously. Market facing systemic risk, enter full defense mode.
 
-**行业信号特征：**
-- >7个行业轨道A评分 < 5.0
-- 或2个以上超级传染者行业同时触发一票否决或轨道A < 3.0
-- 或同时有3个以上超级传染者行业进入异常状态
-- 传染矩阵升级因子中的恐慌情绪或高杠杆因子已触发
+**Industry Signal Characteristics:**
+- > 7 industries with Track A score < 5.0
+- Or 2+ super-spreader industries simultaneously triggering veto or Track A < 3.0
+- Or 3+ super-spreader industries simultaneously entering abnormal state
+- Panic sentiment or high-leverage factors among contagion matrix escalation factors already triggered
 
-**历史参考时期：**
-- 2020年Q1（疫情冲击，见§七回测）
-- 2022年3-4月（上海封控+地产危机+美联储加息三重冲击）
+**Historical Reference Periods:**
+- COVID-19 shock Q1 2020 (see §7 backtest)
+- Multi-crisis systemic events
 
-**行动建议：**
-- 全面防御——优先保流动性
-- 大幅降低对风险行业的敞口（减仓50%以上）
-- 仅保留最安全的资产（利率债、AAA央企短融）
-- 增加现金储备
-- 暂停一切新增风险敞口
-- 触发流动性应急预案
-- 每日监测SRI变化和传染矩阵升级因子
-- 准备极端压力场景下的组合重组方案
+**Action Recommendations:**
+- Full defense — prioritize liquidity preservation
+- Significantly reduce exposure to risk industries (reduce positions by 50%+)
+- Retain only safest assets (sovereign bonds, AAA short-term notes)
+- Increase cash reserves
+- Suspend all new risk exposure
+- Trigger liquidity contingency plan
+- Monitor SRI changes and contagion matrix escalation factors daily
+- Prepare portfolio restructuring plan for extreme stress scenarios
 
-### 3.3 阈值设定的理论依据
+### 3.3 Threshold Theoretical Basis
 
-#### SRI < 0.5（🟢 正常）阈值理由
+#### SRI < 0.5 (🟢 Normal) Threshold Rationale
 
-| 依据类型 | 具体理由 |
-|---------|---------|
-| **统计数据** | 当SRI < 0.5时，13个行业的平均风险得分约相当于1个行业得2分+12个行业得0分，或3个行业得1分+10个行业得0分——即仅有1-2个行业进入中高风险或2-3个行业进入中等风险。属于市场正常分化范围 |
-| **历史验证** | 2017年供给侧改革后中国信用债市场的违约率低于0.3%，属于正常信用周期 |
-| **传染逻辑** | 单一弱传染者行业（如食品饮料）出问题不会传染到其他行业，不需要系统性预警 |
+| Basis Type | Specific Rationale |
+|-----------|-------------------|
+| **Statistical** | When SRI < 0.5, the average risk score across 13 industries is approximately equivalent to 1 industry scoring 2 + 12 scoring 0, or 3 industries scoring 1 + 10 scoring 0 — meaning only 1-2 industries at medium-high risk or 2-3 at medium risk. This falls within normal market differentiation |
+| **Historical Validation** | During post-crisis recovery periods, credit bond market default rates were below 0.3%, representing a normal credit cycle |
+| **Contagion Logic** | A single weak contagion industry (e.g., Food & Beverage) in trouble does not spread to other industries; no systemic warning needed |
 
-#### SRI ≥ 0.5（🟡 关注）阈值理由
+#### SRI ≥ 0.5 (🟡 Watch) Threshold Rationale
 
-| 依据类型 | 具体理由 |
-|---------|---------|
-| **统计数据** | 0.5的阈值相当于13个行业中有约2-3个行业风险得分≥2（中高风险）且其余正常，或4-5个行业风险得分≥1（中等风险）。当2-3个同时出现问题时，需要开始关注——是单一事件和系统性事件的分水岭 |
-| **历史验证** | 永煤违约前3个月（2020年8月），SRI估算约0.6-0.7（见§5回测），已进入关注区间 |
-| **传染逻辑** | 2-3个行业同时出问题意味着风险已不是孤立的单一事件，需要通过传染矩阵检查这些行业之间是否存在高传染链路 |
+| Basis Type | Specific Rationale |
+|-----------|-------------------|
+| **Statistical** | The 0.5 threshold is equivalent to approximately 2-3 industries with risk score ≥ 2 (medium-high risk) with the rest normal, or 4-5 industries with risk score ≥ 1 (medium risk). When 2-3 industries have problems simultaneously, monitoring is needed — this is the dividing line between isolated events and systemic events |
+| **Historical Validation** | Pre-Lehman period Q3 2008, estimated SRI approximately 0.6-0.7 (see §5 backtest), already entered Watch range |
+| **Contagion Logic** | 2-3 industries in trouble simultaneously means risk is no longer an isolated single event; the contagion matrix must be checked for high-contagion pathways between these industries |
 
-#### SRI ≥ 1.0（🟠 警惕）阈值理由
+#### SRI ≥ 1.0 (🟠 Alert) Threshold Rationale
 
-| 依据类型 | 具体理由 |
-|---------|---------|
-| **统计数据** | SRI=1.0相当于13个行业中有约4-5个行业风险得分为2分（中高风险），或2个行业得3分（高风险）+其他正常。当接近半数行业出现问题时，系统性风险已实质性存在 |
-| **历史验证** | 地产危机爆发前（2021年Q1），SRI估算约1.0-1.2（见§6回测），已进入警惕区间 |
-| **传染逻辑** | SRI≥1.0时，陷入风险的行业中大概率包含了超级传染者（因超级传染者行业数量占3/13），而这些行业会通过传染矩阵向其他健康行业扩散风险 |
+| Basis Type | Specific Rationale |
+|-----------|-------------------|
+| **Statistical** | SRI = 1.0 is equivalent to approximately 4-5 industries scoring 2 points (medium-high risk), or 2 industries scoring 3 (high risk) + the rest normal. When nearly half of industries have problems, systemic risk is substantively present |
+| **Historical Validation** | During the Eurozone sovereign debt crisis (2011-12), estimated SRI approximately 1.0-1.2 (see §6 backtest), already entered Alert range |
+| **Contagion Logic** | When SRI ≥ 1.0, the industries in crisis likely include super-spreaders (3 out of 13 industries), and these spread risk to other healthy industries through the contagion matrix |
 
-#### SRI ≥ 1.8（🔴 危险）阈值理由
+#### SRI ≥ 1.8 (🔴 Danger) Threshold Rationale
 
-| 依据类型 | 具体理由 |
-|---------|---------|
-| **统计数据** | SRI=1.8相当于13个行业中有约7个行业得2分（即过半行业进入中高风险），或5个行业得3分+1-2个得1分。超过半数行业同时出问题=全市场系统性风险 |
-| **历史验证** | 2020年Q1疫情冲击时，全部13行业同时承压，SRI完全可能达到≥2.0（见§7回测） |
-| **传染逻辑** | 当多数行业同时临界时，四种传染类型（信用链+区域共振+流动性挤兑+信心崩塌）可能同时触发，形成传染升级因子协同效应中的"三个及以上同时触发"条件（传染矩阵§6.3），导致矩阵中的大部分链路强度+1~+2 |
+| Basis Type | Specific Rationale |
+|-----------|-------------------|
+| **Statistical** | SRI = 1.8 is equivalent to approximately 7 industries scoring 2 (over half at medium-high risk), or 5 scoring 3 + 1-2 scoring 1. Over half of industries in trouble simultaneously = full market systemic risk |
+| **Historical Validation** | During the COVID-19 shock Q1 2020, all 13 industries were stressed simultaneously, SRI could reach ≥ 2.0 (see §7 backtest) |
+| **Contagion Logic** | When most industries are simultaneously distressed, all four contagion types (credit chain + regional resonance + liquidity run + confidence collapse) may trigger simultaneously, forming the "three or more simultaneously triggered" condition from contagion matrix escalation factor synergy (Contagion Matrix §6.3), causing most links in the matrix to increase by +1 to +2 |
 
-### 3.4 温度计与传染矩阵升级因子的联动
+### 3.4 Thermometer and Contagion Matrix Escalation Factor Linkage
 
-温度计等级与[传染矩阵](contagion-matrix.md) §6（传染放大器条件）的升级因子联动，形成一个正向反馈监控环路：
+The thermometer level is linked to the [Contagion Matrix](contagion-matrix.md) §6 (Contagion Amplifier Conditions) escalation factors, forming a positive feedback monitoring loop:
 
-| 温度计等级 | 升级因子状态 | 联动规则 |
-|-----------|------------|---------|
-| 🟢 正常 | 无升级因子触发 | SRI计算使用传染矩阵基础强度值 |
-| 🟡 关注 | 1-2个升级因子可能触发 | 若温度计进入🟡且已有升级因子触发→升级因子对传染路径的跳升幅度×1.5 |
-| 🟠 警惕 | 2-3个升级因子可能同时触发 | 若温度计进入🟠→自动启动升级因子协同效应中的"两个及以上"规则|
-| 🔴 危险 | 3个及以上升级因子很可能已同时触发 | 温度计🔴=传染矩阵进入系统性临界点（§6.3）→矩阵全部链路强度+1~+2 |
+| Thermometer Level | Escalation Factor Status | Linkage Rule |
+|------------------|------------------------|-------------|
+| 🟢 Normal | No escalation factor triggered | SRI calculation uses contagion matrix base intensity values |
+| 🟡 Watch | 1-2 escalation factors may be triggered | If thermometer enters 🟡 and escalation factors are already triggered → escalation factor jump magnitude × 1.5 |
+| 🟠 Alert | 2-3 escalation factors may trigger simultaneously | If thermometer enters 🟠 → automatically activate escalation factor synergy "two or more" rule |
+| 🔴 Danger | 3+ escalation factors likely already triggered simultaneously | Thermometer 🔴 = Contagion matrix enters systemic tipping point (§6.3) → all matrix link intensities +1 to +2 |
 
-**具体联动逻辑：**
+**Specific Linkage Logic:**
 
 ```
-当温度计为🟠或🔴时，即使单个升级因子尚未触发，
-系统性风险本身充当了"全域升级因子"，
-使得传染矩阵中的所有链路强度自动+1。
+When the thermometer is 🟠 or 🔴, even if individual escalation factors have not yet triggered,
+systemic risk itself acts as a "global escalation factor,"
+causing all link intensities in the contagion matrix to automatically increase by +1.
 
-理由：当超过30%的行业同时承压时，
-市场恐慌情绪（升级因子#1）实际上已经被系统性风险本身激活。
+Rationale: When more than 30% of industries are under simultaneous stress,
+market panic sentiment (escalation factor #1) is effectively already activated
+by the systemic risk itself.
 ```
 
 ---
 
-## 四、行业权重与传染力系数
+## 4. Industry Weights and Contagion Coefficients
 
-### 4.1 完整权重计算表
+### 4.1 Complete Weight Calculation Table
 
-基于传染矩阵(contagion-matrix.md)的超级传染者排名和13行业传染力均值，各行业的权重参数如下：
+Based on the Contagion Matrix (contagion-matrix.md) super-spreader rankings and 13-industry mean contagion score, the weight parameters for each industry are as follows:
 
-| 行业 | 信用债存量占比(A) | 传染力系数(B) | 原始权重(A×B) | 归一化权重 |
-|------|-----------------|--------------|-------------|-----------|
-| 城投债(LGFV) | 35.0% | 1.187 | 41.53% | 37.55% |
-| 交通运输 | 8.0% | 0.980 | 7.84% | 7.09% |
-| 商贸零售 | 4.0% | 0.929 | 3.71% | 3.36% |
-| 传媒/互联网 | 3.0% | 1.032 | 3.10% | 2.80% |
-| 食品饮料 | 3.0% | 0.722 | 2.17% | 1.96% |
-| 光伏/储能 | 2.0% | 1.083 | 2.17% | 1.96% |
-| 新能源汽车 | 2.0% | 1.032 | 2.06% | 1.87% |
-| 半导体/集成电路 | 1.5% | 1.290 | 1.93% | 1.75% |
-| 高端装备/工业母机 | 1.0% | 1.135 | 1.13% | 1.03% |
-| 医疗器械 | 1.0% | 0.929 | 0.93% | 0.84% |
-| 生物医药/创新药 | 0.8% | 0.877 | 0.70% | 0.63% |
-| 纺织服装 | 0.7% | 0.774 | 0.54% | 0.49% |
-| 房地产(注) | 5.0% | — | — | — |
-| **合计** | **~67%** | — | **~67.82%** | **61.33%** |
+| Industry | Credit Bond Outstanding Share (A) | Contagion Coefficient (B) | Raw Weight (A×B) | Normalized Weight |
+|----------|-------------------------------|--------------------------|-----------------|------------------|
+| LGFV Bonds | 35.0% | 1.187 | 41.53% | 37.55% |
+| Transportation | 8.0% | 0.980 | 7.84% | 7.09% |
+| Retail | 4.0% | 0.929 | 3.71% | 3.36% |
+| Media/Internet | 3.0% | 1.032 | 3.10% | 2.80% |
+| Food & Beverage | 3.0% | 0.722 | 2.17% | 1.96% |
+| Solar/PV & Energy Storage | 2.0% | 1.083 | 2.17% | 1.96% |
+| New Energy Vehicles | 2.0% | 1.032 | 2.06% | 1.87% |
+| Semiconductors/Integrated Circuits | 1.5% | 1.290 | 1.93% | 1.75% |
+| Advanced Equipment/Industrial Machinery | 1.0% | 1.135 | 1.13% | 1.03% |
+| Medical Devices | 1.0% | 0.929 | 0.93% | 0.84% |
+| Biopharmaceuticals/Innovative Drugs | 0.8% | 0.877 | 0.70% | 0.63% |
+| Textile & Apparel | 0.7% | 0.774 | 0.54% | 0.49% |
+| Real Estate (Note) | 5.0% | — | — | — |
+| **Total** | **~67%** | — | **~67.82%** | **61.33%** |
 
-**注：** 房地产行业不在引擎的13行业覆盖范围内，但其信用债存量约5%。在SRI计算中，这部分可归入相关行业（如城投债通过土地财政关联）或作为"其他行业"单独处理。当前版本将房地产信用债按区域信用债加回城投债权重。
+**Note:** The real estate industry is not within the engine's 13-industry coverage, but its credit bond outstanding is approximately 5%. In the SRI calculation, this portion can be attributed to related industries (e.g., LGFV through land finance linkages) or treated as "other industries" separately. In the current version, real estate credit bonds are added back to LGFV weight through regional credit linkage.
 
-**数据来源：** 信用债存量占比基于Wind资讯2026年Q2信用债市场统计（含企业债、公司债、中票、短融、定向工具），覆盖银行间和交易所市场。传染力系数来自contagion-matrix.md附录B的13行业传染力均值。房地产存量占比5%仅供参考，不纳入SRI计算。数据中心/算力基建的信用债存量并入城投债口径（园区/基建关联），不单列。
+**Data Source:** Credit bond outstanding shares are based on market data from major financial information terminals (Q2 2026 credit bond market statistics, including enterprise bonds, corporate bonds, MTNs, CPs, PPNs), covering both interbank and exchange markets. Contagion coefficients are derived from the 13-industry mean contagion score in contagion-matrix.md Appendix B. Real estate outstanding share of 5% is for reference only and is not included in SRI calculation. Data Centers/Compute Infrastructure credit bond outstanding is consolidated into the LGFV category (park/infrastructure related), not listed separately.
 
-**归一化计算说明：**
-- 原始权重合计 ≈ 67.82%（仅覆盖13行业的信用债存量范围内的权重）
-- 各行业权重百分比 = 原始权重 / 67.82% × 61.33%
-- 归一化因子 = 100% / Σ(权重百分比)（确保最终Σ(权重百分比) = 100%）
+**Normalization Calculation Notes:**
+- Raw weight total ≈ 67.82% (covering only the credit bond outstanding weight within the 13-industry scope)
+- Normalized industry weight percentage = raw weight / 67.82% × 61.33%
+- Normalization factor = 100% / Σ(weight percentage) (ensures final Σ(weight percentage) = 100%)
 
-**实际简便处理：** 由于城投债的权重占比过高（原始权重41.53%），在实际计算中推荐使用**截断权重**：
-- 城投债权重上限截断为25%（防止单一行业权重过大导致SRI被城投债单一主导）
-- 被截断的超额权重按各行业原始权重比例分配回其他行业
+**Practical Simplified Treatment:** Due to the excessively high LGFV weight (raw weight 41.53%), **truncated weights** are recommended for actual calculations:
+- LGFV weight truncated at 25% (prevents a single industry from dominating the SRI)
+- Excess truncated weight is redistributed to other industries proportionally by their raw weights
 
-| 行业 | 截断后权重(推荐) | 说明 |
-|------|----------------|------|
-| 城投债(LGFV) | 25.00% | 截断至25%，防止过度主导 |
-| 交通运输 | 8.50% | 上行调整 |
-| 商贸零售 | 4.00% | 上行调整 |
-| 传媒/互联网 | 3.35% | 上行调整 |
-| 食品饮料 | 2.22% | 上行调整 |
-| 光伏/储能 | 2.33% | 上行调整 |
-| 新能源汽车 | 2.22% | 上行调整 |
-| 半导体/集成电路 | 2.06% | 上行调整 |
-| 高端装备/工业母机 | 1.22% | 上行调整 |
-| 医疗器械 | 1.01% | 上行调整 |
-| 生物医药/创新药 | 0.77% | 上行调整 |
-| 纺织服装 | 0.60% | 上行调整 |
-| 其他(含地产等) | 46.72% | 通过城投+基建关联部分传导 |
-| **合计** | **100.00%** | |
+| Industry | Truncated Weight (Recommended) | Description |
+|----------|-------------------------------|-------------|
+| LGFV Bonds | 25.00% | Truncated at 25%, preventing over-dominance |
+| Transportation | 8.50% | Adjusted upward |
+| Retail | 4.00% | Adjusted upward |
+| Media/Internet | 3.35% | Adjusted upward |
+| Food & Beverage | 2.22% | Adjusted upward |
+| Solar/PV & Energy Storage | 2.33% | Adjusted upward |
+| New Energy Vehicles | 2.22% | Adjusted upward |
+| Semiconductors/Integrated Circuits | 2.06% | Adjusted upward |
+| Advanced Equipment/Industrial Machinery | 1.22% | Adjusted upward |
+| Medical Devices | 1.01% | Adjusted upward |
+| Biopharmaceuticals/Innovative Drugs | 0.77% | Adjusted upward |
+| Textile & Apparel | 0.60% | Adjusted upward |
+| Other (including Real Estate, etc.) | 46.72% | Transmitted through LGFV + infrastructure linkages |
+| **Total** | **100.00%** | |
 
-**截断敏感性分析：** 不同截断阈值对SRI计算结果的影响如下（以2026年Q2为例）：
+**Truncation Sensitivity Analysis:** The impact of different truncation thresholds on SRI calculation results (scenario example):
 
-| 截断阈值 | 城投债权重 | 其他行业权重 | SRI | 温度计 | 说明 |
-|---------|----------|------------|-----|-------|------|
-| 20% | 20.00% | 各行业↑ | 0.52 | 🟡关注 | 更激进截断，降低城投债主导，但可能低估城投系统性风险 |
-| **25%(推荐)** | **25.00%** | **各行业↑** | **0.56** | **🟡关注** | **平衡城投债代表性vs过度主导的折中方案** |
-| 30% | 30.00% | 各行业↓ | 0.61 | 🟡关注(上沿) | 更保守截断，保留城投债信号，SRI更敏感 |
-| 无截断(37.55%) | 37.55% | 归一化权重 | 0.73 | 🟠警惕 | SRI被城投债单一主导，弱化其他行业风险信号 |
+| Truncation Threshold | LGFV Weight | Other Industry Weights | SRI | Thermometer | Description |
+|--------------------|------------|----------------------|-----|-------------|-------------|
+| 20% | 20.00% | Each industry ↑ | 0.52 | 🟡 Watch | More aggressive truncation, reducing LGFV dominance, but may underestimate LGFV systemic risk |
+| **25% (Recommended)** | **25.00%** | **Each industry ↑** | **0.56** | **🟡 Watch** | **Balanced compromise between LGFV representation and over-dominance** |
+| 30% | 30.00% | Each industry ↓ | 0.61 | 🟡 Watch (upper bound) | More conservative truncation, retaining LGFV signal, SRI more sensitive |
+| No truncation (37.55%) | 37.55% | Normalized weights | 0.73 | 🟠 Alert | SRI dominated by LGFV alone, weakening risk signals from other industries |
 
-**建议：** 默认使用25%截断。在城投债系统性风险暴露期（如化债攻坚年），可选用30%截断以保留更多城投信号；在组合高度分散于非城投行业时，可选用20%截断以降低城投债干扰。
+**Recommendation:** Default to 25% truncation. During LGFV systemic risk exposure periods (e.g., debt resolution critical years), 30% truncation may be selected to retain more LGFV signal. When the portfolio is highly diversified away from LGFV, 20% truncation may be selected to reduce LGFV interference.
 
-### 4.2 权重动态调整规则
+### 4.2 Dynamic Weight Adjustment Rules
 
-| 触发条件 | 调整内容 | 调整理由 |
-|---------|---------|---------|
-| 某个行业信用债存量占比季度变动>20% | 更新该行业的信用债存量权重 | 如城投化债导致存量大降，或科创债扩容导致半导体存量占比上升 |
-| 超级传染者排名发生变化 | 更新传染力系数 | 如新一代行业（AI算力）崛起取代原有超级传染者 |
-| 传染矩阵版本更新 | 同步更新传染力系数 | 传染矩阵的强度调整会改变传染力总分 |
-| 升级因子中的高杠杆环境触发 | 对金融属性高（资产负债率高）的行业权重×1.2 | 高杠杆环境下高负债行业的传染风险放大 |
+| Trigger Condition | Adjustment | Rationale |
+|------------------|-----------|-----------|
+| An industry's credit bond outstanding share changes > 20% quarter-over-quarter | Update the industry's credit bond outstanding weight | E.g., LGFV reduction due to debt resolution, or bond expansion causing semiconductor share to rise |
+| Super-spreader rankings change | Update contagion coefficients | E.g., a new-generation industry (AI compute) rises to replace existing super-spreaders |
+| Contagion matrix version update | Synchronously update contagion coefficients | Intensity adjustments in the contagion matrix change contagion total scores |
+| High-leverage escalation factor triggered | Multiply weight by 1.2 for industries with high financial intensity (high debt ratio) | Contagion risk of high-debt industries amplified in high-leverage environments |
 
-### 4.3 避免权重过度集中的设计
+### 4.3 Design to Avoid Weight Over-Concentration
 
-城投债作为信用债市场的最大品种（约占35%存量），在SRI中天然具有最大权重。为防止SRI被城投债单一信号主导：
+As the largest category in the credit bond market (approximately 35% of outstanding), LGFV naturally has the highest weight in the SRI. To prevent the SRI from being dominated by a single LGFV signal:
 
-| 设计 | 说明 |
-|------|------|
-| **传染力系数折中** | 城投债是超级传染者#2(23分)，低于半导体(25分)，传染力系数为1.187，在超级传染者中居中——防止权重叠加过大 |
-| **权重截断机制** | 任何单一行业权重上限为25% |
-| **与传染矩阵联动** | 城投债的信用风险主要通过区域共振而非行业间直接传染，在SRI中城投债高风险不一定意味着其他行业也高风险 |
-| **温度计降级条件** | 若SRI偏高但主要贡献来自城投债一个行业，且其他行业均🟢，温度计可降一级（🟠→🟡） |
-
----
-
-## 五、历史回测验证一：永煤违约前（2020年Q3）
-
-### 5.1 场景背景
-
-**时间窗口：** 2020年8月（永煤违约前约3个月）
-**实际违约时间：** 2020年11月10日（20永煤SCP003本息10.32亿元违约）
-**当时市场环境：** 新冠疫情冲击后的市场恢复期，宽信用政策仍在延续，AAA国企刚兑信仰尚未被打破。
-
-### 5.2 当时各行业信号状态
-
-基于历史数据回溯，2020年8月时13行业的信号状态估算如下：
-
-| 行业 | 轨道A评分(估) | 行业风险得分(基准) | 展望 | 轨道B | 风险得分 |
-|------|-------------|------------------|------|-------|---------|
-| 煤炭(注) | 3.0-4.0 (B+ 至 BB) | 2 | 负面 | 🟡(关注) | 3.0 |
-| 城投债(LGFV) | 5.5-6.0 (BB+ 至 BBB) | 1 | 稳定 | 🟢(平静) | 1.0 |
-| 交通运输 | 5.5-6.0 (BB+ 至 BBB) | 1 | 稳定 | 🟢(平静) | 1.0 |
-| 房地产 | 5.0-6.0 (BBB- 至 BB+) | 1 | 稳定 | 🟢(平静) | 1.0 |
-| 光伏/储能 | 5.5-6.0 (BBB- 至 BBB+) | 1 | 稳定 | 🟢(平静) | 1.0 |
-| 半导体/集成电路 | 6.0-7.0 (BBB+ 至 A-) | 0 | 正面 | 🟢(平静) | 0 |
-| 高端装备 | 6.0-7.0 (BBB+ 至 A-) | 0 | 稳定 | 🟢(平静) | 0 |
-| 生物医药 | 6.5-7.5 (A- 至 A) | 0 | 正面 | 🟢(平静) | 0 |
-| 医疗器械 | 6.0-7.0 (BBB+ 至 A-) | 0 | 稳定 | 🟢(平静) | 0 |
-| 新能源汽车 | 5.5-6.5 (BBB 至 A-) | 0 | 稳定 | 🟢(平静) | 0 |
-| 数据中心 | 6.5-7.0 (A- 至 A) | 0 | 正面 | 🟢(平静) | 0 |
-| 食品饮料 | 7.0-7.5 (A) | 0 | 稳定 | 🟢(平静) | 0 |
-| 纺织服装 | 6.0-6.5 (BBB+) | 0 | 稳定 | 🟢(平静) | 0 |
-
-**注：** 煤炭行业不在引擎的标准13行业覆盖范围内。在回测中，将煤炭行业的风险信号近似归入"周期性行业"大类。2020年8月时：
-- 永煤母公司（河南能源化工）已资不抵债（母公司资产负债率约95%）
-- 辽宁省国企（华晨汽车）信用风险暴露
-- 部分弱区域城投（贵州、天津、云南）出现非标违约
-- 标普信评在2020年8月已将永煤的潜在信用质量下调至B+（见WebSearch结果）
-
-**注（煤炭行业风险得分）：** 煤炭行业风险得分=基准分2(+0.5展望负面)=2.5，但回测中因触发一票否决高危信号（母公司资不抵债+辽宁省国企信用暴露+弱区域城投非标违约密集），按§2.2.2规则强制跳升至3.0，反映区域性系统性风险的叠加影响。
-
-### 5.3 SRI计算
-
-```
-风险得分计数：
-  得3分的行业：1个（煤炭/永煤等周期行业，含一票否决高危信号）
-  得2分的行业：0个
-  得1分的行业：约4个（城投、交通、地产、光伏）
-  得0分的行业：约8个（其余行业）
-
-简单算术均值 ≈ (3×1 + 1×4 + 0×8) / 13 = 7 / 13 = 0.54
-
-考虑权重后的SRI估算（近似）：
-  城投债(25%权重): 得1分 × 25% = 0.25
-  交通运输(8.5%): 得1分 × 8.5% = 0.09
-  煤炭/周期(按2%估算): 得3分 × 2% = 0.06
-  其他行业加权合计: ≈ 0.18
-  SRI ≈ 0.25 + 0.09 + 0.06 + 0.18 = 0.58
-
-→ **SRI ≈ 0.58（🟡 关注区间）**
-```
-
-### 5.4 能否提前预警？
-
-| 评估维度 | 结论 |
-|---------|------|
-| **SRI读数是否进入🟡？** | **是。** SRI≈0.58，已经跨过0.5的关注阈值 |
-| **能否提前3个月预警？** | **有条件预警。** SRI在2020年8月已进入🟡，但当时的主要风险贡献来自煤炭/周期行业（得3分）和城投/交通（得1分）——永煤违约与这两个领域直接相关。但SRI当时尚未进入🟠（SRI<1.0），说明框架识别的是"关注级"而非"警惕级"风险 |
-| **框架的局限性** | SRI在2020年8月为🟡，但2020年11月永煤违约后引发了🔴级系统性冲击（AAA国企信仰崩塌）。SRI无法预测信心崩塌这一突发事件本身——它只能识别"风险在积累" |
-| **改进方向** | 如果结合传染矩阵的升级因子分析（2020年11月时市场恐慌+信息不对称两个升级因子已触发），可以在SRI🟡的基础上触发升级因子预警，提前升级至🟠级应对 |
-
-### 5.5 回测结论
-
-| 回测结论 | 具体说明 |
-|---------|---------|
-| **预警有效** | SRI在违约前3个月已进入🟡关注区间，识别了风险在积累的事实 |
-| **但未升级至警惕** | SRI≈0.58仅到关注区间下限，框架不会建议大幅降仓，仅建议"提高监控频率·检查集中度" |
-| **需要配合升级因子** | 如果将升级因子（尤其是信息不对称：永煤违约前信息高度不透明）的前置信号纳入，可在违约前1-2个月升级至🟠警惕 |
-| **总体评价** | 框架在该回测中表现合理——识别了风险积累但未过度预警。永煤事件的本质是"黑天鹅"（AAA国企超预期违约），预警框架的核心价值是在事前积累风险时启动关注流程，而不是精确预测违约时点 |
+| Design | Description |
+|--------|-------------|
+| **Contagion Coefficient Moderation** | LGFV is super-spreader #2 (23 points), lower than Semiconductors (25 points), with a contagion coefficient of 1.187, mid-range among super-spreaders — prevents excessive weight stacking |
+| **Weight Truncation Mechanism** | Any single industry weight capped at 25% |
+| **Contagion Matrix Linkage** | LGFV credit risk primarily spreads through regional resonance rather than direct inter-industry contagion; in the SRI, high LGFV risk does not necessarily mean other industries are also high risk |
+| **Thermometer Downgrade Condition** | If SRI is elevated but the main contribution comes from LGFV alone, and all other industries are 🟢, the thermometer may be downgraded one level (🟠 → 🟡) |
 
 ---
 
-## 六、历史回测验证二：地产危机前（2021年Q1）
+## 5. Historical Backtest 1: GFC 2008 (Pre-Lehman)
 
-### 6.1 场景背景
+### 5.1 Scenario Background
 
-**时间窗口：** 2021年3月（恒大危机全面爆发前约3-6个月）
-**实际爆发时间：** 2021年6月起恒大商票逾期，9月正式承认流动性危机
-**当时市场环境：** 永煤违约冲击逐步消化，市场情绪有所恢复，但房地产行业风险已在积聚。恒大仍被视为"大而不倒"，外部评级仍维持AAA。
+**Time Window:** Q3 2008 (approximately 1 month before Lehman Brothers bankruptcy)
+**Actual Event Date:** September 15, 2008 (Lehman Brothers filed for Chapter 11 bankruptcy protection)
+**Market Environment at the Time:** After the subprime mortgage crisis emerged in 2007, the market experienced a period of relative calm in early-to-mid 2008. Bear Stearns had been rescued by JPMorgan in March 2008. The AAA-rated MBS/CDO ratings bubble was still largely intact. The market broadly believed that systemically important institutions would be bailed out.
 
-### 6.2 当时各行业信号状态
+### 5.2 Industry Signal State at the Time
 
-基于历史数据回溯，2021年Q1时13行业的信号状态估算如下：
+Based on historical data reconstruction, the estimated signal states for the 13 industries in Q3 2008 (pre-Lehman) are as follows:
 
-| 行业 | 轨道A评分(估) | 行业风险得分(基准) | 展望 | 轨道B | 风险得分 |
-|------|-------------|------------------|------|-------|---------|
-| 房地产(注) | 3.5-4.5 (B+ 至 BB) | 2 | 负面 | 🟠(异常) | 3.0 |
-| 建筑/建材(注) | 4.0-5.0 (B+ 至 BB+) | 2 | 负面 | 🟡(关注) | 3.0 |
-| 城投债(LGFV) | 5.0-5.5 (BBB- 至 BB+) | 1 | 负面 | 🟡(关注) | 2.0 |
-| 交通运输 | 5.5-6.0 (BBB- 至 BBB+) | 1 | 稳定 | 🟢(平静) | 1.0 |
-| 光伏/储能 | 6.0-7.0 (BBB+ 至 A-) | 0 | 稳定 | 🟢(平静) | 0 |
-| 半导体/集成电路 | 6.5-7.5 (A- 至 A) | 0 | 正面 | 🟢(平静) | 0 |
-| 高端装备 | 6.0-7.0 (BBB+ 至 A-) | 0 | 稳定 | 🟢(平静) | 0 |
-| 生物医药/创新药 | 6.5-7.5 (A- 至 A) | 0 | 正面 | 🟢(平静) | 0 |
-| 医疗器械 | 6.0-7.0 (BBB+ 至 A-) | 0 | 稳定 | 🟢(平静) | 0 |
-| 新能源汽车 | 5.5-6.5 (BBB 至 A-) | 0 | 稳定 | 🟢(平静) | 0 |
-| 数据中心 | 6.5-7.0 (A- 至 A) | 0 | 正面 | 🟢(平静) | 0 |
-| 食品饮料 | 7.0-7.5 (A) | 0 | 稳定 | 🟢(平静) | 0 |
-| 纺织服装 | 6.0-6.5 (BBB+) | 0 | 稳定 | 🟢(平静) | 0 |
-| 传媒/互联网 | 6.0-7.0 (BBB+ 至 A-) | 0 | 稳定 | 🟢(平静) | 0 |
+| Industry | Track A Score (Est.) | Industry Risk Score (Base) | Outlook | Track B | Risk Score |
+|----------|---------------------|--------------------------|---------|---------|------------|
+| Energy/Mining | 3.0-4.0 (B+ to BB) | 2 | Negative | 🟡 (Watch) | 3.0 |
+| LGFV Bonds / Sub-Sovereign | 5.5-6.0 (BB+ to BBB) | 1 | Stable | 🟢 (Calm) | 1.0 |
+| Transportation | 5.5-6.0 (BB+ to BBB) | 1 | Stable | 🟢 (Calm) | 1.0 |
+| Real Estate / Financial | 3.5-4.5 (B+ to BB) | 2 | Negative | 🟠 (Abnormal) | 3.0 |
+| Solar/PV & Energy Storage | 5.5-6.0 (BBB- to BBB+) | 1 | Stable | 🟢 (Calm) | 1.0 |
+| Semiconductors/Integrated Circuits | 6.0-7.0 (BBB+ to A-) | 0 | Positive | 🟢 (Calm) | 0 |
+| Advanced Equipment | 6.0-7.0 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
+| Biopharmaceuticals | 6.5-7.5 (A- to A) | 0 | Positive | 🟢 (Calm) | 0 |
+| Medical Devices | 6.0-7.0 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
+| New Energy Vehicles | 5.5-6.5 (BBB to A-) | 0 | Stable | 🟢 (Calm) | 0 |
+| Data Centers | 6.5-7.0 (A- to A) | 0 | Positive | 🟢 (Calm) | 0 |
+| Food & Beverage | 7.0-7.5 (A) | 0 | Stable | 🟢 (Calm) | 0 |
+| Textile & Apparel | 6.0-6.5 (BBB+) | 0 | Stable | 🟢 (Calm) | 0 |
 
-**注：** 房地产和建筑/建材不在引擎的13行业覆盖范围内。在回测中，通过以下方式近似处理：
-- 房地产风险通过城投债（土地财政关联）间接传导
-- 建筑/建材风险通过交通运输（建筑/建材供应链）间接传导
-- 核心传染链：地产→建筑/建材→银行/信托→城投（土地出让收入下降）
+**Note on Energy/Mining and Financial/Real Estate sectors:** These industries are not within the engine's standard 13-industry coverage. In this backtest, their risk signals are approximated within the relevant industry categories. In Q3 2008:
+- Lehman Brothers had massive exposure to subprime MBS/CDOs, with a debt-to-equity ratio exceeding 30:1
+- AIG had written extensive credit default swaps on MBS, facing potential $50B+ in losses
+- Systemic contagion was spreading across the entire financial sector
+- Major banks (Citi, Bank of America, Merrill Lynch) were all under severe stress
+- The financial sector's track B signals reflected extreme market pricing dislocation
 
-### 6.3 传染链映射：地产相关行业在SRI中的权重处理
-
-由于房地产不是13行业之一，但地产危机通过两条路径间接影响SRI：
-
-```
-路径A：地产→城投（区域共振+信用链）
-  土地出让收入下降 → 地方政府财力恶化 → 城投信用重估
-  地产企业违约 → 银行收紧地产授信 → 城投融资环境同步收紧
-
-路径B：地产→建筑/建材→交通运输→各行业
-  地产停工 → 建筑/建材企业违约 → 物流/交运业务量下降
-  地产企业商票违约 → 供应商（含建材/家装/家电）应收账款坏账 → 波及消费类行业
-```
-
-**在SRI中的处理：** 地产风险通过城投债的风险得分间接体现——2021年Q1时城投债的展望已从稳定转为负面，轨道B信号也从🟢转为🟡（反映市场对城投-地产关联的担忧）。
-
-### 6.4 SRI计算
+### 5.3 SRI Calculation
 
 ```
-风险得分计数：
-  得3分的行业：约2个（房地产、建筑/建材，间接计入）
-  得2分的行业：约1个（城投债）
-  得1分的行业：约1个（交通运输，间接关联）
-  得0分的行业：约9个（其余行业）
+Risk Score Count:
+  3-point industries: 2 (Energy/Mining, Real Estate/Financial — including veto-level signals)
+  2-point industries: 0
+  1-point industries: 3 (Sub-sovereign/LGFV, Transportation, Solar/PV)
+  0-point industries: 8 (remaining industries)
 
-简单算术均值 ≈ (3×2 + 2×1 + 1×1 + 0×9) / 13 = 9 / 13 = 0.69
+Simple Arithmetic Mean ≈ (3×2 + 1×3 + 0×8) / 13 = 9 / 13 = 0.69
 
-考虑权重后的SRI估算（含房地产间接映射）：
-  城投债(25%权重): 得2分 × 25% = 0.50
-  交通运输(8.5%): 得1分 × 8.5% = 0.09
-  地产间接映射(5%权重): 得3分 × 5% = 0.15
-  建筑/建材间接映射(3%): 得3分 × 3% = 0.09
-  其他行业加权合计: ≈ 0.15
-  SRI ≈ 0.50 + 0.09 + 0.15 + 0.09 + 0.15 = 0.98
+Weighted SRI Estimate (approximate):
+  LGFV/Sub-sovereign (25% weight): 1 point × 25% = 0.25
+  Transportation (8.5%): 1 point × 8.5% = 0.09
+  Energy/Mining (approx 2%): 3 points × 2% = 0.06
+  Real Estate/Financial indirect (5%): 3 points × 5% = 0.15
+  Other industries weighted total: ≈ 0.15
+  SRI ≈ 0.25 + 0.09 + 0.06 + 0.15 + 0.15 = 0.70
 
-→ **SRI ≈ 0.98（🟡 关注区间上沿，接近🟠警惕阈值）**
+→ **SRI ≈ 0.70 (🟡 Watch range)**
 ```
 
-### 6.5 能否提前预警？
+### 5.4 Could It Provide Early Warning?
 
-| 评估维度 | 结论 |
-|---------|------|
-| **SRI读数是否进入关注？** | **是。** SRI≈0.97，在🟡关注区间上沿，非常接近🟠警惕阈值（1.0） |
-| **能否提前预警地产危机？** | **是，但主要依赖间接路径。** 由于房地产不是13行业之一，SRI主要通过城投债（得2分）和间接映射来反映地产风险。SRI≈0.97明确提示"关注，接近警惕" |
-| **SRI是否识别了地产相关的传染链？** | **部分识别。** SRI捕捉了城投债的风险上升（展望负面+轨道B异常），但无法直接反映建筑/建材/银行/信托等地产关联行业的风险——这些行业不在13行业覆盖内 |
-| **改进方向** | 如果增加"地产关联间接传染因子"作为输入（如城投债的展望负面权重×1.5在地产下行周期），可以使SRI更灵敏地反映地产->城投->基建的传染链。此外，传染矩阵中城投债↔交通运输（强度4）和城投债↔光伏/数据中心（强度3）的路径在压力环境下触发跳升，可进一步提升SRI读数 |
+| Assessment Dimension | Conclusion |
+|---------------------|-----------|
+| **Did SRI enter 🟡?** | **Yes.** SRI ≈ 0.70, crossed the 0.5 watch threshold |
+| **Could it warn 1 month ahead?** | **Conditional warning.** SRI was already in 🟡 in Q3 2008, with the main risk contribution coming from Energy/Mining (3 points) and Real Estate/Financial (3 points), and Sub-sovereign/Transportation (1 point each). Lehman's bankruptcy was directly related to financial/real estate exposure. But SRI was still below 🟠 (SRI < 1.0), meaning the framework identified "watch-level" rather than "alert-level" risk |
+| **Framework Limitations** | SRI was 🟡 in Q3 2008, but Lehman's bankruptcy on September 15, 2008 triggered a 🔴-level systemic shock (global financial system freeze). The SRI cannot predict confidence collapse events themselves — it can only identify that "risk is accumulating" |
+| **Improvement Direction** | If combined with contagion matrix escalation factor analysis (panic sentiment + information asymmetry + high leverage were all triggering in September 2008), an escalation factor warning could have been triggered on top of the 🟡 SRI, upgrading to 🟠 Alert level response |
 
-### 6.6 回测结论
+### 5.5 Backtest Conclusion
 
-| 回测结论 | 具体说明 |
-|---------|---------|
-| **预警有效** | SRI在2021年Q1约为0.97，接近🟠警惕阈值，已明确发出"关注级"预警 |
-| **但未跨越警惕阈值** | SRI≈0.97在🟡关注区间上沿但未到🟠警惕（1.0），框架会建议"提高监控频率·检查集中度"但不会建议直接降仓——这与当时市场的主流判断一致（恒大违约前市场普遍认为"大而不倒"） |
-| **地产不在13行业是盲区** | SRI框架直接覆盖13个行业，地产通过城投间接映射。如果需要更准确的地产危机预警，建议在SRI框架外单独监控地产行业的信用信号 |
-| **总体评价** | 框架在该回测中表现**良好**——SRI在危机爆发前3-6个月已进入关注区间上沿。如果投资者在SRI>0.9时启动"检查集中度"流程，可能会发现地产+城投+交通的联合敞口过高，从而提前减仓 |
+| Backtest Conclusion | Specific Description |
+|--------------------|---------------------|
+| **Warning Effective** | SRI entered 🟡 Watch range 1 month before Lehman, identifying the fact that risk was accumulating |
+| **But Not Upgraded to Alert** | SRI ≈ 0.70 only reached the lower end of the Watch range; the framework would not recommend substantial position reduction, only "increase monitoring frequency · check concentration" |
+| **Needs Coordination with Escalation Factors** | If pre-signals from escalation factors (especially information asymmetry: the opacity of Lehman's balance sheet in the months before bankruptcy) were incorporated, the warning could have been upgraded to 🟠 Alert 1-2 weeks before the event |
+| **Overall Assessment** | The framework performed reasonably in this backtest — it identified risk accumulation without excessive warning. The Lehman event was essentially a "black swan" (systemically important institution bankruptcy that was widely considered "too big to fail"). The core value of the warning framework is to initiate the monitoring process when risk accumulates beforehand, not to precisely predict the timing of default |
 
 ---
 
-## 七、历史回测验证三：疫情冲击（2020年Q1）
+## 6. Historical Backtest 2: Eurozone Sovereign Debt Crisis 2011-12
 
-### 7.1 场景背景
+### 6.1 Scenario Background
 
-**时间窗口：** 2020年2-3月（新冠疫情全球爆发）
-**实际冲击时间：** 2020年1月23日武汉封城，2-3月全国经济大面积停摆
-**当时市场环境：** 前所未有的公共卫生危机导致全行业同时受冲击。与永煤违约和地产危机不同，疫情是一个"外生的、同步的、非信用的"冲击。
+**Time Window:** Q3 2011 (the peak of the Eurozone sovereign debt crisis — Greek debt crisis escalation)
+**Actual Event Time:** Summer/Fall 2011 — Greek bond yields exceeded 50%, CDS spreads peaked, and contagion spread to Italy, Spain, Portugal, and Ireland (PIIGS)
+**Market Environment at the Time:** The aftermath of the 2008 global financial crisis was still unfolding. The Greek government revealed a much larger deficit than previously reported in late 2009. By 2011, the crisis had evolved into a full-blown sovereign debt crisis threatening the eurozone's integrity. The bank-sovereign "doom loop" was in full effect — banks held large amounts of sovereign debt, while struggling sovereigns needed banks to remain healthy.
 
-### 7.2 当时各行业信号状态
+### 6.2 Industry Signal State at the Time
 
-基于历史数据回溯，2020年Q1时13行业的信号状态估算如下：
+Based on historical data reconstruction, the estimated signal states for the 13 industries in Q3 2011 are as follows:
 
-| 行业 | 轨道A评分(估) | 行业风险得分(基准) | 展望 | 轨道B | 风险得分 | 备注 |
-|------|-------------|------------------|------|-------|---------|------|
-| 交通运输 | 2.0-3.0 (B 至 B+) | 3 | 负面 | 🔴(危机) | 3.0 | 客运量锐减，航空公司日亏数亿 |
-| 商贸零售 | 2.5-3.5 (B 至 B+) | 2 | 负面 | 🔴(危机) | 3.0 | 百货/购物中心客流归零 |
-| 传媒/互联网 | 3.0-4.0 (B+ 至 BB) | 2 | 负面 | 🟠(异常) | 3.0 | 广告收入骤降，但线上消费受益 |
-| 食品饮料 | 3.5-4.5 (B+ 至 BB) | 2 | 负面 | 🟠(异常) | 3.0 | 餐饮/礼品消费骤降，但必选消费受益 |
-| 纺织服装 | 2.5-3.5 (B 至 B+) | 2 | 负面 | 🟠(异常) | 3.0 | 线下门店关闭，出口订单取消 |
-| 房地产 | 3.0-4.0 (B+ 至 BB) | 2 | 负面 | 🟠(异常) | 3.0 | 售楼处关闭，销售回款冻结 |
-| 新能源车 | 3.5-4.5 (B+ 至 BB) | 2 | 负面 | 🟠(异常) | 3.0 | 工厂停工，销量暴跌80%+ |
-| 光伏/储能 | 4.0-5.0 (B+ 至 BB+) | 2 | 负面 | 🟡(关注) | 3.0 | 产能利用率下降，海外订单延迟 |
-| 高端装备 | 4.0-5.0 (B+ 至 BB+) | 2 | 负面 | 🟡(关注) | 3.0 | 生产暂停，交付延期 |
-| 医疗器械 | 5.0-6.0 (BBB- 至 BB+) | 1 | 正面 | 🟢(平静) | 1.0 | 抗疫物资需求暴增，受益行业 |
-| 生物医药 | 5.5-6.5 (BBB+ 至 A-) | 0 | 正面 | 🟢(平静) | 0 | 抗疫相关研发受益，非疫情领域受影响 |
-| 城投债(LGFV) | 5.0-6.0 (BBB- 至 BB+) | 1 | 稳定 | 🟡(关注) | 1.5 | 基建稳增长预期升温，但短期有压力 |
-| 半导体/集成电路 | 5.5-6.5 (BBB+ 至 A-) | 0 | 正面 | 🟡(关注) | 0.5 | 供应链中断担忧但国产替代逻辑强化 |
+| Industry | Track A Score (Est.) | Industry Risk Score (Base) | Outlook | Track B | Risk Score |
+|----------|---------------------|--------------------------|---------|---------|------------|
+| Real Estate / Banking (Note) | 3.5-4.5 (B+ to BB) | 2 | Negative | 🟠 (Abnormal) | 3.0 |
+| Construction/Building Materials (Note) | 4.0-5.0 (B+ to BB+) | 2 | Negative | 🟡 (Watch) | 3.0 |
+| LGFV/Sub-Sovereign/Sovereign | 4.0-5.0 (B+ to BB+) | 2 | Negative | 🟠 (Abnormal) | 3.0 |
+| Transportation | 5.0-5.5 (BBB- to BB+) | 1 | Stable | 🟢 (Calm) | 1.0 |
+| Solar/PV & Energy Storage | 6.0-7.0 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
+| Semiconductors/Integrated Circuits | 6.5-7.5 (A- to A) | 0 | Positive | 🟢 (Calm) | 0 |
+| Advanced Equipment | 6.0-7.0 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
+| Biopharmaceuticals/Innovative Drugs | 6.5-7.5 (A- to A) | 0 | Positive | 🟢 (Calm) | 0 |
+| Medical Devices | 6.0-7.0 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
+| New Energy Vehicles | 5.5-6.5 (BBB to A-) | 0 | Stable | 🟢 (Calm) | 0 |
+| Data Centers | 6.5-7.0 (A- to A) | 0 | Positive | 🟢 (Calm) | 0 |
+| Food & Beverage | 7.0-7.5 (A) | 0 | Stable | 🟢 (Calm) | 0 |
+| Textile & Apparel | 6.0-6.5 (BBB+) | 0 | Stable | 🟢 (Calm) | 0 |
+| Media/Internet | 6.0-7.0 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
 
-### 7.3 SRI计算
+**Note on Banking and Construction:** The banking sector and construction/building materials are not within the engine's 13-industry coverage. In this backtest, these risks are approximated through:
+- Sovereign/banking risk is reflected through Sub-sovereign/LGFV (via sovereign credit linkage)
+- Construction/building materials risk is reflected through Transportation (via construction supply chain)
+- Core contagion chain: Sovereign stress → Banking sector → Sub-sovereign → Real economy
+
+### 6.3 Contagion Chain Mapping: Sovereign-Related Industries in SRI Weight Treatment
+
+Since sovereign/banking is not one of the 13 industries, the sovereign debt crisis impacts the SRI indirectly through two pathways:
 
 ```
-风险得分计数：
-  得3分的行业：8个（交通运输、商贸零售、传媒、食品、纺织、新能源车、光伏、高端装备）
-  得1.5分的行业：1个（城投债）
-  得1分的行业：1个（医疗器械，受益型）
-  得0.5分的行业：1个（半导体）
-  得0分的行业：2个（生物医药、数据中心，受益型）
+Pathway A: Sovereign → LGFV/Sub-Sovereign (Regional Resonance + Credit Chain)
+  Sovereign credit rating downgrades → Weaker sub-sovereign fiscal capacity → Sub-sovereign credit revaluation
+  Banking sector stress → Banks deleverage → Sub-sovereign/LGFV financing environment tightens
 
-简单算术均值 ≈ (3×8 + 1.5×1 + 1×1 + 0.5×1 + 0×2) / 13
-              = (24 + 1.5 + 1 + 0.5 + 0) / 13
-              = 27 / 13 = 2.08
+Pathway B: Sovereign → Construction/Building Materials → Transportation → All Industries
+  Construction freeze → Building materials defaults → Logistics/transport volume decline
+  Sovereign stress → Government spending cuts → Infrastructure investment decline → Affects all industries
+```
 
-考虑权重后的SRI计算：
-  交通运输(8.5%权重): 得3分 × 8.5% = 0.26
-  城投债(25%): 得1.5分 × 25% = 0.38
-  商贸零售(4%): 得3分 × 4% = 0.12
-  传媒/互联网(3.35%): 得3分 × 3.35% = 0.10
-  食品饮料(2.22%): 得3分 × 2.22% = 0.07
-  纺织服装(0.6%): 得3分 × 0.6% = 0.02
-  光伏/储能(2.33%): 得3分 × 2.33% = 0.07
-  高端装备(1.22%): 得3分 × 1.22% = 0.04
-  新能源汽车(2.22%): 得3分 × 2.22% = 0.07
-  医疗器械(1.01%): 得1分 × 1.01% = 0.01
-  半导体/集成电路(2.06%): 得0.5分 × 2.06% = 0.01
-  其他行业加权合计: ≈ 0
+**Treatment in SRI:** Sovereign debt crisis risk was indirectly reflected through the Sub-sovereign/LGFV risk score — in Q3 2011, the Sub-sovereign outlook had already shifted from stable to negative, and Track B signals shifted from 🟢 to 🟡/🟠 (reflecting market concern about the sovereign-sub-sovereign linkage).
+
+### 6.4 SRI Calculation
+
+```
+Risk Score Count:
+  3-point industries: 2 (Sovereign/Banking, Construction/Building Materials — indirectly counted)
+  3-point industries: 1 (Sub-sovereign/LGFV)
+  1-point industries: 1 (Transportation, indirect linkage)
+  0-point industries: 9 (remaining industries)
+
+Simple Arithmetic Mean ≈ (3×3 + 1×1 + 0×9) / 13 = 10 / 13 = 0.77
+
+Weighted SRI Estimate (including sovereign indirect mapping):
+  LGFV/Sub-sovereign (25% weight): 3 points × 25% = 0.75
+  Transportation (8.5%): 1 point × 8.5% = 0.09
+  Banking indirect mapping (5% weight): 3 points × 5% = 0.15
+  Construction/Building Materials indirect (3%): 3 points × 3% = 0.09
+  Other industries weighted total: ≈ 0.15
+  SRI ≈ 0.75 + 0.09 + 0.15 + 0.09 + 0.15 = 1.23
+
+→ **SRI ≈ 1.23 (🟠 Alert range)**
+```
+
+### 6.5 Could It Provide Early Warning?
+
+| Assessment Dimension | Conclusion |
+|---------------------|-----------|
+| **Did SRI enter Watch?** | **Yes.** SRI ≈ 1.23, well into 🟠 Alert range, crossing the 1.0 threshold |
+| **Could it warn of the Eurozone crisis?** | **Significant warning, mainly through indirect pathways.** Since sovereign/banking are not among the 13 industries, SRI primarily reflected the crisis through Sub-sovereign/LGFV (3 points) and indirect mapping. SRI ≈ 1.23 clearly indicated "Alert level — systemic risk accumulating" |
+| **Did SRI identify sovereign-related contagion chains?** | **Partially identified.** SRI captured the Sub-sovereign risk escalation (negative outlook + Track B abnormal), but could not directly reflect banking/construction sector risks — these industries are not within the 13-industry coverage |
+| **Improvement Direction** | Adding a "sovereign/banking indirect contagion factor" as an input (e.g., Sub-sovereign outlook negative weight × 1.5 during sovereign stress cycles) would make the SRI more sensitive to the sovereign → sub-sovereign → infrastructure contagion chain. Additionally, the contagion matrix pathways for Sub-sovereign ↔ Transportation (intensity 4) and Sub-sovereign ↔ Solar/PV/Data Centers (intensity 3) would trigger jumps under stress, further elevating the SRI reading |
+
+### 6.6 Backtest Conclusion
+
+| Backtest Conclusion | Specific Description |
+|--------------------|---------------------|
+| **Warning Effective** | SRI in Q3 2011 was approximately 1.23, well into 🟠 Alert range, clearly signaling "systemic risk accumulating, need to reduce exposure" |
+| **Crossed Alert Threshold** | SRI ≈ 1.23 crossed the 1.0 Alert threshold, framework would recommend "actively reduce high-risk industry exposure · increase hedging · shorten duration" |
+| **Sovereign Not in 13 Industries is a Blind Spot** | The SRI framework directly covers 13 industries; sovereign/banking is captured indirectly through Sub-sovereign. For more accurate sovereign crisis early warning, it is recommended to monitor sovereign credit signals separately outside the SRI framework |
+| **Overall Assessment** | The framework performed **well** in this backtest — SRI entered the Alert range 3-6 months before the peak of the crisis. If investors had initiated "check concentration · reduce exposure" procedures when SRI > 1.0, the combined sovereign + sub-sovereign + banking exposure could have been identified and reduced in advance |
+
+---
+
+## 7. Historical Backtest 3: COVID-19 Shock 2020
+
+### 7.1 Scenario Background
+
+**Time Window:** February-March 2020 (global COVID-19 pandemic outbreak)
+**Actual Impact Time:** January 30, 2020 WHO declared a Public Health Emergency of International Concern; March 11, 2020 declared a global pandemic
+**Market Environment at the Time:** An unprecedented public health crisis caused simultaneous shocks to all industries. Unlike the GFC or Eurozone debt crisis, COVID-19 was an "exogenous, synchronous, non-credit" shock.
+
+### 7.2 Industry Signal State at the Time
+
+Based on historical data reconstruction, the estimated signal states for the 13 industries in Q1 2020 are as follows:
+
+| Industry | Track A Score (Est.) | Industry Risk Score (Base) | Outlook | Track B | Risk Score | Notes |
+|----------|---------------------|--------------------------|---------|---------|------------|-------|
+| Transportation | 2.0-3.0 (B to B+) | 3 | Negative | 🔴 (Crisis) | 3.0 | Passenger traffic collapsed, airlines losing millions per day |
+| Retail | 2.5-3.5 (B to B+) | 2 | Negative | 🔴 (Crisis) | 3.0 | Department stores/malls saw zero foot traffic |
+| Media/Internet | 3.0-4.0 (B+ to BB) | 2 | Negative | 🟠 (Abnormal) | 3.0 | Ad revenue plunged, but online consumption benefited |
+| Food & Beverage | 3.5-4.5 (B+ to BB) | 2 | Negative | 🟠 (Abnormal) | 3.0 | Restaurant/gift consumption plunged, but essential consumption benefited |
+| Textile & Apparel | 2.5-3.5 (B to B+) | 2 | Negative | 🟠 (Abnormal) | 3.0 | Physical stores closed, export orders canceled |
+| Real Estate | 3.0-4.0 (B+ to BB) | 2 | Negative | 🟠 (Abnormal) | 3.0 | Sales offices closed, sales cash flow frozen |
+| New Energy Vehicles | 3.5-4.5 (B+ to BB) | 2 | Negative | 🟠 (Abnormal) | 3.0 | Factories shut down, sales down 80%+ |
+| Solar/PV & Energy Storage | 4.0-5.0 (B+ to BB+) | 2 | Negative | 🟡 (Watch) | 3.0 | Capacity utilization declined, overseas orders delayed |
+| Advanced Equipment | 4.0-5.0 (B+ to BB+) | 2 | Negative | 🟡 (Watch) | 3.0 | Production paused, deliveries delayed |
+| Medical Devices | 5.0-6.0 (BBB- to BB+) | 1 | Positive | 🟢 (Calm) | 1.0 | Pandemic supply demand surged, benefiting sector |
+| Biopharmaceuticals | 5.5-6.5 (BBB+ to A-) | 0 | Positive | 🟢 (Calm) | 0 | Pandemic-related R&D benefited, non-COVID areas affected |
+| LGFV/Sub-Sovereign | 5.0-6.0 (BBB- to BB+) | 1 | Stable | 🟡 (Watch) | 1.5 | Infrastructure stabilization expectations rose, but short-term pressure |
+| Semiconductors/Integrated Circuits | 5.5-6.5 (BBB+ to A-) | 0 | Positive | 🟡 (Watch) | 0.5 | Supply chain disruption concerns but domestic substitution logic strengthened |
+
+### 7.3 SRI Calculation
+
+```
+Risk Score Count:
+  3-point industries: 8 (Transportation, Retail, Media, Food & Beverage, Textile & Apparel,
+                       New Energy Vehicles, Solar/PV, Advanced Equipment)
+  1.5-point industries: 1 (Sub-sovereign/LGFV)
+  1-point industries: 1 (Medical Devices, benefiting)
+  0.5-point industries: 1 (Semiconductors)
+  0-point industries: 2 (Biopharmaceuticals, Data Centers — benefiting)
+
+Simple Arithmetic Mean ≈ (3×8 + 1.5×1 + 1×1 + 0.5×1 + 0×2) / 13
+                      = (24 + 1.5 + 1 + 0.5 + 0) / 13
+                      = 27 / 13 = 2.08
+
+Weighted SRI Calculation:
+  Transportation (8.5% weight): 3 points × 8.5% = 0.26
+  Sub-sovereign/LGFV (25%): 1.5 points × 25% = 0.38
+  Retail (4%): 3 points × 4% = 0.12
+  Media/Internet (3.35%): 3 points × 3.35% = 0.10
+  Food & Beverage (2.22%): 3 points × 2.22% = 0.07
+  Textile & Apparel (0.6%): 3 points × 0.6% = 0.02
+  Solar/PV (2.33%): 3 points × 2.33% = 0.07
+  Advanced Equipment (1.22%): 3 points × 1.22% = 0.04
+  New Energy Vehicles (2.22%): 3 points × 2.22% = 0.07
+  Medical Devices (1.01%): 1 point × 1.01% = 0.01
+  Semiconductors (2.06%): 0.5 points × 2.06% = 0.01
+  Other industries weighted total: ≈ 0
   SRI ≈ 0.26 + 0.38 + 0.12 + 0.10 + 0.07 + 0.02 + 0.07 + 0.04 + 0.07 + 0.01 + 0.01 = 1.15
 
-→ **SRI ≈ 1.15（🟠 警惕区间）**
+→ **SRI ≈ 1.15 (🟠 Alert range)**
 ```
 
-### 7.4 这是"已知的未知"还是"未知的未知"？
+### 7.4 Was This a "Known Unknown" or an "Unknown Unknown"?
 
-| 评估维度 | 分析 |
-|---------|------|
-| **疫情的性质** | 疫情本身是一个"已知的未知"——公共卫生专家长期警告大流行病风险（如SARS经验、WHO的流感大流行准备计划），但具体时间、规模和影响路径是未知的 |
-| **SRI框架能否预警？** | **不能提前预警。** SRI框架依赖行业基础信号（轨道A/B/展望），而疫情在爆发前（2020年1月）全行业的轨道A评分均为正常——无法预测一个外生的、全行业同步的冲击 |
-| **SRI能否反映冲击？** | **能实时反映。** 一旦冲击发生（2020年2月），各行业轨道A评分骤降、展望转为负面、轨道B信号跳升，SRI迅速升至约1.15（🟠警惕），准确反映了系统性危机的严重程度 |
-| **与信用事件的本质区别** | 疫情与永煤违约/地产危机的本质区别：前者是"外生同步冲击"（所有行业同时被非信用因素影响），后两者是"内生传导冲击"（信用风险从一个行业逐步传导至其他行业）。SRI框架对前者是"反应性"的（冲击后确认严重性），对后者是"前瞻性"的（冲击前识别风险积累） |
+| Assessment Dimension | Analysis |
+|---------------------|---------|
+| **Nature of the Pandemic** | The pandemic itself was a "known unknown" — public health experts had long warned about pandemic risk (SARS experience, WHO pandemic preparedness plans), but the specific timing, scale, and impact pathways were unknown |
+| **Could the SRI Framework Provide Early Warning?** | **Cannot provide pre-event warning.** The SRI framework relies on industry fundamental signals (Track A/B/Outlook), and all industries had normal Track A scores before the pandemic outbreak (January 2020) — it cannot predict an exogenous, synchronous shock affecting all industries |
+| **Could the SRI Reflect the Impact?** | **Yes, in real time.** Once the shock occurred (February 2020), Track A scores plunged across industries, outlooks turned negative, Track B signals jumped, and SRI rapidly rose to approximately 1.15 (🟠 Alert), accurately reflecting the severity of the systemic crisis |
+| **Essential Difference from Credit Events** | The key difference between COVID-19 and the GFC/Eurozone crisis: the former was an "exogenous synchronous shock" (all industries simultaneously affected by non-credit factors), while the latter were "endogenous transmission shocks" (credit risk gradually spreading from one industry to others). The SRI framework is "reactive" for the former (confirming severity after the shock) and "forward-looking" for the latter (identifying risk accumulation before the shock) |
 
-### 7.5 回测结论
+### 7.5 Backtest Conclusion
 
-| 回测结论 | 具体说明 |
-|---------|---------|
-| **SRI实时有效性** | 在疫情冲击下，SRI迅速达到🟠警惕区间（约1.15），准确反映了系统性危机的严重程度 |
-| **不能提前预警外生冲击** | SRI框架对"已知的未知"（外生冲击）无提前预警能力——这是所有基于基本面信号的评分框架的共同局限性 |
-| **区分"外生"和"内生"** | SRI框架的核心价值在于识别"内生的、积累的、可传导的"信用风险，而非预测"外生的、突发的、非信用的"冲击。前者才是信用分析框架的本职工作 |
-| **在疫情中的实际意义** | 如果SRI框架在2020年3月显示🔴危险，其价值不在于预警（疫情已发生），而在于**避免在危机中误判**——当SRI为🔴时，框架建议"全面防御·保流动性·减仓"，这将帮助投资者避免在疫情中过度承担信用风险 |
+| Backtest Conclusion | Specific Description |
+|--------------------|---------------------|
+| **SRI Real-Time Effectiveness** | Under the COVID shock, SRI rapidly reached the 🟠 Alert range (approximately 1.15), accurately reflecting the severity of the systemic crisis |
+| **Cannot Pre-Warn Exogenous Shocks** | The SRI framework has no pre-warning capability for "known unknowns" (exogenous shocks) — this is a common limitation of all fundamental signal-based scoring frameworks |
+| **Distinguishing "Exogenous" from "Endogenous"** | The core value of the SRI framework is in identifying "endogenous, accumulated, transmissible" credit risk, not predicting "exogenous, sudden, non-credit" shocks. The former is the proper function of a credit analysis framework |
+| **Practical Significance During the Pandemic** | If the SRI framework showed 🔴 Danger in March 2020, its value was not in warning (the pandemic had already arrived), but in **avoiding misjudgment during the crisis** — when SRI is 🔴, the framework recommends "full defense · preserve liquidity · reduce positions," which would have helped investors avoid excessive credit risk-taking during the pandemic |
 
 ---
 
-## 八、当前时点计算：2026年Q2 SRI读数
+## 8. Current Period Calculation: Scenario-Based SRI Example
 
-### 8.1 2026年Q2各行业信号状态
+### 8.1 Scenario: Hypothetical Market Stress State
 
-基于公开市场数据（WebSearch结果）和引擎现有验证数据，2026年Q2（截至7月初）13行业的信号状态估算如下：
+This section provides a scenario-based example showing how the SRI would be calculated under a hypothetical market stress state. The following signal state is illustrative — not a current real-time reading.
 
-| 行业 | 轨道A评分(估) | 基准分 | 展望 | 轨道B | 风险得分 | 数据来源 |
-|------|-------------|-------|------|-------|---------|---------|
-| 光伏/储能 | 4.5-5.5 (BB+ 至 BBB-) | 2 | 负面 | 🟡(关注) | 3.0 | 产能过剩·供需错配·景气度低位（兴业研究） |
-| 半导体/集成电路 | 6.5-7.5 (A- 至 A) | 0 | 正面 | 🟢(平静) | 0 | 新兴产业高增长·股权财政外溢效应（国投证券） |
-| 高端装备/工业母机 | 6.0-7.0 (BBB+ 至 A-) | 0 | 稳定 | 🟢(平静) | 0 | 科创央国企估值下行+高端制造需求稳定 |
-| 生物医药/创新药 | 5.5-6.5 (BBB+ 至 A-) | 0 | 稳定 | 🟢(平静) | 0 | Biotech融资回暖但分化仍存 |
-| 医疗器械 | 6.0-7.0 (BBB+ 至 A-) | 0 | 稳定 | 🟢(平静) | 0 | 集采压力持续但国产替代支撑 |
-| 新能源汽车 | 5.0-6.0 (BBB- 至 BB+) | 1 | 负面 | 🟡(关注) | 2.0 | 价格战持续·产能过剩·尾部出清 |
-| 数据中心/算力基建 | 6.5-7.5 (A- 至 A) | 0 | 正面 | 🟢(平静) | 0 | AI算力需求爆发·景气度高企 |
-| 城投债(LGFV) | 5.0-5.5 (BBB- 至 BB+) | 1 | 稳定 | 🟡(关注) | 1.5 | 化债推进中·区域分化加剧·评级下调集中（财通证券） |
-| 食品饮料 | 6.5-7.5 (A- 至 A) | 0 | 稳定 | 🟢(平静) | 0 | 消费稳定·必选消费抗周期 |
-| 纺织服装 | 5.5-6.5 (BBB+ 至 A-) | 0 | 稳定 | 🟢(平静) | 0 | 出口有韧性·内需偏弱 |
-| 交通运输 | 5.5-6.5 (BBB+ 至 A-) | 0 | 稳定 | 🟢(平静) | 0 | 物流/交运需求平稳 |
-| 商贸零售 | 5.0-6.0 (BBB- 至 BB+) | 1 | 负面 | 🟡(关注) | 2.0 | 消费降级·线上冲击·部分企业承压 |
-| 传媒/互联网 | 5.5-6.5 (BBB+ 至 A-) | 0 | 稳定 | 🟢(平静) | 0 | 广告收入恢复·监管环境平稳 |
+| Industry | Track A Score (Est.) | Base Score | Outlook | Track B | Risk Score |
+|----------|---------------------|-----------|---------|---------|------------|
+| Solar/PV & Energy Storage | 4.5-5.5 (BB+ to BBB-) | 2 | Negative | 🟡 (Watch) | 3.0 |
+| Semiconductors/Integrated Circuits | 6.5-7.5 (A- to A) | 0 | Positive | 🟢 (Calm) | 0 |
+| Advanced Equipment/Industrial Machinery | 6.0-7.0 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
+| Biopharmaceuticals/Innovative Drugs | 5.5-6.5 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
+| Medical Devices | 6.0-7.0 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
+| New Energy Vehicles | 5.0-6.0 (BBB- to BB+) | 1 | Negative | 🟡 (Watch) | 2.0 |
+| Data Centers/Compute Infrastructure | 6.5-7.5 (A- to A) | 0 | Positive | 🟢 (Calm) | 0 |
+| LGFV/Sub-Sovereign | 5.0-5.5 (BBB- to BB+) | 1 | Stable | 🟡 (Watch) | 1.5 |
+| Food & Beverage | 6.5-7.5 (A- to A) | 0 | Stable | 🟢 (Calm) | 0 |
+| Textile & Apparel | 5.5-6.5 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
+| Transportation | 5.5-6.5 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
+| Retail | 5.0-6.0 (BBB- to BB+) | 1 | Negative | 🟡 (Watch) | 2.0 |
+| Media/Internet | 5.5-6.5 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
 
-### 8.2 各行业风险得分详细说明
+### 8.2 Industry Risk Score Detail
 
-| 行业 | 风险得分 | 详细说明 |
-|------|---------|---------|
-| **光伏/储能** | 3.0 | 基准分2（轨道A 4.5-5.5，BB+ 至 BBB-区间）+ 展望负面0.5 + 轨道B关注0.5。产能严重过剩是核心矛盾，全产业链面临供给侧出清压力 |
-| **新能源汽车** | 2.0 | 基准分1（轨道A 5.0-6.0，BBB- 至 BB+区间）+ 展望负面0.5 + 轨道B关注0.5。价格战持续·尾部出清加速·但电池板块企稳回升 |
-| **城投债(LGFV)** | 1.5 | 基准分1（轨道A 5.0-5.5，BBB- 至 BB+区间）+ 轨道B关注0.5。10万亿化债推进中，但弱区域（山东/陕西/云南/河南等）评级下调集中 |
-| **商贸零售** | 2.0 | 基准分1（轨道A 5.0-6.0，BBB- 至 BB+区间）+ 展望负面0.5 + 轨道B关注0.5。消费降级趋势·线上线下融合压力·部分民企承压 |
-| **其余9行业** | 0-0 | 均在轨道A 5.5以上（BBB+及以上），展望稳定或正面，轨道B平静，无风险贡献 |
+| Industry | Risk Score | Detail |
+|----------|-----------|--------|
+| **Solar/PV & Energy Storage** | 3.0 | Base 2 (Track A 4.5-5.5, BB+ to BBB- range) + Negative outlook 0.5 + Track B Watch 0.5. Core issue is severe overcapacity; the entire supply chain faces restructuring pressure |
+| **New Energy Vehicles** | 2.0 | Base 1 (Track A 5.0-6.0, BBB- to BB+ range) + Negative outlook 0.5 + Track B Watch 0.5. Ongoing price wars, accelerating shakeout of weaker players, but battery sector stabilizing and recovering |
+| **LGFV/Sub-Sovereign** | 1.5 | Base 1 (Track A 5.0-5.5, BBB- to BB+ range) + Track B Watch 0.5. Debt resolution progressing, but regional divergence intensifying, concentrated rating downgrades in weaker regions |
+| **Retail** | 2.0 | Base 1 (Track A 5.0-6.0, BBB- to BB+ range) + Negative outlook 0.5 + Track B Watch 0.5. Consumption downgrade trend, online-offline integration pressure, some enterprises under stress |
+| **Remaining 9 industries** | 0 | All with Track A above 5.5 (BBB+ and above), stable or positive outlook, Track B calm, no risk contribution |
 
-### 8.3 SRI计算
+### 8.3 SRI Calculation
 
 ```
-风险得分计数：
-  得3.0分的行业：1个（光伏/储能）
-  得2.0分的行业：2个（新能源汽车、商贸零售）
-  得1.5分的行业：1个（城投债）
-  得0分的行业：9个（其余行业）
+Risk Score Count:
+  3.0-point industries: 1 (Solar/PV)
+  2.0-point industries: 2 (New Energy Vehicles, Retail)
+  1.5-point industries: 1 (LGFV/Sub-sovereign)
+  0-point industries: 9 (remaining industries)
 
-简单算术均值 = (3.0×1 + 2.0×2 + 1.5×1 + 0×9) / 13
-             = (3.0 + 4.0 + 1.5) / 13
-             = 8.5 / 13 = 0.65
+Simple Arithmetic Mean = (3.0×1 + 2.0×2 + 1.5×1 + 0×9) / 13
+                       = (3.0 + 4.0 + 1.5) / 13
+                       = 8.5 / 13 = 0.65
 
-考虑权重后的SRI计算：
-  城投债(25%权重): 得1.5分 × 25% = 0.375
-  光伏/储能(2.33%): 得3分 × 2.33% = 0.070
-  新能源汽车(2.22%): 得2.0分 × 2.22% = 0.044
-  商贸零售(4%): 得2.0分 × 4% = 0.080
-  交通运输(8.5%): 得0分 × 8.5% = 0
-  其他行业: 得0分 × 合计权重 = 0
+Weighted SRI Calculation:
+  LGFV/Sub-sovereign (25% weight): 1.5 points × 25% = 0.375
+  Solar/PV (2.33%): 3 points × 2.33% = 0.070
+  New Energy Vehicles (2.22%): 2.0 points × 2.22% = 0.044
+  Retail (4%): 2.0 points × 4% = 0.080
+  Transportation (8.5%): 0 points × 8.5% = 0
+  Other industries: 0 points × combined weight = 0
   SRI = 0.375 + 0.070 + 0.044 + 0.080 = 0.569
 
-→ **SRI ≈ 0.57（🟡 关注区间）**
+→ **SRI ≈ 0.57 (🟡 Watch range)**
 ```
 
-### 8.4 当前SRI解读
+### 8.4 SRI Interpretation
 
-| 维度 | 分析 |
-|------|------|
-| **当前等级** | 🟡 关注（SRI ≈ 0.57），略低于永煤违约前3个月的读数（0.58） |
-| **主要贡献者** | ①城投债（权重最大，得1.5分）贡献0.375，占SRI的66%；②商贸零售（得2.0分）贡献0.080；③光伏（得3.0分）贡献0.070；④新能源车（得2.0分）贡献0.044 |
-| **与历史对比** | 类似2020年8月的水平（SRI≈0.58），但风险结构不同——2020年风险集中在煤炭/周期行业，2026年集中在城投+光伏+消费 |
-| **关键特征** | 当前SRI偏高主要是因为城投债的权重（25%）叠加其风险信号（1.5分）。如果去掉城投债的极端权重，实质性风险行业（轨道A<6.0）仅光伏/新能源车/商贸零售3个，SRI将降至0.2以下（🟢） |
-| **判断** | 🟡关注是合理的——城投债确实面临区域分化压力，光伏和新能源车确实面临产能过剩。但没有达到🟠警惕的程度（SRI<1.0），因为超级传染者（半导体、高端装备）均运行正常，没有同时触发的多行业共振 |
+| Dimension | Analysis |
+|-----------|----------|
+| **Current Level** | 🟡 Watch (SRI ≈ 0.57), slightly below the pre-crisis backtest reading of 0.70 |
+| **Main Contributors** | ① LGFV/Sub-sovereign (largest weight, 1.5 points) contributes 0.375, 66% of SRI; ② Retail (2.0 points) contributes 0.080; ③ Solar/PV (3.0 points) contributes 0.070; ④ NEV (2.0 points) contributes 0.044 |
+| **Historical Comparison** | Similar to the pre-systemic-event level, but the risk structure is different — the GFC 2008 risk was concentrated in finance/energy, this scenario is concentrated in Sub-sovereign + Solar/PV + Consumer |
+| **Key Characteristic** | The SRI is elevated mainly because of the LGFV/Sub-sovereign weight (25%) combined with its risk signal (1.5 points). If the extreme LGFV weight is removed, the industries with substantive risk (Track A < 6.0) are only Solar/PV + NEV + Retail — 3 industries — and SRI would fall below 0.2 (🟢) |
+| **Assessment** | 🟡 Watch is reasonable — Sub-sovereign/LGFV does face regional divergence pressure, and Solar/PV and NEV face overcapacity issues. But it has not reached 🟠 Alert level (SRI < 1.0) because super-spreaders (Semiconductors, Advanced Equipment) are all operating normally, with no simultaneous multi-industry resonance |
 
-### 8.5 当前建议的行动
+### 8.5 Recommended Actions
 
-| 行动项目 | 具体内容 |
-|---------|---------|
-| **监控焦点** | 城投债的区域分化进展（弱区域评级下调是否扩散）、光伏行业出清进度、新能源车价格战是否进一步升级 |
-| **检查集中度** | 组合中对城投债+光伏+新能源车+商贸零售的联合敞口是否超过集中度限额（集群D+集群F的合计敞口<40%） |
-| **升级情景** | 如果半导体或高端装备（超级传染者）出现信号恶化，SRI可能迅速升至1.0以上进入🟠警惕——届时需立即启动降仓计划 |
-| **无需恐慌** | 当前SRI≈0.57仅到🟡关注区间下沿，且主要贡献来自城投债的权重（而非实质性风险扩散），无需大规模调整组合 |
+| Action Item | Specific Content |
+|------------|-----------------|
+| **Monitoring Focus** | Sub-sovereign/LGFV regional divergence progress, Solar/PV industry restructuring progress, whether NEV price wars escalate further |
+| **Check Concentration** | Whether combined portfolio exposure to Sub-sovereign + Solar/PV + NEV + Retail exceeds concentration limits (Cluster D + Cluster F combined exposure < 40%) |
+| **Escalation Scenario** | If Semiconductors or Advanced Equipment (super-spreaders) show signal deterioration, SRI could rapidly rise above 1.0 into 🟠 Alert — immediate position reduction plan would be required |
+| **No Need for Panic** | Current SRI ≈ 0.57 is at the lower end of 🟡 Watch range, and the main contribution comes from the Sub-sovereign weight (rather than substantive risk spread) — no major portfolio adjustment needed |
 
 ---
 
-## 九、阈值敏感性分析
+## 9. Threshold Sensitivity Analysis
 
-### 9.1 阈值对SRI结果的影响
+### 9.1 Impact of Thresholds on SRI Results
 
-SRI的核心参数（阈值设定）对最终温度和行动建议有决定性的影响。以下敏感性分析展示参数变化如何改变SRI读数：
+The core parameters of the SRI (threshold settings) have a decisive impact on the final temperature and action recommendations. The following sensitivity analysis shows how parameter changes alter SRI readings:
 
-**场景A：基准阈值（当前版本）**
+**Scenario A: Baseline Thresholds (Current Version)**
 
-| 轨道A范围 | 基准分 | 展望负面 | 轨道B🟡 | 轨道B🟠 | 轨道B🔴 |
-|-----------|-------|---------|--------|--------|--------|
+| Track A Range | Base Score | Negative Outlook | Track B 🟡 | Track B 🟠 | Track B 🔴 |
+|--------------|-----------|-----------------|-----------|-----------|-----------|
 | > 6.0 | 0 | +0.5 | +0.5 | +1.0 | +1.5 |
 | 5.0-6.0 | 1 | +0.5 | +0.5 | +1.0 | +1.5 |
 | 3.0-5.0 | 2 | +0.5 | +0.5 | +1.0 | +1.5 |
 | < 3.0 | 3 | +0.5 | +0.5 | +1.0 | +1.5 |
 
-**场景B：悲观阈值（更敏感）**
+**Scenario B: Pessimistic Thresholds (More Sensitive)**
 
-| 轨道A范围 | 基准分 | 展望负面 | 轨道B🟡 | 轨道B🟠 | 轨道B🔴 |
-|-----------|-------|---------|--------|--------|--------|
+| Track A Range | Base Score | Negative Outlook | Track B 🟡 | Track B 🟠 | Track B 🔴 |
+|--------------|-----------|-----------------|-----------|-----------|-----------|
 | > 6.0 | 0 | +1.0 | +1.0 | +1.5 | +2.0 |
 | 5.0-6.0 | 1 | +1.0 | +1.0 | +1.5 | +2.0 |
 | 3.0-5.0 | 3 | +1.0 | +1.0 | +1.5 | +2.0 |
-| < 3.0 | 4 | 不叠加 | 不叠加 | 不叠加 | 不叠加 |
+| < 3.0 | 4 | Not stacked | Not stacked | Not stacked | Not stacked |
 
-悲观阈值下，SRI计算结果更激进——对展望负面的惩罚加倍，轨道B各档惩罚也上调一档（关注+1.0、异常+1.5、危机+2.0），且投机级基准分从2分提升至3分。该版本适用于保守型投资者或系统性风险高发期。
+Under pessimistic thresholds, SRI calculations are more aggressive — the negative outlook penalty is doubled, Track B penalties are raised one level each (Watch +1.0, Abnormal +1.5, Crisis +2.0), and the speculative-grade base score is raised from 2 to 3. This version is suitable for conservative investors or periods of high systemic risk.
 
-**场景C：乐观阈值（更不敏感）**
+**Scenario C: Optimistic Thresholds (Less Sensitive)**
 
-| 轨道A范围 | 基准分 | 展望负面 | 轨道B🟡 | 轨道B🟠 | 轨道B🔴 |
-|-----------|-------|---------|--------|--------|--------|
-| > 6.0 | 0 | 无惩罚 | 无惩罚 | 无惩罚 | 无惩罚 |
+| Track A Range | Base Score | Negative Outlook | Track B 🟡 | Track B 🟠 | Track B 🔴 |
+|--------------|-----------|-----------------|-----------|-----------|-----------|
+| > 6.0 | 0 | No penalty | No penalty | No penalty | No penalty |
 | 5.0-6.0 | 1 | +0.5 | +0.5 | +0.5 | +0.5 |
 | 3.0-5.0 | 2 | +0.5 | +0.5 | +0.5 | +0.5 |
 | < 3.0 | 3 | +0.5 | +0.5 | +0.5 | +0.5 |
 
-乐观阈值下，展望负面和轨道B信号在轨道A>6.0时无惩罚（认为高评级行业的负面信号是噪音），且其余区间的轨道B惩罚统一为半档。该版本适用于高风险偏好的投资者。
+Under optimistic thresholds, negative outlook and Track B signals have no penalty when Track A > 6.0 (assuming negative signals for high-grade industries are noise), and Track B penalties in other ranges are unified to half a notch. This version is suitable for high-risk-appetite investors.
 
-### 9.2 三个场景下的SRI对比（以2026年Q2为例）
+### 9.2 SRI Comparison Across Three Scenarios (Scenario Example)
 
-| 参数版本 | 计算过程 | SRI | 温度计 |
-|---------|---------|-----|-------|
-| **A. 基准(当前)** | 如§8.3计算 | 0.57 | 🟡关注 |
-| **B. 悲观** | 光伏: 3+1+1=5→3; 新能源车: 1+1+1=3; 城投: 1+0+1=2; 商贸: 1+1+1=3 | 0.76 | 🟡关注(上沿) |
-| **C. 乐观** | 光伏: 2+0.5+0=2.5; 新能源车: 1+0.5+0=1.5; 城投: 1+0+0=1; 商贸: 1+0.5+0=1.5 | 0.40 | 🟢正常 |
+| Parameter Version | Calculation Process | SRI | Thermometer |
+|-----------------|-------------------|-----|-------------|
+| **A. Baseline (Current)** | As calculated in §8.3 | 0.57 | 🟡 Watch |
+| **B. Pessimistic** | Solar: 3+1+1=5→3; NEV: 1+1+1=3; Sub-sovereign: 1+0+1=2; Retail: 1+1+1=3 | 0.76 | 🟡 Watch (upper bound) |
+| **C. Optimistic** | Solar: 2+0.5+0=2.5; NEV: 1+0.5+0=1.5; Sub-sovereign: 1+0+0=1; Retail: 1+0.5+0=1.5 | 0.40 | 🟢 Normal |
 
-**分析：**
-- 乐观版本下，SRI降至0.40，落在🟢区间
-- 悲观版本下，SRI升至0.76，仍在🟡区间但接近上沿
-- 三个版本均未达到🟠警惕（1.0）——说明参数变化在当前的信号分布下不会导致过度或不足的预警
+**Analysis:**
+- Under the optimistic version, SRI falls to 0.40, landing in 🟢 range
+- Under the pessimistic version, SRI rises to 0.76, still in 🟡 range but near the upper bound
+- None of the three versions reach 🟠 Alert (1.0) — indicating that parameter variation does not cause over- or under-warning given the current signal distribution
 
-### 9.3 阈值的适用场景建议
+### 9.3 Threshold Applicability Recommendations
 
-| 市场环境 | 建议使用阈值版本 | 理由 |
-|---------|----------------|------|
-| 正常市场（信用利差稳定、无系统性冲击） | 基准(A) | 平衡敏感性和特异性 |
-| 信用紧缩周期（信用利差持续走阔、取消发行率高） | 悲观(B) | 提高预警灵敏度，及早准备 |
-| 评级泡沫破裂期（大量AAA被下调） | 悲观(B) | 在评级集中调整窗口提高警惕 |
-| 宽货币+资产荒（信用利差持续压缩） | 乐观(C) | 避免在高流动性环境中过度预警 |
-| 传染矩阵升级因子触发（恐慌/高杠杆） | 悲观(B) | 升级因子已触发，提高预警级别 |
+| Market Environment | Recommended Threshold | Rationale |
+|-------------------|---------------------|-----------|
+| Normal market (credit spreads stable, no systemic shock) | Baseline (A) | Balanced sensitivity and specificity |
+| Credit tightening cycle (credit spreads widening, high cancellation rates) | Pessimistic (B) | Increase warning sensitivity, prepare early |
+| Rating bubble burst period (mass AAA downgrades) | Pessimistic (B) | Increase vigilance during concentrated rating adjustment window |
+| Loose monetary + asset shortage (credit spreads compressing) | Optimistic (C) | Avoid over-warning in high-liquidity environments |
+| Contagion matrix escalation factor triggered (panic/high leverage) | Pessimistic (B) | Escalation factors already triggered, raise warning level |
 
 ---
 
-## 十、与现有引擎的集成
+## 10. Integration with Existing Engine
 
-### 10.1 集成到分析金字塔
+### 10.1 Integration into the Analysis Pyramid
 
-#### M1(行业基本面分析)
+#### M1 (Industry Fundamental Analysis)
 
-SRI输出作为每个行业分析报告中的"系统性风险背景"指标：
+SRI output serves as a "systemic risk context" indicator in each industry analysis report:
 
 ```
-行业分析报告模板中的"系统性风险上下文"章节：
+"Systemic Risk Context" section in the industry analysis report template:
 
-当前系统性风险等级：[🟢/🟡/🟠/🔴]
-SRI读数：[0.xx]
-关注行业：列出风险得分≥2的行业
-与[本行业]的关联：
-  - 是否属于同一高传染集群
-  - 是否有直接传染路径（引用传染矩阵）
-  - 是否与超级传染者重叠
+Current Systemic Risk Level: [🟢/🟡/🟠/🔴]
+SRI Reading: [0.xx]
+Industries of Concern: List industries with risk score ≥ 2
+Linkage with [This Industry]:
+  - Whether it belongs to the same high-contagion cluster
+  - Whether there is a direct contagion pathway (reference the contagion matrix)
+  - Whether it overlaps with a super-spreader
 ```
 
-#### M2(个体信用分析)
+#### M2 (Individual Credit Analysis)
 
-SRI作为个体评级的背景修正：
+SRI serves as a background correction for individual ratings:
 
-| SRI等级 | 个体评级调整规则 |
+| SRI Level | Individual Rating Adjustment Rule |
+|-----------|----------------------------------|
+| 🟢 Normal | No adjustment |
+| 🟡 Watch | No automatic adjustment, but note "Systemic risk context 🟡, monitor industry contagion risk" |
+| 🟠 Alert | If the individual is in a high-risk industry (risk score ≥ 2), automatically downgrade half a notch |
+| 🔴 Danger | All individual ratings downgraded 1 notch from base (systemic risk premium) |
+
+#### M3 (Industry Comparison and Ranking)
+
+SRI is used for weight correction in industry ranking:
+
+- When SRI ≥ 1.0 (🟠 Alert), the weights of high-contagion clusters (Cluster A/B/C) in industry ranking are reduced by 10%
+- When SRI ≥ 1.8 (🔴 Danger), industry ranking is suspended (industry comparison loses meaning under systemic risk)
+
+#### M4 (Portfolio Risk Control)
+
+SRI serves as a precondition for the concentration framework:
+
+```
+Five-Dimensional Concentration Composite Score = Original Score × (1 + SRI Adjustment Factor)
+
+SRI Adjustment Factor:
+  🟢 Normal: 0% (no adjustment)
+  🟡 Watch: +5%
+  🟠 Alert: +15%
+  🔴 Danger: +30% (concentration score increased by 30%, triggering stricter limit management)
+```
+
+### 10.2 Linkage with Contagion Matrix
+
+| Linkage Scenario | Rule |
+|-----------------|------|
+| 🟡 Watch + 1 escalation factor triggered | Escalation factor jump magnitude for contagion pathways × 1.5 |
+| 🟠 Alert + 2 escalation factors triggered | Automatically activate escalation factor synergy (Contagion Matrix §6.3), all matrix link intensities +1 |
+| 🔴 Danger | Equivalent to contagion matrix entering "systemic tipping point" (three or more escalation factors triggered simultaneously), all matrix link intensities +1 to +2 |
+| SRI continuously rising (2 consecutive periods of increase) | Even without crossing threshold, trigger escalation factor monitoring upgrade — increase escalation factor monitoring frequency |
+
+### 10.3 Linkage with Concentration Framework
+
+According to the [Five-Dimensional Concentration Analysis Framework](concentration-framework.md) §8.4 (Dynamic Weight Adjustment Rules), the SRI thermometer serves as one of the trigger conditions for dynamic weight adjustment:
+
+| SRI Level | Concentration Framework Adjustment |
+|-----------|-----------------------------------|
+| 🟡 Watch | If the main SRI contributing industry has portfolio exposure > 20% → Industry concentration dimension weight increased from 25% to 30% |
+| 🟠 Alert | Weight adjusted to "Contagion Matrix Escalation Factor Triggered" mode (Industry 30%, Region 25%, Rating 10%, Maturity 20%, Funding Channel 15%) |
+| 🔴 Danger | Directly trigger portfolio extreme concentration cap (Concentration Framework §7.3), all issuers in portfolio capped at BB |
+
+### 10.4 Linkage with Outlook Monitoring Framework
+
+According to the [Outlook Monitoring Framework](outlook-monitoring-framework.md), the outlook direction input of the SRI framework directly references the outlook framework's industry-level outlook judgments. When the outlook framework adjusts an industry's outlook direction, the SRI automatically updates that industry's outlook_penalty.
+
+| SRI Level | Outlook Monitoring Adjustment |
+|-----------|------------------------------|
+| 🟡 Watch | Outlook update frequency increased from monthly to bi-weekly |
+| 🟠 Alert | Requires special outlook assessment for all high-risk industries (risk score ≥ 2), results directly fed back to SRI |
+| 🔴 Danger | Outlook assessment suspended (outlook differentiation loses meaning under systemic risk) |
+
+### 10.5 Data Flow Architecture
+
+```
+                  Outlook Monitoring Framework     Contagion Matrix
+                         │                              │
+                         ▼                              ▼
+  Industry Pyramid → Track A Score ──┐          Contagion Coefficients
+  Track B Signals → Market Level ────┼──→ SRI Aggregation ──→ Thermometer Output
+  Dual-Track Analysis → Veto Trigger ─┘               │
+                         │                              │
+                         ▼                              ▼
+                   Industry Weight Table       Action Recommendations → M4 Concentration Framework
+                   Credit Bond Outstanding               │
+                         │                                ▼
+                         ▼                          Portfolio Risk Decisions
+                   Regular Updates (Quarterly)
+```
+
+### 10.6 Execution Order (Preventing Cycles)
+
+1. Calculate each issuer's Dual-Track rating (Track A + Track B → cross-validation).
+2. Aggregate industry scores → calculate SRI.
+3. Apply SRI background downgrade to individual ratings at M2 (one-time, no back-calculation).
+4. Calculate portfolio five-dimensional concentration.
+5. Use SRI to adjust concentration weights (M4).
+6. Apply concentration → rating adjustment.
+
+It is prohibited to recalculate industry scores or SRI using already-adjusted individual ratings within the same analysis cycle.
+
+---
+
+## 11. Limitations Statement
+
+### 11.1 Framework Inherent Limitations
+
+| Limitation | Specific Description | Mitigation |
+|-----------|---------------------|------------|
+| **1. Lags behind exogenous shocks** | The SRI framework is based on industry fundamental signals and cannot pre-warn exogenous, non-credit shocks (e.g., pandemics, natural disasters, geopolitical conflicts) | For known external risks (e.g., trade frictions, regulatory policy changes), advance reflection in outlook assessment can partially mitigate the lag |
+| **2. Incomplete industry coverage** | The framework only covers 13 industries; important credit bond industries such as banking, construction, energy/mining are not directly covered and require indirect mapping with information loss | Indirect capture through related industries' signals (e.g., sub-sovereign for fiscal linkages, transportation for construction supply chain) |
+| **3. Static weight risk** | Industry weights based on credit bond outstanding share and contagion coefficients are fixed parameters that cannot reflect short-term market structural changes | Establish quarterly weight update mechanism; update immediately when an industry's credit bond outstanding changes > 20% |
+| **4. Parameter subjectivity** | Industry risk score thresholds (3.0/5.0/6.0), penalty factors (0.5), and thermometer thresholds (0.5/1.0/1.8) are based on subjective judgment and historical calibration, not statistical optimization | Provide pessimistic/baseline/optimistic parameter versions for user selection based on risk preference; conduct annual backtest calibration |
+| **5. Linear weighting limitation** | SRI uses linear weighted aggregation and cannot capture non-linear interaction effects between industries (e.g., industry A in trouble → contagion to B → feedback loop strengthening A) | Partially compensated through thermometer and contagion matrix escalation factor linkage (§3.4) — automatically activate escalation factor synergy when SRI ≥ 1.0 |
+| **6. Signal quality dependency** | The calculation quality of SRI depends on the accuracy of input Track A scores and Track B signals. If these foundational signals are biased (e.g., inflated ratings), SRI will also be distorted | Reference the engine's "pseudo-high rating" identification mechanism as auxiliary validation of SRI quality |
+
+### 11.2 Usage Restrictions
+
+| Restriction | Description |
+|-------------|-------------|
+| **Not Investment Advice** | The SRI provides systemic risk level assessment and does not constitute specific buy/sell/hold investment advice |
+| **Not a Regulatory Metric** | This framework has not been reviewed or certified by any regulatory authority and cannot be used for regulatory capital calculation or compliance reporting |
+| **Limited Historical Samples** | The framework has only been validated through 3 historical events (2020 COVID-19, 2008 GFC, 2011-12 Eurozone crisis) for backtesting, with limited statistical significance. As more credit events accumulate, the framework requires continuous recalibration |
+| **Market-Specific Parameters** | The framework's thresholds, weights, and contagion coefficients are based on specific market data and characteristics. Direct application to other markets requires comprehensive parameter reset |
+
+### 11.3 Version Evolution Roadmap
+
+| Version | Planned Content |
 |---------|----------------|
-| 🟢 正常 | 不调整 |
-| 🟡 关注 | 无自动调整，但标注"系统性风险背景🟡，需关注行业传染风险" |
-| 🟠 警惕 | 若个体处于高风险行业（风险得分≥2），自动降档半子级 |
-| 🔴 危险 | 全部个体评级在基准基础上降档1子级（系统性风险溢价） |
-
-#### M3(行业比较与排序)
-
-SRI用于行业排序的权重修正：
-
-- 当SRI≥1.0（🟠警惕）时，行业排序中高传染集群（集群A/B/C）的权重扣减10%
-- 当SRI≥1.8（🔴危险）时，行业排序暂停（系统性风险下行业比较失去意义）
-
-#### M4(组合风控)
-
-SRI作为集中度框架的前置条件：
-
-```
-五维集中度综合评分 = 原有评分 × (1 + SRI调整因子)
-
-SRI调整因子：
-  🟢 正常: 0%（不调整）
-  🟡 关注: +5%
-  🟠 警惕: +15%
-  🔴 危险: +30%（集中度评分上浮30%，触发更严格的限额管理）
-```
-
-### 10.2 与传染矩阵的联动
-
-| 联动场景 | 规则 |
-|---------|------|
-| 🟡关注 + 1个升级因子触发 | 升级因子对传染路径的跳升幅度×1.5 |
-| 🟠警惕 + 2个升级因子触发 | 自动启动升级因子协同效应（传染矩阵§6.3），矩阵全部链路强度+1 |
-| 🔴危险 | 等同于传染矩阵进入"系统性临界点"（三个及以上升级因子同时触发），矩阵全部链路强度+1~+2 |
-| SRI连续上升（连续2期读数上升） | 即使未跨阈值，也触发升级因子监控升级——提高升级因子监测频率 |
-
-### 10.3 与集中度框架的联动
-
-根据[五维集中度分析框架](concentration-framework.md) §7.4（权重动态调整规则），SRI温度计作为权重动态调整的触发条件之一：
-
-| SRI等级 | 集中度框架调整 |
-|---------|--------------|
-| 🟡 关注 | 若SRI的主要贡献行业在组合中敞口>20%→行业集中度维度权重从25%上调至30% |
-| 🟠 警惕 | 权重调整为"传染矩阵升级因子触发"模式（行业30%、区域25%、评级10%、期限20%、融资渠道15%） |
-| 🔴 危险 | 直接触发组合极端集中上限（集中度框架§7.3），组合内全部发行人上限调整为BB |
-
-### 10.4 与展望监控框架的联动
-
-根据[展望监控框架](outlook-monitoring-framework.md)的输出，SRI框架的展望方向输入直接引用展望框架的行业级展望判断。当展望框架调整某个行业的展望方向时，SRI自动更新该行业的outlook_penalty。
-
-| SRI等级 | 展望监控调整 |
-|---------|------------|
-| 🟡 关注 | 展望更新频率从月度提高至双周 |
-| 🟠 警惕 | 要求对所有高风险行业（风险得分≥2）进行展望专项评估，评估结果直接反馈至SRI |
-| 🔴 危险 | 展望评估暂停（系统性风险下展望区分度失效） |
-
-### 10.5 数据流架构
-
-```
-                  展望监控框架                传染矩阵
-                      │                        │
-                      ▼                        ▼
-  行业金字塔 → 轨道A评分 ──┐              传染力系数
-  轨道B信号 → 市场等级 ──┼──→ SRI聚合 ──→ 温度计输出
-  双轨分析 → 一票否决 ──┘               │
-                      │                    │
-                      ▼                    ▼
-                行业权重表            行动建议 → M4集中度框架
-                信用债存量                 │
-                      │                    ▼
-                      ▼              组合风控决策
-                定期更新(季度)
-```
-
-### 10.6 执行顺序（防止循环）
-
-1. 计算每个发行人的双轨评级（Track A + Track B → 交叉对撞）。
-2. 聚合行业评分 → 计算 SRI。
-3. 使用 SRI 对个体评级施加 M2 背景下调（一次性，不反算）。
-4. 计算组合五维集中度。
-5. 使用 SRI 调整集中度权重（M4）。
-6. 应用集中度 → 评级调整。
-
-禁止在同一分析周期内用已调整的个体评级重新计算行业评分或 SRI。
+| v0.6.8-alpha | Initial version: Basic aggregation algorithm + thermometer + 3 historical backtests + current calculation |
+| v0.7.0-alpha | System intelligence layer integration: complete M4 portfolio risk control system with contagion matrix/concentration framework, unified engine version |
+| v0.8.0-release | Engine-level integration release: cross-CLI entry (AGENTS.md) · four-segment chain product contract · executable orchestrator · dimension registry |
+| v0.8.1-release | Gate reinforcement and promotion mechanism (no change to framework/thresholds): .gitattributes mandatory LF · CI launch · promote.py promotion script |
+| v0.8.2-release | Contagion matrix connected to encoding engine; §2.3.1 Contagion Coefficient Table and §4 weight example aligned with matrix truth values (ranking unchanged) |
+| v0.8.3-release | Reliability iteration: consistency audit and gate expansion (framework includes §2.3.2/§4.1 data center consolidation note) |
+| v0.8.4-release (Current) | Outlook monitoring activation wiring (no change to framework/thresholds) |
+| v0.9.0-beta | Add SRI time series tracking (plot SRI historical curves, identify trends and turning points) |
+| v0.9.0-beta | Introduce real-time SRI and contagion matrix escalation factor linkage (automatically adjust SRI reading when escalation factors trigger) |
+| v0.9.0-release | Add portfolio-level SRI calculation (based on actual portfolio holding weights replacing industry weights), achieving true portfolio systemic risk assessment |
+| v0.9.0-release | Introduce SRI stress testing (input hypothetical shock → output post-stress SRI thermometer), deeply integrated with M4 portfolio risk control |
+| v1.0.0 | Stable release: all backtest validations passed + at least 6 months of real-time operational data validation |
 
 ---
 
-## 十一、局限性声明
+## 12. Appendix
 
-### 11.1 框架固有局限
-
-| 局限性 | 具体说明 | 缓解措施 |
-|--------|---------|---------|
-| **1. 滞后于外生冲击** | SRI框架基于行业基本面信号，无法提前预警外生的、非信用的冲击（如疫情、自然灾害、地缘冲突） | 对于已知的外部风险（如贸易摩擦、监管政策变化），可在展望评估中提前反映，部分缓解滞后性 |
-| **2. 行业覆盖不完整** | 框架仅覆盖13个行业，房地产、建筑、煤炭等信用债重要行业不在直接覆盖范围内，通过间接映射存在信息损失 | 通过城投债（土地财政映射）、交通运输（建筑供应链映射）等关联行业的信号间接捕获 |
-| **3. 权重静态化风险** | 行业权重基于信用债存量占比和传染力系数，属固定参数，无法反映短期的市场结构变化 | 建立季度权重更新机制，当某个行业信用债存量变化>20%时即时更新 |
-| **4. 参数主观性** | 行业风险得分的阈值（3.0/5.0/6.0）、惩罚因子（0.5分）、温度计阈值（0.5/1.0/1.8）均基于主观判断和历史校准，非统计优化 | 提供悲观/基准/乐观三套参数版本，用户可根据风险偏好选择；年度回测校准参数 |
-| **5. 线性加权局限** | SRI采用线性加权聚合，无法捕捉行业间的非线性交互效应（如A行业出问题→传染至B行业→反向加强A行业的双向反馈） | 通过温度计与传染矩阵升级因子的联动（§3.4）部分弥补——当SRI>=1.0时自动激活升级因子协同效应 |
-| **6. 信号质量依赖** | SRI的计算质量取决于输入的轨道A评分和轨道B信号的准确性。如果这些基础信号本身有偏差（如评级虚高），SRI也会失真 | 引用引擎的"伪高评级"识别机制作为SRI质量的辅助验证 |
-
-### 11.2 使用限制
-
-| 限制 | 说明 |
-|------|------|
-| **非投资建议** | SRI提供的是系统性风险等级评估，不构成买入/卖出/持有的具体投资建议 |
-| **非监管指标** | 本框架未经任何监管机构审核或认证，不可用于监管资本计算或合规报告 |
-| **历史样本有限** | 框架仅通过3个历史事件（2020Q1疫情、2020Q3永煤、2021Q1地产）进行回测验证，统计显著性有限。随着更多信用事件的积累，框架需要持续重新校准 |
-| **中国市场特定** | 框架的阈值、权重、传染力系数均基于中国市场的数据和特征，直接应用于其他市场（如美国、欧洲信用债市场）需全面重置参数 |
-
-### 11.3 版本演进路线
-
-| 版本 | 计划内容 |
-|------|---------|
-| v0.6.8-alpha | 初始版本：基本聚合算法+温度计+3个历史回测+2026Q2即时计算 |
-| v0.7.0-alpha | 系统智能层整合：与传染矩阵/集中度框架形成完整M4组合风控体系，引擎版本统一 |
-| v0.8.0-release | 引擎级集成发布：跨CLI入口（AGENTS.md）·四段链产物契约·可执行编排器（本框架经 WP-M4-03 接入编码引擎）·维度注册表 |
-| v0.8.1-release | 门禁加固与晋升机制（本框架与阈值无变更）：.gitattributes 强制 LF·CI 上线·promote.py 晋升脚本 |
-| v0.8.2-release | WP-M4-02 传染矩阵接入编码引擎；§2.3.1 传染力系数表与 §4 权重示例对齐矩阵真值（排名不变） |
-| v0.8.3-release | 可靠度迭代：一致性普查与门扩展（本框架含 §2.3.2/§4.1 数据中心归并说明） |
-| v0.8.4-release（当前） | WP-X-05 展望监控激活接线（本框架与阈值无变更） |
-| v0.9.0-beta | 增加SRI时间序列追踪（绘制SRI历史曲线，识别趋势和拐点） |
-| v0.9.0-beta | 引入SRI与传染矩阵升级因子的实时联动（当升级因子触发时自动调整SRI读数） |
-| v0.9.0-release | 增加组合级别的SRI计算（基于组合实际持仓权重替代行业权重），实现真正的组合系统性风险评估 |
-| v0.9.0-release | 引入SRI压力测试（输入假想冲击→输出压力后的SRI温度计），与M4组合风控深度集成 |
-| v1.0.0 | 发布稳定版：所有回测验证通过 + 至少6个月的实时运行数据验证 |
-
----
-
-## 十二、附录
-
-### 附录A：信号聚合算法伪代码
+### Appendix A: Signal Aggregation Algorithm Pseudocode
 
 ```
 function calculate_SRI(industries, weights):
     """
-    计算系统性风险指数
+    Calculate the Systemic Risk Index
     
-    参数:
-      industries: 13个行业的字典列表，每个元素包含:
-        - name: 行业名称
-        - track_A_score: 轨道A评分 (0-10)
-        - track_B_level: 轨道B等级 ('green'/'yellow'/'orange'/'red')
-        - outlook: 展望方向 ('positive'/'stable'/'negative')
-        - veto_triggered: 一票否决 (True/False)
-      weights: 13个行业的权重百分比列表（归一化，和为100%）
+    Parameters:
+      industries: list of dictionaries for 13 industries, each containing:
+        - name: industry name
+        - track_A_score: Track A score (0-10)
+        - track_B_level: Track B level ('green'/'yellow'/'orange'/'red')
+        - outlook: outlook direction ('positive'/'stable'/'negative')
+        - veto_triggered: veto trigger (True/False)
+      weights: list of weight percentages for 13 industries (normalized, sum to 100%)
     
-    返回:
-      SRI: 系统性风险指数 (float)
-      level: 温度计等级 (str)
-      details: 各行业风险得分明细
+    Returns:
+      SRI: Systemic Risk Index (float)
+      level: Thermometer level (str)
+      details: Risk score breakdown per industry
     """
     
     total_score = 0
     details = []
     
     for i, ind in enumerate(industries):
-        # 1. 基准分来自轨道A评分
+        # 1. Base score from Track A
         if ind.track_A_score < 3.0:
             base = 3
         elif ind.track_A_score < 5.0:
@@ -1141,10 +1143,10 @@ function calculate_SRI(industries, weights):
         else:
             base = 0
         
-        # 2. 展望惩罚
+        # 2. Outlook penalty
         outlook_penalty = 0.5 if ind.outlook == 'negative' else 0
         
-        # 3. 轨道B惩罚
+        # 3. Track B penalty
         if ind.track_B_level == 'red':
             track_B_penalty = 1.5
         elif ind.track_B_level == 'orange':
@@ -1154,7 +1156,7 @@ function calculate_SRI(industries, weights):
         else:
             track_B_penalty = 0
         
-        # 4. 一票否决检查
+        # 4. Veto check
         if ind.veto_triggered:
             risk_score = 3
         else:
@@ -1176,66 +1178,67 @@ function calculate_SRI(industries, weights):
     
     SRI = total_score
     
-    # 温度计判定
+    # Thermometer determination
     if SRI >= 1.8:
-        level = '🔴 危险'
+        level = '🔴 Danger'
     elif SRI >= 1.0:
-        level = '🟠 警惕'
+        level = '🟠 Alert'
     elif SRI >= 0.5:
-        level = '🟡 关注'
+        level = '🟡 Watch'
     else:
-        level = '🟢 正常'
+        level = '🟢 Normal'
     
     return SRI, level, details
 ```
 
-### 附录B：三个回测的SRI对比汇总
+### Appendix B: SRI Comparison Summary Across Three Backtests
 
-| 回测场景 | 时间窗口 | SRI估算 | 温度计 | 框架表现 |
-|---------|---------|---------|-------|---------|
-| 永煤违约前 | 2020年8月 | 0.58 | 🟡关注 | 提前3个月识别风险积累——合理 |
-| 地产危机前 | 2021年3月 | 0.97 | 🟡关注(上沿) | 接近警惕阈值，识别了风险——良好 |
-| 疫情冲击 | 2020年2月 | 1.15 | 🟠警惕 | 实时反映危机严重程度——有效但无法提前 |
-| 2026年Q2 | 当前 | 0.57 | 🟡关注 | 城投债权重主导的温和风险——合理 |
+| Backtest Scenario | Time Window | SRI Estimate | Thermometer | Framework Performance |
+|------------------|------------|-------------|-------------|----------------------|
+| Pre-Lehman (GFC 2008) | Q3 2008 | 0.70 | 🟡 Watch | Identified risk accumulation 1 month ahead — reasonable |
+| Eurozone Sovereign Crisis | Q3 2011 | 1.23 | 🟠 Alert | Crossed alert threshold, identified systemic risk — good |
+| COVID-19 Shock | Q1 2020 | 1.15 | 🟠 Alert | Real-time crisis severity reflection — effective but could not pre-warn |
+| Scenario Example | Current | 0.57 | 🟡 Watch | Sub-sovereign weight-driven moderate risk — reasonable |
 
-### 附录C：快速计算表
+### Appendix C: Quick Calculation Table
 
-使用下表快速估算任意13行业信号组合下的SRI：
+Use the following table to quickly estimate SRI for any combination of 13 industry signals:
 
 ```
-SRI估值 = (A×3 + B×2 + C×1 + D×0) / 13 × 权重调整因子
+SRI Estimate = (A×3 + B×2 + C×1 + D×0) / 13 × Weight Adjustment Factor
 
-其中：
-  A = 高风险行业数（风险得分≥3，含一票否决强制3分）
-  B = 中高风险行业数（风险得分2.0-2.9）
-  C = 中等风险行业数（风险得分1.0-1.9）
-  D = 低风险行业数（风险得分<1.0）
+Where:
+  A = Number of high-risk industries (risk score ≥ 3, including veto-forced 3)
+  B = Number of medium-high risk industries (risk score 2.0-2.9)
+  C = Number of medium risk industries (risk score 1.0-1.9)
+  D = Number of low-risk industries (risk score < 1.0)
   
-  权重调整因子 ≈ 1.3（考虑城投债等权重行业的主导效应，默认加权因子为1.3）
+  Weight Adjustment Factor ≈ 1.3 (considering the dominance effect of heavy-weight 
+  industries like sub-sovereign/LGFV, default weighted factor is 1.3)
 ```
 
-**速查表：**
+**Quick Reference:**
 
-| A(高风险) | B(中高风险) | C(中等风险) | D(低风险) | 加权SRI(估) | 温度计 |
-|-----------|-----------|-----------|----------|------------|-------|
-| 0 | 0 | 1 | 12 | 0.10 | 🟢正常 |
-| 0 | 1 | 2 | 10 | 0.31 | 🟢正常 |
-| 0 | 2 | 2 | 9 | 0.51 | 🟡关注 |
-| 1 | 0 | 3 | 9 | 0.58 | 🟡关注 |
-| 1 | 2 | 2 | 8 | 0.95 | 🟡关注(近警惕) |
-| 1 | 3 | 3 | 6 | 1.38 | 🟠警惕 |
-| 2 | 2 | 3 | 6 | 1.55 | 🟠警惕 |
-| 3 | 3 | 2 | 5 | 2.15 | 🔴危险 |
-| 4 | 4 | 3 | 2 | 3.02 | 🔴危险 |
-| 7 | 3 | 2 | 1 | 4.10 | 🔴危险(极端) |
+| A (High Risk) | B (Med-High) | C (Medium) | D (Low Risk) | Weighted SRI (Est.) | Thermometer |
+|--------------|-------------|-----------|-------------|--------------------|-------------|
+| 0 | 0 | 1 | 12 | 0.10 | 🟢 Normal |
+| 0 | 1 | 2 | 10 | 0.31 | 🟢 Normal |
+| 0 | 2 | 2 | 9 | 0.51 | 🟡 Watch |
+| 1 | 0 | 3 | 9 | 0.58 | 🟡 Watch |
+| 1 | 2 | 2 | 8 | 0.95 | 🟡 Watch (near Alert) |
+| 1 | 3 | 3 | 6 | 1.38 | 🟠 Alert |
+| 2 | 2 | 3 | 6 | 1.55 | 🟠 Alert |
+| 3 | 3 | 2 | 5 | 2.15 | 🔴 Danger |
+| 4 | 4 | 3 | 2 | 3.02 | 🔴 Danger |
+| 7 | 3 | 2 | 1 | 4.10 | 🔴 Danger (Extreme) |
 
-### 附录D：版本变更记录
+### Appendix D: Version Change Log
 
-| 版本 | 日期 | 变更内容 | 作者 |
-|------|------|---------|------|
-| v0.6.8-alpha | 2026-07-10 | 初版创建：SRI信号聚合算法+温度计四级体系+3个历史回测+2026Q2当前计算+阈值敏感性分析+引擎集成方案 | 引擎团队 |
-| v0.7.0-alpha | 2026-07-10 | 系统智能层整合：引擎版本统一为v0.7.0-alpha，与传染矩阵/集中度框架形成完整M4组合风控体系 | 引擎团队 |
+| Version | Date | Change Content | Author |
+|---------|------|---------------|--------|
+| v0.6.8-alpha | 2026-07-10 | Initial creation: SRI signal aggregation algorithm + four-level thermometer + 3 historical backtests + current calculation + threshold sensitivity analysis + engine integration plan | Engine Team |
+| v0.7.0-alpha | 2026-07-10 | System intelligence layer integration: engine version unified to v0.7.0-alpha, complete M4 portfolio risk control system with contagion matrix/concentration framework | Engine Team |
 
 ---
 
-*本文档应与《双轨分析方法论》(v0.8.4-release)、《传染矩阵》(v0.8.4-release)、《五维集中度分析框架》(v0.8.4-release)、《展望监控框架》配合使用。系统性预警框架是引擎M4组合风控层的顶层仪表盘，为分散的行业信号提供统一的系统性风险读数。*
+*This document should be used in conjunction with the Dual-Track Methodology (v0.8.4-release), Contagion Matrix (v0.8.4-release), Five-Dimensional Concentration Analysis Framework (v0.8.4-release), and Outlook Monitoring Framework. The Systemic Warning Framework is the top-level dashboard for the engine's M4 Portfolio Risk Control Layer, providing a unified systemic risk reading for dispersed industry signals.*

@@ -1,728 +1,730 @@
-# 金融债信用分析框架
+# Financial Bond Credit Analysis Framework
 
-**版本**: v0.8.4-release | **日期**: 2026-07-10 | **状态**: 已发布
+**Version**: v0.8.4-release | **Date**: 2026-07-10 | **Status**: Published
 
-**所属模块**: 固定收益信用分析引擎 — 金融行业分析轨道（与产业债金字塔平行）
-
----
-
-> **诚实性声明：** 本框架专门针对金融企业（银行、证券、保险、金融租赁）的信用分析设计。金融企业的信用逻辑与产业企业有根本性差异——没有"存货周转率""应收账款账龄""毛利率"这些产业分析的核心指标。金融企业的"原材料"是资金，"产品"是贷款和投资，"成本"是风险。本框架旨在填补引擎在金融债领域的空白，但不替代每个子类型的专业监管框架（如巴塞尔协议、偿付能力二代等）。
+**Module**: Fixed Income Credit Analysis Engine - Financial Industry Analysis Track (Parallel to Corporate Bond Pyramid)
 
 ---
 
-## 目录
-
-- [一、金融债在引擎中的定位](#一金融债在引擎中的定位)
-- [二、金融行业分析轨道设计](#二金融行业分析轨道设计)
-- [三、银行子框架（CAMELS）](#三银行子框架camels)
-- [四、证券子框架](#四证券子框架)
-- [五、保险子框架](#五保险子框架)
-- [六、金融租赁子框架](#六金融租赁子框架)
-- [七、跨子类型通用指标](#七跨子类型通用指标)
-- [八、金融债公开数据质量评估](#八金融债公开数据质量评估)
-- [九、金融债分析的特殊风险](#九金融债分析的特殊风险)
-- [十、金融债与产业债的交叉对撞衔接](#十金融债与产业债的交叉对撞衔接)
-- [十一、评分输出模板](#十一评分输出模板)
-- [十二、版本历史与待办事项](#十二版本历史与待办事项)
+> **Honesty Statement:** This framework is specifically designed for credit analysis of financial enterprises (banks, securities firms, insurance companies, financial leasing companies). The credit logic of financial enterprises is fundamentally different from corporate enterprises -- there is no "inventory turnover," "accounts receivable aging," or "gross margin," which are core indicators for corporate analysis. For financial enterprises, the "raw material" is funding, the "product" is loans and investments, and the "cost" is risk. This framework aims to fill the gap in the engine regarding financial bonds, but does not replace the specialized regulatory frameworks for each sub-type (such as the Basel Accords, Solvency II, etc.).
 
 ---
 
-## 一、金融债在引擎中的定位
+## Table of Contents
 
-### 1.1 金融债市场规模
+- [1. Positioning of Financial Bonds in the Engine](#1-positioning-of-financial-bonds-in-the-engine)
+- [2. Financial Industry Analysis Track Design](#2-financial-industry-analysis-track-design)
+- [3. Bank Sub-Framework (CAMELS)](#3-bank-sub-framework-camels)
+- [4. Securities Sub-Framework](#4-securities-sub-framework)
+- [5. Insurance Sub-Framework](#5-insurance-sub-framework)
+- [6. Financial Leasing Sub-Framework](#6-financial-leasing-sub-framework)
+- [7. Cross-Sub-Type General Indicators](#7-cross-sub-type-general-indicators)
+- [8. Financial Bond Public Data Quality Assessment](#8-financial-bond-public-data-quality-assessment)
+- [9. Special Risks in Financial Bond Analysis](#9-special-risks-in-financial-bond-analysis)
+- [10. Cross-Validation Linkage Between Financial and Corporate Bonds](#10-cross-validation-linkage-between-financial-and-corporate-bonds)
+- [11. Scoring Output Template](#11-scoring-output-template)
+- [12. Version History and To-Do Items](#12-version-history-and-to-do-items)
 
-中国信用债市场（截至2025年末）中，金融债（含商业银行债、证券公司债、保险公司债、金融租赁债）存量约6-8万亿元，占信用债总存量的约15%。
+---
 
-| 金融债子类型 | 存量规模估算 | 发行主体特征 |
+## 1. Positioning of Financial Bonds in the Engine
+
+### 1.1 Financial Bond Market Scale
+
+In the global credit bond market (as of end-2025), financial bonds (including commercial bank bonds, securities company bonds, insurance company bonds, and financial leasing bonds) account for a significant portion of total credit bond outstanding.
+
+| Financial Bond Sub-Type | Outstanding Scale Estimate | Issuer Characteristics |
 |---|---|---|
-| 商业银行债（含二级资本债、永续债） | 约4-5万亿 | 国有大行+股份行+城农商行，监管披露最完善 |
-| 证券公司债（含短期融资券） | 约1-1.5万亿 | 上市券商为主，受市场行情影响大 |
-| 保险公司债（含资本补充债） | 约3000-5000亿 | 寿险>财险，久期长，利率敏感 |
-| 金融租赁债 | 约2000-3000亿 | 银行系租赁为主，资产端与产业周期高度联动 |
+| Commercial bank bonds (including Tier 2 capital bonds, perpetual bonds) | Significant | State-owned banks + joint-stock banks + city/rural commercial banks, most comprehensive regulatory disclosure |
+| Securities company bonds (including short-term notes) | Notable | Primarily listed securities firms, heavily influenced by market conditions |
+| Insurance company bonds (including capital supplementary bonds) | Moderate | Life insurance > property insurance, long duration, interest rate sensitive |
+| Financial leasing bonds | Smaller | Primarily bank-affiliated leasing companies, asset-side highly linked to industrial cycle |
 
-### 1.2 金融债 vs 产业债：根本性差异
+### 1.2 Financial Bonds vs Corporate Bonds: Fundamental Differences
 
-| 维度 | 产业企业 | 金融企业 |
+| Dimension | Corporate Enterprises | Financial Enterprises |
 |---|---|---|
-| 核心资产 | 存货、设备、厂房、IP | 贷款组合、投资组合、客户关系 |
-| 收入来源 | 产品/服务销售 | 利息净收入、手续费、投资收益 |
-| 主要风险 | 需求/竞争/成本 | 信用风险（贷款违约）、市场风险（资产价格波动）、流动性风险 |
-| 杠杆特征 | 资产负债率40-70% | 杠杆天然高（银行>90%负债率正常） |
-| 监管密度 | 行业监管+环保等 | 严格金融机构监管（资本/流动性/关联交易等硬约束） |
-| 数据质量 | 参差不齐，非上市企业差 | 强制披露，数据质量远好于产业债 |
-| 风险暴露速度 | 渐进恶化（>12个月） | 可突然爆发（银行挤兑/市场冻结） |
-| 政府支持 | 部分国企有隐性强担保 | 系统重要性金融机构有明确显性+隐性支持 |
+| Core assets | Inventory, equipment, plant, IP | Loan portfolios, investment portfolios, customer relationships |
+| Revenue source | Product/service sales | Net interest income, fees, investment income |
+| Primary risks | Demand/competition/cost | Credit risk (loan default), market risk (asset price volatility), liquidity risk |
+| Leverage characteristics | Debt-to-asset ratio 40-70% | Naturally high leverage (banks > 90% liability ratio is normal) |
+| Regulatory density | Industry regulation + environmental etc. | Strict financial institution regulation (capital/liquidity/related party hard constraints) |
+| Data quality | Variable, poor for non-listed enterprises | Mandatory disclosure, data quality far better than corporate bonds |
+| Risk exposure speed | Gradual deterioration (> 12 months) | Can erupt suddenly (bank run / market freeze) |
+| Government support | Some SOEs have implicit guarantees | Systemically important financial institutions have explicit + implicit support |
 
-### 1.3 为什么金融债需要独立分析轨道
+### 1.3 Why Financial Bonds Need an Independent Analysis Track
 
-现有引擎的产业债金字塔（政策驱动型/技术壁垒型/存量博弈型/资产租约型）对金融企业完全不适用：
+The existing engine's corporate bond pyramids (policy-driven / technology-moat / zero-sum / asset-lease types) are completely unsuitable for financial enterprises:
 
-- **L1政策层**：对金融企业仍然重要（货币政策/监管政策），但权重和指标完全不同
-- **L2技术层**：金融企业没有"技术壁垒"概念（除金融科技）
-- **L3供应链层**：金融企业的"供应链"是资金来源（存款/同业/债券发行）和资金运用（贷款/投资）
-- **L4财务层**：财务指标完全不同（资本充足率 vs 资产负债率，净息差 vs 毛利率）
+- **L1 Policy Layer**: Still important for financial enterprises (monetary policy / regulatory policy), but weights and indicators are completely different
+- **L2 Technology Layer**: Financial enterprises have no "technology moat" concept (except fintech)
+- **L3 Supply Chain Layer**: A financial enterprise's "supply chain" is fund sources (deposits / interbank / bond issuance) and fund deployment (loans / investments)
+- **L4 Financial Layer**: Financial indicators are completely different (capital adequacy ratio vs debt-to-asset ratio, NIM vs gross margin)
 
 ---
 
-## 二、金融行业分析轨道设计
+## 2. Financial Industry Analysis Track Design
 
-### 2.1 轨道设计原则
+### 2.1 Track Design Principles
 
-金融债不另建独立金字塔评分体系，而是在现有双轨架构中增加 **"金融行业分析轨道"** ，与产业债金字塔平行存在。
-
-```
-输入: 行业 + 企业 + 分析日期
-        │
-   ┌────┴────┐
-   │ 行业判定  │
-   └────┬────┘
-        │
-   ┌────┴─────────────────────┐
-   │                          │
-   产业企业                    金融企业
-   (产业金字塔)                (金融分析轨道)
-   · 政策驱动型               · 银行 → CAMELS
-   · 技术壁垒型               · 券商 → 资本+杠杆+自营
-   · 存量博弈型               · 保险 → 偿付能力+利差
-   · 资产租约型               · 租赁 → 不良率+拨备+利差
-        │                          │
-   └────┴─────────────────────┘
-        │
-        进入双轨交叉对撞（轨道A+B）
-```
-
-### 2.2 金融分析轨道的标准化评分结构
-
-金融企业不采用产业四层金字塔的权重逻辑（政策/技术/供应链/财务），而是采用 **"五维风险评分"** 结构，统一适用于所有金融子类型，但每个维度的具体指标和权重依子类型调整。
+Financial bonds do not establish a separate independent pyramid scoring system, but instead add a **"Financial Industry Analysis Track"** within the existing dual-track architecture, running parallel to the corporate bond pyramid.
 
 ```
-金融五维评分 = Σ(维度评分 × 子类型权重)
-维度评分 = Σ(指标评分 × 指标权重)
-
-五维：
-  C - Capital Adequacy         资本充足性
-  A - Asset Quality            资产质量
-  L - Liquidity & Funding      流动性与融资
-  E - Earnings & Profitability 盈利与回报
-  S - Sensitivity & Risk       风险敏感度（市场/操作/集中度）
-
-权重依子类型调整：
-  银行:  C25% A30% L20% E15% S10%
-  券商:  C20% A20% L20% E20% S20%
-  保险:  C30% A20% L10% E20% S20%
-  租赁:  C20% A35% L15% E15% S15%
+Input: Industry + Enterprise + Analysis Date
+           │
+      ┌────┴────┐
+      │ Industry  │
+      │ Judgment │
+      └────┬────┘
+           │
+      ┌────┴─────────────────────┐
+      │                          │
+      Corporate                   Financial
+      Enterprises                 Enterprises
+      (Corporate Pyramid)        (Financial Analysis Track)
+      · Policy-driven            · Bank -> CAMELS
+      · Technology-moat          · Securities -> Capital+Leverage+Proprietary
+      · Zero-sum                 · Insurance -> Solvency+Spread
+      · Asset-lease              · Leasing -> NPL+Provisions+Spread
+           │                          │
+      └────┴─────────────────────┘
+           │
+           Enter Dual-Track Cross-Validation (Track A+B)
 ```
 
-### 2.3 与产业金字塔的衔接
+### 2.2 Standardized Scoring Structure of the Financial Analysis Track
 
-金融分析轨道产生的五维评分映射到现有引擎的**12档评级体系**（AAA→D），评分区间的定义与产业债完全一致：
+Financial enterprises do not use the four-layer pyramid weighting logic (policy/technology/supply chain/financial) used for corporates, but instead adopt a **"Five-Dimension Risk Score"** structure, uniformly applicable to all financial sub-types, with specific indicators and weights adjusted per sub-type.
 
-| 五维评分范围 | 对应评级 | 含义 |
+```
+Financial Five-Dimension Score = Sum(Dimension Score x Sub-Type Weight)
+Dimension Score = Sum(Indicator Score x Indicator Weight)
+
+Five Dimensions:
+  C - Capital Adequacy
+  A - Asset Quality
+  L - Liquidity & Funding
+  E - Earnings & Profitability
+  S - Sensitivity & Risk (Market/Operational/Concentration)
+
+Weights adjusted by sub-type:
+  Bank:      C25% A30% L20% E15% S10%
+  Securities: C20% A20% L20% E20% S20%
+  Insurance:  C30% A20% L10% E20% S20%
+  Leasing:    C20% A35% L15% E15% S15%
+```
+
+### 2.3 Linkage with the Corporate Pyramid
+
+The five-dimension score generated by the financial analysis track maps to the existing engine's **12-notch rating system** (AAA -> D), with scoring range definitions entirely consistent with corporate bonds:
+
+| Five-Dimension Score Range | Corresponding Rating | Meaning |
 |---|---|---|
-| 9.5 - 10.0 | AAA | 极低风险 |
-| 8.0 - 9.4 | AA+/AA/AA- | 低风险 |
-| 6.5 - 7.9 | A+/A/A- | 中低风险 |
-| 5.0 - 6.4 | BBB+/BBB/BBB- | 中等风险 |
-| 3.5 - 4.9 | BB+/BB/BB- | 中高风险 |
-| 2.0 - 3.4 | B+/B/B- | 高风险 |
-| 1.0 - 1.9 | CCC | 极高风险 |
-| 0 - 0.9 | D | 违约/濒临 |
+| 9.5 - 10.0 | AAA | Extremely low risk |
+| 8.0 - 9.4 | AA+/AA/AA- | Low risk |
+| 6.5 - 7.9 | A+/A/A- | Medium-low risk |
+| 5.0 - 6.4 | BBB+/BBB/BBB- | Medium risk |
+| 3.5 - 4.9 | BB+/BB/BB- | Medium-high risk |
+| 2.0 - 3.4 | B+/B/B- | High risk |
+| 1.0 - 1.9 | CCC | Extremely high risk |
+| 0 - 0.9 | D | Default/Imminent |
 
-> **重要**：同一评级对应不同风险逻辑。银行AA与产业AA的含义都是"低风险"，但风险源头不同——银行的风险是资产质量恶化和流动性危机，产业的风险是竞争格局恶化和现金流枯竭。
+> **Important**: The same rating corresponds to different risk logic. Bank AA and corporate AA both mean "low risk," but the risk sources differ -- for banks, the risk is asset quality deterioration and liquidity crisis; for corporates, it is competitive landscape deterioration and cash flow exhaustion.
 
-### 2.4 金融分析轨道的市场信号（轨道B接入）
+### 2.4 Market Signals for the Financial Analysis Track (Track B Access)
 
-金融企业的轨道B信号与产业企业一致，使用四级市场信号体系：
+Track B signals for financial enterprises are consistent with corporate enterprises, using a four-level market signal system:
 
-| 信号维度 | 银行/券商特殊考量 |
+| Signal Dimension | Bank/Securities Special Considerations |
 |---|---|
-| 信用利差 | 银行二级资本债/永续债利差反映市场对资本质量的看法；券商短融利差反映流动性压力 |
-| 股价波动率 | 上市银行/券商/保险股价波动（中国上市金融企业覆盖率>90%） |
-| 资金流向 | 同业存单发行利率/量 → 反映银行融资可得性 |
-| 评级事件 | 评级下调对银行影响大于产业（影响同业授信，可能引致流动性危机） |
+| Credit spreads | Bank Tier 2 capital / perpetual bond spreads reflect market views on capital quality; securities short-term note spreads reflect liquidity pressure |
+| Stock price volatility | Listed bank/securities/insurance stock price volatility (listed financial enterprise coverage > 90%) |
+| Fund flows | Interbank CD issuance rate/volume -> reflects bank financing accessibility |
+| Rating events | Rating downgrade impact on banks is greater than for corporates (affects interbank credit lines, may trigger liquidity crisis) |
 
 ---
 
-## 三、银行子框架（CAMELS）
+## 3. Bank Sub-Framework (CAMELS)
 
-### 3.1 CAMELS六维框架
+### 3.1 CAMELS Six-Dimension Framework
 
-银行信用分析采用国际通行的CAMELS框架，但根据中国市场特征做了本土化调整。
+Bank credit analysis adopts the internationally recognized CAMELS framework, with adjustments for market characteristics.
 
-| 维度 | 含义 | 权重 | 核心指标 | 数据来源 |
+| Dimension | Meaning | Weight | Core Indicators | Data Source |
 |---|---|---|---|---|
-| **C - Capital Adequacy** | 资本充足性 | 25% | 核心一级资本充足率、一级资本充足率、资本充足率、杠杆率 | 年报/季报披露 |
-| **A - Asset Quality** | 资产质量 | 30% | 不良贷款率、关注类贷款率、拨备覆盖率、拨贷比、逾期90天+/不良偏离度 | 年报/季报披露 |
-| **M - Management** | 管理层质量 | 10% | 股权结构稳定性、管理层履历、关联交易规模、监管处罚记录 | 企查查/监管公告 |
-| **E - Earnings** | 盈利能力 | 15% | ROA、ROE、净息差（NIM）、成本收入比、非利息收入占比 | 年报/季报披露 |
-| **L - Liquidity** | 流动性 | 15% | 流动性覆盖率（LCR）、净稳定融资比例（NSFR）、存贷比、同业负债占比 | 年报/季报（部分需估算） |
-| **S - Sensitivity** | 市场风险敏感度 | 5% | 利率风险、汇率风险敞口、交易账户占比、衍生品规模/资本比 | 年报披露+估算 |
+| **C - Capital Adequacy** | Capital adequacy | 25% | CET1 ratio, Tier 1 capital ratio, Capital adequacy ratio, Leverage ratio | Annual/quarterly reports |
+| **A - Asset Quality** | Asset quality | 30% | NPL ratio, Special-mention loan ratio, Provision coverage ratio, Loan loss provision ratio, 90+ days past due / NPL divergence | Annual/quarterly reports |
+| **M - Management** | Management quality | 10% | Equity structure stability, management track record, related transaction scale, regulatory penalty record | Business information platforms / regulatory announcements |
+| **E - Earnings** | Profitability | 15% | ROA, ROE, Net interest margin (NIM), Cost-to-income ratio, Non-interest income ratio | Annual/quarterly reports |
+| **L - Liquidity** | Liquidity | 15% | LCR, NSFR, Loan-to-deposit ratio, Interbank liability ratio | Annual/quarterly reports (some require estimation) |
+| **S - Sensitivity** | Market risk sensitivity | 5% | Interest rate risk, FX risk exposure, Trading book ratio, Derivatives size/capital | Annual reports + estimation |
 
-### 3.2 C - 资本充足性评分（25%）
+### 3.2 C - Capital Adequacy Score (25%)
 
-| 指标 | 计算方式 | 优秀（8-10） | 一般（4-7） | 危险（0-3） | 权重 |
+| Indicator | Calculation | Strong (8-10) | Adequate (4-7) | Weak (0-3) | Weight |
 |---|---|---|---|---|---|
-| 核心一级资本充足率 | 核心一级资本/风险加权资产 | >12% | 9-12% | <9%（监管红线下沿） | 35% |
-| 一级资本充足率 | 一级资本/风险加权资产 | >13% | 10-13% | <10%（监管缓冲区） | 25% |
-| 资本充足率 | 总资本/风险加权资产 | >15% | 12-15% | <12%（<10.5%触发监管措施） | 25% |
-| 杠杆率 | 一级资本/总资产（不含风险权重调整） | >6% | 4-6% | <4%（监管底线） | 15% |
+| CET1 ratio | CET1 / Risk-weighted assets | > 12% | 9-12% | < 9% (regulatory minimum) | 35% |
+| Tier 1 capital ratio | Tier 1 capital / Risk-weighted assets | > 13% | 10-13% | < 10% (regulatory buffer) | 25% |
+| Capital adequacy ratio | Total capital / Risk-weighted assets | > 15% | 12-15% | < 12% (< 10.5% triggers regulatory action) | 25% |
+| Leverage ratio | Tier 1 capital / Total assets (no risk weighting) | > 6% | 4-6% | < 4% (regulatory minimum) | 15% |
 
-**中国银行资本监管红线下沿：**
-- 核心一级资本充足率最低要求：5%（系统重要性银行+1%-2.5%附加）
-- 一级资本充足率最低要求：6%
-- 资本充足率最低要求：8%
-- **实际运行中，银行资本低于监管要求+缓冲线即触发限制**，不应等到最低红线
+**Bank Capital Regulatory Minimums:**
+- CET1 minimum requirement: 5% (D-SIB/G-SIB add 1%-2.5% surcharge)
+- Tier 1 capital minimum requirement: 6%
+- Capital adequacy minimum requirement: 8%
+- **In practice, capital below regulatory requirement + buffer triggers restrictions -- do not wait for hard minimum**
 
-**评分调整：**
-- 资本质量（含其他一级资本/二级资本占比）——TLAC合格工具占比高+1分
-- 资本构成的TLAC（总损失吸收能力）达标情况——国有大行需关注TLAC缺口
+**Scoring Adjustment:**
+- Capital quality (including other Tier 1 / Tier 2 capital composition) -- high proportion of TLAC-eligible instruments +1 point
+- TLAC (Total Loss-Absorbing Capacity) compliance -- systemically important banks need to monitor TLAC shortfall
 
-### 3.3 A - 资产质量评分（30%）
+### 3.3 A - Asset Quality Score (30%)
 
-| 指标 | 计算方式 | 优秀（8-10） | 一般（4-7） | 危险（0-3） | 权重 |
+| Indicator | Calculation | Strong (8-10) | Adequate (4-7) | Weak (0-3) | Weight |
 |---|---|---|---|---|---|
-| 不良贷款率（NPL） | 不良贷款/总贷款 | <1.0% | 1.0-2.5% | >2.5%（>5%严重危险） | 30% |
-| 关注类贷款率 | 关注类贷款/总贷款 | <2.0% | 2.0-5.0% | >5.0% | 20% |
-| 拨备覆盖率 | 贷款损失准备/不良贷款 | >300% | 150-300% | <150%（<120%触发监管关注） | 20% |
-| 拨贷比 | 贷款损失准备/总贷款 | >3.5% | 2.5-3.5% | <2.5% | 15% |
-| 逾期90天+/不良偏离度 | 逾期90天以上贷款/不良贷款 | <100% | 100-130% | >130%（藏不良信号） | 15% |
+| NPL ratio | Non-performing loans / Total loans | < 1.0% | 1.0-2.5% | > 2.5% (> 5% severely weak) | 30% |
+| Special-mention loan ratio | Special-mention loans / Total loans | < 2.0% | 2.0-5.0% | > 5.0% | 20% |
+| Provision coverage ratio | Loan loss provisions / NPLs | > 300% | 150-300% | < 150% (< 120% triggers regulatory attention) | 20% |
+| Loan loss provision ratio | Loan loss provisions / Total loans | > 3.5% | 2.5-3.5% | < 2.5% | 15% |
+| 90+ days past due / NPL divergence | Loans 90+ days past due / NPLs | < 100% | 100-130% | > 130% (signal of hidden NPLs) | 15% |
 
-**中国银行资产质量核心关注：**
+**Bank Asset Quality Core Focus Areas:**
 
-1. **偏离度指标是资产质量的照妖镜。** 逾期90天+/不良偏离度>100%意味着银行在隐藏不良——这是中国银行资产质量分析中最重要的先行指标。包商银行（2019）在接管前偏离度长期>150%。
+1. **Divergence ratio is the mirror of asset quality.** 90+ days past due / NPL divergence > 100% means the bank is hiding NPLs -- this is the most important leading indicator in bank asset quality analysis. A failed mid-sized bank (2019) had divergence > 150% for an extended period before regulatory takeover.
 
-2. **关注类贷款是先行信号。** 关注类贷款率上升比不良贷款率上升早6-12个月，是前瞻性资产质量恶化的最重要预警。
+2. **Special-mention loans are a leading signal.** An increase in the special-mention loan ratio precedes an increase in the NPL ratio by 6-12 months, making it the most important forward warning of asset quality deterioration.
 
-3. **不良率的数值质量取决于偏离度。** 偏离度>130%的银行，其披露的不良率基本不可信，需要在披露值基础上加1-3个百分点估算真实不良率。
+3. **The quality of the NPL ratio depends on divergence.** For banks with divergence > 130%, the disclosed NPL ratio is essentially unreliable; the true NPL ratio needs to be estimated by adding 1-3 percentage points to the disclosed value.
 
-4. **行业集中度是隐性风险。** 对房地产/地方政府融资平台/产能过剩行业的敞口集中度不直接反映在NPL中，但会在经济下行期集中暴露。
+4. **Industry concentration is a hidden risk.** Concentration exposure to real estate / LGFVs / overcapacity industries is not directly reflected in NPLs, but will be concentrated during economic downturns.
 
-**行业敞口集中度调整（修正评分）：**
+**Industry Exposure Concentration Adjustment (Corrected Score):**
 
-| 单一行业敞口/净资本 | 评分修正 |
+| Single Industry Exposure / Net Capital | Score Correction |
 |---|---|
-| >50%（房地产业） | -1分（特殊关注） |
-| >100%（地方政府融资平台） | -2分（高度集中） |
-| 前三大行业合计>200% | -1分（行业集中风险） |
+| > 50% (real estate) | -1 point (special attention) |
+| > 100% (LGFVs) | -2 points (highly concentrated) |
+| Top 3 industries combined > 200% | -1 point (industry concentration risk) |
 
-### 3.4 M - 管理层质量评分（10%）
+### 3.4 M - Management Quality Score (10%)
 
-| 指标 | 计算方式 | 优秀（8-10） | 一般（4-7） | 危险（0-3） | 权重 |
+| Indicator | Calculation | Strong (8-10) | Adequate (4-7) | Weak (0-3) | Weight |
 |---|---|---|---|---|---|
-| 股权结构稳定性 | 近3年主要股东变更次数 | 稳定 | 有变化但无控制权争议 | 频繁变更或存在股权质押纠纷 | 25% |
-| 管理层稳定性 | 近3年董事长/行长变更次数 | 0-1次 | 2-3次 | >3次或非正常变更 | 20% |
-| 关联交易规模 | 关联交易/净资产 | <10% | 10-30% | >30%或向大股东输送利益嫌疑 | 25% |
-| 监管处罚记录 | 近3年重大处罚次数 | 0次 | 1-2次小罚 | >2次重大处罚或被接管/托管 | 30% |
+| Equity structure stability | Major shareholder changes in 3 years | Stable | Changes but no control dispute | Frequent changes or equity pledge disputes | 25% |
+| Management stability | Chairman/president changes in 3 years | 0-1 times | 2-3 times | > 3 times or abnormal changes | 20% |
+| Related transaction scale | Related transactions / Net assets | < 10% | 10-30% | > 30% or suspected benefit transfer to major shareholder | 25% |
+| Regulatory penalty record | Major penalties in 3 years | 0 | 1-2 minor fines | > 2 major penalties or taken over/placed under receivership | 30% |
 
-**特别关注信号（触发一票否决性关注）：**
-- 大股东股权被司法冻结
-- 董事长/行长被调查或失踪
-- 关联贷款不计提资本扣减
-- 与股东之间存在大量非标业务往来
+**Special Attention Signals (Triggering Veto-Level Concern):**
+- Major shareholder equity frozen by court order
+- Chairman/president under investigation or missing
+- Related loans not deducted from capital
+- Large volume of non-standard business transactions with shareholders
 
-### 3.5 E - 盈利能力评分（15%）
+### 3.5 E - Earnings Score (15%)
 
-| 指标 | 计算方式 | 优秀（8-10） | 一般（4-7） | 危险（0-3） | 权重 |
+| Indicator | Calculation | Strong (8-10) | Adequate (4-7) | Weak (0-3) | Weight |
 |---|---|---|---|---|---|
-| ROA | 净利润/平均总资产 | >1.0% | 0.5-1.0% | <0.5%（<0%持续亏损） | 25% |
-| ROE | 净利润/平均净资产 | >12% | 6-12% | <6%（<0%持续亏损） | 25% |
-| 净息差（NIM） | 利息净收入/平均生息资产 | >2.2% | 1.8-2.2% | <1.8%（<1.5%压力） | 25% |
-| 成本收入比 | 业务及管理费/营业收入 | <30% | 30-40% | >40%（>50%效率低） | 15% |
-| 非利息收入占比 | 非利息收入/营业收入 | >25% | 15-25% | <15%（依赖息差） | 10% |
+| ROA | Net profit / Average total assets | > 1.0% | 0.5-1.0% | < 0.5% (< 0% sustained losses) | 25% |
+| ROE | Net profit / Average net assets | > 12% | 6-12% | < 6% (< 0% sustained losses) | 25% |
+| NIM | Net interest income / Average interest-earning assets | > 2.2% | 1.8-2.2% | < 1.8% (< 1.5% stressed) | 25% |
+| Cost-to-income ratio | Operating expenses / Operating income | < 30% | 30-40% | > 40% (> 50% inefficient) | 15% |
+| Non-interest income ratio | Non-interest income / Operating income | > 25% | 15-25% | < 15% (over-reliant on spread) | 10% |
 
-**中国银行盈利分析要点：**
+**Bank Earnings Analysis Key Points:**
 
-1. **NIM趋势比绝对值更重要。** 中国利率下行周期中（2020-2025），全行业NIM从2.2%压缩至1.6%以下。NIM下降速度快的银行通常意味着资产负债结构脆弱（存款成本粘性高、贷款定价能力弱）。
+1. **NIM trend is more important than absolute value.** In an interest rate down-cycle, industry NIM may compress from 2.2% to below 1.6%. Banks with rapid NIM decline typically have fragile asset-liability structures (sticky deposit costs, weak loan pricing power).
 
-2. **非利息收入中需要拆解：** 手续费收入相对稳定（财富管理、投行、结算），投资收益波动大（债券价差、基金分红）。非利息收入占比高但以投资收益为主 → 可持续性存疑。
+2. **Non-interest income needs decomposition:** Fee income (wealth management, investment banking, settlement) is relatively stable; investment income (bond price gains, fund dividends) is volatile. High non-interest income ratio but primarily investment income -> sustainability questionable.
 
-3. **信用成本是盈利的最大拖累。** 银行报表利润 = 利息净收入 + 非利息收入 - 业务管理费 - 信用减值损失 - 所得税。信用减值损失是调节利润的最大项——在不良率高时可能被低估。
+3. **Credit cost is the biggest drag on earnings.** Bank reported profit = Net interest income + Non-interest income - Operating expenses - Credit impairment losses - Tax. Credit impairment losses are the largest profit adjustment item -- may be understated when NPLs are high.
 
-### 3.6 L - 流动性评分（15%）
+### 3.6 L - Liquidity Score (15%)
 
-| 指标 | 计算方式 | 优秀（8-10） | 一般（4-7） | 危险（0-3） | 权重 |
+| Indicator | Calculation | Strong (8-10) | Adequate (4-7) | Weak (0-3) | Weight |
 |---|---|---|---|---|---|
-| 流动性覆盖率（LCR） | 合格优质流动性资产/未来30日净现金流出 | >150% | 100-150% | <100%（不达标） | 30% |
-| 净稳定融资比例（NSFR） | 可用稳定融资/所需稳定融资 | >120% | 100-120% | <100%（不达标） | 25% |
-| 存贷比 | 贷款总额/存款总额 | <75% | 75-85% | >85%（>100%极高风险） | 20% |
-| 同业负债占比 | 同业负债/总负债 | <15% | 15-25% | >25%（>33%监管上限） | 15% |
-| 优质流动性资产 | 现金+国债+政策性金融债/总资产 | >10% | 5-10% | <5% | 10% |
+| LCR | High-quality liquid assets / Net cash outflows over 30 days | > 150% | 100-150% | < 100% (non-compliant) | 30% |
+| NSFR | Available stable funding / Required stable funding | > 120% | 100-120% | < 100% (non-compliant) | 25% |
+| Loan-to-deposit ratio | Total loans / Total deposits | < 75% | 75-85% | > 85% (> 100% extremely high risk) | 20% |
+| Interbank liability ratio | Interbank liabilities / Total liabilities | < 15% | 15-25% | > 25% (> 33% regulatory cap) | 15% |
+| High-quality liquid assets | Cash + government bonds + policy bank bonds / Total assets | > 10% | 5-10% | < 5% | 10% |
 
-**中国银行流动性核心关注：**
+**Bank Liquidity Core Focus Areas:**
 
-1. **同业负债依赖度高是脆弱性信号。** 包商银行（2019）在接管前同业负债占比超过40%，远超33%监管上限。中小银行流动性危机往往始于同业融资收紧。
+1. **High interbank liability dependence is a fragility signal.** A failed mid-sized bank had interbank liability ratio exceeding 40% before takeover, far above the 33% regulatory cap. Liquidity crises for small and medium banks often start with interbank financing tightening.
 
-2. **LCR和NSFR数据公开披露有限。** 大多数银行仅在年报中披露大行/股份行水平的LCR和NSFR，城农商行可能不披露。不披露本身就是一个负面信号。
+2. **LCR and NSFR public disclosure is limited.** Most banks only disclose LCR and NSFR at the large bank level in annual reports; city/rural commercial banks may not disclose. Non-disclosure itself is a negative signal.
 
-3. **存贷比>100%意味着银行"借短贷长"程度极端。** 如果同时同业负债占比高，则流动性风险极高。
+3. **Loan-to-deposit ratio > 100% means the bank is extremely "borrowing short, lending long."** If combined with a high interbank liability ratio, liquidity risk is extremely high.
 
-### 3.7 S - 市场风险敏感度评分（5%）
+### 3.7 S - Market Risk Sensitivity Score (5%)
 
-| 指标 | 计算方式 | 优秀（8-10） | 一般（4-7） | 危险（0-3） | 权重 |
+| Indicator | Calculation | Strong (8-10) | Adequate (4-7) | Weak (0-3) | Weight |
 |---|---|---|---|---|---|
-| 交易账户占比 | 交易性金融资产/总资产 | <5% | 5-15% | >15% | 30% |
-| 债券投资/资本 | 债券投资规模/净资本 | <300% | 300-500% | >500% | 25% |
-| 衍生品名义本金/资本 | 衍生品名义本金/净资本 | <500% | 500-2000% | >2000% | 20% |
-| 外汇敞口/资本 | 外汇风险敞口/净资本 | <10% | 10-30% | >30% | 25% |
+| Trading book ratio | Trading securities / Total assets | < 5% | 5-15% | > 15% | 30% |
+| Bond investment / Capital | Bond investment size / Net capital | < 300% | 300-500% | > 500% | 25% |
+| Derivatives notional / Capital | Derivatives notional / Net capital | < 500% | 500-2000% | > 2000% | 20% |
+| FX exposure / Capital | FX risk exposure / Net capital | < 10% | 10-30% | > 30% | 25% |
 
-**注：** 中国银行的市场风险敞口通常较小（以持有至到期债券为主），但部分股份制银行交易账户占比高，利率波动对其资本影响较大。
+**Note:** Banks' market risk exposure is typically small (mainly hold-to-maturity bonds), but some joint-stock banks have high trading book ratios, and interest rate fluctuations have a greater impact on their capital.
 
-### 3.8 银行一票否决条件（评分上限锁定CCC）
+### 3.8 Bank Veto Conditions (Score Capped at CCC)
 
-触发以下任一条件，银行综合评级上限锁定为CCC：
+Triggering any of the following conditions caps the bank's composite rating at CCC:
 
-1. **核心一级资本充足率 < 监管最低要求（含缓冲）** —— 资本不足已触发监管限制
-2. **不良贷款率 > 8%** —— 资产质量严重恶化（参考包商银行接管前水平）
-3. **拨备覆盖率 < 100%** —— 拨备不足，实际已资不抵债
-4. **被接管、托管或触发系统性风险处置机制**
-5. **同业负债占比 > 33%（监管上限）且同时存贷比 > 100%**
-6. **董事长/行长被立案调查或失联**
+1. **CET1 ratio < regulatory minimum (including buffer)** -- capital deficiency has triggered regulatory restrictions
+2. **NPL ratio > 8%** -- severe asset quality deterioration
+3. **Provision coverage ratio < 100%** -- insufficient provisions, effectively insolvent
+4. **Taken over, placed under receivership, or systemic risk resolution mechanism triggered**
+5. **Interbank liability ratio > 33% (regulatory cap) AND loan-to-deposit ratio > 100%**
+6. **Chairman/president placed under investigation or missing**
 
-### 3.9 银行规模分层参照
+### 3.9 Bank Size Tier Reference
 
-不同量级的银行，评分基准不同：
+Banks of different tiers have different scoring baselines:
 
-| 银行类型 | 代表 | 核心一级资本充足率基准 | 不良率基准 | ROE基准 | 特殊考量 |
+| Bank Type | Examples | CET1 Ratio Baseline | NPL Baseline | ROE Baseline | Special Considerations |
 |---|---|---|---|---|---|
-| 国有大行 | 工/农/中/建/交/邮储 | >12% | <1.5% | >10% | TLAC达标、系统重要性附加资本 |
-| 股份行 | 招商/兴业/浦发/民生/中信等 | >10% | <1.8% | >8% | 同业负债占比、非标敞口 |
-| 城商行 | 宁波/南京/江苏/杭州等头部 | >10% | <1.5% | >10% | 区域经济集中度、地方政府敞口 |
-| 农商行 | 重庆/上海/广州等头部 | >11% | <2.0% | >8% | 涉农敞口、小微信贷风险 |
-| 外资行 | 汇丰/渣打/花旗中国 | >15% | <0.5% | >5% | 母行支持是关键，中国业务占比小 |
-| 村镇银行 | — | >10% | <3.0% | 不稳定 | 规模极小，流动性脆弱 |
+| State-owned banks | Major global banks | > 12% | < 1.5% | > 10% | TLAC compliance, G-SIB surcharge |
+| Joint-stock banks | National commercial banks | > 10% | < 1.8% | > 8% | Interbank liability ratio, non-standard exposure |
+| City commercial banks | Regional leading banks | > 10% | < 1.5% | > 10% | Regional economic concentration, LGFV exposure |
+| Rural commercial banks | Regional leading banks | > 11% | < 2.0% | > 8% | Agricultural exposure, SME credit risk |
+| Foreign banks | International banks (local subsidiaries) | > 15% | < 0.5% | > 5% | Parent bank support is key, local business share small |
+| Community banks | -- | > 10% | < 3.0% | Unstable | Very small scale, fragile liquidity |
 
 ---
 
-## 四、证券子框架
+## 4. Securities Sub-Framework
 
-### 4.1 券商信用分析的特殊性
+### 4.1 Special Characteristics of Securities Firm Credit Analysis
 
-证券公司与银行有本质区别：
-- **资产端**：以金融资产为主（股票/债券/基金/衍生品），非贷款
-- **负债端**：杠杆经营但杠杆率受监管约束
-- **收入**：高度依赖市场行情（经纪/投行/自营/资管）
-- **风险**：市场风险>信用风险，与二级市场行情高度绑定
+Securities firms are fundamentally different from banks:
+- **Asset side**: Primarily financial assets (stocks/bonds/funds/derivatives), not loans
+- **Liability side**: Leveraged operations but leverage ratio subject to regulatory constraints
+- **Revenue**: Highly dependent on market conditions (brokerage/IB/proprietary/asset management)
+- **Risk**: Market risk > credit risk, highly correlated with secondary market conditions
 
-### 4.2 券商五维评分
+### 4.2 Securities Firm Five-Dimension Score
 
-| 维度 | 权重 | 核心指标 | 数据来源 |
+| Dimension | Weight | Core Indicators | Data Source |
 |---|---|---|---|
-| **C - 资本充足性** | 20% | 净资本、风险覆盖率、资本杠杆率 | 年报/月度经营数据 |
-| **A - 资产质量** | 20% | 自营投资回报、债券投资评级分布、股票质押式回购违约率 | 年报+估算 |
-| **L - 流动性与融资** | 20% | 流动性覆盖率、短期融资占比、融资渠道多样性 | 年报 |
-| **E - 盈利能力** | 20% | ROE、经纪业务市占率、投行IPO承销排名、自营收入占比 | Wind/证券业协会 |
-| **S - 风险敏感度** | 20% | 杠杆率、衍生品名义本金/净资本、自营权益占比、单一客户集中度 | 年报 |
+| **C - Capital Adequacy** | 20% | Net capital, Risk coverage ratio, Capital leverage ratio | Annual reports / monthly operating data |
+| **A - Asset Quality** | 20% | Proprietary investment returns, Bond investment rating distribution, Stock pledge repo default rate | Annual reports + estimation |
+| **L - Liquidity & Funding** | 20% | LCR, Short-term financing ratio, Financing channel diversity | Annual reports |
+| **E - Earnings** | 20% | ROE, Brokerage market share, IB IPO underwriting ranking, Proprietary income ratio | Financial data platforms / industry associations |
+| **S - Sensitivity** | 20% | Leverage ratio, Derivatives notional/net capital, Proprietary equity ratio, Single client concentration | Annual reports |
 
-### 4.3 券商关键指标评分
+### 4.3 Securities Firm Key Indicator Scoring
 
-| 指标 | 计算方式 | 优秀（8-10） | 一般（4-7） | 危险（0-3） | 权重 |
+| Indicator | Calculation | Strong (8-10) | Adequate (4-7) | Weak (0-3) | Weight |
 |---|---|---|---|---|---|
-| **C - 风险覆盖率** | 净资本/各项风险资本准备之和 | >300% | 200-300% | <200%（<100%触发监管） | 50% |
-| **C - 资本杠杆率** | 核心净资本/表内外资产总额 | >15% | 10-15% | <10%（<8%触及监管） | 50% |
-| **A - 股票质押违约率** | 违约质押规模/总质押规模 | <5% | 5-15% | >15% | 40% |
-| **A - 自营投资杠杆** | 自营规模/净资本 | <200% | 200-400% | >400% | 30% |
-| **E - ROE** | 净利润/平均净资产 | >8% | 4-8% | <4%或亏损 | 35% |
-| **E - 经纪业务稳定性** | 近3年经纪收入标准差/均值 | <15% | 15-30% | >30% | 25% |
-| **L - 短融占比** | 短期融资/总负债 | <20% | 20-35% | >35% | 40% |
-| **L - 融资渠道多样性** | 可用融资渠道数量（公司债/短融/收益凭证/拆借/回购/转融通） | >5种 | 3-5种 | <3种 | 30% |
-| **S - 杠杆率（监管口径）** | 总资产/净资产 | <3x | 3-5x | >5x（>6x触监管上限） | 40% |
-| **S - 自营权益占比** | 权益类自营/净资本 | <50% | 50-100% | >100% | 30% |
+| **C - Risk coverage ratio** | Net capital / Total risk capital reserves | > 300% | 200-300% | < 200% (< 100% triggers regulatory action) | 50% |
+| **C - Capital leverage ratio** | Core net capital / Total on- and off-balance sheet assets | > 15% | 10-15% | < 10% (< 8% triggers regulatory action) | 50% |
+| **A - Stock pledge default rate** | Default pledge size / Total pledge size | < 5% | 5-15% | > 15% | 40% |
+| **A - Proprietary investment leverage** | Proprietary size / Net capital | < 200% | 200-400% | > 400% | 30% |
+| **E - ROE** | Net profit / Average net assets | > 8% | 4-8% | < 4% or loss-making | 35% |
+| **E - Brokerage stability** | Std dev / mean of brokerage revenue over 3 years | < 15% | 15-30% | > 30% | 25% |
+| **L - Short-term note ratio** | Short-term financing / Total liabilities | < 20% | 20-35% | > 35% | 40% |
+| **L - Financing channel diversity** | Number of available financing channels (corp bonds / short-term notes / revenue certificates / borrowing / repo / refinancing) | > 5 types | 3-5 types | < 3 types | 30% |
+| **S - Leverage ratio (regulatory)** | Total assets / Net assets | < 3x | 3-5x | > 5x (> 6x regulatory cap) | 40% |
+| **S - Proprietary equity ratio** | Equity proprietary / Net capital | < 50% | 50-100% | > 100% | 30% |
 
-### 4.4 券商信用分析核心要点
+### 4.4 Securities Firm Credit Analysis Key Points
 
-1. **自营业务是关键变量。** 券商经营分"轻资产"（经纪/投行/资管）和"重资产"（自营/做市）。自营占比高=业绩波动大=信用风险随市场波动。2022年权益市场下跌导致多家券商自营亏损，拖累ROE至负值。
+1. **Proprietary business is a key variable.** Securities firm operations are divided into "asset-light" (brokerage/IB/asset management) and "asset-heavy" (proprietary/market making). Higher proprietary ratio = greater performance volatility = credit risk fluctuating with markets.
 
-2. **股票质押式回购是中国券商特有风险。** 2018年股票质押强制平仓潮导致多家券商计提大额减值，部分中小券商回售违约。质押业务规模大、风控差的券商需要额外关注。
+2. **Stock pledge repo is a unique risk.** The 2018 stock pledge margin call wave caused many securities firms to book large impairment provisions, with some small and medium firms facing default on repurchase agreements. Firms with large pledge businesses and weak risk control require extra attention.
 
-3. **经纪业务稳定但被压缩。** 佣金率持续下降（从万三到万一点五），经纪业务作为利润支柱的地位减弱。需要关注财富管理转型进度（代销基金/投顾服务收入占比）。
+3. **Brokerage business is stable but being compressed.** Commission rates have been declining. Brokerage as a profit pillar is weakening. The progress of wealth management transformation (fund distribution / advisory service revenue share) needs attention.
 
-4. **投行业务依赖监管周期。** IPO节奏受政策调控影响大，2023-2024年IPO收紧导致投行收入大幅波动。不能以峰值收入作为信用质量基准。
+4. **IB business depends on regulatory cycles.** IPO pace is heavily influenced by policy regulation. IB revenue cannot be used as a credit quality baseline at peak levels.
 
-5. **央企/头部券商 vs 民营/中小券商：** 头部券商（中信/中金/华泰/国君等）的融资渠道、客户基础和监管地位远优于中小券商，信用分化明显。
+5. **Leading vs small/medium securities firms:** Leading firms have significantly superior financing channels, client bases, and regulatory standing compared to small/medium firms; credit differentiation is evident.
 
-### 4.5 券商一票否决条件
+### 4.5 Securities Firm Veto Conditions
 
-1. **风险覆盖率 < 100%**（净资本不足覆盖风险敞口）
-2. **资本杠杆率 < 8%**（触及监管红线）
-3. **股票质押违约率 > 20%，且规模>净资本50%**
-4. **自营权益类占比 > 200%（超监管上限）**
-5. **被证监会采取限制业务措施或风险处置**
+1. **Risk coverage ratio < 100%** (net capital insufficient to cover risk exposure)
+2. **Capital leverage ratio < 8%** (regulatory red line)
+3. **Stock pledge default rate > 20% AND size > 50% of net capital**
+4. **Proprietary equity ratio > 200%** (exceeds regulatory cap)
+5. **Subject to business restriction measures or risk resolution by securities regulator**
 
 ---
 
-## 五、保险子框架
+## 5. Insurance Sub-Framework
 
-### 5.1 保险信用分析的特殊性
+### 5.1 Special Characteristics of Insurance Credit Analysis
 
-保险公司信用分析的核心逻辑：
-- **负债端**：保费收入是"先收钱后赔付"——天然的高现金流业务，但长期负债（寿险）存在利率风险
-- **资产端**：大部分资金投资于债券/非标等固收资产，部分投资于权益
-- **核心风险**：**利差损**（负债成本>投资收益）、**偿付能力不足**、**权益投资波动**
+Core logic of insurance company credit analysis:
+- **Liability side**: Premium income is "collect now, pay later" -- naturally high cash flow business, but long-term liabilities (life insurance) have interest rate risk
+- **Asset side**: Most funds invested in bonds/non-standard fixed income assets, some in equities
+- **Core risks**: **Spread loss** (liability cost > investment return), **insufficient solvency**, **equity investment volatility**
 
-### 5.2 保险五维评分
+### 5.2 Insurance Five-Dimension Score
 
-| 维度 | 权重 | 核心指标 | 数据来源 |
+| Dimension | Weight | Core Indicators | Data Source |
 |---|---|---|---|
-| **C - 偿付能力充足性** | 30% | 综合偿付能力充足率、核心偿付能力充足率、实际资本/最低资本 | 偿报（季度披露） |
-| **A - 资产质量** | 20% | 固收类占比、信用债评级分布、非标资产占比、违约资产占比 | 年报 |
-| **L - 流动性与负债** | 10% | 退保率、流动性覆盖率、短债占比 | 年报/偿报 |
-| **E - 盈利能力** | 20% | ROE、综合收益率、净投资收益率、承保利润/亏损、利差 | 年报 |
-| **S - 风险敏感度** | 20% | 权益投资占比、利率敏感度（久期缺口）、集中度风险 | 年报/偿报 |
+| **C - Solvency Adequacy** | 30% | Composite solvency ratio, Core solvency ratio, Actual capital / Minimum capital | Solvency reports (quarterly) |
+| **A - Asset Quality** | 20% | Fixed income ratio, Credit bond rating distribution, Non-standard asset ratio, Default asset ratio | Annual reports |
+| **L - Liquidity & Liabilities** | 10% | Lapse ratio, LCR, Short-term debt ratio | Annual / solvency reports |
+| **E - Earnings** | 20% | ROE, Composite investment yield, Net investment yield, Underwriting profit/loss, Spread | Annual reports |
+| **S - Sensitivity** | 20% | Equity investment ratio, Interest rate sensitivity (duration gap), Concentration risk | Annual / solvency reports |
 
-### 5.3 保险关键指标评分
+### 5.3 Insurance Key Indicator Scoring
 
-| 指标 | 计算方式 | 优秀（8-10） | 一般（4-7） | 危险（0-3） | 权重 |
+| Indicator | Calculation | Strong (8-10) | Adequate (4-7) | Weak (0-3) | Weight |
 |---|---|---|---|---|---|
-| **C - 综合偿付能力充足率** | 实际资本/最低资本 | >200% | 120-200% | <120%（<100%触发监管） | 50% |
-| **C - 核心偿付能力充足率** | 核心资本/最低资本 | >150% | 75-150% | <75%（<50%触发监管） | 30% |
-| **C - 实际资本/保费收入** | 实际资本/当年保费 | >30% | 15-30% | <15% | 20% |
-| **E - 综合投资收益率** | （投资收益+公允价值变动）/平均投资资产 | >5% | 3-5% | <3%持续2年 | 30% |
-| **E - 利差** | 综合投资收益率 - 负债平均成本 | >1.5% | 0-1.5% | <0%（利差损） | 30% |
-| **E - ROE** | 净利润/平均净资产 | >10% | 5-10% | <5%或亏损 | 20% |
-| **E - 承保利润率** | 承保利润/已赚保费 | >3% | 0-3% | <0%持续 | 20% |
-| **S - 权益投资占比** | 股票+股票基金+权益类资产/总投资资产 | <15% | 15-25% | >25%（>30%触监管上限） | 35% |
-| **S - 利率久期缺口** | 资产久期 - 负债久期 | 缺口<1年 | 缺口1-3年 | 缺口>3年 | 30% |
-| **S - 前五大对手集中度** | 前五大交易对手风险敞口/总资产 | <10% | 10-20% | >20% | 20% |
-| **L - 退保率** | 退保金/已赚保费 | <3% | 3-8% | >8% | 40% |
+| **C - Composite solvency ratio** | Actual capital / Minimum capital | > 200% | 120-200% | < 120% (< 100% triggers regulatory action) | 50% |
+| **C - Core solvency ratio** | Core capital / Minimum capital | > 150% | 75-150% | < 75% (< 50% triggers regulatory action) | 30% |
+| **C - Actual capital / Premium income** | Actual capital / Annual premiums | > 30% | 15-30% | < 15% | 20% |
+| **E - Composite investment yield** | (Investment income + FV changes) / Average invested assets | > 5% | 3-5% | < 3% for 2 consecutive years | 30% |
+| **E - Spread** | Composite investment yield - Average liability cost | > 1.5% | 0-1.5% | < 0% (negative spread) | 30% |
+| **E - ROE** | Net profit / Average net assets | > 10% | 5-10% | < 5% or loss-making | 20% |
+| **E - Underwriting profit margin** | Underwriting profit / Earned premiums | > 3% | 0-3% | < 0% sustained | 20% |
+| **S - Equity investment ratio** | (Stocks + equity funds + equity assets) / Total invested assets | < 15% | 15-25% | > 25% (> 30% regulatory cap) | 35% |
+| **S - Interest rate duration gap** | Asset duration - Liability duration | Gap < 1 year | Gap 1-3 years | Gap > 3 years | 30% |
+| **S - Top 5 counterparty concentration** | Top 5 counterparty risk exposure / Total assets | < 10% | 10-20% | > 20% | 20% |
+| **L - Lapse ratio** | Lapse benefits / Earned premiums | < 3% | 3-8% | > 8% | 40% |
 
-### 5.4 保险信用分析核心要点
+### 5.4 Insurance Credit Analysis Key Points
 
-1. **利差损是寿险公司最大的慢性风险。** 中国利率下行周期（2019-2025）中，10年期国债收益率从3.3%降至1.8%以下，而寿险保单的预定利率调整滞后。高峰时销售的4.025%预定利率保单对应的资产再投资收益持续下降 → 利差损不断累积。这是中国寿险业系统性风险的最大单一来源。
+1. **Negative spread is the biggest chronic risk for life insurers.** In an interest rate down-cycle, long-term government bond yields may decline from 3%+ to below 2%, while the adjustment of life insurance policy pricing rates lags. Policies sold at peak pricing rates face continuously declining asset reinvestment returns -> negative spread accumulates. This represents a major systemic risk source.
 
-2. **偿付能力充足率是监管红线，但不是先行指标。** 偿付能力充足率反映的是"当下"的资本水平。偿付能力恶化通常是资产端问题（投资亏损/违约）已经发生后的结果，不作为前瞻预测。
+2. **Solvency ratio is a regulatory red line but not a leading indicator.** The solvency ratio reflects "current" capital levels. Solvency deterioration is typically the result of asset-side problems (investment losses/defaults) that have already occurred, not a forward predictor.
 
-3. **长短期结合看：**
-   - **短期先行指标**：退保率上升、新业务价值（NBV）下滑 → 现金流压力
-   - **中期核心指标**：利差损趋势、久期缺口 → 持续盈利能力恶化
-   - **长期结构指标**：偿付能力充足率、权益投资占比 → 资本安全边际
+3. **Combine short and long-term perspectives:**
+   - **Short-term leading indicators**: Rising lapse ratio, declining new business value (NBV) -> cash flow pressure
+   - **Medium-term core indicators**: Negative spread trend, duration gap -> sustained profitability deterioration
+   - **Long-term structural indicators**: Solvency ratio, equity investment ratio -> capital safety margin
 
-4. **上市公司 vs 非上市：** 上市保险公司（中国人寿/平安/太保/新华/人保）信息披露最为完整，数据可信度高。非上市保险公司（特别是中小寿险公司）信息公开程度参差不齐——许多公司不披露投资收益率和久期缺口。
+4. **Listed vs non-listed:** Listed insurance companies have the most complete information disclosure and high data reliability. Non-listed insurers (especially small and medium life insurers) have varying levels of public information -- many do not disclose investment yields and duration gaps.
 
-5. **分红险/万能险的刚兑压力：** 如果投资收益低于客户预期收益，保险公司需要从自有资金补贴——这在利率下行环境中会加速资本消耗。
+5. **With-profits / universal life guarantee pressure:** If investment returns fall below customer expected returns, insurers need to subsidize from own funds -- this accelerates capital consumption in a low-rate environment.
 
-### 5.5 保险一票否决条件
+### 5.5 Insurance Veto Conditions
 
-1. **综合偿付能力充足率 < 100%**（偿付能力不达标，监管强制措施启动）
-2. **核心偿付能力充足率 < 50%**（严重不足）
-3. **连续3年持续利差损（综合投资收益率 < 负债资金成本）且缺口持续扩大**
-4. **权益投资占比 > 30%（超监管上限）**
-5. **被银保监会接管/托管或限制业务范围**
+1. **Composite solvency ratio < 100%** (solvency non-compliant, mandatory regulatory action triggered)
+2. **Core solvency ratio < 50%** (severely insufficient)
+3. **Sustained negative spread for 3 consecutive years (composite investment yield < liability cost) and gap widening**
+4. **Equity investment ratio > 30%** (exceeds regulatory cap)
+5. **Taken over/placed under receivership or business scope restricted by financial regulator**
 
 ---
 
-## 六、金融租赁子框架
+## 6. Financial Leasing Sub-Framework
 
-### 6.1 金融租赁信用分析的特殊性
+### 6.1 Special Characteristics of Financial Leasing Credit Analysis
 
-金融租赁企业具有"类银行"属性：
-- **资产端**：以租赁资产（设备/飞机/船舶/车辆等）为主——既是金融资产也是实物资产
-- **负债端**：高度依赖银行借款和债券发行——融资渠道是核心
-- **风险特征**：信用风险（承租人违约）+ 资产风险（租赁物价值下跌/处置困难）+ 期限错配风险
-- **与银行关联度高**：大部分金融租赁公司是银行子公司——母行支持是关键变量
+Financial leasing enterprises have "bank-like" characteristics:
+- **Asset side**: Primarily lease assets (equipment/aircraft/ships/vehicles etc.) -- both financial and physical assets
+- **Liability side**: Highly dependent on bank borrowing and bond issuance -- financing channels are core
+- **Risk characteristics**: Credit risk (lessee default) + asset risk (lease asset value decline / disposal difficulty) + maturity mismatch risk
+- **High correlation with banks**: Most financial leasing companies are bank subsidiaries -- parent bank support is a key variable
 
-### 6.2 租赁五维评分
+### 6.2 Leasing Five-Dimension Score
 
-| 维度 | 权重 | 核心指标 | 数据来源 |
+| Dimension | Weight | Core Indicators | Data Source |
 |---|---|---|---|
-| **C - 资本充足性** | 20% | 资本充足率、杠杆倍数（总资产/净资产） | 年报/监管披露 |
-| **A - 资产质量** | 35% | 不良租赁资产率、拨备覆盖率、关注类租赁资产率、行业集中度 | 年报 |
-| **L - 流动性与融资** | 15% | 融资渠道多样性、资产负债期限匹配、短债占比 | 年报 |
-| **E - 盈利能力** | 15% | ROA、ROE、净利差、非息收入占比 | 年报 |
-| **S - 风险敏感度** | 15% | 单一客户集中度、行业集中度（飞机/船舶/设备）、区域集中度 | 年报+估算 |
+| **C - Capital Adequacy** | 20% | Capital adequacy ratio, Leverage multiple (total assets / net assets) | Annual reports / regulatory disclosures |
+| **A - Asset Quality** | 35% | Non-performing lease asset ratio, Provision coverage ratio, Special-mention lease asset ratio, Industry concentration | Annual reports |
+| **L - Liquidity & Funding** | 15% | Financing channel diversity, Asset-liability maturity matching, Short-term debt ratio | Annual reports |
+| **E - Earnings** | 15% | ROA, ROE, Net interest spread, Non-interest income ratio | Annual reports |
+| **S - Sensitivity** | 15% | Single client concentration, Industry concentration (aircraft/shipping/equipment), Regional concentration | Annual reports + estimation |
 
-### 6.3 租赁关键指标评分
+### 6.3 Leasing Key Indicator Scoring
 
-| 指标 | 计算方式 | 优秀（8-10） | 一般（4-7） | 危险（0-3） | 权重 |
+| Indicator | Calculation | Strong (8-10) | Adequate (4-7) | Weak (0-3) | Weight |
 |---|---|---|---|---|---|
-| **C - 资本充足率** | 净资本/风险加权资产 | >15% | 10-15% | <10%（<8%触发监管） | 50% |
-| **C - 杠杆倍数** | 总资产/净资产 | <5x | 5-8x | >8x（>10x极端） | 50% |
-| **A - 不良租赁资产率** | 不良租赁资产/总租赁资产 | <0.5% | 0.5-2.0% | >2.0%（>5%严重） | 30% |
-| **A - 拨备覆盖率** | 租赁资产损失准备/不良租赁资产 | >250% | 150-250% | <150% | 20% |
-| **A - 关注类租赁资产率** | 关注类租赁资产/总租赁资产 | <2% | 2-5% | >5% | 15% |
-| **A - 行业集中度（最大行业）** | 最大行业敞口/总租赁资产 | <20% | 20-35% | >35% | 15% |
-| **E - 净利差** | 租赁收益率-融资成本率 | >2.5% | 1.5-2.5% | <1.5% | 30% |
-| **E - ROE** | 净利润/平均净资产 | >10% | 6-10% | <6% | 25% |
-| **E - ROA** | 净利润/平均总资产 | >1.2% | 0.8-1.2% | <0.8% | 25% |
-| **L - 资产负债期限错配** | 加权资产久期-加权负债久期 | <1年 | 1-3年 | >3年 | 35% |
-| **L - 银行借款占比** | 银行借款/总负债 | <50% | 50-70% | >70% | 30% |
-| **S - 单一客户集中度** | 最大单一客户敞口/净资本 | <15% | 15-30% | >30% | 40% |
-| **S - 前三大行业集中度** | 前三大行业敞口/总租赁资产 | <40% | 40-60% | >60% | 30% |
+| **C - Capital adequacy ratio** | Net capital / Risk-weighted assets | > 15% | 10-15% | < 10% (< 8% triggers regulatory action) | 50% |
+| **C - Leverage multiple** | Total assets / Net assets | < 5x | 5-8x | > 8x (> 10x extreme) | 50% |
+| **A - Non-performing lease asset ratio** | Non-performing lease assets / Total lease assets | < 0.5% | 0.5-2.0% | > 2.0% (> 5% severe) | 30% |
+| **A - Provision coverage ratio** | Lease asset loss provisions / Non-performing lease assets | > 250% | 150-250% | < 150% | 20% |
+| **A - Special-mention lease asset ratio** | Special-mention lease assets / Total lease assets | < 2% | 2-5% | > 5% | 15% |
+| **A - Industry concentration (largest industry)** | Largest industry exposure / Total lease assets | < 20% | 20-35% | > 35% | 15% |
+| **E - Net interest spread** | Lease yield - Funding cost rate | > 2.5% | 1.5-2.5% | < 1.5% | 30% |
+| **E - ROE** | Net profit / Average net assets | > 10% | 6-10% | < 6% | 25% |
+| **E - ROA** | Net profit / Average total assets | > 1.2% | 0.8-1.2% | < 0.8% | 25% |
+| **L - Asset-liability maturity mismatch** | Weighted asset duration - Weighted liability duration | < 1 year | 1-3 years | > 3 years | 35% |
+| **L - Bank borrowing ratio** | Bank borrowing / Total liabilities | < 50% | 50-70% | > 70% | 30% |
+| **S - Single client concentration** | Largest single client exposure / Net capital | < 15% | 15-30% | > 30% | 40% |
+| **S - Top 3 industry concentration** | Top 3 industry exposure / Total lease assets | < 40% | 40-60% | > 60% | 30% |
 
-### 6.4 金融租赁信用分析核心要点
+### 6.4 Financial Leasing Credit Analysis Key Points
 
-1. **母行支持是生命线。** 中国大部分金融租赁公司是银行子公司（工银租赁/交银租赁/招银租赁/国银租赁等）。信用质量高度依赖母行——若母行在困难时愿意且能够支持，则租赁公司的流动性风险和资产质量风险可控。但如果母行自身有困难（如城商行背景的租赁），则风险叠加。
+1. **Parent bank support is the lifeline.** Most financial leasing companies are bank subsidiaries. Credit quality is highly dependent on the parent bank -- if the parent bank is willing and able to support during difficulties, the leasing company's liquidity and asset quality risks are manageable. But if the parent bank itself has difficulties (e.g., city commercial bank-affiliated leasing), risks compound.
 
-2. **行业集中度决定周期性风险暴露。**
-   - 航空租赁（飞机）：受全球航空周期影响，COVID期间严重受创，但回收价值较高（飞机易变现）
-   - 船舶租赁：强周期，受BDI指数和全球贸易影响大
-   - 设备租赁（工程机械/制造业设备）：与固定资产投资周期联动
-   - 车辆租赁：受新能源车转型影响（残值风险）
+2. **Industry concentration determines cyclical risk exposure.**
+   - Aviation leasing (aircraft): Affected by global aviation cycles, severely impacted during COVID, but recovery value relatively high (aircraft easily monetizable)
+   - Ship leasing: Strongly cyclical, greatly affected by global trade indicators
+   - Equipment leasing (construction machinery / manufacturing equipment): Linked to fixed asset investment cycle
+   - Vehicle leasing: Affected by new energy vehicle transition (residual value risk)
 
-3. **租赁资产质量评估难度大。**
-   - 不像银行贷款有标准化五级分类体系
-   - 租赁物（特别是专用设备）的处置回收率高度不确定
-   - 承租人信用以中小企业和民营企业为主，风险高于银行的各类企业客户
+3. **Lease asset quality assessment is challenging.**
+   - Unlike bank loans which have standardized five-category classification
+   - Recovery rates for leased assets (especially specialized equipment) are highly uncertain
+   - Lessee credit primarily comprises SMEs and private enterprises, risk higher than various enterprise clients of banks
 
-4. **期限错配是结构性风险。** 租赁资产的期限通常较长（3-8年），而负债以1年内银行借款和短融为主。如果融资市场出现紧缩，短债长投的流动性风险立刻暴露。
+4. **Maturity mismatch is a structural risk.** Lease assets typically have longer terms (3-8 years), while liabilities are mainly bank borrowings and short-term notes within 1 year. If the financing market tightens, the liquidity risk of short-term borrowing funding long-term assets is immediately exposed.
 
-### 6.5 租赁一票否决条件
+### 6.5 Leasing Veto Conditions
 
-1. **资本充足率 < 8%**（监管红线）
-2. **不良租赁资产率 > 5%**
-3. **拨备覆盖率 < 100%**
-4. **杠杆倍数 > 10x**（过度杠杆经营）
-5. **母行信用评级下调至投资级以下且母行声明不再支持**
+1. **Capital adequacy ratio < 8%** (regulatory red line)
+2. **Non-performing lease asset ratio > 5%**
+3. **Provision coverage ratio < 100%**
+4. **Leverage multiple > 10x** (excessive leverage)
+5. **Parent bank credit rating downgraded to below investment grade AND parent bank declares no further support**
 
 ---
 
-## 七、跨子类型通用指标
+## 7. Cross-Sub-Type General Indicators
 
-### 7.1 政府支持与系统重要性评估
+### 7.1 Government Support and Systemic Importance Assessment
 
-| 指标 | 说明 | 适用子类型 |
+| Indicator | Description | Applicable Sub-Type |
 |---|---|---|
-| 系统重要性金融机构（D-SIB）名单 | 入选央行系统重要性名单 → 有明确的资本要求但也有更强的支持预期 | 银行 |
-| 中央/地方政府持股比例 | 国有持股比例越高 → 隐性政府支持预期越强 | 全部 |
-| 员工规模/分支机构覆盖 | 员工>10万/网点全国覆盖 → "大而不能倒" | 银行 |
-| 上市地位 | 上市金融企业有更高的透明度和融资渠道 | 全部 |
-| 是否属于"金融控股公司"试点 | 金控公司受更严格的监管，也获得政策支持 | 全部 |
+| Systemically important financial institution (D-SIB/G-SIB) list | Included in central bank systemic importance list -> clear capital requirements but also stronger support expectations | Banks |
+| Central/local government shareholding ratio | Higher state ownership -> stronger implicit government support expectation | All |
+| Employee size / branch coverage | Employees > 100K / nationwide branch network -> "too big to fail" | Banks |
+| Listing status | Listed financial enterprises have higher transparency and financing channels | All |
+| Whether part of "financial holding company" pilot | FHCs subject to stricter regulation but also access policy support | All |
 
-**政府支持评分修正：**
+**Government Support Score Correction:**
 
-| 条件 | 评分修正 |
+| Condition | Score Correction |
 |---|---|
-| 入选D-SIB名单 + 国有控股 | +1.0（五维评分最终值） |
-| 国有控股但非D-SIB | +0.5 |
-| 地方国有（城商行等） | +0.3（取决于地方财政实力） |
-| 民营控股 + 系统重要性低 | +0（无额外支持） |
-| 民营 + 高风险资产结构 | -0.5（政府可能不支持） |
+| Listed as D-SIB/G-SIB + state-controlled | +1.0 (five-dimension score final value) |
+| State-controlled but non-D-SIB/G-SIB | +0.5 |
+| Local state-owned (city commercial banks etc.) | +0.3 (depends on local fiscal strength) |
+| Private-controlled + low systemic importance | +0 (no additional support) |
+| Private + high-risk asset structure | -0.5 (government may not support) |
 
-### 7.2 关联方风险
+### 7.2 Related Party Risk
 
-金融企业之间的股权/业务关联是系统性风险的重要传染渠道：
+Equity/business interconnections between financial enterprises are an important contagion channel for systemic risk:
 
-| 关联类型 | 风险 | 需关注的场景 |
+| Linkage Type | Risk | Scenarios Requiring Attention |
 |---|---|---|
-| 银行→租赁 | 租赁出现风险回传至母行 | 租赁不良率上升+母行资本不足 |
-| 银行→保险 | 保险公司违约导致银行投资损失 | 银行持有保险次级债或协议存款 |
-| 证券→银行 | 券商发行金融债由银行持有 | 券商自营亏损→持有银行处置债券 |
-| 金控集团内部 | 集团内部交易和风险隔离有效性 | 方正/明天系案例：子公司风险隔离失败 |
+| Bank -> Leasing | Leasing risks transmit back to parent bank | Leasing NPL ratio rising + parent bank capital deficiency |
+| Bank -> Insurance | Insurer default causes bank investment losses | Bank holds insurance subordinated debt or negotiated deposits |
+| Securities -> Bank | Securities firm financial bonds held by banks | Securities proprietary losses -> banks holding bonds disposed |
+| Financial holding group internal | Internal transactions and risk isolation effectiveness | Case examples: subsidiary risk isolation failure |
 
-### 7.3 ESG因素（金融债特化）
+### 7.3 ESG Factors (Financial Bond Specialization)
 
-| ESG维度 | 银行 | 券商 | 保险 | 租赁 |
+| ESG Dimension | Banks | Securities | Insurance | Leasing |
 |---|---|---|---|---|
-| **E - 绿色金融** | 绿色信贷/绿色债券占比 | 绿色投行业务规模 | 绿色投资占比 | 绿色租赁资产占比 |
-| **S - 普惠金融** | 小微贷款投放 | 投教/投资者保护 | 普惠保险覆盖率 | 小微租赁占比 |
-| **G - 治理风险** | 关联交易/内部人控制 | 从业人员廉洁 | 销售合规/退保纠纷 | 违规投放/合规处罚 |
+| **E - Green Finance** | Green credit/green bond ratio | Green IB business scale | Green investment ratio | Green lease asset ratio |
+| **S - Inclusive Finance** | SME lending | Investor education/protection | Inclusive insurance coverage | SME leasing ratio |
+| **G - Governance Risk** | Related transactions / insider control | Practitioner integrity | Sales compliance / lapse disputes | Violation lending / compliance penalties |
 
 ---
 
-## 八、金融债公开数据质量评估
+## 8. Financial Bond Public Data Quality Assessment
 
-### 8.1 数据可得性
+### 8.1 Data Accessibility
 
-| 数据类型 | 可得性 | 覆盖范围 | 更新频率 | 可信度 |
+| Data Type | Accessibility | Coverage | Update Frequency | Reliability |
 |---|---|---|---|---|
-| 资本充足率 | 强制披露 | 所有持牌金融机构 | 季度 | 高（银保监会/证监会共管口径） |
-| 不良贷款率 | 强制披露 | 所有持牌银行 | 季度 | 中高（统计口径一致，但可能隐藏） |
-| 偿付能力充足率 | 强制披露 | 所有持牌保险 | 季度 | 高（偿报体系严格） |
-| 净资本/杠杆率 | 强制披露 | 券商 | 月度 | 中高 |
-| 拨备覆盖率 | 强制披露 | 银行 | 季度 | 中（拨备调节空间大） |
-| 投资收益率 | 部分披露 | 保险/部分银行 | 年度 | 中（定义差异） |
-| 流动性覆盖率 | 大行/股份行披露 | 仅上市公司 | 半年度 | 中高 |
-| 关联交易 | 强制披露 | 上市公司/发债主体 | 年度 | 中 |
-| 股权结构 | 公开可查 | 全部 | 实时 | 高 |
-| 监管处罚 | 公开可查 | 全部 | 实时 | 高（监管公告） |
+| Capital adequacy ratio | Mandatory disclosure | All licensed financial institutions | Quarterly | High (banking/securities regulator co-regulated) |
+| NPL ratio | Mandatory disclosure | All licensed banks | Quarterly | Medium-high (consistent statistical definitions, but may be hidden) |
+| Solvency ratio | Mandatory disclosure | All licensed insurers | Quarterly | High (strict solvency reporting system) |
+| Net capital / leverage ratio | Mandatory disclosure | Securities firms | Monthly | Medium-high |
+| Provision coverage ratio | Mandatory disclosure | Banks | Quarterly | Medium (provision adjustment flexibility) |
+| Investment yield | Partial disclosure | Insurance / some banks | Annual | Medium (definition differences) |
+| LCR | Large banks / joint-stock banks disclose | Only listed companies | Semi-annual | Medium-high |
+| Related transactions | Mandatory disclosure | Listed companies / bond issuers | Annual | Medium |
+| Equity structure | Publicly searchable | All | Real-time | High |
+| Regulatory penalties | Publicly searchable | All | Real-time | High (regulatory announcements) |
 
-### 8.2 与产业债的数据质量对比
+### 8.2 Data Quality Comparison with Corporate Bonds
 
-| 对比项 | 金融债 | 产业债 |
+| Comparison Item | Financial Bonds | Corporate Bonds |
 |---|---|---|
-| 强制披露体系 | 有（银保监会/证监会/人民银行等） | 部分行业有（如环保/安全） |
-| 关键指标标准化 | 高（监管定义统一） | 低（各行业指标差异大） |
-| 审计质量 | 高（四大行为主） | 中（部分民企审计质量存疑） |
-| 前瞻性数据 | 低（监管更关注当期） | 中（行业前瞻数据较丰富） |
-| **总结** | **数据质量远好于产业债，但真正的风险往往在表外** |
+| Mandatory disclosure system | Yes (banking/securities/central bank regulators etc.) | Partial industries have (e.g., environmental/safety) |
+| Key indicator standardization | High (uniform regulatory definitions) | Low (large variance across industries) |
+| Audit quality | High (primarily Big 4) | Medium (some private enterprise audit quality questionable) |
+| Forward-looking data | Low (regulation focuses more on current period) | Medium (industry forward data relatively rich) |
+| **Summary** | **Data quality far better than corporate bonds, but real risks are often off-balance-sheet** |
 
-### 8.3 "数据好但风险更难捕捉"悖论
+### 8.3 "Good Data but Risk Harder to Capture" Paradox
 
-**金融债分析面临一个特殊矛盾：**
+**Financial bond analysis faces a special contradiction:**
 
-- **金融企业的公开数据质量在中国所有发债主体中是最好的**——监管强制、口径统一、审计严格、频率高
-- **但真正的风险往往不在这些数据中**——包商银行在接管前的披露数据全部"达标"，不良率仅1.5%、资本充足率12.5%
-- **关键风险隐藏在：**
-  1. **表外资产**：理财/NCD/通道业务——占银行总资产的10-30%不等，披露极不透明
-  2. **资产质量的分化**：平均不良率1.5%掩盖了房地产/城投/产能过剩行业的不良率可能>5%
-  3. **关联交易**：大股东通过关联贷款/非标输送资金——数据不公开
-  4. **期限错配**：存短贷长的程度无法从资产负债表直接读出
-  5. **集中度**：单一行业/单一客户/单一区域的真实敞口披露有限
+- **Financial enterprises have the best public data quality among all bond issuers** -- regulatory mandatory, uniform definitions, strict auditing, high frequency
+- **But the real risks are often not in this data** -- a failed mid-sized bank showed all disclosed data as "compliant" before takeover, with NPL ratio only 1.5% and capital adequacy ratio 12.5%
+- **Key risks are hidden in:**
+  1. **Off-balance-sheet assets**: Wealth management products / interbank CDs / channel business -- accounting for 10-30% of total bank assets, disclosure extremely non-transparent
+  2. **Asset quality divergence**: Average NPL ratio of 1.5% masks the fact that NPL ratios for real estate/LGFV/overcapacity industry exposure may be > 5%
+  3. **Related transactions**: Major shareholders channeling funds through related loans / non-standard instruments -- data not public
+  4. **Maturity mismatch**: The extent of borrowing short and lending long cannot be directly read from the balance sheet
+  5. **Concentration**: Actual exposure to single industry / single client / single region has limited disclosure
 
-**核心原则：金融债分析中，"数据不存在"本身就是最重要的风险信号。**
+**Core Principle: In financial bond analysis, "data absence" itself is the most important risk signal.**
 
 ---
 
-## 九、金融债分析的特殊风险
+## 9. Special Risks in Financial Bond Analysis
 
-### 9.1 系统性风险与传染风险
+### 9.1 Systemic Risk and Contagion Risk
 
-金融企业之间的风险相关性远高于产业企业：
-- **同业风险**：一家银行出现风险 → 同业拆借/存单市场收缩 → 所有依赖同业负债的金融机构承压
-- **资产价格联动**：利率/信用利差上行 → 持有大量债券的银行/保险/券商同时遭受损失
-- **挤兑风险**：市场信心崩塌 → 存款/理财/保费同时流出 → 流动性危机
-- **监管政策突变**：如资管新规（2018）对银行理财的冲击、券商"去通道"对资管规模的影响
+Risk correlation among financial enterprises is far higher than among corporate enterprises:
+- **Interbank risk**: One bank experiencing risk -> interbank lending/CD market contraction -> all financial institutions dependent on interbank funding come under pressure
+- **Asset price linkage**: Interest rate/credit spread increase -> all banks/insurers/securities firms holding large bond portfolios simultaneously suffer losses
+- **Run risk**: Market confidence collapse -> deposits/wealth management products/premiums flow out simultaneously -> liquidity crisis
+- **Regulatory policy shifts**: Such as new asset management regulations impacting bank wealth management, de-shadow banking effects on asset management scale
 
-**分析建议：** 单一金融企业分析必须配套市场整体环境评估，不能孤立看指标。
+**Analysis Recommendation:** Analysis of a single financial enterprise must be paired with an overall market environment assessment; indicators cannot be viewed in isolation.
 
-### 9.2 表外风险（中国金融体系特有的隐性杠杆）
+### 9.2 Off-Balance-Sheet Risk (Implicit Leverage)
 
-| 表外项目 | 规模估算 | 风险类型 | 披露透明度 |
+| Off-Balance-Sheet Item | Scale Estimate | Risk Type | Disclosure Transparency |
 |---|---|---|---|
-| 银行理财（保本/非保本） | 约25-30万亿 | 刚兑打破+资产减值 | 低（穿透后底层资产不透明） |
-| 同业存单 | 约10-12万亿 | 续期风险+利率波动 | 中（有集中数据但无穿透） |
-| 通道业务/信托受益权 | 约5-8万亿（高峰已压缩） | 底层资产质量+合规风险 | 极低 |
-| 股票质押式回购 | 约3000-5000亿（券商端） | 股价下跌被迫平仓 | 中 |
-| 保险"万能险"账户 | 约2-3万亿 | 资产负债错配+利差损 | 低 |
+| Bank wealth management products (guaranteed/non-guaranteed) | Significant | Break of implicit guarantee + asset impairment | Low (underlying assets not transparent) |
+| Interbank CDs | Significant | Rollover risk + interest rate volatility | Medium (aggregate data available but no look-through) |
+| Channel business / trust beneficiary rights | Notable (peak already compressed) | Underlying asset quality + compliance risk | Extremely low |
+| Stock pledge repo | Moderate (securities firm side) | Stock price decline forced margin call | Medium |
+| Insurance "universal life" accounts | Moderate | Asset-liability mismatch + negative spread | Low |
 
-**表外风险评估无法依赖被分析主体的披露，需要通过：**
-1. 行业整体表外规模趋势（央行/银保监会公布）
-2. 公开的银行理财年报（部分）
-3. 银行间市场/交易所的第三方统计数据
-4. 对比同类机构的表外/表内比例——异常高意味着风险
+**Off-balance-sheet risk assessment cannot rely on the analyzed entity's own disclosure, and requires:**
+1. Industry aggregate off-balance-sheet trends (central bank / financial regulator publications)
+2. Public bank wealth management annual reports (partial)
+3. Third-party statistical data from interbank market / exchange
+4. Comparing the off-balance-sheet / on-balance-sheet ratio of similar institutions -- abnormally high means risk
 
-### 9.3 利率环境影响
+### 9.3 Interest Rate Environment Impact
 
-金融企业（特别是银行和保险）对利率环境高度敏感：
+Financial enterprises (especially banks and insurers) are highly sensitive to the interest rate environment:
 
-| 利率场景 | 对银行的影响 | 对保险的影响 | 对券商的影响 |
+| Interest Rate Scenario | Impact on Banks | Impact on Insurers | Impact on Securities Firms |
 |---|---|---|---|
-| 利率持续下行 | NIM压缩→盈利承压；债券持仓获得价差收益（对冲） | 利差损扩大→长期毒性积累；债券持仓估值上升 | 债券自营受益；经纪/投行业务中性 |
-| 利率快速上行 | NIM改善；债券持仓亏损（利率风险） | 负债成本上升滞后→短期改善但退保率可能上升 | 债券自营亏损；交易量上升 |
-| 利率倒挂（短>长） | 负carry→资产负债管理困难 | 短债再投资收益率低于长债平均资金成本 | 资金业务亏损 |
-| 低利率长期化 | NIM持续压缩到极限→银行盈利模式承压 | 利差损持续累积→部分公司可能资不抵债 | 自营收益率下降 |
+| Rates continuously declining | NIM compression -> earnings pressure; bond holdings gain price appreciation (hedge) | Negative spread widening -> long-term toxicity accumulation; bond holdings gain valuation uplift | Bond proprietary benefits; brokerage/IB neutral |
+| Rates rapidly rising | NIM improvement; bond holdings suffer losses (interest rate risk) | Liability cost increase lags -> short-term improvement but lapse ratio may rise | Bond proprietary losses; trading volume increases |
+| Inverted yield curve (short > long) | Negative carry -> asset-liability management difficulty | Short-term reinvestment yield below long-term average funding cost | Funding operations loss-making |
+| Prolonged low rates | NIM compressed to limit -> bank earnings model under pressure | Negative spread continuously accumulating -> some companies may become insolvent | Proprietary yield decline |
 
-### 9.4 金融科技冲击
+### 9.4 Fintech Impact
 
-| 冲击类型 | 影响方式 | 影响主体 |
+| Impact Type | Method | Affected Entities |
 |---|---|---|
-| 支付脱媒 | 微信支付/支付宝抢夺存款 | 银行（特别是零售存款占比高的银行） |
-| 信贷脱媒 | 互联网消费贷/小微贷分流 | 银行（信用卡/消费贷领域） |
-| 理财脱媒 | 货币基金替代银行活期理财 | 银行/保险 |
-| 数字化降本 | AI取代人工投顾/客服 | 券商/保险 |
+| Payment disintermediation | Digital payment platforms capturing deposits | Banks (especially those with high retail deposit ratios) |
+| Lending disintermediation | Internet consumer/SME lending diverting | Banks (credit card / consumer lending) |
+| Wealth management disintermediation | Money market funds replacing bank liquidity products | Banks / Insurance |
+| Digital cost reduction | AI replacing human advisors / customer service | Securities / Insurance |
 
 ---
 
-## 十、金融债与产业债的交叉对撞衔接
+## 10. Cross-Validation Linkage Between Financial and Corporate Bonds
 
-### 10.1 金融分析轨道进入双轨架构
+### 10.1 Financial Analysis Track Entering the Dual-Track Architecture
 
-金融分析轨道产生"五维评分"后，与产业债评分一样进入双轨交叉对撞流程：
+After generating the "five-dimension score," the financial analysis track enters the dual-track cross-validation workflow alongside corporate bond scoring:
 
 ```
-金融五维评分
+Financial Five-Dimension Score
     │
     ▼
-金融评级映射（AAA→D）
+Financial Rating Mapping (AAA -> D)
     │
-    ├──→ 轨道A：基本面评分 ──────┐
-    │                           │
-    ├──→ 轨道B：市场信号         ├──→ 交叉对撞 → 最终评级
-    │        （利差/波动率/      │
-    │         资金流向/评级事件） │
-    │                           │
-    └──→ 数据完备性报告 ────────┘
+    ├──> Track A: Fundamental Score ──────────┐
+    │                                         │
+    ├──> Track B: Market Signals              ├──> Cross-Validation -> Final Rating
+    │        (spreads/volatility/             │
+    │         fund flows/rating events)        │
+    │                                         │
+    └──> Data Completeness Report ────────────┘
 ```
 
-### 10.2 对撞差异的特殊处理
+### 10.2 Special Handling of Validation Differences
 
-金融企业与产业企业的轨道B信号权重应当调整：
+The weight of Track B signals should be adjusted between financial and corporate enterprises:
 
-| 对撞状态 | 产业企业处理 | 金融企业处理 |
+| Validation Status | Corporate Enterprise Handling | Financial Enterprise Handling |
 |---|---|---|
-| 分歧A（A好+B差） | 优先相信A | **同样优先相信A，但需要排查：** 市场是否在担心表外风险或系统性传染 |
-| 分歧B（A差+B好） | 优先相信A | **同样优先相信A，但需要排查：** 是否因为政府支持预期而定价偏高？ |
-| 共识（全好） | 确认 | **注意系统性风险叠加：** 金融企业个体良好但行业整体恶化时，行业趋势可能压倒个体质量 |
-| 共识（全差） | 确认 | **确认但需附加：** 金融企业评级下调可能引致连锁反应（同业授信收紧→流动性恶化） |
+| Divergence A (A good + B bad) | Trust A preferentially | **Also trust A preferentially, but need to investigate:** Is the market worried about off-balance-sheet risk or systemic contagion? |
+| Divergence B (A bad + B good) | Trust A preferentially | **Also trust A preferentially, but need to investigate:** Is pricing elevated due to government support expectations? |
+| Consensus (all good) | Confirm | **Note systemic risk superposition:** Individual financial enterprise may be sound but if the industry as a whole is deteriorating, industry trends may overwhelm individual quality |
+| Consensus (all bad) | Confirm | **Confirm but need to add:** Financial enterprise rating downgrades may trigger chain reactions (interbank credit tightening -> liquidity deterioration) |
 
-### 10.3 涉及金融企业作为外部支持的评估
+### 10.3 Assessment Involving Financial Enterprises as External Support
 
-当产业企业信用分析需要评估银行/券商/保险的外部支持时（如[外部支持框架](external-support-framework.md)中的银行授信支持），本框架的五维评分可作为评估支持方信用质量的基础。
-
----
-
-## 十一、评分输出模板
-
-```
-╔══════════════════════════════════════════════════╗
-║       金融信用分析报告（[企业名称]）              ║
-║       [子类型：银行/券商/保险/租赁]              ║
-╠══════════════════════════════════════════════════╣
-║ 综合评分: [0-10]                                 ║
-║ 评级: [AAA→D]                                   ║
-║ 分析日期: [YYYY-MM-DD]                          ║
-║ 置信度: [高/中/低]                               ║
-╠══════════════════════════════════════════════════╣
-║ 五维评分明细:                                    ║
-║   C - 资本充足性: [0-10] × [权重] = [得分]      ║
-║   A - 资产质量:   [0-10] × [权重] = [得分]      ║
-║   L - 流动性:     [0-10] × [权重] = [得分]      ║
-║   E - 盈利能力:   [0-10] × [权重] = [得分]      ║
-║   S - 风险敏感度: [0-10] × [权重] = [得分]      ║
-╠══════════════════════════════════════════════════╣
-║ 核心发现:                                        ║
-║  [3-5行核心分析结论]                             ║
-╠══════════════════════════════════════════════════╣
-║ 关键风险:                                        ║
-║  1. [风险1] - [严重度] - [缓释建议]              ║
-║  2. [风险2] - [严重度] - [缓释建议]              ║
-║  3. [风险3] - [严重度] - [缓释建议]              ║
-╠══════════════════════════════════════════════════╣
-║ 数据完备性: [信号密度百分比]                      ║
-║  数据缺口: [列出现有关键缺口]                    ║
-║  缺口影响: [对评级置信度的影响说明]              ║
-╠══════════════════════════════════════════════════╣
-║ 交叉对撞: [共识/分歧A/分歧B]                     ║
-║  轨道B信号: [利差/波动率/资金流向/评级事件]      ║
-║  [分歧时] 市场在担忧什么: [分析]                 ║
-╠══════════════════════════════════════════════════╣
-║ 一票否决检查: [通过/触发（列出触发项）]          ║
-╚══════════════════════════════════════════════════╝
-```
+When corporate credit analysis needs to assess external support from banks/securities/insurance (such as bank credit support in the external support framework), the five-dimension score from this framework can serve as the basis for assessing the supporting entity's credit quality.
 
 ---
 
-## 十二、版本历史与待办事项
+## 11. Scoring Output Template
 
-### v0.1.0（2026-07-09）— 初始发布
+```
++=========================================================+
+|          Financial Credit Analysis Report                |
+|          [Sub-Type: Bank / Securities / Insurance / Leasing] |
++=========================================================+
+| Composite Score: [0-10]                                  |
+| Rating: [AAA -> D]                                      |
+| Analysis Date: [YYYY-MM-DD]                             |
+| Confidence: [High/Medium/Low]                            |
++=========================================================+
+| Five-Dimension Score Detail:                             |
+|   C - Capital Adequacy: [0-10] x [Weight] = [Score]     |
+|   A - Asset Quality:   [0-10] x [Weight] = [Score]     |
+|   L - Liquidity:       [0-10] x [Weight] = [Score]     |
+|   E - Earnings:        [0-10] x [Weight] = [Score]     |
+|   S - Sensitivity:     [0-10] x [Weight] = [Score]     |
++=========================================================+
+| Core Findings:                                          |
+|  [3-5 line core analysis conclusion]                    |
++=========================================================+
+| Key Risks:                                              |
+|  1. [Risk 1] - [Severity] - [Mitigation Suggestion]     |
+|  2. [Risk 2] - [Severity] - [Mitigation Suggestion]     |
+|  3. [Risk 3] - [Severity] - [Mitigation Suggestion]     |
++=========================================================+
+| Data Completeness: [Signal density percentage]           |
+|  Data Gaps: [List key existing gaps]                    |
+|  Gap Impact: [Impact on rating confidence]              |
++=========================================================+
+| Cross-Validation: [Consensus / Divergence A / Divergence B]|
+|  Track B Signals: [Spreads/Volatility/Fund Flows/Rating Events]|
+|  [If divergent] What is the market concerned about: [Analysis] |
++=========================================================+
+| Veto Check: [Passed / Triggered (list triggered items)] |
++=========================================================+
+```
 
-- 金融行业分析轨道设计（与产业债金字塔平行）
-- CAMELS银行子框架（C/A/M/E/L/S六维，含中国本土化调整）
-- 券商子框架（五维+特色指标+股票质押风险）
-- 保险子框架（五维+利差损+偿付能力）
-- 金融租赁子框架（五维+母行支持+行业集中度）
-- 跨子类型通用指标（政府支持/关联方/ESG）
-- 金融债公开数据质量评估
-- 金融债特殊风险分析（表外/传染/利率/金融科技）
+---
 
-### 待办事项
+## 12. Version History and To-Do Items
 
-| # | 事项 | 优先级 | 说明 |
+### v0.1.0 (2026-07-09) -- Initial Release
+
+- Financial industry analysis track design (parallel to corporate bond pyramid)
+- CAMELS bank sub-framework (C/A/M/E/L/S six dimensions, with market-specific adjustments)
+- Securities firm sub-framework (five dimensions + specialized indicators + stock pledge risk)
+- Insurance sub-framework (five dimensions + negative spread + solvency)
+- Financial leasing sub-framework (five dimensions + parent bank support + industry concentration)
+- Cross-sub-type general indicators (government support / related parties / ESG)
+- Financial bond public data quality assessment
+- Special risk analysis for financial bonds (off-balance-sheet / contagion / interest rates / fintech)
+
+### To-Do Items
+
+| # | Item | Priority | Description |
 |---|---|---|---|
-| 1 | **金融债前瞻验证** | 高 | 选择1-2家银行/券商进行前瞻验证，类似于产业债的光伏案例 |
-| 2 | **金融债回溯验证** | 高 | 验证包商银行（2019）、锦州银行（2019-2020）、华信证券等历史案例 |
-| 3 | **系统重要性银行名单更新** | 中 | 跟踪央行D-SIB名单变化和附加资本要求 |
-| 4 | **保险偿二代二期影响评估** | 中 | 偿二代二期（2022年实施）对偿付能力充足率的影响 |
-| 5 | **金融租赁母行支持评分细化** | 中 | 设计母行支持意愿和能力的评估子框架 |
-| 6 | **TLAC缺口分析** | 低 | 对国有大行增加总损失吸收能力（TLAC）达标分析 |
-| 7 | **表外风险量化方法** | 低 | 开发基于公开数据的表外风险规模估算方法 |
-| 8 | **金融科技影响量化** | 低 | 量化金融科技对不同类型金融机构的冲击程度 |
+| 1 | **Forward-looking validation of financial bonds** | High | Select 1-2 banks/securities firms for forward validation, similar to corporate bond case studies |
+| 2 | **Backward-looking validation of financial bonds** | High | Validate historical cases of failed banks and other distressed financial institutions |
+| 3 | **Systemically important bank list update** | Medium | Track D-SIB/G-SIB list changes and additional capital requirements |
+| 4 | **Solvency II Phase 2 impact assessment** | Medium | Impact of updated solvency regulations on solvency ratios |
+| 5 | **Financial leasing parent bank support scoring refinement** | Medium | Design sub-framework for assessing parent bank support willingness and capability |
+| 6 | **TLAC gap analysis** | Low | Add TLAC compliance analysis for systemically important banks |
+| 7 | **Off-balance-sheet risk quantification method** | Low | Develop methodology for estimating off-balance-sheet risk scale based on public data |
+| 8 | **Fintech impact quantification** | Low | Quantify the degree of fintech impact on different types of financial institutions |
 
 ---
 
-## 相关内容
+## Related Content
 
-- [双轨分析方法论](dual-track-methodology.md) — 轨道A+B架构、评级映射、交叉对撞矩阵
-- [马赛克引擎](mosaic-engine.md) — 信号提取、拼图、完备性评估
-- [外部支持框架](external-support-framework.md) — 政府/集团/战投对金融机构的支持分析
-- [LGD与回收率框架](lgd-recovery-framework.md) — 金融债的回收率评估（特别注意次级债和资本工具）
-- [行业分类与分析框架](industry-framework.md) — 十维评分、行业类型判断
+- [Dual-Track Analysis Methodology](dual-track-methodology.md) -- Track A+B architecture, rating mapping, cross-validation matrix
+- [Mosaic Engine](mosaic-engine.md) -- Signal extraction, assembly, completeness assessment
+- [External Support Framework](external-support-framework.md) -- Government/group/strategic investor support analysis for financial institutions
+- [LGD and Recovery Rate Framework](lgd-recovery-framework.md) -- Recovery rate assessment for financial bonds (particular attention to subordinated debt and capital instruments)
+- [Industry Classification and Analysis Framework](industry-framework.md) -- Ten-dimension scoring, industry type judgment
