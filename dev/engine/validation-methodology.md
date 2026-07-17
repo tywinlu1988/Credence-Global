@@ -1,361 +1,440 @@
-# 验证方法论
+# Validation Methodology
 
-**版本**: v0.8.4-release | **日期**: 2026-07-10
-**来源**: 固收信贷分析技能包 v0.2.0-v0.3.0 · 黑天鹅回溯验证案例  
-**日期**: 2026-07-08  
-**性质**: 结构化归档——从已有技能包和验证案例中提取整理
-
----
-
-## 一、黑天鹅回溯验证概述
-
-### 1.1 验证设计原则
-
-1. **严格的时点限定**：所有数据必须限定在分析时点已公开可获取——不能使用事后信息或倒推
-2. **双时点设计**：T1距离违约17-18个月（检验中期预警能力）、T2距离违约4-5个月（检验短期升级能力）
-3. **跨风险基因型验证**：覆盖不同类型的违约原因——欺诈型、并购泡沫型、治理缺陷型
-4. **轨道A + 轨道B双轨独立验证**：同时验证基本面和市场定价两条路径的有效性
-5. **外部评级作为对照基线**：框架的预警时效必须对比外部评级迁移的滞后程度
-
-### 1.2 核心发现（跨案例汇总）
-
-- **外部评级滞后17个月以上**：在所有验证案例中，外部评级在违约前17-22个月仍维持AAA/稳定
-- **公开数据足够预警**：所有案例在T1时点均能从公开数据中识别出明确风险信号
-- **轨道A领先于轨道B**：基本面信号（轨道A）比市场定价（轨道B）提前6-12个月发出预警
-- **数据缺口本身是信号**：某些数据缺失（如非上市企业无市场定价）本身就是重要的风险信号
+**Version**: v0.8.4-release | **Date**: 2026-07-10
+**Source**: Fixed-Income Credit Analysis Skill Pack v0.2.0-v0.3.0 . Black Swan Back-Testing Cases
+**Date**: 2026-07-08
+**Nature**: Structured Archive -- extracted and organized from existing skill packs and validation cases
 
 ---
 
-## 二、黑天鹅回溯验证标准流程（6步）
+## 1. Black Swan Back-Testing Overview
+
+### 1.1 Validation Design Principles
+
+1. **Strict time point limitation**: All data must be limited to publicly available information as of the analysis date -- no ex-post information or backward reasoning
+2. **Dual timepoint design**: T1 at 17-18 months before default (tests medium-term warning capability), T2 at 4-5 months before default (tests short-term escalation capability)
+3. **Cross-risk-genotype validation**: Cover different types of default causes -- fraud, acquisition bubble, governance failure, leverage crisis
+4. **Track A + Track B independent dual-track validation**: Simultaneously validate both fundamental and market pricing paths
+5. **External rating as control baseline**: Framework warning timeliness must be measured against the lag of external rating migrations
+
+### 1.2 Core Findings (Cross-Case Summary)
+
+- **External rating lag >17 months**: Across all validation cases, external ratings remained at AAA/A or equivalent 17-22 months before default
+- **Public data sufficient for warning**: All cases showed clearly identifiable risk signals from public data at the T1 timepoint
+- **Track A leads Track B**: Fundamental signals (Track A) issued warnings 6-12 months ahead of market pricing (Track B)
+- **Data gaps themselves are signals**: Certain missing data (e.g., no market pricing for private entities) are themselves important risk signals
+
+---
+
+## 2. Black Swan Back-Testing Standard Process (6 Steps)
 
 ```
-Step 1: 选择验证标的
-  ├── 已发生实质性违约/破产的信用主体
-  ├── 违约前外部评级≥AA（检验评级滞后）
-  ├── 公开数据在违约前可获取
-  └── 输出：验证标的声明 + 违约日期 + 违约前评级
+Step 1: Select Validation Target
+  +-- Entity that experienced material default / bankruptcy
+  +-- External rating >= A prior to default (tests rating lag)
+  +-- Public data available before default
+  +-- Output: Target declaration + default date + pre-default rating
 
-Step 2: 确定分析时点
-  ├── T1: 违约前17-18个月（检验中期预警能力）
-  ├── T2: 违约前4-5个月（检验短期升级能力，可选）
-  ├── 时点选择依据：数据可获取性（年报/半年报已发布）
-  └── 输出：T0分析基准日 + 支持的公开数据集清单
+Step 2: Determine Analysis Timepoints
+  +-- T1: 17-18 months before default (tests medium-term warning)
+  +-- T2: 4-5 months before default (tests short-term escalation, optional)
+  +-- Timepoint selection criteria: Data availability (annual/half-year reports published)
+  +-- Output: T0 analysis base date + supporting public data set list
 
-Step 3: 重建分析时点的数据环境
-  ├── 只使用该时点已公开的信息
-  ├── 精确到该时点已发布的文件/公告/报告
-  ├── 不查阅任何事后信息
-  └── 输出：该时点的完整数据清单
+Step 3: Reconstruct Data Environment at Analysis Timepoint
+  +-- Use only information publicly available at that timepoint
+  +-- Precise to documents/reports/announcements published by that date
+  +-- Do not consult any ex-post information
+  +-- Output: Complete data inventory for that timepoint
 
-Step 4: 运行框架评估
-  ├── 轨道A: 行业金字塔逐层分析（从L1到L4，不可跳跃）
-  │   ├── 每个层级评分 + 一票否决检查
-  │   └── 综合评分 + 评级映射
-  ├── 轨道B: 市场定价四级信号（如数据可获取）
-  │   ├── 信用利差 / 波动率 / 资金流向 / 评级迁移
-  │   └── 四级分段（Calm/Watch/Abnormal/Crisis）
-  ├── 交叉对撞：四象限矩阵
-  └── 输出：框架在T0时点的评估结论
+Step 4: Run Framework Assessment
+  +-- Track A: Industry pyramid layer-by-layer (L1 to L4, no skipping)
+  |   +-- Each layer score + one-vote veto check
+  |   +-- Composite score + rating mapping
+  +-- Track B: Market pricing four-level signals (if data available)
+  |   +-- Credit spreads / Volatility / Fund flows / Rating migration
+  |   +-- Four-level segmentation (Calm/Watch/Abnormal/Crisis)
+  +-- Cross-validation: Four-quadrant matrix
+  +-- Output: Framework assessment at T0
 
-Step 5: 对比实际结果
-  ├── 框架结论 vs 实际违约结果
-  ├── 框架评级 vs 当时外部评级
-  ├── 预警窗口长度（T0到违约日的月数）
-  └── 输出：对比总结
+Step 5: Compare Against Actual Outcome
+  +-- Framework conclusion vs. actual default outcome
+  +-- Framework rating vs. contemporaneous external rating
+  +-- Warning window length (months from T0 to default)
+  +-- Output: Comparison summary
 
-Step 6: 记录框架发现和改进
-  ├── 框架做得对的部分（成功预警的信号）
-  ├── 框架无法知道的部分（数据限制）
-  ├── 框架改进建议（权重调整 / 新指标引入 / 新否决条件）
-  └── 输出：框架改进记录
+Step 6: Record Framework Findings and Improvements
+  +-- What the framework got right (successful warnings)
+  +-- What the framework could not have known (data limitations)
+  +-- Framework improvement suggestions (weight adjustments / new indicators / new veto conditions)
+  +-- Output: Framework improvement record
 ```
 
 ---
 
-## 三、双时点验证方法
+## 3. Dual-Timepoint Validation Method
 
-### 3.1 时点选择原则
+### 3.1 Timepoint Selection Principles
 
-| 时点 | 时间窗口 | 数据基线 | 验证目标 |
+| Timepoint | Time Window | Data Baseline | Validation Objective |
 |---|---|---|---|
-| **T1** | 违约前17-18个月 | 最近一个完整财年的年报（约T1前3-4个月发布） | 检验中期预警能力——在"一切看似正常"时能否识别风险累积 |
-| **T2** | 违约前4-5个月 | 最近一个季度的季报/半年报（约T2前1-2个月发布） | 检验短期升级能力——风险是否已全面暴露、信号密度是否提升 |
+| **T1** | 17-18 months pre-default | Most recent full fiscal year annual report (published ~3-4 months before T1) | Test medium-term warning -- can risk accumulation be identified when "everything seems normal"? |
+| **T2** | 4-5 months pre-default | Most recent quarterly / half-year report (published ~1-2 months before T2) | Test short-term escalation -- has risk fully materialized? Has signal density increased? |
 
-### 3.2 T1评估核心要点
-
-```
-检测重点：
-├── 是否存在结构性质变信号（治理缺陷 / 核心资产剥离 / 政策突变）
-├── 母公司单体 vs 合并报表的背离程度
-├── 轨道A多层级是否出现2+层同时亮红灯
-├── 轨道B是否出现利差异常扩大（>50bp跳升或持续扩大趋势）
-└── 交叉对撞是否处于"分歧"象限（轨道A差但轨道B好 → 市场忽视风险）
-```
-
-**T1可接受的结果**：
-- 框架识别出风险但无法预测具体违约日期 → **合格**
-- 框架评级显著低于外部评级（如BBB vs AAA）→ **框架优于外部评级**
-- 框架给出"需持续监控"而非"立即回避"→ **正常**（17个月前精确预测违约不现实）
-
-### 3.3 T2评估核心要点
+### 3.2 T1 Assessment Key Points
 
 ```
-检测重点：
-├── T1的信号是否全面升级（红灯数增加 / 方向一致恶化）
-├── 轨道B是否开始收敛于轨道A（市场终于开始反映基本面）
-├── 是否有不可逆转的致命信号（资不抵债 / 现金流完全枯竭 / 核心资产剥离完成）
-└── 一票否决条件是否触发
+Detection Focus:
++-- Are there structural qualitative changes? (Governance defects / Core asset divestiture / Policy shift)
++-- Degree of divergence between parent standalone vs. consolidated statements
++-- Are 2+ layers simultaneously flashing red in Track A?
++-- Is Track B showing abnormal spread widening? (>50bp jump or sustained widening trend)
++-- Is the cross-validation quadrant in "divergence"? (Track A weak but Track B strong -> market ignoring risk)
 ```
 
-**T2可接受的结果**：
-- 框架评级进一步下调（如从BBB降至CCC）→ **合格**
-- 框架给出"强烈建议回避/减仓"→ **合格**
-- 一票否决条件触发→ **合格**
+**T1 Acceptable Outcomes**:
+- Framework identifies risk but cannot predict exact default date -> **Pass**
+- Framework rating significantly lower than external rating (e.g., BBB vs AAA) -> **Framework outperforms external rating**
+- Framework says "needs continued monitoring" rather than "immediately avoid" -> **Normal** (precise default prediction 17 months out is unrealistic)
 
-### 3.4 双时点信号密度对比
+### 3.3 T2 Assessment Key Points
 
-对比T1→T2每个维度的信号密度变化：
+```
+Detection Focus:
++-- Have T1 signals fully escalated? (More red flags / Consistent deterioration direction)
++-- Is Track B beginning to converge with Track A? (Market finally reflecting fundamentals)
++-- Are there irreversible fatal signals? (Insolvency / Cash flow completely depleted / Core asset divestiture completed)
++-- Have any one-vote veto conditions been triggered?
+```
 
-| 维度 | T1信号密度 | T2信号密度 | 变化方向 | 含义 |
+**T2 Acceptable Outcomes**:
+- Framework rating further downgraded (e.g., from BBB to CCC) -> **Pass**
+- Framework issues "strongly recommend avoid/reduce position" -> **Pass**
+- One-vote veto condition triggered -> **Pass**
+
+### 3.4 Dual-Timepoint Signal Density Comparison
+
+Compare signal density changes from T1 to T2 for each dimension:
+
+| Dimension | T1 Signal Density | T2 Signal Density | Direction | Meaning |
 |---|---|---|---|---|
-| L1 政策/宏观 | 60% | 70% | ↑ | 政策风险信号进一步增强 |
-| L2 技术/竞争 | 75% | 85% | ↑ | 竞争劣势进一步确认 |
-| L3 供应链/运营 | 45% | 65% | ↑ | 运营恶化信号充分暴露 |
-| L4 财务/偿债 | 70% | 90% | ↑ | 财务恶化信号已完全暴露 |
-| 轨道B 市场定价 | 40% | 65% | ↑ | 市场开始反应（从滞后到收敛） |
+| L1 Policy/Macro | 60% | 70% | Up | Policy risk signals further strengthened |
+| L2 Technology/Competition | 75% | 85% | Up | Competitive disadvantage further confirmed |
+| L3 Supply Chain/Operations | 45% | 65% | Up | Operational deterioration signals fully exposed |
+| L4 Financial/Debt Service | 70% | 90% | Up | Financial deterioration signals fully exposed |
+| Track B Market Pricing | 40% | 65% | Up | Market beginning to respond (from lag to convergence) |
 
 ---
 
-## 四、前瞻对比验证方法
+## 4. Forward-Looking Comparison Method
 
-### 4.1 设计目的
+### 4.1 Design Purpose
 
-检验框架在同行业不同企业之间的**区分度**——框架能否清晰区分"相对好"和"相对差"的企业，并在实际违约/暴雷前给出差异化评级。
+Test the framework's **differentiation capability** within the same industry -- can the framework clearly distinguish "relatively strong" from "relatively weak" entities and produce differentiated ratings before the weaker entity defaults or crashes?
 
-### 4.2 验证框架：隆基绿能 vs 一道新能
+### 4.2 Validation Framework: Gilead Sciences vs. Valeant Pharmaceuticals
 
-| 项目 | 内容 |
+| Item | Content |
 |---|---|
-| **分析日期** | 2026-07（实时，非回溯） |
-| **行业** | 光伏 |
-| **标的A** | 隆基绿能（601012）——BC技术领导者，50.3GW央企集采入围，526亿现金储备 |
-| **标的B** | 一道新能——非上市，IPO终止，负债率86.89%→负净资产 |
-| **数据来源** | 100%公开数据 |
+| **Analysis Date** | 2015-06 (real-time, not back-testing) |
+| **Industry** | Biopharmaceuticals |
+| **Target A** | Gilead Sciences (GILD) -- HIV/HCV leader, massive cash flow, strong IP portfolio |
+| **Target B** | Valeant Pharmaceuticals -- acquisition-driven, extremely high leverage, unsustainable pricing strategy |
+| **Data Source** | 100% public data (SEC filings, clinical trial results, pricing data, rating reports) |
 
-### 4.3 对比评估结果
+### 4.3 Comparative Assessment Results
 
-| 对比维度 | 隆基绿能 | 一道新能 |
+| Comparison Dimension | Gilead Sciences | Valeant Pharmaceuticals |
 |---|---|---|
-| **综合评分** | 7.00 | 1.50 |
-| **评级** | BB+/BBB- | CCC |
-| **评级差距** | — | **5.5分** |
-| **轨道B** | 异常（市场悲观） | 不可用（非上市，无市场数据） |
-| **T1 L1 政策环境** | 部分电站资产受136号文影响，出口退税取消有冲击 | 纯组件企业无电站资产，出口退税取消完全暴露→2分 |
-| **T2 L2 技术竞争** | BC技术领先，央企集采85.3%入围率 | TOPCon通用技术，毛利率低同行5pct，无差异化→2分 |
-| **T3 L3 供应链运营** | 硅片→电池→组件一体化，海外产能布局 | 无垂直一体化，大客户占31%且与大股东同一方→1分 |
-| **T4 L4 财务偿债** | 526亿现金，低负债率 | 负债率86.89%，现金流持续为负，IPO终止→0分 |
+| **Composite Score** | 7.50 | 2.00 |
+| **Rating** | A- | B |
+| **Rating Gap** | -- | **5.5 points** |
+| **Track B** | Normal (market efficient) | Abnormal (CDS spreads widening sharply) |
+| **L1 Policy/Regulatory** | Stable patent framework, favorable pricing environment for breakthrough therapies | Regulatory investigations into price hikes, political pressure on specialty pharma -> 2 pts |
+| **L2 Technology/IP** | Industry-leading HIV/HCV franchise, strong pipeline -> 0 pts | No internal R&D, relies entirely on acquired products -> 2 pts |
+| **L3 Operations** | High margins, established commercial infrastructure | Philidor pharmacy relationship opaque, channel risk -> 1 pt |
+| **L4 Financial** | $15B cash, near-zero net debt, massive FCF | Debt/EBITDA >6x, negative FCF after interest, leverage covenant pressure -> 0 pts |
 
-### 4.4 前瞻验证的独特价值
+### 4.4 Unique Value of Forward-Looking Validation
 
-| 特点 | 说明 |
+| Feature | Description |
 |---|---|
-| **超高区分度** | 5.5分的差距远超框架中任何已知阈值——框架在该行业具有强判别力 |
-| **无市场数据也不影响** | 一道新能轨道B完全为空——但缺失本身就是核心风险信号 |
-| **非上市企业也能评估** | 招股书（即使已终止）+ 司法记录 + 招标数据 → 足够的结构化信号 |
-| **预警时效性** | 框架超前实际暴雷8-24个月（视市场环境和触发事件而定） |
+| **Extreme differentiation** | 5.5-point gap far exceeds any known threshold -- framework has strong discriminatory power in this industry |
+| **Works without market data** | Even if Track B is unavailable for non-listed entities, the framework still functions |
+| **Assesses private companies too** | IPO filings (even if withdrawn), court records, clinical trial data -> sufficient structured signals |
+| **Warning timeliness** | Framework anticipates material credit events 8-24 months ahead (depending on market environment and trigger events) |
 
 ---
 
-## 五、马赛克完备性在验证中的应用
+## 5. Mosaic Completeness in Validation
 
-### 5.1 每个验证案例的信号密度评估
+### 5.1 Signal Density Assessment per Validation Case
 
-验证过程中，对每个评估身份/维度输出信号密度：
+During validation, output signal density for each stakeholder role/dimension:
 
-| 身份/维度 | 信号密度 | 可用信号层 | 关键缺口 | 置信度 |
+| Role/Dimension | Signal Density | Available Signal Levels | Key Gaps | Confidence |
 |---|---|---|---|---|
-| 信贷审批（M0） | 72% | L5×2, L4×4, L3×3 | 母子公司资金归集协议、股权质押详情 | 中高 |
-| 债券投资（M1） | 73% | L5×3, L4×5, L3×2 | Z-spread/OAS、修正久期、成交价序列 | 中高 |
-| 交易+风控（M3+M4） | 58% | L4×3, L3×3, L2×3 | Bid-ask spread、CDS产品（不存在）、RWA数据 | 中 |
+| Credit Underwriting (M0) | 72% | L5x2, L4x4, L3x3 | Parent-subsidiary cash pooling agreement, equity pledge details | Medium-High |
+| Bond Investment (M1) | 73% | L5x3, L4x5, L3x2 | Z-spread/OAS, modified duration, trade price series | Medium-High |
+| Trading + Risk (M3+M4) | 58% | L4x3, L3x3, L2x3 | Bid-ask spread, CDS products (may not exist), RWA data | Medium |
 
-### 5.2 数据缺口在验证中的处理原则
+### 5.2 Data Gap Treatment Principles in Validation
 
-1. **缺少的数据不是"无法分析"——是"用已有数据做判断"**
-2. **替代信号规则**：当精确数据不可获取时，使用公开可获取的代理指标
-3. **标注规则**：所有使用替代信号的判断必须在输出中标注"替代信号来源"
-4. **市场基础设施缺失 vs 数据缺失**：中国市场特有的数据缺口（如Bid-ask spread不披露、CDS产品不存在）标注为"市场基础设施缺失，非本系统局限"
+1. **Missing data does not mean "cannot analyze" -- it means "make judgment with available data"**
+2. **Substitute signal rule**: When precise data is unavailable, use publicly available proxy indicators
+3. **Annotation rule**: All substitute-signal-based judgments must be annotated as "substitute signal source" in the output
+4. **Market infrastructure gaps vs. data gaps**: Market-specific data gaps (e.g., bid-ask spread not disclosed, CDS products unavailable) should be annotated as "market infrastructure gap, not a system limitation"
 
-### 5.3 替代信号映射表（验证阶段实测有效）
+### 5.3 Substitute Signal Mapping Table (Validation-Proven)
 
-| 缺失数据 | 替代方案 | 替代效果 |
+| Missing Data | Substitute | Effectiveness |
 |---|---|---|
-| Z-spread / OAS | YTM + 同评级利差对比 | 中——无法精细分解，但足够排序 |
-| 修正久期 + 凸性 | 期限结构替代 | 中——精度下降但方向正确 |
-| Bid-ask spread | 日均成交量 + 换手率 | 中——无法评估交易成本，但可评估活跃度 |
-| 精确成交价序列 | 发行利率 + 利差变化趋势 | 中高——趋势信号比价格点更有意义 |
-| 非上市企业财务数据 | 招股书（如有）+ 司法记录 + 招聘动态 | 中——需要多源交叉验证 |
-| CDS/CRMW价格 | 发行利差变化 + 股价（如上市） | 低——无法精确对冲 |
+| Z-spread / OAS | YTM + same-rating spread comparison | Medium -- cannot decompose finely, but sufficient for ranking |
+| Modified duration + convexity | Tenor structure substitute | Medium -- precision reduced but direction correct |
+| Bid-ask spread | Average daily volume + turnover rate | Medium -- cannot assess transaction cost, but can assess activity level |
+| Precise trade price series | Issuance rate + spread trend | Medium-High -- trend signals more meaningful than price points |
+| Private company financials | IPO filings (if available) + court records + hiring activity | Medium -- requires multi-source cross-validation |
+| CDS/CRMW pricing | Issuance spread changes + stock price (if listed) | Low -- cannot precisely hedge |
 
 ---
 
-## 六、已完成的验证案例摘要
+## 6. Completed Validation Case Summaries
 
-### 案例1：永城煤电控股集团（永煤）
+### Case 1: Lehman Brothers (2008)
 
-| 项目 | 内容 |
+| Item | Content |
 |---|---|
-| **违约日期** | 2020-11-10（20永煤SCP003，10亿本金） |
-| **违约前评级** | AAA/稳定（中诚信）→ 违约后BB |
-| **风险基因型** | **治理结构缺陷**——母公司被大股东掏空，财务欺诈（虚增货币资金861亿） |
-| **市场信念** | "AAA国企=安全" |
-| **T1分析点** | 2019-06-30（T-17个月） |
+| **Default Date** | 2008-09-15 (Chapter 11 filing, $613B debt) |
+| **Pre-Default Rating** | A2/A (Moody's/S&P) -> downgraded to B+/BBB just before filing |
+| **Risk Genotype** | **Leverage Bubble** -- Excessive mortgage exposure, 31:1 leverage, liquidity mismatch |
+| **Market Belief** | "Too big to fail" / "Systemically important bank" |
+| **T1 Analysis Point** | 2007-03-31 (T-18 months) |
 
-**T1发现（违约前17个月）**：
+**T1 Findings (18 months before bankruptcy)** :
 
-| 轨道A信号 | 状态 |
+| Track A Signal | Status |
 |---|---|
-| 母公司负债率：94.87% | 🔴 |
-| 归母净利润：-11.44B（2018年） | 🔴 |
-| 短期债务占比：59.14% | 🟡 |
-| 关联方应收款：22.5B | 🔴 |
-| 股权结构缺陷 | 🔴 |
+| Leverage ratio: 31:1 (consolidated) | Red |
+| Subprime mortgage exposure: ~$85B (RMBS + CMBS) | Red |
+| Commercial real estate concentration: 28% of portfolio | Red |
+| Short-term funding ratio: >60% of liabilities maturing <1 year | Yellow |
+| Q1 2007 net income: flat YoY, mortgage provisions rising | Yellow |
 
-| 轨道B信号 | 状态 |
+| Track B Signal | Status |
 |---|---|
-| 外部评级：AAA/稳定 | 🟢（误导性） |
-| SCP发行利率：3.24-3.40% | 🟢（正常） |
-| 煤炭行业：大型矿企利润+32.8% | 🟢 |
+| External rating: A2/A (Moody's/S&P) Stable | Green (Misleading) |
+| CDS spread: ~60bp (normal for strong bank) | Green (Misleading) |
+| Investment bank industry: robust M&A, high bonuses | Green |
 
-**框架结论（T1）**：4红+1黄（轨道A），轨道B完全绿色 → "需要持续监控"
-**框架结论（T2，违约前4.5个月）**：5红+0黄（轨道A升级），轨道B开始出现黄色信号
+**Framework Conclusion (T1)**: 3 red + 2 yellow (Track A), Track B entirely green -> "Requires enhanced monitoring, particularly liquidity and mortgage exposure"
+**Framework Conclusion (T2, 4.5 months pre-default)**: 5 red (Track A escalation), Track B CDS spreads widening to >300bp
 
-**框架无法知道的内容**（T1时点）：
-- 资产转移计划（内部政府决策，2020年7月）
-- 货币资金造假真实规模（861亿，事后调查发现）
-- 具体违约日期
+**Framework Could Not Have Known** (T1 timepoint):
+- Exact subprime mark-to-market losses (market not yet pricing them)
+- Bear Stearns collapse timeline (March 2008 trigger event)
+- Specific liquidity crisis date
 
-**T1→T2信号密度变化**：轨道A从75%升至90%，轨道B从40%升至65%（市场开始收敛）
+**T1->T2 Signal Density Change**: Track A from 70% to 90%, Track B from 45% to 75% (market rapidly converging)
 
 ---
 
-### 案例2：紫光集团（Tsinghua Unigroup）
+### Case 2: Wirecard (2020)
 
-| 项目 | 内容 |
+| Item | Content |
 |---|---|
-| **违约日期** | 2020-11-16（17紫光PPN005，13亿本金） |
-| **违约前评级** | AAA/稳定（中诚信） |
-| **后续** | 破产重整，智路建广联合体接盘 |
-| **风险基因型** | **并购泡沫**——债务驱动的收购狂潮，商誉膨胀，利息覆盖<2x |
-| **市场信念** | "国家半导体舰队，大而不倒" |
-| **分析点** | 2019-06-30（T-17个月，仅T1） |
+| **Default Date** | 2020-06-25 (insolvency filing, EUR 1.9B cash missing) |
+| **Pre-Default Rating** | BBB- (S&P, downgraded from BBB in May 2020) |
+| **Risk Genotype** | **Accounting Fraud** -- Fabricated revenue through third-party acquiring partners, fictitious cash balances |
+| **Market Belief** | "German fintech champion, European PayPal" |
+| **T1 Analysis Point** | 2019-01-31 (T-17 months) |
 
-**各层信号**：
+**Layer Signals**:
 
-| 层级 | 关键信号 | 状态 |
+| Layer | Key Signal | Status |
 |---|---|---|
-| L5 财务 | 负债率73.42%（剔除商誉97.59%） | 🔴 |
-| L5 财务 | EBITDA利息覆盖倍数：1.61x（2017年2.29x） | 🔴 |
-| L5 财务 | 核心净利润：-67.86B（vs 披露的-6.31B） | 🔴 |
-| L5 财务 | 财务费用=总利润的6.5倍 | 🔴 |
-| L5 财务 | 商誉543B（占资产的19.59%） | 🔴 |
-| L4 政策 | 校企改革迫使清华剥离 | 🔴 |
-| L4 政策 | 两次股权转让失败（无市场接手方） | 🔴 |
-| L3 市场 | H3C中国排名第1企业网 | 🟢 |
-| L2 技术 | YMTC尚未量产，落后2-3代 | 🟡 |
-| L1 地缘政治 | 中兴/华为已被制裁，YMTC设备依赖美国 | 🟡 |
+| L4 Financial | Reported operating margin >30% -- significantly higher than payment industry peers | Red |
+| L4 Financial | Third-party acquirer business (TPA) generated 50%+ of revenue but opaque economics | Red |
+| L4 Financial | Cash balance EUR 2.2B held in escrow accounts at Philippine banks | Red |
+| L3 Operations | FT investigation (Jan 2019) revealed suspected forgery at Wirecard Singapore office | Red |
+| L3 Operations | Senior management including CEO Markus Braun personally involved in TPA operations | Red |
+| L2 Technology | Core payment processing technology not differentiated from competitors | Yellow |
+| L1 Regulatory | BaFin (German regulator) under scrutiny for its handling of Wirecard whistleblower complaints | Yellow |
 
-**框架结论**：L5极端风险 + L4高风险 → **"高风险，建议降低敞口"**
+**Framework Conclusion** (T1): Multi-layer red flags -> "Extreme caution, opaque accounting and business model not compensable by high margins"
+**Framework Conclusion** (T2, May 2020): KPMG special audit could not verify 25% of revenue -> "Immediate avoidance recommended"
 
-**关键区别**（vs永煤）：
-- 永煤的欺诈掩盖了真相；紫光的风险是**透明的**——所有数字都在2018年年报中
-- 市场被"国家冠军"叙事蒙蔽，而非缺乏信息
-- 这是框架可以直接预警的类型——不需要内幕信息
+**Key Distinction** (vs. Lehman):
+- Lehman's risks were partly visible but masked by market conditions; Wirecard's fraud was **transparently suspicious** -- the red flags were in the public domain
+- Market was misled by "German champion" narrative and regulatory endorsement (BaFin)
+- This is the type of case the framework can flag directly -- no insider information needed
 
-**框架改进建议**：M&A驱动型企业的L5权重应从5-10%提升至15-20%；"剔除商誉的负债率"是关键指标
+**Framework Improvement Suggestion**: For opaque business models (TPA revenue >30%), impose automatic L4 score cap of 4/10 regardless of reported metrics; add "revenue transparency score" as a new indicator
 
 ---
 
-### 案例3：隆基绿能 vs 一道新能（前瞻对比验证）
+### Case 3: Valeant Pharmaceuticals (2015)
 
-| 项目 | 隆基绿能 | 一道新能 |
-|---|---|---|
-| **综合评分** | 7.00 | 1.50 |
-| **评级** | BB+/BBB- | CCC |
-| **轨道B** | 🟠 异常（市场悲观） | —（非上市，无市场数据） |
-| **区分度** | — | **差距5.5分** |
-| **预警时效** | — | 超前实际暴雷8-24个月 |
-
-**核心发现**：框架在同一行业不同信用质量的企业间产生5.5分的差距，具有强判别力。一道新能轨道B为空——非上市企业无市场定价本身就是风险信号。
-
----
-
-### 案例4：华晨汽车集团（多身份并行验证）
-
-| 项目 | 内容 |
+| Item | Content |
 |---|---|
-| **分析时点** | 2018-12-31 |
-| **首次违约** | 2020-10-23（17华汽05） |
-| **破产重整** | 2020-11-20 |
-| **预警窗口** | **22个月** |
-| **违约前评级** | AAA/稳定（大公国际） |
-| **马赛克评分** | **1.25/10（D级）** |
-| **风险基因型** | **子强母弱**——合并AAA掩盖母公司D级；核心资产（华晨宝马50%股权）将被剥离 |
+| **Analysis Date** | 2015-06-30 (T-12 months from peak crisis) |
+| **Key Event** | Philidor scandal, stock crashed ~90%, CEO resigned (March 2016) |
+| **Pre-Event Rating** | BBB- (S&P, investment grade) |
+| **Risk Genotype** | **Acquisition Bubble** -- Debt-fueled M&A spree, price gouging strategy, opaque specialty pharmacy channel |
+| **Market Belief** | "Pharmaceutical industry disruptor, Valeant business model is the future" |
 
-**核心欺瞒结构**：合并报表 vs 母公司报表
+**Track A Signals**:
 
-| 指标 | 合并报表（AAA评级据此） | 母公司单体（借债主体） | 差异 |
+| Layer | Key Signal | Status |
+|---|---|---|
+| L4 Financial | Total debt >$30B, Debt/EBITDA >6x | Red |
+| L4 Financial | Debt-funded acquisitions of Salix ($14.5B), Bausch & Lomb ($8.7B), many others | Red |
+| L4 Financial | Goodwill + intangibles >$50B -- asset quality highly concentrated | Red |
+| L3 Operations | Philidor specialty pharmacy relationship generated ~20% of revenue -- highly opaque | Red |
+| L3 Operations | Business model relied on large price increases on acquired drugs | Red |
+| L3 Operations | R&D spending <3% of revenue vs. pharma industry average 15-20% | Red |
+| L2 Technology/IP | No internal R&D pipeline -- entirely dependent on acquired legacy products | Red |
+| L1 Regulatory | US Congressional investigation into pricing practices launched (Q4 2015) | Yellow |
+
+**Track B Signals**:
+
+| Signal | Status |
+|---|---|
+| Stock price: peaked at $263 in July 2015 | Green (Peak) |
+| CDS spread: ~200bp (normal for BBB-) | Green (Misleading) |
+| Short interest: rising from 5% to 15%+ | Yellow (Warning) |
+| Cliff fund (Ackman) continued large holding | Green (False comfort) |
+
+**Framework Conclusion**: Multi-layer fundamental unsustainability -> "Structural risk, business model not viable long-term -- reduce or avoid exposure"
+
+**Framework Could Not Have Known** (T1 timepoint):
+- Specific Philidor transaction details (SEC investigation later revealed)
+- Exact timeline of pricing investigation escalation
+- Ackman's Pershing Square exit timing
+
+**Key Lesson**: Valeant is a case where Track A (fundamental analysis) decisively outperforms Track B (market pricing). The market was captivated by the "disruptor" narrative and high revenue growth, ignoring the structural unsustainability of acquisition-driven pricing strategies.
+
+**Framework Improvement Suggestion**: For acquisition-driven companies, impose debt/EBITDA ceiling (6x triggers automatic L4 cap); "R&D/revenue ratio" should be a mandatory L2 indicator for pharma/biotech
+
+---
+
+### Case 4: Credit Suisse (2023)
+
+| Item | Content |
+|---|---|
+| **Analysis Date** | 2021-09-30 (T-18 months to acquisition by UBS) |
+| **Default Event** | March 19, 2023 -- forced acquisition by UBS orchestrated by Swiss authorities |
+| **Pre-Event Rating** | A-/A3 (S&P/Moody's, early 2021) -> BBB/Baa2 (mid-2022) -> junk just before acquisition |
+| **Risk Genotype** | **Governance Failure + Repeated Scandals** -- Cultural breakdown, risk management dysfunction, deposit flight |
+| **Market Belief** | "Global systemically important bank -- too big and too connected to fail" |
+
+**Core Deception Structure**: Strong franchise reputation vs. reality of internal dysfunction
+
+| Metric | Public Perception (Brand) | Reality (Credit Analysis) | Gap |
 |---|---|---|---|
-| 资产负债率 | 69.93% | ~107%（资不抵债） | +37pct |
-| 归母净利润 | 4.58亿（表面盈利） | -3.56亿（实际亏损） | 差8.14亿 |
-| 经营现金流 | +136亿 | -10.51亿（净流出） | 母公司依赖输血 |
-| 货币资金 | 513.76亿 | 母公司可动用极少 | 合并现金≠母公司现金 |
+| Brand | 166-year history, elite private bank | Repeated scandals: Archegos, Greensill, Mozambique | Full gap |
+| Capital | CET1 ratio 14%+ reported | Risk-weighted assets understated, concentration risk in Archegos | Material |
+| Deposits | Stable private banking franchise | Outflows accelerating: CHF 135B in Q4 2022 alone | Extreme |
+| Wealth Management | Global leader | Talent exodus, client withdrawals from Singapore/EMEA | Full gap |
 
-**宝马股权公告影响**（2018-10-11）：
-- 宝马宣布2022年增持华晨宝马至75%
-- 华晨中国当日暴跌24.54%
-- 核心资产将在3年后被剥夺——**结构性质变**
+**Key Trigger Events Leading to Collapse**:
 
-**三身份评估结果**：
-
-| 身份 | 评分 | 结论 |
+| Date | Event | Impact |
 |---|---|---|
-| M0 信贷审批 | 有条件同意 | 只做抵押贷款（华晨中国股权质押），5亿上限，1年期限 |
-| M1 债券投资 | **2.75/10** | **强烈回避**——无担保 + 利差补偿不足 + 宝马剥离已公告 |
-| M3+M4 交易风控 | 减仓 | **0.5% NAV硬上限**，缩短久期，无对冲工具可用 |
+| March 2021 | Archegos Capital default ($5.5B loss for CS) | Revealed risk management failure |
+| March 2021 | Greensill Capital funds freeze ($10B) | Supply chain finance opacity exposed |
+| February 2022 | Mozambique "tuna bonds" conviction | Criminal record for failure to prevent money laundering |
+| October 2022 | Social media speculation of imminent collapse | Accelerated deposit outflow |
+| Q4 2022 | Q4 net outflows CHF 135B | Liquidity crisis |
+| March 15, 2023 | Saudi National Bank declines additional capital injection | Last viable lifeline cut |
+| March 19, 2023 | UBS forced acquisition for CHF 3B | Zero equity value for shareholders |
 
-**验证结论**：三个身份均在违约前22个月给出明确负面判断，验证了多身份并行评估框架的有效性。
+**Multi-Stakeholder Assessment Results**:
+
+| Role | Score | Conclusion |
+|---|---|---|
+| M0 Credit Underwriting | Conditional pass | Only secured lending, strict collateral, 1-year max tenor |
+| M1 Bond Investment | **3.00/10** | **Strong avoid** -- unsecured + spread does not compensate for governance risk + deposit trajectory |
+| M3+M4 Trading/Risk | Reduce | **0.5% NAV hard ceiling**, shorten duration, no hedge instruments available |
+
+**Validation Conclusion**: Three stakeholder roles all issued clear negative judgments 18 months before the forced acquisition, validating the multi-stakeholder parallel assessment framework.
 
 ---
 
-## 七、验证中的关键发现和框架改进记录
+### Case 5: Greece (2012) -- Sovereign Debt Restructuring
 
-### 7.1 跨案例共识
+| Item | Content |
+|---|---|
+| **Event Date** | March 2012 -- Private Sector Involvement (PSI) debt restructuring, largest sovereign restructuring in history (~EUR 200B) |
+| **Pre-Event Rating** | CCC/Ca (S&P/Moody's, early 2012) -- downgraded from A- in 2010 |
+| **Risk Genotype** | **Sovereign Debt Crisis** -- Unsustainable debt/GDP, structural budget deficit, competitiveness gap |
+| **T1 Analysis Point** | 2010-06-30 (T-21 months to restructuring) |
 
-| 发现 | 普遍性 | 含义 |
+**Track A Sovereign Signals**:
+
+| Dimension | Key Signal | Status |
 |---|---|---|
-| 外部评级滞后≥17个月 | 所有案例 | 外部评级不能作为风险判断依据 |
-| 母公司单体报表比合并报表更危险 | 永煤、华晨 | 必须同时分析合并+单体，重点是发债主体 |
-| 轨道A领先轨道B | 所有案例 | 基本面信号比市场定价提前6-12个月 |
-| 结构化风险（治理/并购/资产剥离）> 周期性风险 | 全部案例 | 最致命的不是"市场不好"，而是"结构不可逆" |
-| 100%公开数据足以预警 | 全部案例 | 不需要内幕信息，拼图足够 |
+| Debt sustainability | Debt/GDP >150% (2010) | Red |
+| Fiscal balance | Deficit >10% of GDP | Red |
+| Current account | Persistent deficit >10% of GDP | Red |
+| Competitiveness | Unit labor costs grew 30%+ vs. Germany since Euro entry | Red |
+| Political | Government resistance to reform, social unrest | Red |
+| External support | EU/IMF bailout of EUR 110B (May 2010) -- temporary relief but structural issues unresolved | Yellow |
 
-### 7.2 框架改进记录
+**Track B Signals**:
 
-| 版本 | 时间 | 改进内容 | 触发案例 |
+| Signal | Status |
+|---|---|
+| 10-year bond yield: >12% (June 2010) | Crisis |
+| Rating: A- (Jan 2010) -> BBB+ (Apr 2010) -> BB+ (Jun 2010) | Rapid downgrades |
+| CDS spreads: >1000bp | Crisis |
+| ECB/SMP program: started buying Greek bonds May 2010 | Intervention |
+
+**Framework Conclusion (T1)**: 5 red + 1 yellow (Track A) -> "Not debt, but solvency crisis. Structural adjustment required for any sustainable outcome."
+**Framework Conclusion (T2, Q4 2011)**: PSI negotiations underway -> "Controlled default is most likely scenario regardless of official sector resistance."
+
+**Key Distinction**: Sovereign credit analysis differs from corporate -- the framework's pyramid layers require adaptation (L1=Debt sustainability, L2=Competitiveness, L3=Fiscal governance, L4=Political capacity). However, the dual-track cross-validation principle still applies.
+
+**Framework Improvement Suggestion**: Sovereign credit assessment requires separate layer definitions; the corporate pyramid is not directly applicable without customization.
+
+---
+
+## 7. Key Findings and Framework Improvement Record
+
+### 7.1 Cross-Case Consensus
+
+| Finding | Universality | Implication |
+|---|---|---|
+| External rating lag >=17 months | All cases | External rating cannot serve as risk judgment basis |
+| Parent standalone financials more dangerous than consolidated | Lehman, Credit Suisse | Must analyze both consolidated + standalone, focus on debt-issuing entity |
+| Track A leads Track B | All cases | Fundamental signals precede market pricing by 6-12 months |
+| Structural risk (governance/M&A/asset divestiture) > cyclical risk | All cases | Most deadly are "structural irreversible" not "market conditions poor" |
+| 100% public data sufficient for warning | All cases | No insider information needed, mosaic is sufficient |
+
+### 7.2 Framework Improvement Record
+
+| Version | Time | Improvement | Trigger Case |
 |---|---|---|---|
-| v0.1→v0.2 | 2026-07-07 | 新增双时点验证方法论 | 永煤、紫光验证完成 |
-| v0.2→v0.3 | 2026-07-08 | 新增马赛克引擎层（信号提取+拼图+完备性评估） | 跨案例通用 |
-| v0.2→v0.3 | 2026-07-08 | 新增数据缺口→风险映射表 | 跨案例通用 |
-| v0.2→v0.3 | 2026-07-08 | M&A驱动型企业L5权重提升至15-20% | 紫光（商誉指标关键） |
-| v0.2→v0.3 | 2026-07-08 | 新增"剔除商誉的负债率"为核心指标 | 紫光 |
-| v0.3→v0.3 | 2026-07-08 | 多身份并行评估框架（M0/M1/M3+M4） | 华晨 |
-| v0.3→v0.3 | 2026-07-08 | 母公司单体 vs 合并报表对比方法论 | 华晨、永煤 |
-| v0.3→v0.3 | 2026-07-08 | 信号密度 ≤58% 时间接判断不可用场景标注 | 华晨（交易视角） |
+| v0.1->v0.2 | 2026-07-07 | Added dual-timepoint validation methodology | Lehman, Wirecard validation completed |
+| v0.2->v0.3 | 2026-07-08 | Added mosaic engine layer (signal extraction + assembly + completeness) | Cross-case universal |
+| v0.2->v0.3 | 2026-07-08 | Added data gap->risk mapping table | Cross-case universal |
+| v0.2->v0.3 | 2026-07-08 | M&A-driven enterprise financial layer weight increased to 15-20% | Valeant (goodwill indicator critical) |
+| v0.2->v0.3 | 2026-07-08 | Added "debt/EBITDA ceiling" as core indicator | Valeant |
+| v0.3->v0.3 | 2026-07-08 | Multi-stakeholder parallel assessment framework (M0/M1/M3+M4) | Credit Suisse |
+| v0.3->v0.3 | 2026-07-08 | Parent standalone vs. consolidated comparison methodology | Credit Suisse, Lehman |
+| v0.3->v0.3 | 2026-07-08 | Signal density <=58% indirect judgment unavailable scenario annotation | Credit Suisse (trading perspective) |
 
-### 7.3 框架已知局限
+### 7.3 Framework Known Limitations
 
-1. **无法预测违约时间**：框架识别结构不可持续性，但无法预测具体触发事件和时间
-2. **对欺诈型风险的预警时效较短**：永煤的货币资金造假需要T2（违约前4.5个月）才充分暴露
-3. **非上市企业的轨道B完全不可用**：需要依赖替代信号（招股书、司法记录、招标数据）
-4. **中国市场基础设施限制**：Bid-ask spread不披露、CDS产品缺失——这些是市场本身的限制，非框架可解决
-5. **无法替代深度行业判断**：框架提供结构化分析路径，但行业专家对技术路线等维度的判断仍不可替代
+1. **Cannot predict default timing**: Framework identifies structural unsustainability but cannot predict specific trigger events or timing
+2. **Shorter warning window for fraud-type risks**: Wirecard's revenue fabrication required T2 (4.5 months pre-default) for full exposure
+3. **Track B completely unavailable for private companies**: Relies on substitute signals (IPO filings, court records, bidding data)
+4. **Market infrastructure constraints**: Bid-ask spread not disclosed in many markets, CDS products unavailable for many credits -- these are market limitations, not framework limitations
+5. **Cannot replace deep industry judgment**: Framework provides structured analysis path, but industry expert judgment on technology roadmaps and other dimensions remains irreplaceable
+
+---
+
+## Related Content
+
+- [Engine Architecture Overview](engine-overview.md) -- Core philosophy, overall architecture, design principles
+- [Dual-Track Analysis Methodology](dual-track-methodology.md) -- Track A + Track B, cross-validation, rating mapping
+- [Mosaic Engine](mosaic-engine.md) -- Signal extraction, assembly, completeness assessment, Mode B interface
