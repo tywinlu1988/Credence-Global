@@ -1,72 +1,72 @@
 ---
 name: credit-qa-verifier
-description: Use when verifying a Chinese fixed-income credit report or analysis — checking a work path's quality gates, enforcing the mandatory signal-density rules (no numeric score below the density floor), the one-shot-veto CCC ceiling, Mode B anti-hallucination guardrails, and single-source-of-truth compliance (no invented thresholds). Triggers on '质检', '复核这份报告', '检查一下有没有问题', '质量门', or as the final step after report generation. Reads engine documents as the rule source; never relaxes a gate.
+description: Use when verifying a fixed-income credit report or analysis — checking a work path's quality gates, enforcing the mandatory signal-density rules (no numeric score below the density floor), the one-shot-veto CCC ceiling, Mode B anti-hallucination guardrails, and single-source-of-truth compliance (no invented thresholds). Triggers on 'QA check', 'review this report', 'check for issues', 'quality gate', or as the final step after report generation. Reads engine documents as the rule source; never relaxes a gate.
 ---
 
 ## Purpose
 
-**对应引擎版本**: v0.8.4-release
+**Engine version**: v0.0.1
 
-质检层，四段链**终态**。职责：对《交付单》及其上游《分析产物》《工作路径单》做交付前复核，产出《质检裁决》（QA Verdict）。本 skill 以引擎文档为规则源，**从不放宽门禁**（never relaxes a gate）：任何一项质量门或强制检查不通过，即判 `fail` 并退回整改，不得为了交付而降低标准。本 skill 不复制任何阈值/评级映射；规则正文以所引引擎文档为单一事实源。
+QA layer — final stage of the four-stage chain. Responsibility: perform pre-delivery review of the Delivery Note and its upstream Analysis Artifact and Path Sheet, producing a QA Verdict. This skill uses engine documents as the rule source and **never relaxes a gate**: if any quality gate or mandatory check fails, the verdict is `fail` and must be sent back for remediation; do not lower standards for delivery. This skill does not replicate any thresholds/rating mappings; rule content uses the referenced engine documents as the single source of truth.
 
-## Inputs（消费）
+## Inputs
 
-- **《交付单》（Delivery Note）**：`credit-report-builder` 产出（字段形状见 `dev/engine/pipeline-contract.md` §2.3）。
-- **《分析产物》（Analysis Artifact）**：`fixed-income-credit-analysis` 产出，供复核密度/否决/完备性（§2.2）。
-- **《工作路径单》的 `quality_gates`**：`credit-analysis-router` 产出，是逐门复核的清单来源；`path_id` 为贯穿 join key，三份产物须一致。
+- **Delivery Note**: produced by `credit-report-builder` (field shape at `dev/engine/pipeline-contract.md` §2.3).
+- **Analysis Artifact**: produced by `fixed-income-credit-analysis`, for reviewing density/veto/completeness (§2.2).
+- **Path Sheet `quality_gates`**: produced by `credit-analysis-router`, serving as the checklist source for gate-by-gate review; `path_id` is the join key throughout — all three artifacts must be consistent.
 
-## Output（产出）
+## Output
 
-- **《质检裁决》（QA Verdict）**：终态产物，字段形状见 `dev/engine/pipeline-contract.md` §2.4。`verdict` 取值 `pass` | `pass-with-findings` | `fail`。
+- **QA Verdict** — final stage artifact, field shape at `dev/engine/pipeline-contract.md` §2.4. `verdict` takes one of `pass` | `pass-with-findings` | `fail`.
 
-## Verification Protocol（复核协议）
+## Verification Protocol
 
-1. **join key 一致性**：三份产物的 `path_id` 必须相同且在注册表可解析；不一致即 `fail`。
-2. **逐质量门复核**：对路径单 `quality_gates` 逐条复核，产 `gate_results`（每门 `status` + `evidence`，证据引用引擎文档章节）。
-3. **四项强制检查**：见下「Mandatory Checks」，任一不通过即 `fail`。
-4. **产裁决**：全部通过 → `pass`；通过但有应注记的发现 → `pass-with-findings`；任一不通过 → `fail` 并列 `remediation`。
+1. **Join key consistency**: The `path_id` in all three artifacts must be identical and resolvable in the registry. Inconsistency → `fail`.
+2. **Gate-by-gate review**: Review each quality gate in the Path Sheet's `quality_gates` list, producing `gate_results` (each with `status` + `evidence`, evidence citing engine document sections).
+3. **Four mandatory checks**: See below. Any failure → `fail`.
+4. **Produce verdict**: All pass → `pass`; pass but with findings that should be noted → `pass-with-findings`; any failure → `fail` with `remediation`.
 
-## Mandatory Checks（强制检查，规则源为引擎文档）
+## Mandatory Checks (rule source is engine documents)
 
-- **信号密度规则 `density_rule`**：密度低于下限的维度不得出数值评分，须标注"信息不足无法评估"；加权密度不足时不得出最终字母评级。规则源 `dev/engine/mosaic-engine.md` §4.3。
-- **一票否决上限 `veto_ceiling`**：触发一票否决的发行人，评级上限锁定为 CCC 不得上调。规则源 `dev/engine/industry-framework.md` §五。
-- **Mode B 防幻觉 `mode_b`**：用户未显式提供数据源（CSV/API/MCP）时，不得出现任何 Mode B 外部数据值；所有 Mode B 字段须作数据缺口处理。规则源 `dev/engine/mosaic-engine.md` §六。
-- **单一事实源 `single_source`**：报告/分析不得编造阈值、权重、评级映射；引擎未定义的量须标注 `引擎未定义`。规则源为全部所引引擎文档。
+- **Signal density rule `density_rule`**: Dimensions below the density floor must not output numeric scores and must be annotated as `insufficient information to evaluate`; when weighted-average density is insufficient, must not output a final letter rating. Rule source: `dev/engine/mosaic-engine.md` §4.3.
+- **One-shot veto ceiling `veto_ceiling`**: Issuers triggering a one-shot veto have their rating ceiling locked at CCC, may not be raised. Rule source: `dev/engine/industry-framework.md` §5.
+- **Mode B anti-hallucination `mode_b`**: Unless the user explicitly provides data sources (CSV/API/MCP), no Mode B external data values may appear; all Mode B fields must be treated as data gaps. Rule source: `dev/engine/mosaic-engine.md` §6.
+- **Single source of truth `single_source`**: Reports/analyses must not fabricate thresholds, weights, or rating mappings; quantities not defined in the engine must be annotated as `not defined in engine`. Rule source: all referenced engine documents.
 
-## QA Verdict Output（《质检裁决》）
+## QA Verdict Output
 
-模板（schema 单一事实源为 `dev/engine/pipeline-contract.md` §2.4）：
+Template (schema single source of truth is `dev/engine/pipeline-contract.md` §2.4):
 
 ```yaml
-path_id: ""                 # join key（三份产物须一致）
+path_id: ""                 # join key (all three artifacts must be consistent)
 verdict: ""                 # pass|pass-with-findings|fail
-gate_results:               # 逐质量门复核结果
-  - gate: ""                # "规则名 (dev/engine/<doc>.md §节)"（承自路径单 quality_gates）
+gate_results:               # gate-by-gate review results
+  - gate: ""                # "rule name (dev/engine/<doc>.md §section)" (inherited from Path Sheet quality_gates)
     status: ""              # pass|fail
-    evidence: ""            # 复核证据（引用引擎文档章节，不复制数值）
-mandatory_checks:           # 四项强制检查
+    evidence: ""            # review evidence (citing engine document sections, not copying values)
+mandatory_checks:           # four mandatory checks
   density_rule: ""
   veto_ceiling: ""
   mode_b: ""
   single_source: ""
-remediation: []             # 不通过项的整改建议
+remediation: []             # remediation suggestions for failed items
 ```
 
-示例（审贷单标的 WP-M0-01，三门复核通过、强制检查全过，有一项应注记发现）：
+Example (Credit Selector single target WP-CS-01, three gates all pass, mandatory checks all pass, one finding to note):
 
 ```yaml
-path_id: WP-M0-01
+path_id: WP-CS-01
 verdict: pass-with-findings
 gate_results:
-  - gate: "信号密度 (dev/engine/mosaic-engine.md §4.3)"
+  - gate: "signal density (dev/engine/mosaic-engine.md §4.3)"
     status: pass
-    evidence: 低于密度下限的维度已置 null 并标注信息不足无法评估（mosaic-engine §4.3）
-  - gate: "一票否决 (dev/engine/industry-framework.md §五)"
+    evidence: Dimensions below density floor are set to null and annotated insufficient information to evaluate (mosaic-engine §4.3)
+  - gate: "one-shot veto (dev/engine/industry-framework.md §5)"
     status: pass
-    evidence: 未触发一票否决，评级上限规则复核通过（industry-framework §五）
-  - gate: "交叉对撞 (dev/engine/dual-track-methodology.md §四)"
+    evidence: No one-shot veto triggered; rating ceiling rule verified (industry-framework §5)
+  - gate: "cross-comparison (dev/engine/dual-track-methodology.md §4)"
     status: pass
-    evidence: 双轨分歧已在报告中呈现并解读（dual-track-methodology §四）
+    evidence: Track divergence presented and interpreted in report (dual-track-methodology §4)
 mandatory_checks:
   density_rule: pass
   veto_ceiling: pass
@@ -75,21 +75,21 @@ mandatory_checks:
 remediation: []
 ```
 
-## Chaining（链式交接 · 终态）
+## Chaining (Final Stage)
 
-- **上游（REQUIRED）**：`credit-report-builder` —— 消费其《交付单》及上游产物。
-- **终态**：本 skill 为四段链最后一段，无下游。判 `fail` 时按 `remediation` 退回对应阶段（密度/否决问题回 analysis；模板/装配问题回 report）整改后重新质检。
+- **Upstream (REQUIRED)**: `credit-report-builder` — consumes its Delivery Note and upstream artifacts.
+- **Final stage**: This skill is the last of the four-stage chain; no downstream. When verdict is `fail`, return to the appropriate stage per `remediation` (density/veto issues → return to analysis; template/assembly issues → return to report) for remediation and re-review.
 
 ## Guardrails
 
-- **从不放宽门禁（never relaxes a gate）**：质量门与强制检查只有"通过/不通过"，不设"酌情通过"。缺完备性报告、低密度出数值分、编造阈值、Mode B 幻觉，一律 `fail`。
-- **不复制引擎内容**：只引用规则名与文档章节，不复制任何阈值、SRI 档位、分层时间预算或评级映射；数值裁决以所引引擎文档为准。
-- **以引擎文档为规则源**：每条 gate 规则名必须能在所引引擎文档中 grep 到（溯源见 `references/qa-checklist.md`），不得虚构规则。
+- **Never relaxes a gate**: Quality gates and mandatory checks only have pass/fail outcomes; no discretionary pass. Missing completeness report, outputting numeric scores below density floor, fabricating thresholds, Mode B hallucination — all result in `fail`.
+- **Do not replicate engine content**: Only reference rule names and document sections; do not replicate any thresholds, SRI tiers, layered time budgets, or rating mappings. Numerical judgments are based on the referenced engine documents.
+- **Engine documents as rule source**: Every gate rule name must be grep-able in the referenced engine document (traceability at `references/qa-checklist.md`); do not fabricate rules.
 
 ## References
 
-- `references/qa-checklist.md` — 质检清单（逐门规则名 → 引擎文档溯源，单源指针）
-- `dev/engine/pipeline-contract.md` — 四段链 I/O 契约（产物 schema 单一事实源）
-- `dev/engine/mosaic-engine.md` — 信号密度/完备性/Mode B 护栏（density_rule、mode_b 规则源）
-- `dev/engine/industry-framework.md` — 一票否决评级上限（veto_ceiling 规则源）
-- `dev/engine/work-path-registry.md` — 工作路径注册表（质量门清单溯源）
+- `references/qa-checklist.md` — QA checklist (gate rule name → engine document traceability, pointer only)
+- `dev/engine/pipeline-contract.md` — Four-stage chain I/O contract (artifact schema single source of truth)
+- `dev/engine/mosaic-engine.md` — Signal density / completeness / Mode B guardrail (density_rule, mode_b rule source)
+- `dev/engine/industry-framework.md` — One-shot veto rating ceiling (veto_ceiling rule source)
+- `dev/engine/work-path-registry.md` — Work path registry (quality gate list traceability)

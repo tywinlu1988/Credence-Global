@@ -1,53 +1,53 @@
 ---
 name: credit-report-builder
-description: Use when turning a completed Chinese fixed-income credit analysis into a deliverable report — selecting the correct report template (Type 1–15), mapping findings to the L0/L1/L2 output tiers, rendering a multi-stakeholder dashboard, or assembling a layered credit report from an analysis artifact. Triggers on '生成报告', '出一份授信审批报告', '做成仪表盘', 'L0信号卡', or when a work-path sheet's templates must be produced. Requires an upstream analysis artifact; does not perform analysis itself.
+description: Use when turning a completed fixed-income credit analysis into a deliverable report — selecting the correct report template (Type 1–18), mapping findings to the L0/L1/L2 output tiers, rendering a multi-stakeholder dashboard, or assembling a layered credit report from an analysis artifact. Triggers on 'generate report', 'produce a credit approval report', 'build a dashboard', 'L0 signal card', or when a work-path sheet's templates must be produced. Requires an upstream analysis artifact; does not perform analysis itself.
 ---
 
 ## Purpose
 
-**对应引擎版本**: v0.8.4-release
+**Engine version**: v0.0.1
 
-装配层，**本 skill 不做分析**（does not perform analysis）。职责仅两步：把上游 `fixed-income-credit-analysis` 产出的《分析产物》映射到 L0/L1/L2 输出层并选中正确模板 → 装配为交付报告并产出《交付单》。本 skill 不复制任何引擎阈值/分层时间预算/评级映射；模板选择与分层语义一律以引擎文档为单一事实源。
+Assembly layer — **this skill does not perform analysis**. Responsibility is two steps: map the Analysis Artifact produced by the upstream `fixed-income-credit-analysis` skill to L0/L1/L2 output tiers and select the correct template → assemble into a deliverable report and produce a Delivery Note. This skill does not replicate any engine thresholds/layered time budgets/rating mappings; template selection and tier semantics are always determined by engine documents as the single source of truth.
 
-## Inputs（消费）
+## Inputs
 
-- **《工作路径单》（Path Sheet）**：router 产出，提供 `path_id` / `depth` / `quality_gates`。`path_id` 是贯穿四段链的 join key，本 skill 原样继承、不得更改。
-- **《分析产物》（Analysis Artifact）**：fixed-income 产出，提供 findings / completeness / veto / system_readouts / mode_b_gaps（字段形状见 `dev/engine/pipeline-contract.md` §2.2）。
+- **Path Sheet**: produced by the router, providing `path_id` / `depth` / `quality_gates`. `path_id` is the join key through the four-stage chain; this skill inherits it as-is and must not change it.
+- **Analysis Artifact**: produced by fixed-income, providing findings / completeness / veto / system_readouts / mode_b_gaps (field shape at `dev/engine/pipeline-contract.md` §2.2).
 
-## Outputs（产出）
+## Outputs
 
-- **交付报告**：渲染自 `dev/templates/`（模板单一事实源，本 skill 不自带模板副本）。用哪个模板由该路径在 `dev/engine/work-path-registry.md` 的 `templates` 字段决定，不擅自更换。
-- **《交付单》（Delivery Note）**：结构化 yaml，字段形状见 `dev/engine/pipeline-contract.md` §2.3。
+- **Deliverable Report**: rendered from `dev/templates/` (template single source of truth — this skill does not carry template copies). Which template to use is determined by the `templates` field in `dev/engine/work-path-registry.md` for that path; do not substitute arbitrarily.
+- **Delivery Note**: structured YAML, field shape at `dev/engine/pipeline-contract.md` §2.3.
 
-## Assembly Protocol（装配协议）
+## Assembly Protocol
 
-1. **读 join key**：从路径单与分析产物取 `path_id`，校验它指向注册表中的已注册路径；不一致即停止并上报。
-2. **选模板**：按 `path_id` 在 registry 的 `templates` 字段取模板清单（Type 1–15 或允许的标记值 `planned` / `L0-spec:`）。标记值含义以 registry §schema 为准；命中 `planned` 须如实告知"模板待开发"，不得伪造渲染产物。
-3. **映射分层**：把分析产物映射到 L0 信号卡 / L1 快照 / L2 深度报告三层。三层的定义、消费时间与信息密度以 `dev/engine/output-layered-framework.md` §二（三层总览）/§三（L0 信号卡）/§五（L2 深度报告）为单一事实源，本 skill 不重新定义。
-4. **渲染**：用 `dev/templates/` 的模板装配报告；完备性灯号口径见 output-layered-framework §8.4。
-5. **产交付单**：按下述 schema 输出《交付单》。
+1. **Read join key**: Take `path_id` from both the Path Sheet and the Analysis Artifact; verify it points to a registered path in the registry. If inconsistent, stop and report.
+2. **Select templates**: Based on `path_id`, retrieve the template list from the registry's `templates` field (Type 1–18 or allowed marker values `planned` / `L0-spec:`). Marker value meanings are defined in registry §schema; when hitting `planned`, must explicitly state "template under development" and not fabricate rendered output.
+3. **Map tiers**: Map the Analysis Artifact to L0 Signal Card / L1 Snapshot / L2 Deep Report tiers. The definitions, consumption time, and information density of the three tiers use `dev/engine/output-layered-framework.md` §2 (three-tier overview) / §3 (L0 Signal Card) / §5 (L2 Deep Report) as the single source of truth; this skill does not redefine them.
+4. **Render**: Use templates from `dev/templates/` to assemble the report; completeness lamp caliber follows output-layered-framework §8.4.
+5. **Output Delivery Note**: Produce the Delivery Note per the schema below.
 
-## Delivery Note Output（《交付单》）
+## Delivery Note Output
 
-模板（schema 单一事实源为 `dev/engine/pipeline-contract.md` §2.3）：
+Template (schema single source of truth is `dev/engine/pipeline-contract.md` §2.3):
 
 ```yaml
-path_id: ""                 # join key（承自路径单，不得更改）
-depth: ""                   # L0|L1|L2|专项（承自路径单）
-templates_used: []          # 该路径 registry templates 字段选中的模板
-rendered: []                # 实际产出的报告文件（来自 dev/templates/）
-tier_mapping:               # 分析产物 → L0/L1/L2 层
+path_id: ""                 # join key (inherited from Path Sheet, must not change)
+depth: ""                   # L0|L1|L2|special (inherited from Path Sheet)
+templates_used: []          # templates selected from the path's registry templates field
+rendered: []                # actual report files produced (from dev/templates/)
+tier_mapping:               # Analysis Artifact → L0/L1/L2 tiers
   L0: ""
   L1: ""
   L2: ""
-completeness_lamp: ""       # 完备性灯号
-source_analysis: ""         # 上游分析产物引用（溯源）
+completeness_lamp: ""       # completeness lamp status
+source_analysis: ""         # upstream analysis artifact reference (traceability)
 ```
 
-示例（审贷单标的 L2 深度报告，路径 WP-M0-01 配 Type 1 + Type 6）：
+Example (Credit Selector single target L2 Deep Report, path WP-CS-01 with Type 1 + Type 6):
 
 ```yaml
-path_id: WP-M0-01
+path_id: WP-CS-01
 depth: L2
 templates_used:
   - dev/templates/template-type1.html
@@ -56,28 +56,28 @@ rendered:
   - dev/templates/template-type1.html
   - dev/templates/template-type6.html
 tier_mapping:
-  L0: 信号卡（评级+展望+今日关键信号+完备性灯号）
-  L1: 快照（四维雷达+关键异常+评级对比）
-  L2: 深度报告（金字塔逐层+双轨对撞+完备性报告）
-completeness_lamp: 黄色（中置信度，口径见 output-layered-framework §8.4）
-source_analysis: 上游分析产物（findings/completeness/veto，见 pipeline-contract §2.2）
+  L0: Signal card (rating + outlook + key signals today + completeness lamp)
+  L1: Snapshot (four-dimension radar + key anomalies + rating comparison)
+  L2: Deep Report (pyramid layer-by-layer + dual-track cross-comparison + completeness report)
+completeness_lamp: yellow (medium confidence, caliber per output-layered-framework §8.4)
+source_analysis: Upstream Analysis Artifact (findings/completeness/veto, see pipeline-contract §2.2)
 ```
 
-## Chaining（链式交接）
+## Chaining
 
-- **上游**：`fixed-income-credit-analysis` skill —— 消费其《分析产物》。无分析产物时本 skill 不启动（自身不做分析，先回上游完成分析）。
-- **REQUIRED NEXT SUB-SKILL**：`credit-qa-verifier` —— 《交付单》产出后，移交质检 skill 做交付前终态复核（质量门 + 强制检查），质检通过方可交付。
+- **Upstream**: `fixed-income-credit-analysis` skill — consumes its Analysis Artifact. Without an Analysis Artifact, this skill does not start (it does not perform analysis itself; go back upstream to complete analysis first).
+- **REQUIRED NEXT SUB-SKILL**: `credit-qa-verifier` — after the Delivery Note is produced, hand off to the QA verification skill for pre-delivery final review (quality gates + mandatory checks); deliver only after QA passes.
 
 ## Guardrails
 
-- **不做分析**：本 skill 只做模板选择、分层映射与装配，不重新计算评分、不补信号、不改评级。分析结论一律来自上游《分析产物》。
-- **不复制引擎内容**：只引用路径 ID、模板名与文档章节，不复制任何阈值、分层时间预算、信号优先级门槛或评级映射。分层语义以 `dev/engine/output-layered-framework.md` 为准，模板清单以 `dev/engine/work-path-registry.md` 为准。
-- **低密度不补数值**：上游分析产物中因密度不足而置 null 的维度评分（信息不足无法评估），在报告中保持"信息不足"标注，不得为了报告完整而编造数值。
-- **planned 模板如实告知**：路径模板为 `planned` 标记时，明示"该模板待开发"，并给出该路径已可用的替代交付物，不得伪造渲染产物。
+- **No analysis**: This skill only performs template selection, tier mapping, and assembly. It does not recalculate scores, fill in missing signals, or modify ratings. All analysis conclusions come from the upstream Analysis Artifact.
+- **Do not replicate engine content**: Only reference path IDs, template names, and document sections; do not replicate any thresholds, layered time budgets, signal priority floors, or rating mappings. Tier semantics are based on `dev/engine/output-layered-framework.md`; template lists are based on `dev/engine/work-path-registry.md`.
+- **Low density — no fabricated values**: Dimension scores set to null by the upstream Analysis Artifact due to insufficient density (`insufficient information to evaluate`) must retain that annotation in the report; do not fabricate values to make the report look complete.
+- **Planned templates must be disclosed**: When a path's template is marked `planned`, must explicitly state "this template is under development" and provide alternative deliverable items available for that path; do not fabricate rendered output.
 
 ## References
 
-- `references/report-mapping.md` — 路径→模板→分层 映射视图（单源指针，不含复制值）
-- `dev/engine/pipeline-contract.md` — 四段链 I/O 契约（产物 schema 单一事实源）
-- `dev/engine/work-path-registry.md` — 工作路径注册表（`templates` 字段单一事实源）
-- `dev/engine/output-layered-framework.md` — L0/L1/L2 分层输出（分层语义单一事实源）
+- `references/report-mapping.md` — Path → template → tier mapping view (pointer only, no copied values)
+- `dev/engine/pipeline-contract.md` — Four-stage chain I/O contract (artifact schema single source of truth)
+- `dev/engine/work-path-registry.md` — Work path registry (`templates` field single source of truth)
+- `dev/engine/output-layered-framework.md` — L0/L1/L2 tiered output (tier semantics single source of truth)
