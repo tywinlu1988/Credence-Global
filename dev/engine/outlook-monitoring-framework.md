@@ -92,9 +92,9 @@ Outlook signals are extracted from the engine's existing pyramid layers (L1-L4) 
 | Pyramid Layer | Negative Outlook Trigger Signal | Data Source | Verification Method |
 |---|---|---|---|
 | **L1 Policy/Macro** | Accelerated subsidy phase-out (phase-out schedule published and faster than market expectations) | MOF/NDRC subsidy policy documents | Comparison of policy document versions before and after |
-| **L1 Policy/Macro** | Industry准入 tightened/capacity restriction policy introduced | MIIT industry policy announcements | Policy original text + industry association interpretation |
+| **L1 Policy/Macro** | Industry access tightened/capacity restriction policy introduced | MIIT industry policy announcements | Policy original text + industry association interpretation |
 | **L1 Policy/Macro** | Financial regulation tightened (credit concentration control/bond issuance conditions tightened) | CBIRC/PBOC window guidance documents | Open market analysis report cross-verification |
-| **L1 Policy/Macro** | Increased macroeconomic下行 pressure leading to industry demand contraction | NBS PMI/industrial value-added data | Macro data confirmed over 2+ consecutive quarters of trend |
+| **L1 Policy/Macro** | Increased macroeconomic downturn pressure leading to industry demand contraction | NBS PMI/industrial value-added data | Macro data confirmed over 2+ consecutive quarters of trend |
 | **L2 Technology/Competition** | Core product technology roadmap confirmed obsolete (e.g., PERC replaced by TOPCon) | Industry efficiency data, bidding technical specification changes | PVInfoLink/TrendForce price + efficiency data |
 | **L2 Technology/Competition** | Core product added to restricted/prohibited list (e.g., export control entity list) | MOFCOM announcements, BIS Entity List (US) | Official announcements + industry impact assessment |
 | **L2 Technology/Competition** | Key technical talent loss (CSO/CTO departure) | Company announcements, Qichacha/Tianyancha business registration changes | Qichacha executive change records + company announcements |
@@ -104,8 +104,8 @@ Outlook signals are extracted from the engine's existing pyramid layers (L1-L4) 
 | **L3 Supply Chain/Operations** | Major customer loss (top 5 customer list changes or concentration >50%) | Annual report customer information disclosure, exchange inquiry letters | Prospectus/annual report customer concentration data comparison |
 | **L3 Supply Chain/Operations** | Key production facility shutdown/safety accident/environmental penalty | MEM announcements, MEE penalty disclosure | Government affairs open administrative penalty queries |
 | **L3 Supply Chain/Operations** | Core subsidiary equity frozen/enforcement | Qichacha/Tianyancha judicial freezing data | Qichacha + China Judgments Online cross-verification |
-| **L4 Financial** | Operating cash flow持续 negative for 4 consecutive quarters | Quarterly/annual report cash flow statements | Cash flow trend analysis (rolling 12 months) |
-| **L4 Financial** | Interest coverage ratio持续 deteriorating (EBITDA/Interest <1.5x for >2 quarters) | Quarterly/annual reports | Financial ratio deterioration trend confirmation |
+| **L4 Financial** | Operating cash flow persistently negative for 4 consecutive quarters | Quarterly/annual report cash flow statements | Cash flow trend analysis (rolling 12 months) |
+| **L4 Financial** | Interest coverage ratio persistently deteriorating (EBITDA/Interest <1.5x for >2 quarters) | Quarterly/annual reports | Financial ratio deterioration trend confirmation |
 | **L4 Financial** | Short-term debt ratio accelerating upward (short-term debt/total liabilities >60% and still rising) | Quarterly/annual reports | Liability maturity structure trend analysis |
 | **L4 Financial** | Cash and cash equivalents significantly reduced (QoQ decline >30% without reasonable explanation) | Quarterly/annual reports | Cross-period cash changes analysis + audit opinion verification |
 | **L4 Financial** | Asset-liability ratio exceeds industry threshold (policy-driven >80%/tech-moat >70%) | Quarterly/annual reports | Industry benchmarking + leverage trend |
