@@ -1,552 +1,533 @@
-# 多利益相关者视角框架
+# Multi-Stakeholder Perspective Framework
 
-**版本**: v0.8.4-release | **日期**: 2026-07-10
-**来源**: 固收信贷智能分析引擎 v0.3.0 · 马赛克引擎架构  
-**日期**: 2026-07-08  
-**性质**: 结构化归档——从已有技能包和规格文档中提取整理
-
----
-
-## 一、六类利益相关者总览（M0-M5）
-
-框架覆盖六类利益相关者，每类有不同的核心决策问题、决策时域和关键数据需求。
-
-| 编号 | 角色 | 核心问题 | 决策时域 | 优先级 | 状态 |
-|---|---|---|---|---|---|
-| **M0** | 信贷审批（银行） | 能不能贷？什么价格？ | 1-3年 | P0 | 已完成（轨道A+B） |
-| **M1** | 债券投资 | 便宜还是贵？条款保护够不够？流动性好不好？ | 6个月-3年 | **P0** | **已完成（四维框架）** |
-| **M2** | 债券承销（DCM） | 能不能卖出去？卖给谁？什么时候发？ | 1-6个月 | P1 | 已规划 |
-| **M3** | 市场交易 | 利率环境？信用环境？流动性环境？ | 日内-周度 | P1 | 已规划 |
-| **M4** | 组合风控 | 集中度过高？压力情景下损失多大？系统性风险水平？ | 月度-季度 | P0 | ✅ 已实现（集成系统智能层） |
-| **M5** | 企业融资 | 怎么融资？哪个渠道？什么时机？ | 1-5年 | P2 | 已规划 |
-
-### 1.1 各角色的核心约束
-
-| 角色 | 核心约束 |
-|---|---|
-| **M0 信贷审批** | FTP成本 + 不良率指标 + 抵押覆盖率 + 尽职免责 |
-| **M1 债券投资** | 相对排名 + 最大回撤 + 流动性可得性 |
-| **M2 债券承销** | 投资人需求匹配 + 发行成功概率 + 可比定价 |
-| **M3 市场交易** | VaR限额 + Carry收益 + 对冲工具可得性 |
-| **M4 组合风控** | 集中度限额 + 压力测试通过率 + 尾部风险管理 + 系统性风险敞口 |
-| **M5 企业融资** | 融资成本对比 + 期限匹配 + 投资人关系 + 评级管理 |
-
-### 1.2 各角色的关键数据需求
-
-| 角色 | 最关键数据 | 次要数据 | 数据缺口影响 |
-|---|---|---|---|
-| **M0** | 母公司单体报表（非合并）、抵押物价值、司法执行记录 | 行业政策、区域经济、担保人资质 | 合并报表掩盖母公司真实风险 |
-| **M1** | 利差对比（vs同行业/同评级）、条款说明书、流动性指标 | Z-spread/OAS、修正久期、事件日历 | 无Wind终端→无法获取精细利差数据 |
-| **M2** | 投资人持仓结构、近期可比发行利率、认购倍数 | 评级迁移趋势、行业情绪指标 | 持仓数据不完整→投资人画像偏概览 |
-| **M3** | 资金面指标（DR007/Shibor）、收益率曲线、跨市场联动 | 微观结构数据、做市商报价 | Bid-ask spread不披露→交易成本不可知 |
-| **M4** | 组合集中度分布、相关性矩阵、历史回撤、行业传染路径 | 传染矩阵输出、集中度仪表盘、SRI系统温度计 | 精确RWA计算需银行内部数据 |
-| **M5** | 各渠道融资成本曲线、企业资产/负债久期 | 评级机构关注焦点、投资人偏好迁移 | 非公开企业无法获取精确财务数据 |
+**Version**: v0.8.4-release | **Date**: 2026-07-17
+**Source**: Fixed Income Credit Intelligence Engine v0.3.0 · Mosaic Engine Architecture
+**Nature**: Structured archive — compiled from existing skill packages and specification documents
 
 ---
 
-## 二、M1债券投资四维框架（P0 Complete）
+## 1. Six International Buy-Side Roles Overview
 
-M1的评估由四个维度加权构成，每个维度独立评分后加权汇总。
+The framework covers six buy-side roles in the fixed income investment process. Each role operates with a distinct core decision, decision horizon, and data requirements. The roles are listed in order of analytical depth — from single-issuer credit analysis to personal investment decisions.
 
-### 2.1 四维评估框架权重
+| # | Role | Core Decision | Horizon | Key Data Needs |
+|---|------|--------------|---------|----------------|
+| 1 | **Credit Selector** | "Does this credit belong in the book?" — single-issuer rating, default probability | 12-36 months | Industry pyramid, financial deep-dive, LGD/recovery, external support |
+| 2 | **Portfolio Manager** | "Is this the best risk/reward?" — relative value, sector allocation | 6-24 months | Relative value metrics, comparative analysis, curve positioning |
+| 3 | **Risk Officer** | "Where are concentration/contagion hotspots?" — portfolio risk monitoring | Continuous (monthly SRI + event-driven) | Concentration dashboard, contagion matrix, SRI, stress tests |
+| 4 | **Trader** | "Is today the day to act?" — execution, market timing | Intraday to 2 weeks | L0 signal card, real-time spreads, liquidity conditions |
+| 5 | **Advisor** | "What should my client do?" — allocation advice, suitability | 3-12 months | Client risk profile overlay, L1 snapshot, thematic views |
+| 6 | **Individual Investor** | "Should I own this bond?" — personal investment decision | 6-36 months | Simplified L0/L1, buy/hold/sell signal, plain-language risk summary |
 
-| 维度 | 代码 | 权重 | 核心问题 |
-|---|---|---|---|
-| 相对价值 | M1.1 | **30%** | 这只券在同行业/同评级/同期限中处于什么位置？ |
-| 条款保护 | M1.2 | **25%** | 发生不利事件时，持有人有什么保护机制？ |
-| 流动性 | M1.3 | **20%** | 需要卖出时能不能以合理成本退出？ |
-| 事件日历 | M1.4 | **25%** | 未来3个月有哪些可能影响价格的事件？ |
+### 1.1 Role Core Constraints
 
-### 2.2 M1.1 相对价值评估（30%）
+Each role operates under a distinct set of constraints that shape its analytical priorities and decision thresholds.
 
-**判断逻辑**：不只看绝对收益率，而是将个券置于可比集合中比较。
+| Role | Core Constraints |
+|------|-----------------|
+| **Credit Selector** | Rating accuracy, default prediction horizon, recovery rate estimation, regulatory capital treatment |
+| **Portfolio Manager** | Benchmark tracking error, maximum drawdown, liquidity budget, sector concentration limits |
+| **Risk Officer** | Concentration limits, stress test pass rates, tail risk management, systemic risk exposure |
+| **Trader** | VaR limits, carry/roll-down economics, hedging instrument availability, settlement constraints |
+| **Advisor** | Fiduciary duty, client suitability rules, diversification requirements, fee transparency |
+| **Individual Investor** | Personal risk tolerance, income needs, investment horizon, tax implications |
 
-**核心评估指标**：
+### 1.2 Role-Level Data Requirements
 
-| 指标 | 优先级 | 数据可得性 | 替代方案 |
-|---|---|---|---|
-| 税前YTM | 必选 | ✅ 公开 | — |
-| 转股溢价率（可转债） | 必选 | ✅ 公开 | — |
-| Z-spread / OAS | 优选 | ❌ 需Wind/Choice付费 | YTM + 同评级利差对比 |
-| 修正久期 + 凸性 | 优选 | ❌ 需付费终端 | 期限结构替代 |
-| 同行业可比利差 | 必选 | ✅ 公开 | 需自行整理 |
-| 同评级利差中位数 | 必选 | ✅ 公开 | — |
-| 纯债价值/到期赎回价 | 必选 | ✅ 公开 | — |
-| 下修状态与历史 | 必选 | ✅ 公开 | — |
+| Role | Primary Data | Secondary Data | Data Gap Impact |
+|------|--------------|----------------|-----------------|
+| **Credit Selector** | Financial statements (parent-level, not consolidated), capital structure, operating cash flow | Industry benchmarks, peer comparisons, management quality indicators | Consolidated statements mask parent-level cash flow stress |
+| **Portfolio Manager** | Yield/spread vs peer group, modified duration, convexity, Z-spread | Rating migration trends, sector sentiment indicators, macro forecasts | Without curve data, relative value assessment is unreliable |
+| **Risk Officer** | Portfolio concentration heatmap, correlation matrix, drawdown history | Contagion matrix output, SRI temperature, scenario loss tables | Precise RWA calculation requires firm-internal data |
+| **Trader** | Money market rates, yield curve, cross-market linkages | Market microstructure data, dealer quotes, order book depth | Bid-ask spread not disclosed in most markets — transaction cost unknowable |
+| **Advisor** | Client portfolio holdings, risk tolerance score, income requirements | Market outlook reports, sector rotation signals, rating agency watches | Client position data often incomplete or delayed |
+| **Individual Investor** | Bond price, coupon rate, maturity date, credit rating | News headlines, analyst summaries, fund flow data | Full prospectus too long — needs concise risk summary |
 
-**评分逻辑**：
+---
+
+## 2. Role Deep-Dive Frameworks
+
+### 2.1 Credit Selector — Single-Issuer Credit Assessment
+
+The Credit Selector evaluates whether a specific credit belongs in the investment book. This is the foundational analytical role — every other role depends on accurate credit assessment.
+
+**Decision Logic**: Evaluate the issuer's ability and willingness to service debt through one full credit cycle, using the industry-pyramid framework as the structural starting point.
+
+**Assessment Framework**:
+
+| Dimension | Weight | Key Question |
+|-----------|--------|--------------|
+| Industry Position (Pyramid Layer) | 25% | Where does the issuer sit in its industry structure? Is its position sustainable? |
+| Financial Strength | 30% | Does the issuer generate sufficient cash flow to cover fixed charges through a downturn? |
+| LGD / Recovery | 20% | If default occurs, what is the expected recovery given the capital structure and collateral? |
+| External Support | 15% | Is there a parent, government, or strategic partner that would provide support in distress? |
+| Governance & Management | 10% | Is management aligned with creditor interests? Are there governance red flags? |
+
+**Scoring Logic**:
 
 ```
-相对价值评分 = f(
-  税前YTM vs 可比集合,        # 越高越便宜
-  转股溢价率,                 # 越低越有股性价值
-  纯债价值/债底保护,          # 越高越安全
-  利差 vs 同评级中位数,       # 超额利差越大越便宜
-  下修历史善意度               # 曾下修=未来下修概率更高
+Credit Quality Score = f(
+  Industry pyramid position (L1-L4),    // Structural moat assessment
+  Debt/EBITDA + FCF/Total Debt,         // Leverage and coverage
+  Collateral coverage ratio,             // Asset-based protection
+  Parent/sovereign support capacity,     // External backstop
+  Governance red flag count              // Qualitative overlay
 )
 ```
 
-**关键阈值**：
-- 转股溢价率 < 10% → 强股性，加分
-- 转股溢价率 > 100% → 深度价外，大幅扣分
-- YTM为负但AAA评级 → 安全垫溢价，需单独标注
-- 超额利差 > 50bp vs 同评级中位数 → 市场定价隐含风险信号
+**Decision Thresholds**:
 
-### 2.3 M1.2 条款保护评估（25%）
+| Score Range | Rating Equivalent | Action |
+|-------------|-------------------|--------|
+| 8.0-10.0 | AA- and above | Book with confidence |
+| 6.0-7.9 | A- to A+ | Book with monitoring triggers |
+| 4.0-5.9 | BBB- to BBB+ | Hold at reduced size |
+| 2.0-3.9 | B to BB | Restrict — require covenant protection |
+| 0-1.9 | CCC and below | Exclude from book |
 
-**判断逻辑**：评估持有人的法律保护强度——不是条款的有无，而是条款在压力情景下的实际保护力。
+### 2.2 Portfolio Manager — Relative Value & Sector Allocation
 
-**评估维度**：
+The Portfolio Manager determines whether a credit offers the best risk-adjusted return relative to alternatives. This role operates at the intersection of single-issuer analysis and portfolio construction.
 
-| 子项 | 权重 | 评估标准 | 扣分条件 |
-|---|---|---|---|
-| 下修保护 | 30% | 下修记录（频率/幅度/时机）、下修触发条件 | 多次触发但从未下修→大幅扣分；董事会自由裁量权（非强制）→减分 |
-| 回售保护 | 25% | 回售触发价格、回售窗口距离、回售价格（面值+利息 vs 市场价） | 回售价格仅面值+利息→持有人承担价差损失；距触发价格远→保护虚置 |
-| 交叉违约条款 | 25% | 条款存在性、触发门槛、宽限期、持有人会议执行力 | 无交叉违约→零分；门槛过高（如5,000万+30日宽限期）→大幅减分 |
-| 担保/增信 | 20% | 担保方资质、担保比例、资产抵质押覆盖 | 无担保纯信用→扣分；担保方与发行人关联→额外扣分 |
+**Decision Logic**: Compare each credit against its peer group on yield, spread, and risk metrics, then allocate capital to the best risk/reward opportunities within sector and duration constraints.
 
-**可转债条款的四个核心缺陷**（所有已评估案例均存在）：
-1. 下修是董事会自由裁量权，法律上无强制义务
-2. 回售价格仅面值+利息（~100.60元），远低于持有人成本
-3. 大部分可转债未设置交叉违约条款——发行人即使其他债券违约，转债持有人无权加速到期
-4. 无财务承诺、无资产出售限制——理论上发行人可以把核心资产卖光
+**Assessment Framework**:
 
-**评分区间（光伏可转债案例实测）**：
+| Dimension | Weight | Key Question |
+|-----------|--------|--------------|
+| Relative Value | 30% | Where does this bond rank within its peer group on yield, Z-spread, and OAS? |
+| Sector Allocation Fit | 25% | Does adding this position improve the portfolio's sector diversification? |
+| Curve Positioning | 20% | Is this point on the curve offering attractive roll-down vs comparable maturities? |
+| Event & Calendar | 25% | What upcoming events (earnings, rating review, call/put dates) could move this bond? |
 
-| 评分区间 | 含义 | 示例 |
-|---|---|---|
-| 7.0-10.0 | 保护充分 | 晶澳转债（两次主动下修 + 转股价值高） |
-| 5.0-6.9 | 中等保护 | 天23转债（已下修 + 到期赎回115元债底） |
-| 3.0-4.9 | 保护薄弱 | 晶能转债（股性价内但无下修记录） |
-| 0-2.9 | 几乎无保护 | 通22转债（从未下修 + 转股价值33元 + 无交叉违约） |
-
-### 2.4 M1.3 流动性评估（20%）
-
-**判断逻辑**：评估在压力情景下以合理成本退出的能力。
-
-**评估指标**：
-
-| 指标 | 优先级 | 数据可得性 | 说明 |
-|---|---|---|---|
-| 日均成交额 | 必选 | ✅ 公开（交易所数据） | 最近3个月日均成交金额 |
-| 近3月成交总量 | 必选 | ✅ 公开 | 总量越高流动性越好 |
-| 换手率 | 必选 | ✅ 公开 | 日均换手率 = 成交金额 / 余额 |
-| 异常成交量事件 | 可选 | ✅ 公开 | 单日异常放量/缩量 |
-| Bid-Ask spread | 优选 | ❌ 中国交易所不披露 | 无法获取，用成交活跃度替代 |
-| 做市商覆盖名单 | 优选 | ❌ 需付费终端 | 无法获取 |
-| 最优报价深度 | 优选 | ❌ 需付费终端 | 无法获取 |
-
-**流动性评级**（光伏可转债实测标准）：
-
-| 日均成交额 | 换手率 | 评级 |
-|---|---|---|
-| >2亿 | >3% | ★★★★★ 最优 |
-| 1.0-2.0亿 | 2-3% | ★★★★ 中等偏上 |
-| 0.5-1.0亿 | 1-2% | ★★★ 中等 |
-| 0.3-0.5亿 | 0.5-1.0% | ★★ 偏弱 |
-| <0.3亿 | <0.5% | ★ 极差 |
-
-### 2.5 M1.4 事件日历（25%）
-
-**判断逻辑**：未来3个月内可能影响个券价格或信用质量的事件清单，按影响程度分级。
-
-**事件四级分类**：
-
-| 类别 | 示例 | 影响等级 |
-|---|---|---|
-| **公司事件** | 财报发布、评级调整、下修触发/决议、回售窗口、管理层变更 | 高 |
-| **行业事件** | 政策出台/变更、行业价格数据、央企集采结果、出口退税调整 | 高/中 |
-| **宏观事件** | LPR/MLF操作、政治局会议、美联储FOMC、CPI/PMI数据 | 中 |
-| **市场事件** | 新债发行供给、资金面变化、信用事件传染 | 中/低 |
-
-**时间窗口要求**：未来3个月以月为单位分层，每层内以日期排序。
-
-| 月份 | 重点事件类型 |
-|---|---|
-| 第1个月（T+0至T+30日） | 下修触发/回售窗口/公司公告 |
-| 第2个月（T+30至T+60日） | 中报/季报集中披露、评级跟踪期 |
-| 第3个月（T+60至T+90日） | 宏观政策窗口、信用评级集中调整期 |
-
-### 2.6 M1综合评分与投资建议
+**Relative Value Scoring**:
 
 ```
-M1综合评分 = M1.1相对价值×30% + M1.2条款保护×25% + M1.3流动性×20% + M1.4事件日历×25%
-```
-
-| 综合评分区间 | 投资建议 | 含义 |
-|---|---|---|
-| 7.0-10.0 | 可考虑 | 四维均衡偏强，核心风险可控 |
-| 5.0-6.9 | 中性/谨慎 | 有显著优势也有明显短板 |
-| 3.0-4.9 | 谨慎/回避 | 关键维度存在重大风险 |
-| 0-2.9 | 回避 | 多维度处于末位，不建议持有 |
-
-**相对优势排序方法**：在同行业/同评级/同期限的债券集合中，按综合评分排序，标注每只券的定价判断（最贵/偏贵/合理偏高/相对合理/最优）。
-
----
-
-## 三、跨身份交叉对比方法论
-
-### 3.1 三身份并行评估框架（华晨案例验证）
-
-在分析基准时点（T0），同时对同一信用主体从三个身份视角独立评估，然后交叉对比。
-
-**三个基础身份**：
-
-| 身份 | 代号 | 分析框架 | 核心输出 |
-|---|---|---|---|
-| 信贷审批（银行分支行） | M0 | 5步决策链：主体准入→用途审查→还款来源→抵押担保→定价条件 | 核准条件清单（金额/期限/利率/抵押/保护条款） |
-| 债券投资（固收基金经理） | M1 | 四维框架：相对价值+条款保护+流动性+事件日历 | 综合评分（/10）+ 持仓操作建议 |
-| 交易+组合风控（交易员/风控总监） | M3+M4 | 市场环境分析 + 压力测试 + 风险限额 | 交易策略 + 风控限额 + 压力损失表 |
-
-### 3.2 交叉对比矩阵结构
-
-| 对比维度 | M0 信贷审批 | M1 债券投资 | M3+M4 交易+风控 |
-|---|---|---|---|
-| **核心结论** | 有条件同意 / 拒绝 | 强烈回避 / 中性 / 可考虑 | 减仓 / 维持 / 增持 |
-| **决策时域** | 1-3年 | 6个月-3年 | 日内-季度 |
-| **首要关注** | 抵押物+第二还款来源 | 利差+条款保护+流动性 | Carry收益+尾部风险+对冲可得性 |
-| **最关键数据凭据** | 母公司负债率 / 现金流 / 抵押物价值 | 利差对比 / 条款细则 / 流动性指标 | Carry / 对冲工具可得性 / VaR |
-| **最致命发现** | 母公司已资不抵债 / 第一来源不可靠 | AAA掩盖D级信用 / 无回售锁定 | 高Carry是结构陷阱 / 无工具对冲 |
-| **盲区** | 被AAA+国企身份安抚 | 被高票息吸引 | 只看Carry忽视尾部风险 |
-| **被另一身份补偿的盲区** | → 债券投资者的条款分析揭示无担保=无保护 | → 信贷官的母公司报表分析揭示合并AAA=母公司D级 | → 风控压力测试揭示S3场景损失额 |
-
-### 3.3 三身份对比的共识与分歧处理
-
-**共识场景**（三个身份结论一致）：
-- **均为负面**（强烈回避 + 拒绝 + 减仓）→ 信用风险确凿，无需进一步验证
-- **均为正面** → 可考虑投资，但需留意集体盲区
-
-**分歧场景**（结论不一致）：
-
-| 分歧模式 | 含义 | 优先级原则 |
-|---|---|---|
-| M0拒绝但M1中性 | 贷款标准更严，债券可能仍可交易 | 以M1为主（债券投资者风险偏好更高） |
-| M1回避但M0有条件同意 | 债券定价比贷款更敏感 | 以M1为准（市场定价比银行内部评估更前置） |
-| M3+M4强烈减仓但M0/M1中性 | 市场已经在提前定价 | 以M3+M4为准（市场信号领先于静态分析） |
-
----
-
-## 四、多身份并行评估的标准流程
-
-### 4.1 五步流程
-
-```
-Step 1: 数据准备（所有身份共享）
-  ├── 确定分析时点 T0
-  ├── 声明该时点已公开可获取的数据集（精确到文件/公告/报告）
-  ├── 标注数据来源和时戳
-  └── 输出：共享数据清单
-
-Step 2: 身份间独立评估（并行）
-  ├── M0: 5步信贷决策链
-  ├── M1: 四维债券投资框架
-  ├── (可选) M2/M3/M4/M5: 对应框架
-  └── 约束：各身份之间不交换信息（避免交叉污染）
-
-Step 3: 交叉对比
-  ├── 构建三身份（或N身份）对比矩阵
-  ├── 标记共识点和分歧点
-  └── 对每个分歧点标注"被另一身份补偿的盲区"
-
-Step 4: 马赛克完备性报告
-  ├── 每个身份的信号密度（%）
-  ├── 每个身份的置信度（低/中/中高/高）
-  ├── 关键数据缺口列表
-  └── 缺口→替代手段映射
-
-Step 5: 综合输出
-  ├── 共识判断（如果有）
-  ├── 分歧判断（含盲区分析）
-  ├── 预警窗口估计（从T0到可能的信用事件）
-  └── 分身份的行动建议
-```
-
-### 4.2 流程约束
-
-1. **数据必须严格限定在分析时点已公开的范围内**——不能使用事后信息或倒推
-2. **各身份独立评估**——每个身份的评估不受其他身份结论影响
-3. **马赛克完备性报告必须随附**——每个身份给出信号密度和置信度
-4. **盲区必须标注**——每个身份固有的认知盲区，以及被其他身份弥补的方式
-
-### 4.3 华晨案例验证的关键发现（2018.12.31分析时点）
-
-| 指标 | 数值 |
-|---|---|
-| 分析时点 | 2018-12-31 |
-| 首次违约日 | 2020-10-23 |
-| 预警窗口 | **22个月** |
-| 数据源限制 | 100%当时已公开数据 |
-| M0信贷审批结论 | 有条件同意（仅限抵押贷款，5亿上限，1年期限） |
-| M1债券投资结论 | **强烈回避（2.75/10）** |
-| M3+M4交易风控结论 | **减仓至0.5%以下，缩短久期** |
-| 马赛克引擎内部评分 | **1.25/10（D级）** vs 外部评级AAA/稳定 |
-| 数据完备性 | 信贷72% / 债券73% / 交易58% |
-
----
-
-## 五、未覆盖身份的扩展规划
-
-### 5.1 P1优先级（4周迭代）
-
-| 模块 | 子模块 | 数据源 |
-|---|---|---|
-| **M2 债券承销** | M2.1 投资人画像 | 公募基金季报、理财子公告 |
-| | M2.2 可比发行 | Wind公开数据、发行公告 |
-| | M2.3 发行窗口判断 | 公开利率数据 + 一级发行公告 |
-| **M3 市场交易** | M3.1 资金面仪表盘 | 公开市场操作数据（DR007/R007/Shibor） |
-| | M3.2 信用-利率联动 | 公开收益率数据 |
-| | M3.3 跨市场信号 | 各市场公开数据 |
-
-### 5.2 P2优先级（4周迭代）
-
-| 模块 | 子模块 | 限制说明 | 状态 |
-|---|---|---|---|
-| **M4 组合风控** | M4.1 组合集中度（详见下方） | 集成五维集中度框架 | ✅ 已实现（v0.7.0） |
-| | M4.2 压力测试框架 | 历史数据+公开数据 | ✅ 已实现（v0.7.0） |
-| | M4.3 尾部风险扫描 | LLM推理+历史案例 | ✅ 已实现（v0.7.0） |
-| **M5 企业融资** | M5.1 融资成本对比 | 公开利率+发行利率+调研 | 已规划 |
-| | M5.2 期限匹配诊断 | 年报数据可计算 | 已规划 |
-| | M5.3 评级迁移预测 | 基于金字塔框架输出 | 已规划 |
-
----
-
-### 5.2 集中度风险分析：M4.1 子模块详解（v0.7.0已实现 → 详见集中度框架）
-
-> **来源**：风险管理标准审计报告（G3 — 集中度风险覆盖薄弱）
-> **说明**：Basel框架要求组合风控系统性覆盖以下集中度风险类型。本模块基于公开持仓数据（基金季报/交易所披露）提供通用分析框架，不对单一组合做精确计算。
-
-#### 5.2.1 行业集中度
-
-> **注**：本节为v0.7.0之前的初始版本定义，完整版请引用[concentration-framework.md](concentration-framework.md)的五维集中度分析框架
-
-**定义**：组合在不同行业（基于引擎十行业分类体系）的敞口分布。
-
-**分析框架**：
-
-| 层级 | 敞口占比 | 判定 |
-|---|---|---|
-| 单一行业 > 30% | 高集中度 | ⚠️ 需关注行业系统性风险冲击 |
-| 单一行业 15-30% | 适度集中 | 🟡 需评估该行业当前周期位置 |
-| 单一行业 < 15% | 分散 | 🟢 行业集中度风险低 |
-| Top3行业 > 60% | 高集中度 | ⚠️ 组合对少数行业的依赖性过高 |
-
-**数据来源**：
-- 公募基金：季报持仓明细（行业分类）
-- 保险/理财子：大类资产配置报告（如有披露）
-- 无数据时：标注"数据不可获取——参考行业指数持仓结构"
-
-**AI推理逻辑**：
-
-```
-Step 1: 对组合中每只券进行行业分类（依据行业分类框架）
-Step 2: 计算各行业敞口占比 = 该行业券面值(或市值)合计 / 组合总规模
-Step 3: 判定各行业集中度等级
-Step 4: 识别"行业重叠"风险——组合看似分散但多个行业受同一宏观因子驱动
-  （例如：光伏+新能源车+锂电=新能源产业链，实际集中度 > 名义集中度）
-Step 5: 输出行业集中度热力图（行业×敞口占比×评级分布）
-```
-
-**风险传导路径**：
-
-```
-行业集中度高 + 该行业处于下行周期
-  └──► 组合中该行业多只券同时违约/降级
-    └──► 组合损失超过单只违约假设
-      └──► 尾部风险显著上升
-```
-
-#### 5.2.2 区域集中度
-
-**定义**：组合在同一省份/区域的敞口分布，重点关注区域传染风险。
-
-**区域分类（中国信用债市场）**：
-
-| 层级 | 分类标准 |
-|---|---|
-| 东部沿海 | 北京/上海/广东/江苏/浙江/福建/山东 |
-| 中部 | 安徽/江西/河南/湖北/湖南 |
-| 西部 | 重庆/四川/贵州/云南/陕西/甘肃/青海/宁夏/新疆/西藏 |
-| 东北 | 辽宁/吉林/黑龙江 |
-| 特殊区域 | 天津/海南/广西（按实际情况归类） |
-
-**分析框架**：
-
-| 层级 | 敞口占比 | 判定 |
-|---|---|---|
-| 单一省份 > 20% | 高集中度 | ⚠️ 该省份财政或信用环境恶化将导致组合重大损失 |
-| 单一省份 10-20% | 适度集中 | 🟡 需关注该省份财政健康状况和信用事件 |
-| 单一省份 < 10% | 分散 | 🟢 区域集中度风险低 |
-| Top3省份 > 50% | 高集中度 | ⚠️ 组合对少数区域依赖度高 |
-| **贵州/云南/辽宁**任一省份 > 10% | 额外关注 | ⚠️ 高风险区域敞口偏高 |
-
-**区域传染路径**：
-
-```
-单一省份信用事件（如城投违约/担保圈破裂）
-  └──► 该区域其他发行人再融资受阻
-    └──► 区域信用利差整体走阔
-      └──► 组合中该区域所有持仓FV变动（即使未违约）
-        └──► 组合净值回撤
-```
-
-**数据来源**：发行人注册地 + 城投归属区域（省/地级市）。
-
-#### 5.2.3 评级集中度
-
-**定义**：组合内部评级与外部评级的分布结构，重点关注"伪高评级"风险。
-
-**伪高评级识别**（引擎核心差异化能力）：
-
-| 外部评级 | 内部引擎评分 | 判定 |
-|---|---|---|
-| AAA | > 7.5（AA-及以上） | ✅ 真实高评级，信用质量与评级匹配 |
-| AAA | 4.0-7.5（B至BBB） | ⚠️ 伪高评级——外部评级高估，内部评分揭示风险 |
-| AAA | < 4.0（CCC及以下） | 🔴 严重伪高评级——永煤/紫光/华晨违约前评级均为AAA但引擎评分均<4 |
-| AA/AA+ | 与外部基本一致（±1档） | ✅ 评级匹配 |
-| AA/AA+ | 内部评分显著低于外部（≥2档） | ⚠️ 存在评级滞后 |
-
-**分析框架**：
-
-| 指标 | 计算方式 | 阈值 | 判定 |
-|---|---|---|---|
-| 伪高评级占比 | 外部AAA但内部评分<7.5的敞口/总敞口 | > 15% | 🔴 高——组合可能隐藏重大信用风险 |
-| 伪高评级占比 | 同上 | 5-15% | 🟡 关注——需要逐只排查 |
-| 外部AAA敞口占比 | 外部AAA评级敞口/总敞口 | > 40% | ⚠️ 可能是"评级泡沫"——AAA池并非等风险 |
-| 内部CCC及以下敞口占比 | 内部评分<4.0的敞口/总敞口 | > 10% | 🔴 高违约风险——组合尾部风险大 |
-
-**AI推理逻辑**：
-
-```
-Step 1: 获取组合中每只券的外部评级
-Step 2: 对每只券运行引擎评分（或使用现有的最新评分）
-Step 3: 对比外部评级与内部评分，标记"伪高评级"券
-Step 4: 计算伪高评级敞口占比
-Step 5: 输出评级分布对比图（外部 vs 内部）
-Step 6: 识别"评级瀑布风险"——多只伪高评级券面临同时降级风险
-```
-
-#### 5.2.4 融资渠道集中度
-
-**定义**：组合中过度依赖单一融资渠道或单一品种的风险。
-
-**分析维度**：
-
-| 融资渠道 | 典型品种 | 流动性特征 | 风险情景 |
-|---|---|---|---|
-| **可转债** | 转债、可交换债 | 中（受正股流动性影响） | 正股暴跌→转债跌破债底→集中赎回 |
-| **公开信用债** | 中票、公司债、企业债 | 高（银行间/交易所质押） | 评级下调→丧失质押资格→被迫抛售 |
-| **私募债/PPN** | 私募公司债、定向工具 | 低（无公开流动性） | 持有人结构集中→估值锚缺失 |
-| **超短融/短融** | SCP、CP | 高（银行间市场交易活跃） | 展期风险→一二级利差倒挂 |
-| **资产支持证券** | ABS、CMBS、RMBS | 中低（分层流动性差异大） | 底层资产质量恶化→分级下调 |
-| **银行借款** | 流贷、固贷、银团 | 低（不可交易） | 抽贷/断贷→流动性危机 |
-
-**分析框架**：
-
-| 指标 | 阈值 | 判定 |
-|---|---|---|
-| 单一品种 > 40% | ⚠️ 高集中度 | 该品种流动性冻结将导致组合无法退出 |
-| 可转债占比 > 60% | ⚠️ 结构单一 | 组合对权益市场风险暴露过高 |
-| 私募债/PPN占比 > 30% | ⚠️ 流动性不足 | 压力下无法通过二级市场减仓 |
-| 无公开交易品种占比 > 50% | 🔴 流动性危机风险 | 组合整体流动性储备不足 |
-
-#### 5.2.5 单主体集中度
-
-**定义**：对单一发行人的敞口集中度。
-
-**分析框架**（参考公募基金和保险监管标准）：
-
-| 敞口上限 | 适用标准 | 参考来源 |
-|---|---|---|
-| 单一发行人 ≤ 基金净值 10% | 公募基金 | 《公开募集证券投资基金运作管理办法》 |
-| 单一发行人 ≤ 保险总资产 5% | 保险 | 《保险资金运用管理办法》 |
-| 单一只券 ≤ 基金净值 5% | 公募基金（较严格） | 同上 |
-
-**AI推理逻辑**：
-
-```
-单一发行人敞口占比 = 组合中持有该发行人所有券面值(或市值)合计 / 组合总规模
-
-判定：
-  敞口 < 5%  → 🟢 分散
-  5-10%      → 🟡 关注（接近监管上限）
-  > 10%      → 🔴 超标（公募基金违规风险）
-
-附加检查：
-  单一发行人的关联方（母公司/子公司/同一实控人）敞口应合并计算
-  同一担保链条上的多只券应标注"担保传染"风险
-```
-
-#### 5.2.6 集中度风险综合评分
-
-**综合评分逻辑**：
-
-```
-集中度综合评分 = f(
-  行业集中度得分（权重25%）：基于HHI指数或Top1占比
-  区域集中度得分（权重20%）：基于区域集中度和高风险区域敞口
-  评级集中度得分（权重25%）：伪高评级占比为核心指标
-  融资渠道集中度得分（权重15%）：单一品种依赖度
-  单主体集中度得分（权重15%）：最大单一敞口占比
+Relative Value Score = f(
+  Yield vs peer median,                  // Higher yield = cheaper
+  Z-spread vs sector average,            // Excess spread = value opportunity
+  Duration-adjusted carry,                // Carry net of hedging cost
+  Roll-down vs curve steepness,          // Curve positioning benefit
+  Peer rank percentile                   // Where this bond sits in the distribution
 )
-
-每个维度评分 0-10 分（10=最分散/最安全，0=最集中/最危险）
-综合评分同样 0-10 分
 ```
 
-| 综合评分 | 判定 | 建议 |
-|---|---|---|
-| 8-10 | 🟢 分散 | 集中度风险低，无需调整 |
-| 5-7 | 🟡 适度集中 | 建议在新增投资时优先选择集中度较低的维度 |
-| 3-4 | 🟠 集中 | 需要制定分散化计划，限制该维度的新增敞口 |
-| 0-2 | 🔴 高度集中 | 建议立即启动分散化——组合可能在单一冲击下损失超过阈值 |
+**Key Thresholds**:
 
-**数据可得性限制**（诚实标注）：
-- 精确的组合集中度分析需要完整的持仓数据——公募基金季报仅披露前十大持仓，无法覆盖全组合
-- 无持仓数据时，引擎仅能做"行业/区域暴露度估计"，输出格式从"精确计算"改为"风险方向判断"
-- 保险/理财子/私募基金的持仓数据更不可获取——建议仅提供参考框架
+- Z-spread > 50bp over peer median — potential value trap, not just cheapness
+- Negative carry but high roll-down — curve trade, requires duration conviction
+- Sector allocation delta > 5% from benchmark — active bet size needs justification
+- Top-quartile relative value + bottom-quartile liquidity — tension signal, escalate
 
-#### 5.2.7 系统智能层集成（v0.7.0新增）
+### 2.3 Risk Officer — Portfolio Risk Monitoring
 
-M4组合风控在v0.7.0中通过系统智能层获得完整实现，详见以下独立框架文档：
+The Risk Officer monitors concentration and contagion risks across the portfolio. This role is continuous rather than episodic, triggered by both scheduled reviews (monthly SRI cycles) and ad-hoc events (rating actions, market dislocations).
 
-| 文档 | 定位 | 与M4的关系 |
-|---|---|---|
-| **[传染矩阵](../engine/contagion-matrix.md)** | 13×13行业间传染路径与强度 | M4.1行业集中度的动态补充——相邻行业同步恶化时，集中度风险非线性放大 |
-| **[集中度框架](../engine/concentration-framework.md)** | 五维（行业/区域/评级/期限/渠道）集中度评估 | M4.1的正式实现，含阈值体系和评级调整映射 |
-| **[系统性预警框架](../engine/systemic-warning-framework.md)** | SRI信号聚合+四级温度计+历史回测 | M4顶层仪表盘——将分散的行业级信号聚合为单一系统性风险读数 |
+**Decision Logic**: Identify where the portfolio is most exposed to a single-factor shock, then quantify the loss under stress scenarios.
 
-**配套报告模板（系统智能层专用）：**
+**Assessment Framework**:
 
-| 模板 | 用途 | 对应文档 |
-|---|---|---|
-| **Type 13** 传染分析报告 | 以单行业为传染源，追踪传导路径到波及行业/发行人 | [template-type13.html](../templates/template-type13.html) |
-| **Type 14** 组合集中度报告 | 五维热力图+高风险项识别+分散化建议 | [template-type14.html](../templates/template-type14.html) |
-| **Type 15** 系统性风险警报 | SRI温度计读数+红色行业清单+行动建议 | [template-type15.html](../templates/template-type15.html) |
+| Dimension | Frequency | Key Question |
+|-----------|-----------|--------------|
+| Concentration Dashboard | Monthly | Is any single issuer, sector, region, or rating bucket over the predefined limit? |
+| Contagion Matrix | Monthly + Event | If a key sector/issuer defaults, which other positions are at risk through interconnectedness? |
+| SRI (Systematic Risk Indicator) | Monthly + Event | What is the current systemic risk temperature across all covered sectors? |
+| Stress Tests | Quarterly + Event | Under a predefined adverse scenario, what is the expected loss? Does it exceed risk appetite? |
 
-**M4工作流**（经系统智能层增强）：
+**Key Metrics**:
+
+| Metric | Threshold | Action |
+|--------|-----------|--------|
+| Single-issuer concentration | > 5% of NAV | Flag for review; escalate if > 10% |
+| Top-3 sector concentration | > 50% of NAV | Initiate diversification plan |
+| Pseudo-AAA ratio (external AAA but internal < 7.5) | > 15% of NAV | Full review of AAA holdings |
+| Contagion overlap score | > 3 sectors sharing a common risk factor | Scenario analysis required |
+| SRI temperature | Red (critical) | Portfolio-wide risk reduction |
+
+### 2.4 Trader — Execution & Market Timing
+
+The Trader decides whether today is the right day to execute a trade. This role operates at the shortest horizon, converting analytical signals into market actions.
+
+**Decision Logic**: Given a signal from the Credit Selector, Portfolio Manager, or Risk Officer, is now the right time to buy, sell, or hedge? What is the optimal execution strategy?
+
+**Assessment Framework**:
+
+| Dimension | Weight | Key Question |
+|-----------|--------|--------------|
+| L0 Signal Card | 35% | What is the real-time signal from the engine? Buy/sell/hold with conviction level? |
+| Real-Time Spreads | 25% | Are current spreads favorable relative to recent history and fair-value estimates? |
+| Liquidity Conditions | 25% | Can the trade be executed without moving the market? What is the estimated slippage? |
+| Market Context | 15% | Are there macro events, news flow, or technical factors that create favorable windows? |
+
+**Execution Decision Matrix**:
+
+| Signal | Spread vs FV | Liquidity | Action |
+|--------|--------------|-----------|--------|
+| Buy | Cheap (spread > FV + 10bp) | Good | Execute at market |
+| Buy | Cheap | Poor | Use limit orders, split over sessions |
+| Buy | Fair | Any | Wait for better entry |
+| Sell | Rich (spread < FV - 10bp) | Good | Execute at market |
+| Sell | Rich | Poor | Start selling early |
+| Hold | Any | Any | Do nothing, await signal change |
+
+### 2.5 Advisor — Allocation Advice & Suitability
+
+The Advisor translates institutional-grade credit analysis into actionable advice for clients. This role is the bridge between the analytical engine and the end investor.
+
+**Decision Logic**: Given a client's risk profile, income needs, and existing holdings, should this bond be recommended? If so, at what allocation size?
+
+**Assessment Framework**:
+
+| Dimension | Weight | Key Question |
+|-----------|--------|--------------|
+| Client Suitability | 35% | Does this bond match the client's risk tolerance, income needs, and investment horizon? |
+| L1 Snapshot | 25% | What is the one-page summary of the Credit Selector's full analysis — key risks and mitigants? |
+| Portfolio Compatibility | 20% | Does this bond improve the client portfolio's diversification and risk/return profile? |
+| Thematic Outlook | 20% | Does this bond align with the current market themes and sector views established by the PM? |
+
+**Suitability Scoring**:
+
+| Client Type | Suitable Bonds | Allocation Cap |
+|-------------|----------------|----------------|
+| Conservative (retiree, income-focused) | IG only, short-to-medium duration | 5% single name |
+| Moderate (balanced portfolio) | IG core + up to 20% HY | 3% single HY name |
+| Aggressive (growth-oriented) | IG + HY + distressed | 10% single name |
+| Institutional (pension, endowment) | Broad mandate, IG focus | Based on IPS limits |
+
+### 2.6 Individual Investor — Personal Investment Decision
+
+The Individual Investor represents the end user of the analytical framework — a non-professional making personal investment decisions. This role requires simplified signals and plain-language explanations.
+
+**Decision Logic**: Should I buy, hold, or sell this bond? What is the most important thing I need to know about this credit?
+
+**Assessment Framework**:
+
+| Dimension | Weight | Key Question |
+|-----------|--------|--------------|
+| Simplified L0/L1 Signal | 40% | Is the engine's signal clearly buy, hold, or sell? What is the conviction level? |
+| Plain-Language Risk Summary | 30% | Can I understand the key risk in one paragraph? What could go wrong? |
+| Buy/Hold/Sell Signal | 20% | What should I do today with my existing position or new cash? |
+| Income & Duration Match | 10% | Does this bond's coupon and maturity match my income needs and timeline? |
+
+**Signal Presentation**:
+
+| Signal | Color | Meaning | Action |
+|--------|-------|---------|--------|
+| Strong Buy | Dark Green | Credit is strong and cheap | Add to position |
+| Buy | Light Green | Good risk/reward | Consider adding |
+| Hold | Yellow | Fairly priced, no catalyst | Maintain position |
+| Sell | Orange | Deteriorating or better alternatives | Reduce position |
+| Strong Sell | Red | Credit risk is rising significantly | Exit position |
+
+---
+
+## 3. Cross-Role Matrix — Tensions Between Roles Viewing the Same Issuer
+
+When multiple roles assess the same issuer simultaneously, tensions arise from differing horizons, constraints, and analytical priorities. Understanding these tensions is essential for building a robust decision-making process.
+
+### 3.1 Pairwise Tension Matrix
+
+| Role A | Role B | Typical Tension | Resolution |
+|--------|--------|-----------------|------------|
+| **Credit Selector** | **Portfolio Manager** | CS sees a deteriorating single name and wants to remove; PM sees cheap spreads relative to sector and wants to hold for carry | Set a max hold period; if CS score drops below threshold, PM must present a compensating thesis |
+| **Credit Selector** | **Risk Officer** | CS assigns a borderline credit score (e.g., 4.5); RO flags the position as a top-5 concentration risk | Escalate to investment committee; require enhanced monitoring and tighter stop-loss |
+| **Credit Selector** | **Trader** | CS recommends buying; Trader sees poor liquidity and wide spreads — execution may erode the value proposition | Trader provides estimated slippage; CS re-evaluates at net entry spread |
+| **Portfolio Manager** | **Risk Officer** | PM wants to increase sector exposure for relative value; RO warns the sector is already in the top concentration tier | Risk-adjusted sizing: allow the trade at a reduced allocation within the RO's limit |
+| **Portfolio Manager** | **Trader** | PM wants to build a position over days/weeks; Trader sees intraday liquidity surge and wants to execute immediately | Agree on execution schedule; PM sets total allocation, Trader chooses best execution window |
+| **Portfolio Manager** | **Advisor** | PM sees value in a complex structured product; Advisor cannot explain it clearly to clients | Restrict to qualified investor mandates only; Advisor provides plain-language addendum |
+| **Risk Officer** | **Trader** | RO flags rising tail risk and wants reduced exposure; Trader sees dislocated pricing as a buying opportunity for the desk | Separate risk limits for "risk reduction" vs "opportunistic" trades; Trader must fund the trade from a dedicated tactical bucket |
+| **Advisor** | **Individual Investor** | Advisor recommends a diversified portfolio; Individual wants to concentrate in a name they know | Fiduciary override: Advisor documents suitability objection; client signs acknowledgement of concentration risk |
+
+### 3.2 Consensus and Divergence Handling
+
+**Consensus Scenarios** (all applicable roles agree):
+
+| Scenario | Protocol |
+|----------|----------|
+| All negative (avoid/reduce/risk-down) | Credit risk confirmed, no further validation needed. Escalate to PM/RO for action. |
+| All positive (buy/allocate/risk-neutral) | Proceed with standard controls. Flag for collective blind-spot review quarterly. |
+
+**Divergence Scenarios** (roles disagree):
+
+| Divergence Pattern | Meaning | Resolution Principle |
+|--------------------|---------|---------------------|
+| CS negative, PM neutral | Credit Selector's stricter standards may be overridden for liquid, short-dated positions | PM must document compensating factors; position size reduced by 50% |
+| PM negative, Advisor positive | PM sees poor relative value; Advisor client may have non-economic reasons (ESG, relationship) | Document non-economic rationale; flag for fair-value reporting |
+| RO negative, everyone else positive | Risk officer sees concentration/exposure that others are ignoring | RO has veto power: max position size = 50% of RO's limit |
+| Trader negative, CS/PM positive | Market conditions unfavorable for execution | Delay 5 trading days; if conditions persist, escalate to desk head |
+| CS negative, Individual positive | Retail investor attracted by high coupon on a deteriorating credit | Advisor must intervene: suitability override required |
+
+---
+
+## 4. Multi-Role Parallel Assessment Methodology (WP-X-02)
+
+Work Path X-02 defines the standard process for evaluating a single issuer or credit from multiple buy-side role perspectives simultaneously. The methodology ensures each role's analysis is independent, comparable, and collectively complete.
+
+### 4.1 Five-Step Parallel Process
 
 ```
-Step 1: 运行系统性预警 → 获取SRI读数和当前红色/黄色行业清单
-Step 2: 对红色/黄色行业运行传染矩阵 → 识别有传导风险的关联行业
-Step 3: 对关注行业运行五维集中度分析 → 定位具体的高集中度维度
-Step 4: 综合输出 → 组合风险仪表盘（温度计+热力图+评级调整表）
+Step 1: Shared Data Preparation (all roles)
+  |-- Establish analysis base date T0
+  |-- Declare all publicly available data as of T0
+  |   (instrument-level, issuer-level, market-level)
+  |-- Tag each data item with source and timestamp
+  |-- Output: Shared Data Inventory (SDI)
+  |-- Constraint: no forward-looking information or hindsight
+
+Step 2: Independent Role Assessments (parallel, isolated)
+  |-- Credit Selector: pyramid + financial deep-dive + LGD + external support
+  |-- Portfolio Manager: relative value + sector allocation + curve positioning
+  |-- Risk Officer: concentration check + contagion scan + stress scenario
+  |-- Trader: L0 signal + liquidity check + execution feasibility
+  |-- Advisor: suitability overlay + client mapping + plain-language summary
+  |-- Individual Investor: simplified signal + risk summary
+  |-- Constraint: roles do NOT exchange interim conclusions (avoid contamination)
+
+Step 3: Cross-Role Comparison
+  |-- Build 6-role comparison matrix (or N-role, depending on mandate)
+  |-- Mark consensus points (all roles align)
+  |-- Mark divergence points (roles disagree on direction or magnitude)
+  |-- For each divergence: identify which role's blind spot is exposed
+  |-- Output: Cross-Role Comparison Matrix (CRCM)
+
+Step 4: Mosaic Completeness Report
+  |-- Signal density per role (%) — how much of the analytical framework was populated
+  |-- Confidence level per role (Low / Medium / Medium-High / High)
+  |-- Key data gaps per role
+  |-- Gap-to-substitute mapping — for each gap, what proxy or alternative was used
+
+Step 5: Consolidated Output
+  |-- Consensus judgment (if all roles agree)
+  |-- Divergence judgment with blind-spot analysis (if disagreement)
+  |-- Warning window estimate — from T0 to earliest possible credit event
+  |-- Role-specific action recommendations
 ```
 
-### 5.3 优先级评估标准
+### 4.2 Process Constraints
 
-每个未覆盖模块按三维度评估：
+1. **Data must be strictly limited to what was publicly available at T0** — no hindsight, no post-event data, no "as we now know."
+2. **Each role analyzes independently** — no role's conclusions may influence another role's assessment.
+3. **Mosaic completeness report is mandatory** — every role must report signal density and confidence level.
+4. **Blind spots must be explicitly documented** — each role has inherent blind spots; identify which other role's analysis compensates for each.
+5. **Divergence is not a bug** — healthy tension between roles surfaces risks that any single role would miss.
 
-| 维度 | 含义 |
-|---|---|
-| **P 贴近度** | 与当前框架的距离——越低越容易做 |
-| **V 差异化** | 与现有工具（Wind/Bloomberg/评级报告）的差异——越高越有竞争力 |
-| **D 数据可得性** | 公开数据能否支撑——越高越容易POC |
+### 4.3 Integration with Engine Work Paths
 
-| 模块 | P贴近度 | V差异化 | D数据可得 | 优先级 | 理由 |
-|---|---|---|---|---|---|
-| M1 债券投资·四维 | ★★★★ | ★★★★ | ★★★★ | **P0** | 最贴近，公开数据可获取 |
-| M3 市场交易 | ★★★ | ★★★ | ★★★★ | **P1** | 数据可获取，需建立新分析语言 |
-| M2 债券承销 | ★★ | ★★★★★ | ★★★ | **P1** | 差异化最大，部分数据可获取 |
-| M4 组合风控 | ★★★★ | ★★★★ | ★★★★ | **✅ 已实现** | 系统智能层：传染矩阵+集中度框架+预警框架 |
-| M5 企业融资 | ★ | ★★★★★ | ★★★ | **P2** | 最远但差异化极大 |
-| M6 信贷审批·行内 | ★★★★ | ★★ | ★ | **P3** | 数据完全不可获取（银行内部） |
+| Work Path | Relationship to Multi-Role Assessment |
+|-----------|--------------------------------------|
+| WP-X-02 (this) | Standard process for multi-role parallel evaluation |
+| Type 4 Report Template | Standard output format for cross-role comparison matrix |
+| WP-M0-01 to WP-M5-01 | Individual role work paths feed into Step 2 |
+| WP-X-03 (Industry Analysis) | Pyramid structure feeds Credit Selector framework |
+| WP-X-05 (Outlook Monitoring) | Updates each role's starting assumptions in periodic reviews |
+| WP-M4-02 (Contagion Matrix) | Risk Officer uses this in Step 2 |
+
+### 4.4 Workflow Diagram
+
+```
+                    +-------------------+
+                    | Shared Data       |
+                    | Inventory (SDI)   |
+                    +--------+----------+
+                             |
+              +--------------+--------------+
+              |              |              |
+     +--------v------+ +----v--------+ +---v-----------+
+     | Credit        | | Portfolio   | | Risk Officer  |
+     | Selector      | | Manager     | |               |
+     | (Step 2a)     | | (Step 2b)   | | (Step 2c)     |
+     +-------+-------+ +------+------+ +-------+-------+
+             |                |                |
+     +-------v-------+ +------v------+ +------v--------+
+     | Trader        | | Advisor     | | Individual    |
+     | (Step 2d)     | | (Step 2e)   | | Investor      |
+     |               | |             | | (Step 2f)     |
+     +-------+-------+ +------+------+ +-------+-------+
+             |                |                |
+             +-------+--------+----------------+
+                     |
+          +----------v-----------+
+          | Cross-Role Comparison |
+          | Matrix (Step 3)      |
+          +----------+-----------+
+                     |
+          +----------v-----------+
+          | Mosaic Completeness  |
+          | Report (Step 4)      |
+          +----------+-----------+
+                     |
+          +----------v-----------+
+          | Consolidated Output  |
+          | (Step 5)             |
+          +----------------------+
+```
+
+---
+
+## 5. Role-Specific Dashboard Specifications
+
+Each role requires a dedicated dashboard that surfaces the most relevant information at the appropriate frequency and granularity.
+
+### 5.1 Credit Selector Dashboard
+
+**Purpose**: Single-issuer credit quality monitoring and new-issue evaluation.
+
+**Update Frequency**: Daily (score refresh on new data); Full review every quarter.
+
+| Panel | Content | Display Type | Priority |
+|-------|---------|--------------|----------|
+| Industry Pyramid | Issuer placement in L1-L4 pyramid layer with peer cluster | Visual pyramid | P0 |
+| Financial Deep-Dive | Key ratios: Debt/EBITDA, FCF/Debt, Interest Coverage, D/E | Time-series chart + table | P0 |
+| LGD / Recovery | Capital structure waterfall, collateral coverage, seniority | Stacked bar chart | P0 |
+| External Support | Parent rating, sovereign rating, support capacity score | Score card | P1 |
+| Governance Red Flags | Related-party transactions, audit issues, management turnover | Alert list | P0 |
+| Score Timeline | Credit Quality Score over trailing 12 months | Sparkline | P1 |
+| Peer Comparison | Key ratios vs 5 closest peers in pyramid layer | Radar chart | P1 |
+
+**Alert Thresholds**:
+- Score drops below 4.0 -> Amber alert
+- Score drops below 2.0 -> Red alert (consider removal from book)
+- Debt/EBITDA crosses 6x -> Review initiated
+- FCF/Debt turns negative for 2 consecutive quarters -> Watch list
+
+### 5.2 Portfolio Manager Dashboard
+
+**Purpose**: Relative value identification, sector allocation, and portfolio construction.
+
+**Update Frequency**: Daily (market data refresh); Full rebalance review monthly.
+
+| Panel | Content | Display Type | Priority |
+|-------|---------|--------------|----------|
+| Relative Value Heatmap | Z-spread decile ranking by peer group | Heatmap grid | P0 |
+| Sector Allocation | Current vs benchmark sector weights | Waterfall bar | P0 |
+| Curve Positioning | Portfolio duration buckets vs benchmark | Histogram overlay | P0 |
+| Best/Worst Performers | Top/bottom 5 bonds by YTW change | Table with delta | P1 |
+| Trade Ideas | Pre-screened relative value opportunities | Card list | P1 |
+| Peer Rank Tracker | Where the portfolio ranks vs peer funds | Gauge meter | P1 |
+
+**Alert Thresholds**:
+- Sector allocation > 5% from benchmark -> Flag
+- Single-name YTW moves > 2 standard deviations from 30-day average -> Review
+- Relative value score shifts by > 2 deciles -> Re-evaluate thesis
+- Any bond with BS (Strong Sell) from Credit Selector but still in portfolio -> Mandatory review
+
+### 5.3 Risk Officer Dashboard
+
+**Purpose**: Portfolio-level risk surveillance, concentration monitoring, stress testing.
+
+**Update Frequency**: Continuous (intraday for market risk); Full review monthly.
+
+| Panel | Content | Display Type | Priority |
+|-------|---------|--------------|----------|
+| SRI Temperature | Systematic Risk Indicator across all sectors | Thermometer (Green/Yellow/Red) | P0 |
+| Concentration Heatmap | Sector x Region x Rating exposure matrix | Heatmap | P0 |
+| Contagion Matrix | Inter-sector transmission paths with current exposure | Network graph | P0 |
+| Top-10 Exposures | Largest single-name exposures with CS scores | Ranked table | P0 |
+| Stress Test Results | Loss under adverse scenario by sector | Waterfall | P0 |
+| Pseudo-AAA Tracker | External AAA bonds with internal score < 7.5 | Alert list | P1 |
+| Limit Breach Log | Historical breaches of concentration limits | Timeline | P1 |
+
+**Alert Thresholds**:
+- SRI enters Yellow -> Weekly monitoring committee
+- SRI enters Red -> Portfolio risk reduction mandated
+- Any single-name > 10% NAV -> Immediate escalation
+- Pseudo-AAA ratio > 15% -> Full review of AAA holdings
+- Top-3 sectors > 60% NAV -> Diversification plan required
+
+### 5.4 Trader Dashboard
+
+**Purpose**: Execution decision support, real-time market conditions, signal prioritization.
+
+**Update Frequency**: Real-time (intraday streaming).
+
+| Panel | Content | Display Type | Priority |
+|-------|---------|--------------|----------|
+| L0 Signal Card | Real-time buy/hold/sell signal per ticker with conviction | Card per issuer (color-coded) | P0 |
+| Spread vs FV | Current spread vs fair-value estimate with z-score | Gauge + sparkline | P0 |
+| Liquidity Score | Composite liquidity score (volume, turnover, depth) | Bar with percentile rank | P0 |
+| Watch List | Pre-approved trade ideas from PM/CS ready to execute | Actionable card list | P0 |
+| Market Context | Key macro events, central bank calendar, earnings releases | Timeline | P1 |
+
+**Alert Thresholds**:
+- Spread moves > 2 z-scores from fair value -> Highlight as opportunity
+- Liquidity score drops below 20th percentile -> Use limit orders only
+- Signal switches from Hold to Buy/Sell -> Push notification
+- Bid-ask spread widens > 3x normal -> Reduce order size
+
+### 5.5 Advisor Dashboard
+
+**Purpose**: Client portfolio suitability checking, investment memo generation, client communication.
+
+**Update Frequency**: Daily (new analysis available); Client review prep weekly.
+
+| Panel | Content | Display Type | Priority |
+|-------|---------|--------------|----------|
+| Client Risk Profile | Current risk tolerance score, income needs, horizon | Profile card | P0 |
+| L1 Snapshot | One-page bond summary: key risks, rating, signal | Summary card | P0 |
+| Portfolio Fit | Effect of recommended bond on client portfolio diversification | Before/after donut | P1 |
+| Suitability Check | Pass/fail for recommended bonds against client criteria | Pass/Fail badges | P0 |
+| Thematic Views | Current sector/thematic outlook from PM team | Bullet list | P1 |
+
+**Alert Thresholds**:
+- Any bond with CS score < 4.0 flagged for a conservative client -> Mandatory suitability override
+- Recommended bond would push single-name concentration > client limit -> Block trade
+- Advisor recommends Hold/Sell across > 30% of positions -> Rebalance discussion triggered
+
+### 5.6 Individual Investor Dashboard
+
+**Purpose**: Personal bond investment decisions with simplified signals and plain language.
+
+**Update Frequency**: Updated when new analysis is published; User can refresh on demand.
+
+| Panel | Content | Display Type | Priority |
+|-------|---------|--------------|----------|
+| My Portfolio | Holdings with buy/hold/sell signal per bond | Portfolio list with color badges | P0 |
+| Signal Summary | Overall portfolio signal distribution | Donut chart | P0 |
+| Bond Detail | L1 snapshot, risk summary, signal, price chart | Detail card | P0 |
+| Risk Summary | Plain-language: "What could go wrong with this bond?" | Expandable section | P0 |
+| Action Items | Recommended trades (buy this, sell that) with rationale | Action card list | P1 |
+
+**Alert Thresholds**:
+- Any bond signal changes to Strong Sell -> Email/push notification
+- Portfolio > 50% concentrated in one sector -> Diversification prompt
+- Bond coupon exceeds 2x comparable CD rate -> Risk warning (yield trap signal)
+- Any bond in portfolio crosses its expected maturity -> Roll-over consideration prompt
+
+---
+
+## Appendix A: Role-to-Metric Mapping
+
+| Metric | Credit Selector | Portfolio Manager | Risk Officer | Trader | Advisor | Individual Investor |
+|--------|:---:|:---:|:---:|:---:|:---:|:---:|
+| Industry Pyramid Score | Primary | Reference | — | — | Reference | — |
+| Debt/EBITDA | Primary | — | — | — | — | — |
+| Z-Spread vs Peer Median | — | Primary | — | Primary | — | — |
+| LGD / Recovery | Primary | — | — | — | — | — |
+| SRI Temperature | — | Reference | Primary | Reference | — | — |
+| Concentration Ratio | — | — | Primary | — | — | — |
+| Liquidity Score | — | — | — | Primary | — | — |
+| Signal (Buy/Hold/Sell) | Output | Output | Output | Output | Filtered | Primary |
+| Client Suitability | — | — | — | — | Primary | — |
+| Plain-Language Summary | — | — | — | — | Primary | Primary |
+
+## Appendix B: Horizon Alignment Across Roles
+
+When roles with different horizons assess the same issuer, time-horizon conflicts must be explicitly managed.
+
+| Base Horizon | Role(s) | Conflict with Shorter Horizon | Conflict with Longer Horizon |
+|--------------|---------|-------------------------------|------------------------------|
+| 12-36 months | Credit Selector | Short-term price volatility ignored | — |
+| 6-24 months | Portfolio Manager | Tactical trades may conflict with sector allocation | Medium-term thesis may persist through short-term noise |
+| Continuous | Risk Officer | — | Long positions may exceed risk limits temporarily |
+| Intraday-2 weeks | Trader | Execution focus may miss medium-term deterioration | Market timing irrelevant for strategic holding |
+| 3-12 months | Advisor | Advice may be too slow for fast-moving markets | May miss long-term credit improvement |
+| 6-36 months | Individual Investor | Overreacts to short-term news | Patience may miss warning signals |
+
+**Horizon Conflict Resolution**:
+- Short-term signals do not override long-term credit scores, but they do trigger a review.
+- Long-term assesses are not used to justify holding through known credit deterioration.
+- Risk Officer's continuous monitoring overrides all fixed-horizon assessments during stress events.
+
+---
+
+*This framework supersedes the legacy M0-M5 Chinese-market stakeholder framework. All roles are now aligned to international buy-side functions and the WP-X-02 parallel assessment methodology.*
