@@ -38,6 +38,8 @@ npx github:tywinlu1988/fixedincome
 
 把当前 release 包落成 `./credence/`，然后用你的 agent CLI 打开该目录即可。
 
+**更新 / 钉版本**：再次运行同一命令即得最新版（先删除或改名旧 `./credence/`——安装器不做原地更新；克隆方式用 `git pull`）。钉住历史版本：`npx github:tywinlu1988/fixedincome#v0.8.0-release`（`#` 后接任意 git 标签）。
+
 **方式 B · GitHub Release**
 
 从 [Releases](https://github.com/tywinlu1988/fixedincome/releases) 下载最新 `vX.Y.Z-release.zip`，解压后把包根当项目打开。
@@ -102,6 +104,8 @@ npx github:tywinlu1988/fixedincome
 ```
 
 Lays the current release package into `./credence/`; open that folder with your agent CLI.
+
+**Updating / pinning**: re-run the same command for the latest version (delete or rename the old `./credence/` first — the installer never updates in place; with a clone, use `git pull`). To pin an older release: `npx github:tywinlu1988/fixedincome#v0.8.0-release` (any git tag after `#`).
 
 **B · GitHub Release**
 
