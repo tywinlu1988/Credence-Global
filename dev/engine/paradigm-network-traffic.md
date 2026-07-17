@@ -1,428 +1,427 @@
-# 网络+流量型分析范式
+# Network and Throughput (P4) Paradigm: Network-Effect and Traffic/Throughput Analysis
 
-**版本**: v0.8.4-release | **范式版本**: v1.0.0 | **日期**: 2026-07-10 | **状态**: 初版发布
+**Version**: v0.0.1 | **Paradigm Version**: v1.0.0 | **Date**: 2026-07-18 | **Status**: Initial international release
 
 ---
 
-## 一、范式定义与适用范围
+## 1. Paradigm Definition and Scope
 
-### 1.1 什么是"网络+流量型"行业
+### 1.1 What is the Network and Throughput (P4) Paradigm
 
-网络+流量型行业的核心特征是企业通过**网络效应**和**规模经济**构筑竞争壁垒，以**流量/运量/吞吐量**作为核心经营指标。这类行业的信用逻辑不依赖于品牌溢价或技术专利，而是取决于企业能否将规模优势转化为不可逆的成本优势。
+The Network and Throughput (P4) paradigm covers industries where credit quality is driven by **network effects**, **scale economies**, and **traffic/throughput volume** as the core operating metric. Unlike brand-driven or technology-moat paradigms, credit analysis here centers on whether scale advantages translate into irreversible cost leadership and whether throughput volumes are sustainable.
 
-信用分析的关键在于识别：**规模能不能转化为不可逆的成本优势？**
+The defining question: **Does the company's scale translate into an irreversible cost advantage?**
 
-**典型行业：**
-- 交通运输（航运、航空、铁路、港口、公路、快递物流）
-- 数据中心/云计算
-- 电信运营商
-- 电网/能源管网
-- 物流基础设施
+**Core industries (GICS classification):**
+- Transportation (GICS 2030): Airlines, railroads, marine transportation, trucking, airport services, highways & rail tracks
+- Telecommunication Services (GICS 5010): Integrated telecom, wireless, data centers & colocation
+- Select Technology (GICS 45): E-commerce platforms, gig economy platforms, digital marketplaces, cloud infrastructure
+- Select Industrials: Logistics, delivery networks, freight forwarding
 
-**引擎映射：** 交通运输、商贸零售、传媒/互联网在 `industry-framework.md` 中归类为 **网络+流量型** 范式；数据中心/算力基建在 IDC/托管场景下主要归为资产租约型，云/电信混合场景下具备网络+流量型次要属性。
+**Paradigm mapping:** Transportation (2030), Telecommunication Services (5010), and select Technology platforms are categorized under the **Network and Throughput (P4)** paradigm in `industry-framework.md`.
 
-### 1.2 判定条件
+### 1.2 Qualification Criteria
 
-一个行业被归入"网络+流量型"需同时满足以下条件：
+An industry qualifies for the Network and Throughput (P4) paradigm by meeting the following conditions:
 
-| 条件 | 判定标准 | 说明 |
+| Criterion | Standard | Explanation |
 |---|---|---|
-| **N1 网络效应** | 节点越多→网络价值越大→新用户边际收益递增 | 双向/多边网络效应明显（物流网络、通信网络） |
-| **N2 规模经济** | 单位成本随规模提升而下降 | 固定成本占比高（船队/机队/车队/基站） |
-| **N3 转换成本** | 客户切换服务商的成本较高 | 物流合同/港口锁定/数据迁移成本 |
-| **N4 流量/运量核心** | 收入增长直接由流量/运量驱动 | 运价 x 运量 = 收入，流量是非价格竞争的核心 |
-| **N5 重资产依赖** | 大量固定资产（船/飞机/车辆/土地/设备） | Capex是进入门槛也是信用风险来源 |
+| **N1 Network Effect** | More nodes increase network value; marginal user benefit rises | Two-sided/multi-sided network effects (logistics networks, telecom networks, platforms) |
+| **N2 Scale Economy** | Unit cost declines with scale | High fixed-cost ratio (fleet, aircraft, towers, data centers) |
+| **N3 Switching Cost** | Customer cost to switch providers is material | Logistics contracts, port/rail dependency, data migration cost, platform ecosystem lock-in |
+| **N4 Throughput/Traffic Core** | Revenue directly driven by volume (freight, passengers, data packets, transactions) | Volume x unit price = revenue; traffic is the primary non-price competitive dimension |
+| **N5 Asset Intensity** | Significant fixed assets (vessels, aircraft, vehicles, land, equipment, towers, fiber) | Capex is both an entry barrier and a credit risk source |
 
-> **排除规则：** 凡品牌认知是消费者决策的首要因素（如白酒、化妆品、服装），或技术专利是核心壁垒（如半导体、创新药），不适用本范式。
+> **Exclusion rule:** Industries where brand perception is the primary purchase driver (e.g., consumer staples, luxury goods, apparel) or where technology patents are the core barrier (semiconductors, innovative pharma) are not suited for this paradigm.
 
 ---
 
-## 二、范式核心
+## 2. Paradigm Core
 
-### 2.1 最重因子：网络效应/规模经济阈值
+### 2.1 Heaviest Factor: Network Effect and Scale Economy Threshold
 
-**规模和网络不是护城河本身——能否转化为不可逆的成本优势才是。**
+**Scale and network are not moats by themselves -- the moat is whether they translate into irreversible cost advantages.**
 
-网络+流量型行业中，规模具有"阈值"特征——低于阈值时规模扩大会增加成本（规模不经济），超过阈值后单位成本急剧下降，形成护城河。
+In Network and Throughput industries, scale has a "threshold" characteristic -- below the threshold, expanding scale increases unit costs (diseconomies of scale). Above the threshold, unit costs drop sharply, creating a moat that competitors cannot cross.
 
-| 指标 | 计算公式/数据来源 | 强信号 | 弱信号 | 危险信号 |
+| Metric | Formula / Source | Strong Signal | Weak Signal | Danger Signal |
 |---|---|---|---|---|
-| **规模排名** | 行业运力/运量排名 | 行业前三 | 行业前十 | 十名开外 |
-| **单位经济模型** | 单箱成本/单票成本/单TEU成本 | 行业最低20%分位 | 行业中位水平 | 行业最高20%分位 |
-| **网络密度** | 航线/线路/站点覆盖数 | 全覆盖+高频次 | 主要线路覆盖 | 线路稀疏/依赖单线 |
-| **产能利用率** | 装载率/上座率/利用率 | >85% | 65-85% | <65% |
-| **固定成本/总成本** | 折旧+人工+租金/总成本 | >50%（重资产门槛） | 30-50% | <30%（轻资产但无壁垒） |
+| **Scale ranking** | Industry capacity/volume ranking | Top 3 in industry | Top 10 | Outside top 10 |
+| **Unit economics** | Cost per container, per package, per TEU, per subscriber | Industry lowest quintile | Industry median | Industry highest quintile |
+| **Network density** | Routes, lines, sites, coverage | Full coverage + high frequency | Major routes covered | Thin network, single-line dependency |
+| **Capacity utilization** | Load factor, occupancy rate, utilization rate | >85% | 65-85% | <65% |
+| **Fixed cost / total cost** | Depreciation + labor + rent / total cost | >50% (heavy, high barrier) | 30-50% | <30% (light asset, no barrier) |
 
-**关键洞察：** 在网络+流量型行业，"规模排第一"比"盈利排第一"更重要——规模领先意味着单位成本的优势将随时间不断累积，形成竞争者无法追上的正反馈循环。
+**Key insight:** In Network and Throughput industries, "being #1 in scale" matters more than "being #1 in profitability" -- scale leadership compounds cost advantages over time, creating a positive feedback loop that competitors cannot close.
 
-### 2.2 次重因子：用户粘性/转换成本
+### 2.2 Secondary Factor: Customer Stickiness and Switching Costs
 
-客户粘性决定流量的稳定性和可预测性。
+Customer stickiness determines traffic stability and predictability.
 
-**为什么转换成本在此类行业特别重要？**
-- 物流合约通常是一年期以上，客户切换物流商涉及对接成本+信任成本
-- 港口/铁路对制造企业而言是基础设施级的绑定，转换几乎不可能
-- 数据中心客户一旦完成上云迁移，迁移成本极高
+**Why switching costs matter here:**
+- Logistics contracts are typically multi-year; switching involves integration and trust costs
+- Port/rail infrastructure creates infrastructure-level lock-in for manufacturers
+- Cloud/data center customers face high migration costs after onboarding
+- Platform users face ecosystem lock-in (network effects work both ways)
 
-**转换成本评估三维模型：**
+**Three-dimensional switching cost assessment:**
 
-**维度一：合约锁定程度**
-- 长协占比（长期合同 vs 现货市场）
-- 合约平均期限（年）
-- 提前解约条款与违约金
+**Dimension 1: Contract lock-in**
+- Long-term contract ratio (vs. spot market)
+- Average contract duration (years)
+- Early termination provisions and penalties
 
-**维度二：业务依赖度**
-- 前五大客户收入占比（>40%为关注，>60%为危险）
-- 客户行业集中度——单一行业客户占比过高
-- 客户自身经营稳定性
+**Dimension 2: Business dependency**
+- Top-5 customer revenue share (>40% concerning, >60% dangerous)
+- Customer industry concentration
+- Customer operating stability
 
-**维度三：替代成本**
-- 切换服务商的技术对接成本
-- 新服务商是否具备同等的网络覆盖能力
-- 客户的议价能力和议价频率
+**Dimension 3: Replacement cost**
+- Technical integration cost to switch providers
+- Whether alternative providers offer equivalent network coverage
+- Customer bargaining power and renegotiation frequency
 
-> **核心洞察：** 在网络+流量型行业，长协占比是最关键的先行指标。长协占比高=收入可预测性强=现金流稳定=信用质量高。长协占比下降往往是行业竞争加剧的最早信号。
+> **Key insight:** Long-term contract ratio is the most critical leading indicator. High contract ratio = predictable revenue = stable cash flow = high credit quality. A declining contract ratio is often the earliest signal of intensifying competition.
 
-### 2.3 特有风险
+### 2.3 Unique Risks
 
-网络+流量型行业拥有独特的风险类别，与其他行业形成显著区别。
+Network and Throughput industries face distinct risk categories that differ from other paradigms.
 
-**风险一：基础设施关停**
+**Risk 1: Infrastructure shutdown**
 
-| 类型 | 触发条件 | 影响等级 | 恢复难度 |
+| Type | Trigger | Severity | Recovery Difficulty |
 |---|---|---|---|
-| 港口/机场关闭 | 自然灾害/罢工/监管 | 极高 | 高 |
-| 船舶/飞机停航 | 安全事故/制裁/地缘政治 | 高 | 中 |
-| 数据中心断电 | 电力中断/火灾 | 极高 | 中 |
-| 铁路/公路中断 | 地质灾害/事故 | 高 | 中 |
+| Port/airport closure | Natural disaster, strike, regulation | Very high | High |
+| Vessel/aircraft grounding | Safety incident, sanctions, geopolitics | High | Medium |
+| Data center power outage | Power failure, fire | Very high | Medium |
+| Rail/road disruption | Geological disaster, accident | High | Medium |
 
-**风险二：流量断崖**
+**Risk 2: Traffic cliff**
 
-| 类型 | 典型案例 | 影响路径 |
+| Type | Example | Impact Pathway |
 |---|---|---|
-| 贸易流量萎缩 | 中美贸易战→航运需求下降 | 运价暴跌→收入断崖→固定成本不变→亏损 |
-| 航线/线路关闭 | 红海危机→航线改道 | 运力过剩→单位成本上升 |
-| 客户流失 | 核心大客户自建物流 | 流量突然归零 |
-| 技术替代 | 传统货代被数字化平台替代 | 业务模式被颠覆 |
+| Trade flow contraction | US-China tariff escalation, shipping demand drop | Freight rate collapse, revenue cliff, fixed costs unchanged, losses |
+| Route/line closure | Red Sea crisis, rerouting | Capacity glut, unit cost increase |
+| Customer loss | Anchor customer builds own logistics | Traffic suddenly goes to zero |
+| Technology substitution | Traditional freight forwarder displaced by digital platform | Business model disrupted |
 
-**风险三：监管牌照撤销**
+**Risk 3: Regulatory license revocation**
 
-| 行业 | 关键牌照 | 影响 |
+| Industry | Key License | Impact |
 |---|---|---|
-| 航运 | 航线经营许可/船舶安全证书 | 无法运营特定航线 |
-| 航空 | 航空运输许可/航线经营权 | 完全停飞 |
-| 快递 | 快递业务经营许可证 | 不能经营快递业务 |
-| 港口 | 港口经营许可证 | 无法作业 |
+| Airlines | Air operator certificate, route rights | Complete grounding |
+| Railroads | Operating franchise, safety certification | Cannot operate |
+| Telecom | Spectrum license, operating permit | Cannot offer service |
+| Marine | Shipping license, safety certificates | Cannot operate specific routes |
+| Data centers | Operating permits, cross-border data licenses | Jurisdiction-specific restrictions |
 
-**风险四：技术替代**
+**Risk 4: Technology disruption**
 
-| 传统模式 | 替代技术 | 时间窗口 |
+| Legacy Model | Disruptive Technology | Time Window |
 |---|---|---|
-| 传统集装箱航运 | 自动化码头+智慧航运 | 5-10年 |
-| 人工配送 | 无人机/无人车配送 | 5-15年 |
-| 传统仓储 | 智能仓储/自动化立体库 | 3-8年 |
-| 传统货代 | 数字化货运平台 | 3-5年 |
+| Traditional container shipping | Automated terminals, smart shipping | 5-10 years |
+| Manual delivery | Drone/autonomous delivery | 5-15 years |
+| Traditional warehousing | Smart warehousing, automated storage | 3-8 years |
+| Traditional freight forwarding | Digital freight platforms | 3-5 years |
+| Legacy telecom networks | 5G/6G virtualization, cloud-native networks | 5-10 years |
 
-### 2.4 一票否决
+### 2.4 Veto Conditions
 
-| 条件 | 触发标准 | 本质风险 | 可否豁免 |
+| Condition | Trigger | Essential Risk | Waivable |
 |---|---|---|---|
-| **V1 核心基础设施被关停** | 核心港口/机场/数据中心因安全/监管/法律原因被强制关停超过30天 | 运营性死亡 | 不可豁免 |
-| **V2 流量断崖式下跌** | 核心业务运量/流量同比降幅 > 30%且无恢复趋势 | 业务性死亡 | 分析师委员会裁定 |
-| **V3 核心牌照被吊销** | 快递许可/航空经营许可/港口经营权被吊销 | 合规性死亡 | 不可豁免 |
-| **V4 现金流枯竭** | 经营现金流连续2年为负且现金/短期债务 < 0.3x | 财务性死亡 | 不可豁免 |
-| **V5 审计否定/无法表示意见** | 年度审计报告被出具否定意见或无法表示意见 | 信息性死亡 | 不可豁免 |
-| **V6 实际控制人严重失信** | 实控人被列入失信被执行人/被立案调查/涉及重大法律纠纷 | 治理性死亡 | 分析师委员会裁定 |
+| **V1 Core infrastructure shutdown** | Core port/airport/data center forced closed >30 days for safety/regulatory/legal reasons | Operational death | Not waivable |
+| **V2 Traffic cliff** | Core business volume/traffic drop >30% YoY with no recovery trend | Business death | Analyst committee may waive |
+| **V3 Core license revoked** | Air operator cert, port franchise, spectrum license revoked | Compliance death | Not waivable |
+| **V4 Cash flow exhaustion** | Operating cash flow negative for 2 consecutive years AND cash/short-term debt <0.3x | Financial death | Not waivable |
+| **V5 Audit disclaimer/adverse opinion** | Annual audit opinion is adverse or disclaimed | Information death | Not waivable |
+| **V6 Controlling shareholder serious breach** | Listed as delinquent, under investigation, or involved in major legal dispute | Governance death | Analyst committee may waive |
 
 ---
 
-## 三、金字塔权重
+## 3. Pyramid Weights
 
-### 3.1 标准四层金字塔
+### 3.1 Standard Four-Layer Pyramid
 
-| 层级 | 权重 | 核心指标 | 一票否决关联 |
+| Layer | Weight | Core Indicators | Veto Association |
 |---|---|---|---|
-| **L1 网络/规模壁垒** | 35% | 规模排名·成本优势(单位经济模型)·网络密度·产能利用率·固定成本占比 | V1 基础设施关停 / V2 流量断崖 |
-| **L2 用户/客户粘性** | 25% | 客户留存率·转换成本·长协/合同占比·客户集中度·NPS/复购率 | V6 核心客户流失 |
-| **L3 资产质量** | 20% | 固定资产成新率·技术迭代风险·产能扩张节奏·资产专用性·剩余使用年限 | V3 牌照吊销（资产闲置） |
-| **L4 财务质量** | 20% | 经营现金流/有息负债·DSCR·现金覆盖·利息覆盖·Capex强度·运价敏感性 | V4 现金流枯竭 |
+| **L1 Network/Scale Barrier** | 35% | Scale ranking, unit cost advantage, network density, capacity utilization, fixed cost ratio | V1 Infrastructure shutdown / V2 Traffic cliff |
+| **L2 Customer Stickiness** | 25% | Customer retention rate, switching costs, long-term contract ratio, customer concentration, NPS | V6 Core customer loss |
+| **L3 Asset Quality** | 20% | Fixed asset age, technology obsolescence risk, capacity expansion pipeline, asset specificity, remaining useful life | V3 License revocation (asset idling) |
+| **L4 Financial Quality** | 20% | Operating cash flow / debt, DSCR, cash coverage, interest coverage, Capex intensity, rate sensitivity | V4 Cash flow exhaustion |
 
-### 3.2 与传统范式的关键差异
+### 3.2 Key Differences from Other Paradigms
 
-| 对比维度 | 网络+流量型 | 品牌+渠道型 | 政策驱动型(光伏) | 技术壁垒型(半导体) |
+| Dimension | Network & Throughput (P4) | Defensive (P2) | Policy-Driven (P1) | Technology Moat (P3) |
 |---|---|---|---|---|
-| **最重层** | L1 网络/规模 35% | L1 品牌 35% | L1 政策 35% | L1 地缘政治 30-35% |
-| **次重层** | L2 客户粘性 25% | L2 渠道 25% | L2 技术 30% | L2 技术 25-30% |
-| **资产质量层** | 20%（重要维度） | 无独立层 | 10%（技术迭代） | 5-10% |
-| **财务层权重** | 20% | 20% | 15% | 5-10% |
-| **特有否决项** | 基础设施关停/流量断崖 | 品牌危机/食品安全 | 政策转向/产能过剩 | 技术制裁/出口管制 |
-| **行业周期敏感性** | 强（运价/装载率） | 弱（必选消费） | 强 | 中 |
+| **Heaviest layer** | L1 Network/Scale 35% | L1 Brand 35% | L1 Policy 35% | L1 Geopolitical 30-35% |
+| **Second layer** | L2 Customer 25% | L2 Channel 25% | L2 Technology 30% | L2 Technology 25-30% |
+| **Asset quality layer** | 20% (important) | None separate | 10% (tech iteration) | 5-10% |
+| **Financial layer weight** | 20% | 20% | 15% | 5-10% |
+| **Unique vetoes** | Infrastructure shutdown, traffic cliff | Brand crisis, product safety | Policy reversal, overcapacity | Technology sanctions, export controls |
+| **Cyclical sensitivity** | High (rate/load factor) | Low (staples) | High | Medium |
 
-### 3.3 权重调整规则
+### 3.3 Weight Adjustment Rules
 
-| 调整条件 | 调整内容 | 适用场景 |
+| Condition | Adjustment | Scenario |
 |---|---|---|
-| 运价/费率波动性 > 30%（年） | L4 财务权重提升至25%，L1降至30% | 航运/航空等强周期行业 |
-| 固定资产成新率 < 40% | L3 资产质量权重提升至25%，L2降至20% | 大规模Capex替换周期来临 |
-| 长协占比 > 60% | L2 客户粘性增加5%加分 | 收入可预测性高，信用质量提升 |
-| 监管环境剧烈变化 | 增加5-10%监管层（嵌入L1） | 行业准入/环保/安全监管加强 |
-| 技术替代风险高 | L3 资产质量权重提升至25% | 传统物流vs数字化平台 |
+| Rate/fare volatility >30% per year | L4 Financial increases to 25%, L1 drops to 30% | Cyclical industries (shipping, airlines) |
+| Fixed asset age index <40% | L3 Asset Quality increases to 25%, L2 drops to 20% | When major Capex replacement cycle is due |
+| Long-term contract ratio >60% | L2 Customer Stickiness +5% bonus | High revenue predictability = higher credit quality |
+| Regulatory environment changing rapidly | Add 5-10% regulatory sub-layer (embedded in L1) | Industry deregulation, safety, or environmental regulation tightening |
+| High technology disruption risk | L3 Asset Quality increases to 25% | Traditional logistics vs. digital platforms |
 
 ---
 
-## 四、一票否决详解
+## 4. Veto Conditions Detail
 
-### 4.1 触发阈值量化
+### 4.1 Trigger Thresholds Quantified
 
-| 否决条件 | 轻度预警（黄灯） | 严重预警（橙灯） | 触发否决（红灯） |
+| Veto Condition | Yellow (Early Warning) | Orange (Serious Warning) | Red (Veto Triggered) |
 |---|---|---|---|
-| V1 基础设施关停 | 核心设施计划外停摆7-14天 | 停摆15-30天 | 停摆超过30天 |
-| V2 流量断崖 | 核心运量同比降15-20% | 同比降20-30% | 同比降>30%且无恢复 |
-| V3 牌照吊销 | 收到监管整改通知 | 被暂停部分经营许可 | 核心牌照被彻底吊销 |
-| V4 现金流枯竭 | 经营现金流/利息 < 1.5x | 经营现金流/利息 < 1.0x | 连续2年经营现金流为负且现金/短期债务 < 0.3x |
-| V5 审计非标 | 带强调事项段的无保留意见 | 保留意见 | 否定/无法表示意见 |
-| V6 实控人失信 | 实控人被限制高消费 | 实控人被列入失信名单 | 实控人被立案调查/涉及重大违法 |
+| V1 Infrastructure shutdown | Unplanned outage 7-14 days | Outage 15-30 days | Outage >30 days |
+| V2 Traffic cliff | Core volume down 15-20% YoY | Down 20-30% YoY | Down >30% with no recovery |
+| V3 License revocation | Regulatory rectification notice received | Partial operating permit suspended | Core license permanently revoked |
+| V4 Cash flow exhaustion | Operating CF / interest <1.5x | Operating CF / interest <1.0x | 2 consecutive years negative CF and cash/short-term debt <0.3x |
+| V5 Audit non-standard | Qualified opinion with emphasis of matter | Qualified opinion | Adverse / disclaimer of opinion |
+| V6 Controller breach | Controller restricted from high-consumption activities | Controller listed as delinquent | Controller under investigation for major violations |
 
-### 4.2 触发后处理流程
+### 4.2 Post-Trigger Procedure
 
 ```
-触发一票否决条件
-    ↓
-自动锁定评级上限 B-
-    ↓
-分析师委员会 48 小时内召开紧急会议
-    ├── 确认触发：维持 CCC 及以下，启动退出/回收程序
-    └── 裁定豁免（仅 V2/V6 可豁免）：记录豁免理由，评级上限提升至 B
-    ↓
-通知债权银行/债券持有人
-    ↓
-纳入信用事件监控清单，月度更新
+Veto condition triggered
+    |
+Automatic rating cap at B-
+    |
+Analyst committee convened within 48 hours
+    |-- Condition confirmed: maintain CCC or below, initiate exit/recovery
+    |-- Waiver granted (V2/V6 only): record rationale, cap raised to B
+    |
+Notify lenders / bondholders
+    |
+Enter credit event monitoring list, updated monthly
 ```
 
 ---
 
-## 五、双轨分析映射
+## 5. Dual-Track Analysis Mapping
 
-### 5.1 轨道A：金字塔评分
+### 5.1 Track A: Pyramid Score
 
-使用四层金字塔加权计算综合评分：
-- L1 网络/规模壁垒 35%
-- L2 用户/客户粘性 25%
-- L3 资产质量 20%
-- L4 财务质量 20%
+Weighted composite using the four-layer pyramid:
+- L1 Network/Scale Barrier: 35%
+- L2 Customer Stickiness: 25%
+- L3 Asset Quality: 20%
+- L4 Financial Quality: 20%
 
-### 5.2 轨道B：市场定价信号
+### 5.2 Track B: Market Pricing Signals
 
-| 信号类型 | 观察指标 | 网络+流量型特有解读 |
+| Signal Type | Observable | Network & Throughput-Specific Interpretation |
 |---|---|---|
-| **运价/费率信号** | 运价指数（CCFI/SCFI）、装载率、即期vs长协价差 | 运价是行业景气度的最直接信号，领先财务指标1-2个季度 |
-| **流量信号** | 吞吐量/运量/票量同比、市场份额变化 | 流量是市场份额的即时信号，流量下降是竞争格局变化的最早指标 |
-| **资产交易信号** | 二手船/飞机/车辆价格、资产交易活跃度 | 二手资产价格是产能周期的"温度计" |
-| **资本市场信号** | 股价波动、信用利差、债券收益率 | 强周期行业信用利差对运价极其敏感 |
+| **Rate/fare signals** | Freight rate indices, load factors, spot vs. contract spread | Rates are the most direct industry health indicator, leading financials by 1-2 quarters |
+| **Traffic signals** | Throughput/volume YoY change, market share shifts | Traffic is a real-time market share indicator; decline is the earliest sign of competitive shift |
+| **Asset transaction signals** | Second-hand vessel/aircraft/vehicle prices, transaction volumes | Second-hand asset prices are the "thermometer" of the capacity cycle |
+| **Capital market signals** | Stock price volatility, credit spread, bond yields | Cyclical industry credit spreads are highly sensitive to rate movements |
 
-### 5.3 交叉对撞示例
+### 5.3 Cross-Validation Examples
 
-**常见分歧：**
-- 轨道A好 + 轨道B差 = 运价下行周期中的优质企业被"错杀"（如龙头航运企业在运价低谷）
-- 轨道A差 + 轨道B好 = 规模优势尚未在财务上体现（如Capex投入期的成长期企业）
+**Common divergences:**
+- Track A positive + Track B negative = High-quality company caught in a cyclical downturn (e.g., top-tier airline during fuel price spike)
+- Track A negative + Track B positive = Market optimism on scale benefits not yet visible in financials (e.g., growth-stage logistics company pre-scale threshold)
 
-**对撞关键追问：**
-1. 规模优势是否转化为真实的单位成本优势？
-2. 长协占比是否足以对冲运价波动？
-3. 固定资产更新是否被充分计提？
-4. 现金流能否覆盖必要的维持性Capex？
+**Cross-validation key questions:**
+1. Has scale advantage translated into real unit cost leadership?
+2. Is long-term contract coverage sufficient to hedge rate volatility?
+3. Is fixed asset depreciation adequately provisioned?
+4. Can operating cash flow cover sustaining Capex?
 
 ---
 
-## 六、行业适用性判断矩阵
+## 6. Industry Applicability Matrix
 
-### 6.1 判定矩阵
+### 6.1 Assessment Matrix (GICS-based)
 
-| 子行业 | N1网络效应 | N2规模经济 | N3转换成本 | N4流量核心 | N5重资产 | 判定结果 |
+| Sub-Industry | N1 Network Effect | N2 Scale Economy | N3 Switching Cost | N4 Traffic Core | N5 Asset Heavy | Result |
 |---|---|---|---|---|---|---|
-| 集装箱航运(中远海控) | 4/5 | 5/5 | 3/5 | 5/5 | 5/5 | **完全适用** |
-| 快递物流(顺丰) | 5/5 | 4/5 | 3/5 | 5/5 | 4/5 | **完全适用** |
-| 港口运营 | 3/5 | 5/5 | 5/5 | 4/5 | 5/5 | **完全适用** |
-| 航空客运 | 4/5 | 4/5 | 3/5 | 5/5 | 5/5 | **适用** |
-| 数据中心 | 4/5 | 5/5 | 4/5 | 5/5 | 5/5 | **完全适用** |
-| 电信运营商 | 5/5 | 5/5 | 4/5 | 5/5 | 5/5 | **完全适用** |
-| 铁路货运 | 3/5 | 5/5 | 5/5 | 4/5 | 5/5 | **完全适用** |
-| 第三方物流(3PL) | 2/5 | 3/5 | 2/5 | 3/5 | 2/5 | **条件适用（需评估资产轻重）** |
+| Integrated Telecom | 5/5 | 5/5 | 4/5 | 5/5 | 5/5 | **Fully applicable** |
+| Wireless Telecom | 5/5 | 5/5 | 4/5 | 5/5 | 5/5 | **Fully applicable** |
+| Container Shipping (Maersk, MSC) | 4/5 | 5/5 | 3/5 | 5/5 | 5/5 | **Fully applicable** |
+| Express Delivery (UPS, FedEx, DHL) | 5/5 | 4/5 | 3/5 | 5/5 | 4/5 | **Fully applicable** |
+| Airlines | 4/5 | 4/5 | 3/5 | 5/5 | 5/5 | **Applicable** |
+| Toll Roads / Highways | 3/5 | 5/5 | 5/5 | 5/5 | 5/5 | **Fully applicable** |
+| Airports | 3/5 | 5/5 | 5/5 | 4/5 | 5/5 | **Fully applicable** |
+| Data Centers | 4/5 | 5/5 | 4/5 | 5/5 | 5/5 | **Fully applicable** |
+| Freight Railroads | 3/5 | 5/5 | 5/5 | 4/5 | 5/5 | **Fully applicable** |
+| E-commerce Platforms | 5/5 | 4/5 | 3/5 | 5/5 | 2/5 | **Applicable (lighter asset but strong network)** |
+| Digital Marketplaces | 5/5 | 3/5 | 3/5 | 5/5 | 1/5 | **Conditional (network effect exists but low asset barrier)** |
 
 ---
 
-## 七、评分卡量化方法
+## 7. Quantitative Scorecards
 
-### 7.1 网络/规模壁垒评分卡（N-Score）
+### 7.1 Network/Scale Barrier Scorecard (N-Score)
 
-| 维度 | 权重 | 评分标准（1-10分） | 数据来源 |
+| Dimension | Weight | Scoring Rubric (1-10) | Data Source |
 |---|---|---|---|
-| **规模排名** | 30% | 1分=十名开外; 4分=第六至第十; 6分=第四第五; 8分=行业第二第三; 10分=行业第一 | 行业数据 |
-| **单位成本优势** | 25% | 1分=高于行业中位数; 5分=行业中位; 8分=行业最低30%; 10分=行业最低 | 年报计算 |
-| **网络密度** | 20% | 1分=单一线路/站点; 5分=区域性覆盖; 8分=全国性覆盖; 10分=全球网络 | 公开信息 |
-| **产能利用率** | 15% | 1分=<60%; 4分=60-70%; 6分=70-80%; 8分=80-90%; 10分=>90% | 年报/运营数据 |
-| **固定成本/总成本** | 10% | 1分=<20%(轻资产无壁垒); 5分=30-40%; 8分=50-60%; 10分=>60%(高壁垒) | 年报附注 |
+| **Scale ranking** | 30% | 1=outside top 10; 4=6th-10th; 6=4th-5th; 8=2nd-3rd; 10=industry #1 | Industry data |
+| **Unit cost advantage** | 25% | 1=above industry median; 5=at industry median; 8=lowest 30%; 10=lowest in industry | Annual report calculation |
+| **Network density** | 20% | 1=single route/site; 5=regional coverage; 8=national coverage; 10=global network | Public information |
+| **Capacity utilization** | 15% | 1=<60%; 4=60-70%; 6=70-80%; 8=80-90%; 10=>90% | Annual / operational data |
+| **Fixed cost / total cost** | 10% | 1=<20% (light asset, no barrier); 5=30-40%; 8=50-60%; 10=>60% (high barrier) | Annual report notes |
 
-### 7.2 客户粘性评分卡（S-Score）
+### 7.2 Customer Stickiness Scorecard (S-Score)
 
-| 维度 | 权重 | 评分标准 | 数据来源 |
+| Dimension | Weight | Scoring Rubric | Data Source |
 |---|---|---|---|
-| **长协/合同占比** | 30% | 1分=<20%现货; 5分=40-60%; 8分=60-80%; 10分=>80%长协 | 年报/公告 |
-| **客户集中度** | 25% | 1分=前五客户>80%; 4分=60-80%; 7分=30-60%; 10分=<30% | 年报 |
-| **客户留存率** | 20% | 1分=<60%; 5分=60-80%; 8分=80-95%; 10分=>95% | 行业调研 |
-| **合约平均期限** | 15% | 1分=月度; 4分=季度; 7分=半年至一年; 10分=一年以上 | 年报/公告 |
-| **NPS/客户满意度** | 10% | 1分=<20; 5分=30-50; 8分=50-70; 10分=>70 | 第三方调研 |
+| **Contract ratio** | 30% | 1=<20% spot; 5=40-60% long-term; 8=60-80%; 10=>80% contract | Annual report |
+| **Customer concentration** | 25% | 1=top-5 >80%; 4=60-80%; 7=30-60%; 10=<30% | Annual report |
+| **Customer retention** | 20% | 1=<60%; 5=60-80%; 8=80-95%; 10=>95% | Industry surveys |
+| **Average contract duration** | 15% | 1=monthly; 4=quarterly; 7=6-12 months; 10=>12 months | Annual report / filings |
+| **NPS / customer satisfaction** | 10% | 1=<20; 5=30-50; 8=50-70; 10=>70 | Third-party surveys |
 
-### 7.3 评分卡在金字塔中的使用
+### 7.3 Scorecard Integration
 
-N-Score和S-Score分别对应L1和L2的核心量化输入，与L3资产质量评估和L4财务评估共同构成四层金字塔的完整评分体系。建议在每份Type 1报告中至少使用N-Score进行L1定量评分。
+N-Score and S-Score serve as the primary quantitative inputs for L1 and L2 respectively, alongside L3 asset quality assessment and L4 financial analysis to form the complete four-layer pyramid scoring system. Each Type 1 report should employ at least the N-Score for L1 quantification.
 
 ---
 
-## 八、验证案例
+## 8. Validation Cases
 
-### 8.1 标杆验证：中远海控（601919）
+### 8.1 Benchmark: United Parcel Service (UPS)
 
-| 层级 | 权重 | 评分 | 加权 | 依据 |
+| Layer | Weight | Score | Weighted | Basis |
 |---|---|---|---|---|
-| L1 网络/规模壁垒 | 35% | **9/10** | 3.15 | 全球第四大班轮公司+590艘船360万TEU+船队自有率75%+码头40个 |
-| L2 客户/货源粘性 | 25% | **7/10** | 1.75 | 长协占比约50-60%+客户分散+但运价波动大影响收入可预测性 |
-| L3 资产质量 | 20% | **7/10** | 1.40 | 船队成新率较高+绿色船舶42艘+但技术迭代风险（甲醇/LNG替代） |
-| L4 财务质量 | 20% | **8/10** | 1.60 | 负债率41.42%+经营现金流455亿+现金1508亿+分红率50% |
-| **综合** | **100%** | — | **7.90** | **等价评级：A+** |
+| L1 Network/Scale Barrier | 35% | **9/10** | 3.15 | Global air+ground network, ~24M packages/day, industry-leading density |
+| L2 Customer Stickiness | 25% | **8/10** | 2.00 | Long-term contract base, diversified customer mix, high switching costs for enterprise clients |
+| L3 Asset Quality | 20% | **7/10** | 1.40 | Modern fleet, automated sorting facilities, but ongoing technology investment needed |
+| L4 Financial Quality | 20% | **8/10** | 1.60 | Investment-grade metrics, strong FCF, manageable leverage, 40B+ revenue |
+| **Composite** | **100%** | -- | **8.15** | **Equivalent rating: AA-** |
 
-**验证结论：** 中远海控在网络+流量型范式下评分7.90，规模壁垒（9分）是核心优势，全球运力排名第四+自有船队75%+40个码头。财务质量（8分）较稳健，但客户粘性（7分）和资产质量（7分）因行业周期性和技术转型存在不确定性。
+**Validation conclusion:** UPS validates the Network and Throughput paradigm with a dominant network (9/10) as the primary driver. Customer stickiness (8/10) reflects contract-based relationships. Asset quality (7/10) is the relative constraint due to ongoing automation Capex requirements.
 
-### 8.2 中性验证：顺丰控股（002352）
+### 8.2 Neutral: Delta Air Lines (DAL)
 
-| 层级 | 权重 | 评分 | 加权 | 依据 |
+| Layer | Weight | Score | Weighted | Basis |
 |---|---|---|---|---|
-| L1 网络/规模壁垒 | 35% | **8/10** | 2.80 | 快递行业第一+航空网络+鄂州机场+167亿票业务量+但毛利率仅13.32% |
-| L2 客户/货源粘性 | 25% | **8/10** | 2.00 | 时效件42.5%占比+B端235万客户+8亿C端用户+NPS行业第一 |
-| L3 资产质量 | 20% | **7/10** | 1.40 | 鄂州机场建成+Capex高峰期已过+机队成新率好+但重资产折旧压力大 |
-| L4 财务质量 | 20% | **7/10** | 1.40 | 负债率合理+经营现金流276亿+FCF 179亿+但ROE仅11.51%偏低 |
-| **综合** | **100%** | — | **7.60** | **等价评级：A** |
+| L1 Network/Scale Barrier | 35% | **8/10** | 2.80 | Top-3 US airline, hub-and-spoke network, slot-controlled airports (JFK, LGA, ATL) |
+| L2 Customer Stickiness | 25% | **7/10** | 1.75 | SkyMiles loyalty program strong, but airline switching costs relatively low; corporate contracts provide some stickiness |
+| L3 Asset Quality | 20% | **6/10** | 1.20 | Fleet age managed well, but Boeing delivery delays; fuel efficiency upgrade cycle ongoing |
+| L4 Financial Quality | 20% | **6/10** | 1.20 | Post-pandemic balance sheet repair ongoing; leverage elevated; fuel cost sensitivity high |
+| **Composite** | **100%** | -- | **6.95** | **Equivalent rating: BBB+** |
 
-**验证结论：** 顺丰在网络+流量型范式下评分7.60，呈现"均衡型"特征。四项评分均在7-8分区间，没有明显的弱点，但也没有单项满分。L1网络壁垒（8分）因毛利率偏低而未达满分，L4财务（7分）因ROE偏低受限。顺丰是典型的"优等生但非统治级"的信用画像。
+**Validation conclusion:** Delta presents a "mid-cycle" profile. Network strength (8/10) and customer loyalty (7/10) are solid, but asset quality (6/10) and financial quality (6/10) reflect the capital-intensive, cyclical nature of airlines.
 
-### 8.3 困境验证：*ST原尚（603813）
+### 8.3 Distressed: Yellow Corp (Pre-Bankruptcy Profile)
 
-| 层级 | 权重 | 评分 | 加权 | 依据 |
+| Layer | Weight | Score | Weighted | Basis |
 |---|---|---|---|---|
-| L1 网络/规模壁垒 | 35% | **2/10** | 0.70 | 规模极小（营收3.42亿）+无网络效应+无规模优势+毛利率仅8.81% |
-| L2 客户/货源粘性 | 25% | **3/10** | 0.75 | 客户来源单一+应收账款同比翻倍+议价权弱+无长协保护 |
-| L3 资产质量 | 20% | **3/10** | 0.60 | 资产中大量在建工程尚未投产+车辆成新率低+资产专用性强但利用率低 |
-| L4 财务质量 | 20% | **1/10** | 0.20 | 连续亏损+资产负债率66.68%+流动比率0.87+短期偿债压力大+面临退市 |
-| **综合** | **100%** | — | **2.25** | **等价评级：CCC** |
+| L1 Network/Scale Barrier | 35% | **3/10** | 1.05 | Regional LTL network, distant #3-#4 ranking, no national density advantage |
+| L2 Customer Stickiness | 25% | **3/10** | 0.75 | Low contract coverage, customer concentration risk, price-sensitive shippers |
+| L3 Asset Quality | 20% | **3/10** | 0.60 | Aging fleet, deferred maintenance, underinvested terminals |
+| L4 Financial Quality | 20% | **2/10** | 0.40 | Negative operating cash flow, high leverage, pension obligations, liquidity crisis |
+| **Composite** | **100%** | -- | **2.80** | **Equivalent rating: B-** |
 
-**验证结论：** *ST原尚触发了范式的多个一票否决预警——V4现金流枯竭预警（连续亏损+偿债压力大）+V2流量萎缩（增收不增利+毛利率断崖），综合评分仅2.25。范式有效识别了"无规模优势+无客户锁定+财务枯竭"的三重困境特征。
+**Validation conclusion:** Yellow Corp triggered multiple veto warnings -- V4 cash flow exhaustion (negative operating CF + liquidity crisis) combined with V2 traffic decline. The composite score of 2.80 demonstrates how "scale lagging + asset deterioration + financial depletion" converge in the Network and Throughput framework.
 
 ---
 
-## 九、与现有框架的集成
+## 9. Framework Integration
 
-### 9.1 在行业分类中的位置
+### 9.1 Position in the Industry Classification
 
-本范式是"四种行业类型"的补充。四种原行业类型 + 网络+流量型的对应关系：
-
-| 行业 | 原分类 | 新分类 | 说明 |
+| Industry | Original Classification | New Classification | Note |
 |---|---|---|---|
-| 交通运输（航运/航空/快递） | 未覆盖（原框架未分类） | **网络+流量型** | 新创建 |
-| 数据中心 | 资产租约型（Asset-Lease） | **网络+流量型**为云/电信混合场景的次要属性 | 已修订 |
-| 电信运营商 | 未覆盖 | **网络+流量型** | 新创建 |
-| 电网/能源管网 | 未覆盖 | **网络+流量型** | 新创建 |
-| 港口/铁路 | 未覆盖 | **网络+流量型** | 新创建 |
+| Transportation (GICS 2030) | Not covered | **Network & Throughput (P4)** | New addition |
+| Telecommunication Services (GICS 5010) | Not covered | **Network & Throughput (P4)** | New addition |
+| Data Centers | Asset-Lease (sub-type) | **Network & Throughput (P4)** main; asset-lease secondary | Revised |
+| E-commerce Platforms | Not covered | **Network & Throughput (P4)** | New addition (lighter asset, strong network effect) |
+| Digital Marketplaces | Not covered | **Network & Throughput (P4)** | New addition (network effect core) |
 
-### 9.2 与十维评分体系的关联
+### 9.2 Mapping to the Ten-Dimension Scoring System
 
-网络+流量型行业的十维评分逻辑：
-
-| 维度 | 网络+流量型的特殊含义 | 评分范围 |
+| Dimension | Network & Throughput Interpretation | Score Range |
 |---|---|---|
-| D1 市场容量 | 全行业运量/流量/吞吐量总规模 | 3-5 |
-| D2 增量空间 | 增量来自行业自然增长+结构性增长（如跨境电商物流） | 1-4 |
-| D3 政策力度 | 基础设施投资/国货国运/行业补贴/牌照管理 | 1-5 |
-| D4 政策波动性 | 运价管制/环保标准/安全监管变化频率 | 1-4 |
-| D5 资本可持续性 | 重资产行业对融资的依赖度+国企vs民企融资能力差异 | 2-5 |
-| D6 民生关联度 | 物流/交通对国民经济的基础性支撑 | 2-5 |
-| D7 外部依赖度 | 外贸依存度（航运/航空）+能源进口依赖+地缘政治影响 | 1-5 |
-| D8 供应链权力集中度 | 港口/机场/铁路的垄断性+快递行业的集中度变化 | 2-5 |
-| D9 产业生命周期 | 各子行业处于成长/成熟/整合/衰退的阶段 | 1-4 |
-| D10 周期波动性 | 运价/费率的波动幅度，强周期vs弱周期属性 | 1-5 |
+| D1 Market Capacity | Total industry volume (freight tons, passengers, data traffic, transactions) | 3-5 |
+| D2 Growth Headroom | Industry natural growth + structural growth (e-commerce logistics, cloud migration) | 1-4 |
+| D3 Policy Support | Infrastructure investment, cabotage rules, licensing, subsidies | 1-5 |
+| D4 Policy Volatility | Rate regulation, environmental standards, safety regulation frequency | 1-4 |
+| D5 Capital Sustainability | Heavy asset industry reliance on financing; SOE vs. private access differences | 2-5 |
+| D6 Social Essentiality | Logistics/transport/telecom as foundational economic infrastructure | 2-5 |
+| D7 External Dependency | Trade dependency (shipping/airlines), energy import reliance, geopolitics | 1-5 |
+| D8 Supply Chain Power Concentration | Port/airport/rail monopoly characteristics; delivery industry concentration trends | 2-5 |
+| D9 Industry Lifecycle | Growth/maturity/consolidation/decline phase for each sub-industry | 1-4 |
+| D10 Cyclicality | Rate/fare volatility amplitude, strong vs. weak cyclical characteristics | 1-5 |
 
-### 9.3 范式版本管理
+### 9.3 Paradigm Version Management
 
-| 版本 | 日期 | 变更内容 |
+| Version | Date | Changes |
 |---|---|---|
-| v1.0.0 | 2026-07-10 | 初始版本发布：定义网络+流量型范式，包含四层金字塔权重、一票否决体系、双轨分析映射。完成交通运输行业覆盖验证（中远海控/顺丰/*ST原尚） |
+| v1.0.0 | 2026-07-18 | Initial international release: Network and Throughput (P4) paradigm with network-effect business models, traffic/throughput analysis, and GICS Transportation (2030), Telecommunication Services (5010), and select Technology application. Validated with UPS, Delta, and Yellow Corp cases. |
 
 ---
 
-## 十、子行业差异化分析指南
+## 10. Sub-Industry Differentiation Guide
 
-### 10.1 集装箱航运子行业
+### 10.1 Transportation (GICS 2030)
 
-| 特征 | 信用分析侧重 |
+| Sub-Industry | Credit Analysis Emphasis |
 |---|---|
-| 全球运力排名前五为安全区间 | L1规模排名是核心因子——全球TOP5与第五名之后有本质区别 |
-| 运价巨幅波动（CCFI年波动>30%） | L4财务权重建议提升至25%，需做运价压力测试（-30%运价情景） |
-| 长协保护机制 | 长协占比直接影响收入可预测性，是区分优质企业与一般企业的最关键指标 |
-| 地缘政治风险 | 红海危机/中美贸易战/制裁等突发事件影响航线布局和成本结构 |
-| 绿色转型Capex | IMO新规下的船舶更新需求（甲醇/LNG双燃料）是未来5年最大的资产质量变量 |
+| Airlines | Network economics (hub vs. point-to-point); fuel hedging; labor cost structure; slot control; loyalty program value; fleet composition |
+| Railroads | Right-of-way ownership (NS, UP, CSX, BNSF); regulatory framework (STB); coal vs. intermodal mix; PSR implementation |
+| Marine Shipping | Fleet ownership vs. charter mix; freight rate exposure (long-term contract coverage); IMO 2023/2030 decarbonization Capex; trade route diversification |
+| Trucking | Driver availability and cost; fuel surcharge mechanisms; customer contract duration; insurance cost trends |
+| Airport Services | Regulatory aeronautical vs. commercial revenue mix; concession terms; traffic recovery from disruptions; Capex for expansions |
+| Logistics / Freight Forwarding | Asset-light vs. asset-heavy model; technology platform (digital forwarding); global network coverage; working capital efficiency |
 
-### 10.2 快递物流子行业
+### 10.2 Telecommunication Services (GICS 5010)
 
-| 特征 | 信用分析侧重 |
+| Sub-Industry | Credit Analysis Emphasis |
 |---|---|
-| 网络密度决定服务品质 | 航空+陆运+末端配送的协同覆盖是核心壁垒 |
-| 单价持续下行 | 行业竞争导致单票收入持续下降，成本管控能力决定生存 |
-| 加盟vs直营模式差异 | 直营模式（顺丰）vs加盟模式（通达系）信用逻辑完全不同 |
-| 规模效应明显 | 日均票量超过5000万票后单位成本明显下降 |
-| 新基础设施投入（鄂州机场） | Capex高峰期后的产能释放期是信用改善窗口 |
+| Integrated Telecom | Spectrum position; fixed-line erosion vs. fiber build-out; convergence strategy (fixed+mobile); Capex intensity; dividend sustainability |
+| Wireless Telecom | Subscriber trends (postpaid vs. prepaid); ARPU trajectory; spectrum auction Capex; 5G/6G investment cycle; MVNO pressure |
+| Data Centers & Colocation | Power availability and cost; wholesale vs. retail mix; anchor tenant quality; expansion pipeline; renewable energy PPA exposure |
 
-### 10.3 港口运营子行业
+### 10.3 Select Technology (GICS 45)
 
-| 特征 | 信用分析侧重 |
+| Sub-Industry | Credit Analysis Emphasis |
 |---|---|
-| 区域垄断性 | 港口天然具有区域性垄断特征，同一腹地内竞争有限 |
-| 资产寿命长 | 港口基础设施使用年限30-50年，折旧压力小于航运/航空 |
-| 吞吐量挂钩经济周期 | L1网络中需评估腹地经济结构是否多元化 |
-| 环保/安全监管趋严 | 碳排放要求和安全标准提升带来Capex压力 |
-| 控股股东背景重要 | 国企港口在融资便利性和政策支持上显著优于民企 |
+| E-commerce Platforms | Gross merchandise value (GMV) growth; take rate trajectory; fulfillment network ownership; marketplace vs. first-party mix |
+| Digital Marketplaces | Two-sided network effect strength; liquidity (buyers+sellers); monetization model; regulatory risk (digital services acts, platform liability) |
+| Cloud Infrastructure | Capacity utilization; hyperscaler competition; pricing trends; technology refresh cycle; multi-cloud customer trend |
+| Gig Economy / Mobility Platforms | Driver/rater supply elasticity; regulatory classification of workers; insurance cost; market-by-market profitability path |
 
 ---
 
-## 十一、范式边界与局限性
+## 11. Paradigm Boundaries and Limitations
 
-### 11.1 明确不适用场景
+### 11.1 Explicitly Excluded Scenarios
 
-- **品牌认知驱动的行业**（白酒、化妆品、服装）——应使用品牌+渠道型范式
-- **技术专利驱动的行业**（半导体、创新药、高端装备）——应使用技术壁垒型范式
-- **强政策周期行业**（光伏、新能源汽车OEM）——应使用政策驱动型范式
-- **纯轻资产中介平台**（无自营网络/资产的货运平台）——网络效应存在但无重资产壁垒
+- **Brand-driven industries** (consumer staples, luxury goods, apparel) -- use Defensive (P2) paradigm
+- **Technology-patent industries** (semiconductors, innovative pharma, precision equipment) -- use Technology Moat (P3) paradigm
+- **Strong policy-cycle industries** (renewable energy, NEV OEM) -- use Policy-Driven (P1) paradigm
+- **Pure light-asset intermediary platforms** (no owned network or assets) -- network effect present but no asset barrier; score with reduced L3 weight
 
-### 11.2 已知局限性
+### 11.2 Known Limitations
 
-1. **单位成本数据不透明**：除上市公司的年报附注外，单位成本数据（单箱成本/单票成本）难以获得可比数据
-2. **长协占比披露不统一**：不同公司披露标准不一，部分公司不单独披露长协占比
-3. **运价预测困难**：运价受供需+地缘政治+燃油价格多因素影响，预测准确度有限
-4. **资产质量评估主观性**：固定资产成新率是技术更新快慢的有限指标，无法反映真实技术代差
+1. **Unit cost data opacity** -- Unit cost data (cost per container, per package, per subscriber) is difficult to obtain on a comparable basis beyond annual report disclosures
+2. **Contract ratio disclosure inconsistency** -- Reporting standards vary; some companies do not separately disclose long-term contract coverage
+3. **Rate/fare forecasting difficulty** -- Rates are influenced by supply-demand, geopolitics, fuel, and regulation simultaneously; forecasting accuracy is limited
+4. **Asset quality subjectivity** -- Fixed asset age is a partial indicator of technology freshness; it cannot capture true technology generation gaps
 
-### 11.3 缓释措施
+### 11.3 Mitigation Measures
 
-| 局限性 | 缓释措施 |
+| Limitation | Mitigation |
 |---|---|
-| 成本数据不透明 | 利用行业运价指数反推企业利润率，交叉验证单位成本竞争力 |
-| 长协披露不一 | 关注"预收账款+合同负债"与营收的比例变化作为长协占比的代理变量 |
-| 运价预测难 | 建立多情景分析（基准/悲观/乐观），不做单点预测 |
-| 资产质量主观 | 结合折旧年限+技术路线图+二手资产价格三方交叉验证 |
+| Cost data opacity | Use industry rate indices to back-simulate profitability; cross-validate unit cost competitiveness |
+| Contract disclosure variability | Track "deferred revenue + contract liabilities" as a proxy for contract ratio trends |
+| Rate forecast difficulty | Build multi-scenario analysis (base / bear / bull); avoid single-point predictions |
+| Asset quality subjectivity | Cross-validate with: depreciation policy, technology roadmap, and second-hand asset market prices |
 
 ---
 
-## 十二、相关内容
+## 12. Related Documents
 
-- [引擎架构总览](engine-overview.md) — 核心理念、总体架构、设计原则
-- [双轨分析方法论](dual-track-methodology.md) — 轨道A+轨道B评分逻辑、交叉对撞、评级映射
-- [马赛克引擎](mosaic-engine.md) — 信号提取、拼图、完备性评估
-- [行业分类与分析框架](industry-framework.md) — 四种行业类型判定与权重映射
-- [交通运输行业方法论](../../validation/reports/transportation/transportation-methodology.html) — 交通运输行业的具体信用分析方法
+- [Engine Architecture Overview](engine-overview.md) -- Core concepts, overall architecture, design principles
+- [Dual-Track Methodology](dual-track-methodology.md) -- Track A + Track B scoring, cross-validation, rating mapping
+- [Mosaic Engine](mosaic-engine.md) -- Signal extraction, puzzle assembly, completeness assessment
+- [Industry Classification and Framework](industry-framework.md) -- Four industry paradigms, determination criteria, weight mapping
+- [Dimension Registry](dimension-registry.md) -- 6-paradigm + LGFV registry, M0-M5 role index, addressable pointer layer
