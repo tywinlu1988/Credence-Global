@@ -336,3 +336,84 @@ def test_check_version_alignment_flags_package_json_mismatch(tmp_path, monkeypat
     errors = cc.check_version_alignment()
     assert any("package.json" in e for e in errors)
     assert not any("pyproject.toml" in e for e in errors)
+
+
+def _fake_registry(tmp_path):
+    """最小合法 registry：1 条路径，templates/quality_gates 可配。"""
+    (tmp_path / "dev" / "engine").mkdir(parents=True)
+    registry = tmp_path / "dev" / "engine" / "work-path-registry.md"
+    registry.write_text(
+        "```yaml\n"
+        "id: WP-T-01\n"
+        "templates:\n"
+        "  - dev/templates/template-type1.html\n"
+        "quality_gates:\n"
+        '  - "示例门 (dev/engine/foo.md §二)"\n'
+        "```\n",
+        encoding="utf-8",
+    )
+    return registry
+
+
+def test_check_registry_templates_flags_missing(tmp_path, monkeypatch):
+    cc = _import_checker()
+    _fake_registry(tmp_path)
+    (tmp_path / "dev" / "engine" / "foo.md").write_text("## 二、示例\n", encoding="utf-8")
+    monkeypatch.setattr(cc, "ENGINE_DIR", tmp_path / "dev" / "engine")
+    monkeypatch.setattr(cc, "ROOT", tmp_path)
+    errors = cc.check_registry_templates()
+    assert any("template-type1.html" in e for e in errors)
+
+
+def test_check_registry_templates_accepts_markers(tmp_path, monkeypatch):
+    cc = _import_checker()
+    (tmp_path / "dev" / "engine").mkdir(parents=True)
+    registry = tmp_path / "dev" / "engine" / "work-path-registry.md"
+    registry.write_text(
+        "```yaml\n"
+        "id: WP-T-01\n"
+        "templates:\n"
+        "  - planned\n"
+        '  - "L0-spec: dev/engine/foo.md §3"\n'
+        "quality_gates: []\n"
+        "```\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "dev" / "engine" / "foo.md").write_text("# foo\n", encoding="utf-8")
+    monkeypatch.setattr(cc, "ENGINE_DIR", tmp_path / "dev" / "engine")
+    monkeypatch.setattr(cc, "ROOT", tmp_path)
+    assert cc.check_registry_templates() == []
+
+
+def test_check_registry_quality_gates_flags_bad_section(tmp_path, monkeypatch):
+    cc = _import_checker()
+    _fake_registry(tmp_path)
+    (tmp_path / "dev" / "templates").mkdir(parents=True)
+    (tmp_path / "dev" / "templates" / "template-type1.html").write_text("x", encoding="utf-8")
+    (tmp_path / "dev" / "engine" / "foo.md").write_text("## 三、别的\n", encoding="utf-8")
+    monkeypatch.setattr(cc, "ENGINE_DIR", tmp_path / "dev" / "engine")
+    monkeypatch.setattr(cc, "ROOT", tmp_path)
+    errors = cc.check_registry_quality_gates()
+    assert any("§二" in e for e in errors)
+
+
+def test_check_migration_matrix_structure_real_tree():
+    cc = _import_checker()
+    assert cc.check_migration_matrix_structure() == []
+
+
+def test_check_migration_matrix_structure_flags_missing_rating(tmp_path, monkeypatch):
+    cc = _import_checker()
+    fake_engine = tmp_path / "engine"
+    fake_engine.mkdir()
+    (fake_engine / "outlook-monitoring-framework.md").write_text(
+        "### 5.1 中国信用债市场迁移概率参考\n"
+        "| 当前评级 | 上调概率 | 维持概率 | 下调概率 | 违约概率 | 说明 |\n"
+        "|---|---|---|---|---|---|\n"
+        "| **AAA** | 0% | 95%+ | <5% | <0.5% | x |\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(cc, "ENGINE_DIR", fake_engine)
+    errors = cc.check_migration_matrix_structure()
+    assert any("AA+" in e for e in errors)
+    assert any("D" in e for e in errors)

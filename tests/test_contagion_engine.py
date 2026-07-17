@@ -228,3 +228,18 @@ def test_escalation_rules_covered_in_doc():
             assert label in sec, f"§6.2 缺少跳升对: {factor}/{label}"
             row = next(ln for ln in sec.splitlines() if label in ln)
             assert f"| {base} |" in row and f"| {stressed} |" in row, row
+
+
+def test_strength3_links_match_doc(matrix):
+    """§3.2 清单与矩阵互证：强度=3 有向集合 + 唯一对数（v0.8.3 漂移门）。"""
+    text = _doc_text()
+    sec = re.search(r"### 3\.2.*?```\n(.*?)```", text, re.DOTALL).group(1)
+    doc_edges = set()
+    for ln in sec.splitlines():
+        m = re.match(r"\s*(.+?)\s*(↔|→)\s*(.+?)\s*\(", ln)
+        if m:
+            doc_edges.add((m.group(1).strip(), m.group(3).strip()))
+    computed = {(c.source, c.target) for c in matrix.itercells() if c.intensity == 3}
+    assert doc_edges == computed
+    assert len(doc_edges) == 18
+    assert len({frozenset(e) for e in doc_edges}) == 9

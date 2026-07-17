@@ -277,6 +277,76 @@ def check_rating_map_consistency() -> list[str]:
     return errors
 
 
+TEMPLATE_MARKER_RE = re.compile(r"^L0-spec:\s*(\S+)\s+§\S+$")
+QG_REF_RE = re.compile(r"\((dev/[^)]+\.md)\s+§([^\s)]+)\)")
+MIGRATION_RATINGS = [
+    "AAA", "AA+", "AA", "AA-", "A+", "A / A-",
+    "BBB+", "BBB / BBB-", "BB", "B", "CCC", "D",
+]
+
+
+def check_registry_templates() -> list[str]:
+    """registry 每条路径的 templates 字段：文件存在或合法标记（planned / L0-spec: <doc> §节）。"""
+    registry_file = ENGINE_DIR / "work-path-registry.md"
+    if not registry_file.exists():
+        return []
+    errors = []
+    for pid, entry in load_registry_paths(registry_file).items():
+        for tpl in entry.get("templates") or []:
+            if tpl == "planned":
+                continue
+            m = TEMPLATE_MARKER_RE.match(tpl)
+            if m:
+                if not (ROOT / m.group(1)).is_file():
+                    errors.append(f"REGISTRY_TEMPLATE: {pid} L0-spec 文档缺失 {m.group(1)}")
+                continue
+            if not (ROOT / tpl).is_file():
+                errors.append(f"REGISTRY_TEMPLATE: {pid} 模板文件缺失 {tpl}")
+    return errors
+
+
+def check_registry_quality_gates() -> list[str]:
+    """quality_gates 的 '规则名 (文档路径 §节)' 引用：文档存在 + §节可定位。"""
+    registry_file = ENGINE_DIR / "work-path-registry.md"
+    if not registry_file.exists():
+        return []
+    errors = []
+    for pid, entry in load_registry_paths(registry_file).items():
+        for gate in entry.get("quality_gates") or []:
+            for doc_rel, sec in QG_REF_RE.findall(gate):
+                doc = ROOT / doc_rel
+                if not doc.is_file():
+                    errors.append(f"REGISTRY_GATE: {pid} 质量门文档缺失 {doc_rel}")
+                    continue
+                text = doc.read_text(encoding="utf-8")
+                if not re.search(r"^#+\s*" + re.escape(sec) + r"[、.\s]", text, re.MULTILINE):
+                    errors.append(f"REGISTRY_GATE: {pid} 质量门节号不可定位 {doc_rel} §{sec}")
+    return errors
+
+
+def check_migration_matrix_structure() -> list[str]:
+    """outlook-monitoring §5.1 迁移矩阵：12 个评级行齐全且每行 4 概率列非空。"""
+    path = ENGINE_DIR / "outlook-monitoring-framework.md"
+    if not path.exists():
+        return []
+    text = path.read_text(encoding="utf-8")
+    sec = re.search(r"### 5\.1 .*?(?=\n### |\Z)", text, re.DOTALL)
+    if not sec:
+        return ["MIGRATION_MATRIX: §5.1 段落缺失"]
+    body = sec.group(0)
+    errors = []
+    for rating in MIGRATION_RATINGS:
+        row = re.search(
+            r"^\|\s*\*\*" + re.escape(rating) + r"\*\*\s*\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|",
+            body, re.MULTILINE,
+        )
+        if not row:
+            errors.append(f"MIGRATION_MATRIX: 缺评级行 {rating}")
+        elif any(not cell.strip() or cell.strip() == "-" for cell in row.groups()):
+            errors.append(f"MIGRATION_MATRIX: {rating} 行存在空概率列")
+    return errors
+
+
 def check_sri_track_b_consistency() -> list[str]:
     """Flag contradictory textual descriptions of Track-B penalties across yellow/orange/red."""
     path = ENGINE_DIR / "systemic-warning-framework.md"
@@ -531,6 +601,9 @@ def collect_errors(only_links: bool = False) -> list[str]:
     errors.extend(check_artifact_path_ids())
     errors.extend(check_agents_entry())
     errors.extend(check_version_alignment())
+    errors.extend(check_registry_templates())
+    errors.extend(check_registry_quality_gates())
+    errors.extend(check_migration_matrix_structure())
     return errors
 
 
