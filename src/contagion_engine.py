@@ -1,10 +1,13 @@
-"""WP-M4-02 → contagion-matrix.md 的可执行实现（传染矩阵 + 组合暴露 + 压力跳升）。
+"""WP-M4-02 re-executable implementation of contagion-matrix.md (contagion matrix + portfolio exposure + stress escalation).
 
-单一事实源：矩阵数据（§2.1 强度热图 + §2.4 全标记表）从引擎文档运行时解析，不复制；
-派生语义见 contagion-matrix.md §5.5/§5.6（超级传染者=行合计 top3、脆弱行业=列合计
-top3）与 systemic-warning-framework.md §2.3（传染力系数=行合计/13 行业均值、
-行业权重=存量权重×系数并归一化）。§6.2 压力跳升规则编码为代码逻辑（sri_calculator
-先例），每条显式跳升对带文档覆盖测试（tests/test_contagion_engine.py）。
+Single source of truth: matrix data (Section 2.1 intensity heatmap + Section 2.4 full annotation
+table) is parsed from the engine document at runtime, not duplicated; derived semantics follow
+contagion-matrix.md Sections 5.5/5.6 (super-spreaders = row-sum top 3, vulnerable industries =
+column-sum top 3) and systemic-warning-framework.md Section 2.3 (contagion coefficient =
+row-sum / mean of all industry row-sums, industry weight = debt share x coefficient then
+normalized). Section 6.2 stress escalation rules are encoded as code logic (following the
+sri_calculator precedent), with each explicit jump pair covered by a documentation parity test
+(tests/test_contagion_engine.py).
 """
 
 import re
@@ -14,53 +17,40 @@ from pathlib import Path
 from src.path_sheet import engine_dir
 
 INTENSITY_MIN, INTENSITY_MAX = 1, 5
-CONTAGION_TYPES = frozenset("CRLS")  # 信用链/区域共振/流动性挤兑/信心崩塌（§2.2）
-N_INDUSTRIES = 13
+CONTAGION_TYPES = frozenset("CRLS")  # Credit Chain / Regional Resonance / Liquidity Squeeze / Confidence Collapse (Section 2.2)
+N_INDUSTRIES = 19
 
-ESCALATION_FACTORS = ("市场恐慌", "监管真空", "高杠杆", "信息不对称", "年末效应")
+ESCALATION_FACTORS = ("Market Panic", "Regulatory Vacuum", "High Leverage", "Information Asymmetry", "Year-End Effect")
 
-# §6.2 显式跳升表：(source, target, 正常强度, 压力强度, 文档原文对名)。
-# 仅编码正常强度与文档表格一致的方向（如 数据中心↔传媒 仅 数据→传媒 基值 3）。
+# Section 6.2 explicit jump table: (source, target, base intensity, stressed intensity, document pair label).
+# Only encodes base intensities that match the matrix table directions (e.g., Tech HW -> Software base 4).
 _EXPLICIT_JUMPS = {
-    "市场恐慌": [
-        ("半导体/集成电路", "光伏/储能", 4, 5, "半导体→光伏"),
-        ("半导体/集成电路", "新能源汽车", 3, 4, "半导体→新能源车"),
-        ("城投债 / LGFV", "交通运输", 4, 5, "城投债→交通运输"),
-        ("生物医药/创新药", "医疗器械", 4, 5, "生物医药↔医疗器械"),
-        ("医疗器械", "生物医药/创新药", 4, 5, "生物医药↔医疗器械"),
-        ("商贸零售", "传媒/互联网", 3, 4, "商贸零售↔传媒互联网"),
-        ("传媒/互联网", "商贸零售", 3, 4, "商贸零售↔传媒互联网"),
-        ("食品饮料", "纺织服装", 2, 3, "食品饮料↔纺织服装"),
-        ("纺织服装", "食品饮料", 2, 3, "食品饮料↔纺织服装"),
+    "Market Panic": [
+        ("Technology Hardware (Semis)", "Software & Services", 4, 5, "Tech HW -> Software"),
+        ("Technology Hardware (Semis)", "Automobiles", 4, 5, "Tech HW -> Automobiles"),
+        ("Consumer Staples", "Retail", 3, 4, "Consumer Staples <-> Retail"),
+        ("Retail", "Consumer Staples", 3, 4, "Consumer Staples <-> Retail"),
     ],
-    "监管真空": [
-        ("城投债 / LGFV", "交通运输", 4, 5, "城投债→交通运输"),
-        ("城投债 / LGFV", "光伏/储能", 3, 4, "城投债→光伏"),
-        ("城投债 / LGFV", "数据中心/算力基建", 3, 4, "城投债→数据中心"),
-        ("城投债 / LGFV", "新能源汽车", 2, 3, "城投债→新能源车"),
-        ("城投债 / LGFV", "半导体/集成电路", 2, 3, "城投债→半导体"),
-        ("城投债 / LGFV", "高端装备/工业母机", 2, 3, "城投债→高端装备"),
-        ("城投债 / LGFV", "生物医药/创新药", 2, 3, "城投债→生物医药"),
+    "Regulatory Vacuum": [
+        ("Sovereigns & GSEs", "Utilities (Regulated)", 3, 4, "Sovereigns -> Utilities"),
+        ("Sovereigns & GSEs", "Energy (Oil & Gas)", 3, 4, "Sovereigns -> Energy"),
+        ("Sovereigns & GSEs", "Metals & Mining", 3, 4, "Sovereigns -> Metals & Mining"),
+        ("Sovereigns & GSEs", "Construction Materials", 3, 4, "Sovereigns -> Construction Materials"),
     ],
-    "高杠杆": [
-        ("城投债 / LGFV", "交通运输", 4, 5, "城投债→交通运输"),
-        ("数据中心/算力基建", "传媒/互联网", 3, 4, "数据中心↔传媒互联网"),
-        ("商贸零售", "传媒/互联网", 3, 4, "商贸零售↔传媒互联网"),
-        ("传媒/互联网", "商贸零售", 3, 4, "商贸零售↔传媒互联网"),
-        ("半导体/集成电路", "光伏/储能", 4, 5, "半导体↔光伏"),
-        ("光伏/储能", "半导体/集成电路", 4, 5, "半导体↔光伏"),
-        ("数据中心/算力基建", "城投债 / LGFV", 3, 4, "数据中心→城投债"),
+    "High Leverage": [
+        ("Financials (Banks/Insurance)", "Technology Hardware (Semis)", 3, 4, "Financials -> Tech HW"),
+        ("Financials (Banks/Insurance)", "Software & Services", 3, 4, "Financials -> Software"),
+        ("Financials (Banks/Insurance)", "Capital Goods", 3, 4, "Financials -> Capital Goods"),
     ],
-    "信息不对称": [
-        ("城投债 / LGFV", "交通运输", 4, 5, "城投债→交通运输"),
-    ],
-    "年末效应": [],
+    "Information Asymmetry": [],
+    "Year-End Effect": [],
 }
 
-# §6.2 通用标记规则：因子 → 受影响传染类型集合（命中 +1，封顶 5）。
-# 市场恐慌=含 S/L；信息不对称=含 C/R（规则1/规则4 原文）；其余因子无通用规则
-# （规则2 特别说明"+0~+1" 与规则5 "全部 +0~+1" 为模糊区间，留 LLM 判断，编码为 +0）。
-_GENERIC_TYPE_BUMP = {"市场恐慌": frozenset("SL"), "信息不对称": frozenset("CR")}
+# Section 6.2 generic type-bump rules: factor -> affected contagion-type set (matches get +1, cap 5).
+# Market Panic = S/L; Information Asymmetry = C/R (Rule 1 / Rule 4 in document); other factors have no
+# generic rules (Rule 2 specifies "+0~+1" and Rule 5 "all +0~+1" as fuzzy ranges left to LLM judgment,
+# encoded as +0).
+_GENERIC_TYPE_BUMP = {"Market Panic": frozenset("SL"), "Information Asymmetry": frozenset("CR")}
 
 
 @dataclass(frozen=True)
@@ -74,7 +64,7 @@ class ContagionCell:
 
 
 class ContagionMatrix:
-    """13 行业有向传染矩阵（解析自 contagion-matrix.md，不可变）。"""
+    """19-industry directed contagion matrix (parsed from contagion-matrix.md, immutable)."""
 
     def __init__(self, industries, cells):
         self.industries = list(industries)
@@ -85,7 +75,7 @@ class ContagionMatrix:
             return self._cells[(source, target)]
         except KeyError:
             raise ValueError(
-                f"未知行业对: {source!r} → {target!r}（已知 {len(self.industries)} 个行业）"
+                f"Unknown industry pair: {source!r} -> {target!r} (known {len(self.industries)} industries)"
             ) from None
 
     def intensity(self, source, target) -> int:
@@ -105,56 +95,58 @@ class ContagionMatrix:
 
 
 # ---------------------------------------------------------------------------
-# 解析层（§2.1 热图 + §2.4 全标记；文档=单一事实源）
+# Parsing layer (Section 2.1 heatmap + Section 2.4 full annotation; doc = single source of truth)
 # ---------------------------------------------------------------------------
 
 def _parse_heatmap(text: str):
-    """§2.1 代码块 → 13×13 强度网格 {(i,j): int}（0 基索引）。"""
+    """Section 2.1 code block -> 19x19 intensity grid {(i,j): int} (0-based index)."""
     sec = re.search(r"### 2\.1 .*?(?=### 2\.2 )", text, re.DOTALL)
     if not sec:
-        raise ValueError("§2.1 传热图段落缺失")
+        raise ValueError("Section 2.1 heatmap paragraph missing")
     block = re.search(r"```\n(.*?)```", sec.group(0), re.DOTALL)
     if not block:
-        raise ValueError("§2.1 代码块缺失")
+        raise ValueError("Section 2.1 code block missing")
     lines = [ln for ln in block.group(1).splitlines() if "│" in ln]
     if len(lines) != N_INDUSTRIES + 1:
-        raise ValueError(f"§2.1 热图应有 {N_INDUSTRIES + 1} 行含 │ 的行，实际 {len(lines)}")
+        raise ValueError(f"Section 2.1 heatmap should have {N_INDUSTRIES + 1} lines with │, got {len(lines)}")
     abbrevs = lines[0].split("│", 1)[1].split()
     if len(abbrevs) != N_INDUSTRIES:
-        raise ValueError(f"§2.1 列头应有 {N_INDUSTRIES} 个行业缩写，实际 {len(abbrevs)}")
+        raise ValueError(f"Section 2.1 column headers should have {N_INDUSTRIES} industry abbreviations, got {len(abbrevs)}")
     grid = {}
     for i, ln in enumerate(lines[1:]):
         _name, _, rest = ln.partition("│")
         cells = rest.split()
         if len(cells) != N_INDUSTRIES:
-            raise ValueError(f"§2.1 第 {i + 1} 行应有 {N_INDUSTRIES} 格，实际 {len(cells)}")
+            raise ValueError(f"Section 2.1 row {i + 1} should have {N_INDUSTRIES} cells, got {len(cells)}")
         for j, v in enumerate(cells):
             if i == j:
                 if v != "-":
-                    raise ValueError(f"§2.1 对角线 ({i},{j}) 应为 '-'，实际 {v!r}")
+                    raise ValueError(f"Section 2.1 diagonal ({i},{j}) should be '-', got {v!r}")
             else:
                 n = int(v)
                 if not INTENSITY_MIN <= n <= INTENSITY_MAX:
-                    raise ValueError(f"§2.1 强度越界 ({i},{j}): {n}")
+                    raise ValueError(f"Section 2.1 intensity out of range ({i},{j}): {n}")
                 grid[(i, j)] = n
     return grid
 
 
 def _parse_full_matrix(text: str):
-    """§2.4 行块 → (13 个规范名, {(i,j): (types, confidence, bidirectional, intensity)})。"""
+    """Section 2.4 row blocks -> (19 canonical names, {(i,j): (types, confidence, bidirectional, intensity)}).
+
+    Only annotated cells (intensity >= 3) are documented in Section 2.4.
+    """
     blocks = list(re.finditer(
-        r"#### 行(\d+)：(.+?)\s*→\s*各行业\s*\n(.*?)(?=\n#### |\n## |\Z)", text, re.DOTALL
+        r"#### Row (\d+): (.+?)\s*\n(.*?)(?=\n#### |\n## |\Z)", text, re.DOTALL
     ))
     if len(blocks) != N_INDUSTRIES:
-        raise ValueError(f"§2.4 应有 {N_INDUSTRIES} 个行块，实际 {len(blocks)}")
+        raise ValueError(f"Section 2.4 should have {N_INDUSTRIES} row blocks, got {len(blocks)}")
     full_names, marks = [], {}
     for bm in blocks:
         i = int(bm.group(1))
         if i != len(full_names) + 1:
-            raise ValueError(f"§2.4 行块序号不连续: 行{i}")
+            raise ValueError(f"Section 2.4 row block sequence non-contiguous: row {i}")
         name = bm.group(2).strip()
         full_names.append(name)
-        seen_j = set()
         for row in re.finditer(
             r"^\|\s*(\d+)→(\d+)\s+[^|]*?\|\s*([CRLS+\-]+)\s*\|\s*(\d+)\s*\|"
             r"\s*([HML-])\s*\|\s*(↔|→|-)\s*\|",
@@ -162,43 +154,48 @@ def _parse_full_matrix(text: str):
         ):
             bi, bj = int(row.group(1)), int(row.group(2))
             if bi != i:
-                raise ValueError(f"§2.4 行{i}块出现 {bi}→{bj}")
+                raise ValueError(f"Section 2.4 row {i} block has {bi}->{bj}")
             types = tuple(ch for ch in row.group(3) if ch in CONTAGION_TYPES)
             marks[(bi, bj)] = (types, row.group(5), row.group(6) == "↔", int(row.group(4)))
-            seen_j.add(bj)
-        if seen_j != set(range(1, N_INDUSTRIES + 1)) - {i}:
-            raise ValueError(f"§2.4 行{i}块受体覆盖不全: {sorted(seen_j)}")
     return full_names, marks
 
 
 def load_matrix(matrix_md_path=None) -> ContagionMatrix:
-    """从 contagion-matrix.md 解析 13×13 传染矩阵（§2.1 与 §2.4 交叉校验）。"""
+    """Parse 19x19 contagion matrix from contagion-matrix.md (Sections 2.1 and 2.4 cross-validated).
+
+    Section 2.4 only annotates cells with intensity >= 3; unannotated cells receive
+    default values (empty types, confidence "-", not bidirectional).
+    """
     path = Path(matrix_md_path) if matrix_md_path else engine_dir() / "contagion-matrix.md"
     text = path.read_text(encoding="utf-8")
     grid = _parse_heatmap(text)
     full_names, marks = _parse_full_matrix(text)
     cells = {}
     for (i, j), n in grid.items():
-        types, conf, bidir, mn = marks[(i + 1, j + 1)]  # §2.4 标签为 1 基
-        if mn != n:
-            raise ValueError(f"§2.1 与 §2.4 强度不一致 ({i}→{j}): {n} vs {mn}")
         s, t = full_names[i], full_names[j]
+        m = marks.get((i + 1, j + 1))  # Section 2.4 labels are 1-based
+        if m is not None:
+            types, conf, bidir, mn = m
+            if mn != n:
+                raise ValueError(f"Section 2.1 vs Section 2.4 intensity mismatch ({i}->{j}): {n} vs {mn}")
+        else:
+            types, conf, bidir = (), "-", False
         cells[(s, t)] = ContagionCell(s, t, n, types, conf, bidir)
     return ContagionMatrix(full_names, cells)
 
 
 # ---------------------------------------------------------------------------
-# 派生计算（§5.5/§5.6 + systemic §2.3）
+# Derived computation (Sections 5.5/5.6 + systemic Section 2.3)
 # ---------------------------------------------------------------------------
 
 def row_sums(matrix) -> dict:
-    """行合计 = 对外传染力（§5.5 超级传染者得分）。"""
+    """Row sum = outgoing contagion force (Section 5.5 super-spreader score)."""
     return {s: sum(matrix.intensity(s, t) for t in matrix.industries if t != s)
             for s in matrix.industries}
 
 
 def col_sums(matrix) -> dict:
-    """列合计 = 被传染风险（§5.6 脆弱行业得分）。"""
+    """Column sum = incoming contagion exposure (Section 5.6 vulnerable industry score)."""
     return {t: sum(matrix.intensity(s, t) for s in matrix.industries if s != t)
             for t in matrix.industries}
 
@@ -216,38 +213,39 @@ def vulnerable_industries(matrix, top=3) -> list:
 
 
 def contagion_coefficients(matrix) -> dict:
-    """传染力系数 = 行合计 / 13 行业行合计均值（systemic §2.3）。"""
+    """Contagion coefficient = row sum / mean of all industry row sums (systemic Section 2.3)."""
     sums = row_sums(matrix)
     mean = sum(sums.values()) / len(sums)
     return {k: v / mean for k, v in sums.items()}
 
 
 def sri_weights(debt_shares: dict, coefficients: dict) -> dict:
-    """行业权重 = 存量权重 × 传染力系数，归一化（systemic §2.3）。"""
+    """Industry weight = debt share x contagion coefficient, normalized (systemic Section 2.3)."""
     if set(debt_shares) != set(coefficients):
-        raise ValueError("debt_shares 与 coefficients 的行业集合不一致")
+        raise ValueError("debt_shares and coefficients industry sets do not match")
     if any(v < 0 for v in debt_shares.values()):
-        raise ValueError("debt_shares 不允许负值")
+        raise ValueError("debt_shares does not allow negative values")
     raw = {k: debt_shares[k] * coefficients[k] for k in debt_shares}
     total = sum(raw.values())
     if total <= 0:
-        raise ValueError("加权总和必须为正")
+        raise ValueError("weighted sum must be positive")
     return {k: v / total for k, v in raw.items()}
 
 
 # ---------------------------------------------------------------------------
-# 组合分析（WP-M4-02 输出）
+# Portfolio analysis (WP-M4-02 output)
 # ---------------------------------------------------------------------------
 
 def portfolio_exposure(matrix, holdings: dict) -> list:
-    """每只持仓的被传染暴露与对外传染力（其他持仓行业强度 × 其权重），按暴露降序。"""
+    """Each holding's inbound contagion exposure and outbound contagion force (other industry intensity x
+    its weight), sorted by exposure descending."""
     if not holdings:
-        raise ValueError("holdings 不能为空")
+        raise ValueError("holdings cannot be empty")
     for ind, w in holdings.items():
         if ind not in matrix.industries:
-            raise ValueError(f"未知行业: {ind!r}")
+            raise ValueError(f"Unknown industry: {ind!r}")
         if w < 0:
-            raise ValueError(f"权重不允许负值: {ind}={w}")
+            raise ValueError(f"Weight does not allow negative values: {ind}={w}")
     out = []
     for h in holdings:
         inbound = sum(matrix.intensity(s, h) * w
@@ -260,7 +258,8 @@ def portfolio_exposure(matrix, holdings: dict) -> list:
 
 
 def high_intensity_links(matrix, industries=None, threshold=4) -> list:
-    """（组合内）强度 ≥ threshold 的有向传染边，按强度降序（§3.1 图谱数据形态）。"""
+    """(Within portfolio) directed contagion edges with intensity >= threshold, sorted descending by intensity
+    (Section 3.1 graph data morphology)."""
     inds = list(industries) if industries is not None else matrix.industries
     links = [
         matrix.cell(s, t)
@@ -272,21 +271,22 @@ def high_intensity_links(matrix, industries=None, threshold=4) -> list:
 
 
 # ---------------------------------------------------------------------------
-# 压力跳升（§6.2）
+# Stress escalation (Section 6.2)
 # ---------------------------------------------------------------------------
 
 def apply_escalation(matrix, factors) -> ContagionMatrix:
-    """给定触发因子集，返回压力矩阵（显式对跳升 + 标记通用 +1，封顶 5；原矩阵不变）。"""
+    """Given a set of triggered escalation factors, return a stressed matrix (explicit pair jumps + generic
+    type +1, cap 5; original matrix unchanged)."""
     unknown = sorted(set(factors) - set(ESCALATION_FACTORS))
     if unknown:
-        raise ValueError(f"未知升级因子: {unknown}，可选: {list(ESCALATION_FACTORS)}")
+        raise ValueError(f"Unknown escalation factors: {unknown}, available: {list(ESCALATION_FACTORS)}")
     boosts = {}
     for f in factors:
         for (s, t, base, stressed, _label) in _EXPLICIT_JUMPS.get(f, []):
             cur = matrix.intensity(s, t)
             if cur != base:
                 raise ValueError(
-                    f"§6.2 跳升基准漂移: {f} {s}→{t} 文档正常强度={base}，矩阵实际={cur}"
+                    f"Section 6.2 jump base drift: {f} {s}->{t} document base intensity={base}, matrix actual={cur}"
                 )
             key = (s, t)
             boosts[key] = max(boosts.get(key, cur), stressed)
@@ -297,9 +297,9 @@ def apply_escalation(matrix, factors) -> ContagionMatrix:
                     key = (c.source, c.target)
                     cur = boosts.get(key, c.intensity)
                     boosts[key] = min(cur + 1, INTENSITY_MAX)
-        if f == "年末效应":  # 规则5：城投债相关所有对 +1（"全部 +0~+1" 模糊区间留 LLM）
+        if f == "Year-End Effect":  # Rule 5: Financials-related pairs +1 ("all +0~+1" fuzzy range left to LLM)
             for c in matrix.itercells():
-                if "城投债" in c.source or "城投债" in c.target:
+                if "Financials" in c.source or "Financials" in c.target:
                     key = (c.source, c.target)
                     cur = boosts.get(key, c.intensity)
                     boosts[key] = min(cur + 1, INTENSITY_MAX)

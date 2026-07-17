@@ -61,7 +61,7 @@ def industry_score(metrics: ConcentrationMetrics) -> int:
 
 
 def region_score(metrics: ConcentrationMetrics) -> int:
-    """D2: Regional concentration (single province + weak region share)."""
+    """D2: Regional concentration (single country/region + weak region share)."""
     province = _rating_band(metrics.single_province_share, 0.20, 0.35, 0.50)
     weak = _rating_band(metrics.weak_region_share, 0.10, 0.20, 0.35)
     return max(province, weak)
@@ -157,7 +157,7 @@ def rating_adjustment(metrics: ConcentrationMetrics) -> dict:
         or orange_count == 5
         or single_industry_proxy
         # Weak-region cap: the documented condition also requires
-        # "该区域内过去12个月有国企违约", which is not available in
+        # "SOE default in the region in the past 12 months", which is not available in
         # ConcentrationMetrics.
         or metrics.weak_region_share > 0.35
         or metrics.pseudo_high_rating_share > 0.40
