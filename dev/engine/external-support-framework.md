@@ -1,712 +1,807 @@
-# 外部支持评估框架 — 固定收益信用分析引擎
+# External Support Assessment Framework — Fixed Income Credit Analysis Engine
 
-**版本**: v0.8.4-release | **日期**: 2026-07-10
-**定位**: 评级调整层（独立于七行业金字塔的横向调整因子）· 轨道A基本面分析的补充模块
-**核心问题**: 发行人陷入困境时，政府/集团/股东会不会救？有多大能力救？
-
----
-
-## 一、为什么需要独立的外部支持模块
-
-### 1.1 中国信用债市场的结构性特征
-
-中国信用债市场与欧美市场的根本差异在于：**大量发行人的信用质量不取决于自身，而取决于背后的支持方**。
-
-| 特征 | 数据/事实 | 对信用分析的影响 |
-|------|----------|----------------|
-| 国企占信用债存量 ~70% | 2025年末国企信用债存量约25万亿元，民企不足5万亿元 | 大多数发行人有政府背景，需评估政府支持 |
-| AAA级中~90%受益于外部支持 | 以自身信用质量无法达到AAA的国企/城投，因政府支持获高评级 | 纯财务分析会系统性低估AAA级风险（也高估其信用质量） |
-| 地方政府隐性担保普遍 | 城投债30年历史中，仅有零星技术性违约，无实质性违约 | 市场定价中包含"城投刚兑信仰" |
-| 支持的可撤销性是最大尾部风险 | 永煤（2020）、华晨（2020）、紫光（2020）均曾获AAA评级，外部支持突然消失 | 需要系统性评估"支持被撤回"的情景 |
-
-**核心判断**：在中国信用市场，**不评估外部支持相当于只分析了信用质量的一半**。对于国企和城投，外部支持往往是比基本面更重的信用因子。
-
-### 1.2 当前引擎的缺口
-
-在评级机构对标审计（audits/rating-agency-benchmark-audit.md）中，外部支持被列为G3/G4严重缺口：
-
-| 缺口编号 | 缺口描述 | 严重程度 | 具体问题 |
-|---------|---------|---------|---------|
-| G3 | 外部支持（政府/股东）评估缺失 | 🔴 严重 | 仅在个别行业L5层设8-10%外部支持权重，非系统性 |
-| G4 | 支持意愿 vs 支持能力未区分 | 🔴 严重 | 政府/集团支持的评估过于笼统 |
-| 调整机制 | 无上调通道 | 🔴 严重 | 引擎输出为加权评分，无独立的评级上调机制 |
-
-### 1.3 本模块在引擎架构中的位置
-
-```
-引擎架构（含本模块）：
-
-输入: 行业 + 企业 + 分析日期
-        │
-   ┌────┴────┐
-   │马赛克引擎│  → 信号提取 + 拼图 + 完备性评估
-   └────┬────┘
-        │
-   ┌────┴────┐
-   │ 轨道A   │  → 行业金字塔评分（7行业模板）
-   │ 基本面  │     每个金字塔新增"L外部支持"信号维度
-   └────┬────┘
-        │
-   ┌────┴──────────┐
-   │ ★ 外部支持模块 │  ← 本文档：独立调整层，不改变金字塔权重
-   │   能力×意愿    │     在金字塔基准评分之上做上调
-   │   二维矩阵     │
-   └────┬──────────┘
-        │
-   ┌────┴────┐
-   │ 轨道B   │  → 市场定价信号（利差/波动率等）
-   └────┬────┘
-        │
-   ┌────┴────────┐
-   │ 交叉对撞    │  → 轨道A(含外部支持) vs 轨道B
-   │ 四象限矩阵  │     如果市场定价反映了vs未反映外部支持，都是信号
-   └────┬────────┘
-        │
-   ┌────┴────┐
-   │ 综合输出  │  → 评级 + 置信度 + "隐含担保风险"标注
-   │          │     所有因外部支持而上调的评级，必须标注
-   │          │     "此评级的假设前提是..."
-   └──────────┘
-```
+**Version**: v0.8.4-release | **Date**: 2026-07-17
+**Position**: Rating Adjustment Layer (independent cross-cutting adjustment factor) · Track A Fundamental Analysis Supplement
+**Core Question**: When an issuer encounters distress, will the sovereign/parent/shareholder provide support? How much capacity do they have?
 
 ---
 
-## 二、外部支持的三种类型与典型场景
+## 1. Why an Independent External Support Module is Necessary
 
-### 2.1 类型概览
+### 1.1 The Structural Importance of External Support in Global Credit Markets
 
-| 类型 | 典型发行人 | 支持形式 | 分析重点 |
-|------|-----------|---------|---------|
-| **政府支持** | 央企、地方国企、城投平台 | 注资/资产划入/财政补贴/协调银行续贷/破产重整中的优待/隐性担保 | 政府层级（中央/省/市/区县）、财政实力、战略重要性、历史支持记录 |
-| **集团支持** | 国企/央企子公司、集团内部关联企业 | 资金拆借/担保/资产注入/债务承接/业务协同 | 母公司的独立信用质量、母子公司关联度、子公司战略定位、未质押资产 |
-| **战略投资者支持** | 引入战投的民企/混改企业 | 增资/资源导入/信用背书/渠道共享/技术协同 | 战投自身实力、投资承诺的可执行性、退出风险、锁定期 |
+Credit quality across many markets is not solely determined by an issuer's standalone characteristics — external support from sovereigns, multilateral institutions, parent companies, or strategic investors often plays a decisive role.
 
-### 2.2 政府支持（最核心类型）
+| Feature | Evidence | Impact on Credit Analysis |
+|---------|----------|------------------------|
+| Sovereign backing is embedded in rating agency methodologies | Moody's Joint Default Analysis (JDA) framework assesses uplift for government-related issuers; S&P uses GRM (Government-Related Entity) methodology | Most issuers with sovereign linkage receive some rating uplift; standalone analysis systematically underestimates credit quality (and overestimates risk) |
+| Parent/Group support is common in corporate structures | Many rated entities are subsidiaries of larger groups; the parent's credit quality limits the subsidiary's rating via group rating methodology | Pure subsidiary-level financial analysis misses the group support factor |
+| Implicit guarantees exist across markets | GSEs (Fannie Mae/Freddie Mac), systemically important banks (SIFIs), and multi-lateral development banks carry implicit support assumptions | The market prices in support that may be withdrawn — the "support cliff" is a major tail risk |
+| Reversibility of support is the largest tail risk | Enron (2001), Lehman (2008), European sovereign crisis (2011-2012), Credit Suisse AT1 write-down (2023) — support disappeared in unexpected ways | Systematic assessment of "support withdrawal" scenarios is essential |
 
-中国信用市场最独特、最重要、也最容易被误读的外部支持类型。
+**Core Judgment:** In many credit markets, **failure to assess external support means analyzing only half the credit story.** For sovereign-related issuers and group subsidiaries, external support is often a heavier credit factor than standalone fundamentals.
 
-**三种政府层级的影响差异**：
+### 1.2 Current Engine Gaps
 
-| 政府层级 | 典型发行人 | 支持确定性 | 历史违约率 | 数据可获取性 |
-|---------|-----------|----------|-----------|------------|
-| **中央** | 中央直管央企（中石油、国家电网等） | 极高——中央政府代表国家信用 | 近30年无违约（仅华融/中植等边缘案例） | 企业公开信息充足，政府财政数据透明 |
-| **省级** | 省属国企（山西焦煤、安徽交控等） | 高——省级政府资源丰富 | 极少违约（青海省投等个别案例） | 省财政年鉴公开，财政数据可获取 |
-| **地市级** | 市属国企/城投 | 中等——地市财政分化严重 | 非标违约增多（贵州、云南等） | 预决算报告公开，但部分数据滞后6-12个月 |
-| **区县级** | 区县城投 | 弱——区县财政资源有限 | 非标违约已较普遍 | 数据透明度最低，需依赖省级汇总数据 |
+In the rating agency benchmark audit (audits/rating-agency-benchmark-audit.md), external support was identified as a critical gap:
 
-### 2.3 集团支持
+| Gap ID | Gap Description | Severity | Specific Issue |
+|--------|----------------|----------|---------------|
+| G3 | External support (sovereign/parent) assessment missing | Critical | Only partial support weights in specific industry layers; not systematic |
+| G4 | Support willingness vs. capacity not distinguished | Critical | Support assessment is overly generalized |
+| Adjustment mechanism | No uplift pathway | Critical | Engine output is weighted score; no independent rating uplift mechanism |
 
-适用于集团-子公司架构，是信用分析中容易被低估（也容易高估）的支持类型。
-
-| 子类型 | 典型场景 | 支持强度判断依据 |
-|--------|---------|----------------|
-| **全资子公司** | 央企/国企全资子公司 | 支持意愿最高——子公司违约直接冲击母公司信用；但需评估母公司自身是否有能力支持 |
-| **控股子公司** | 集团持股>50% | 支持意愿较高——有合并报表压力；但需评估其他股东的态度和退出可能性 |
-| **参股公司** | 集团持股<50% | 支持意愿弱——集团没有法律义务救助参股企业；需对照Moody's "Joint Default Analysis"框架评估 |
-| **同一实控人下的兄弟公司** | 同一国资委控制的多家企业 | 不确定性最高——需要具体分析每家企业的战略重要性和实控人的资源分配优先级 |
-
-### 2.4 战略投资者支持
-
-| 战投类型 | 支持特点 | 需警惕的信号 |
-|---------|---------|------------|
-| **国有资本（国新/国投等）** | 资金实力强，有政策导向 | 战投是否只是财务投资？是否有明确的退出时间表？ |
-| **产业资本（上下游龙头企业）** | 业务协同价值高 | 战投自身是否陷入困境？产业下行周期中战投可能先自救 |
-| **私募股权/PE基金** | 有明确的退出期限 | 锁定期后的退出风险——支持仅在投资期内存在 |
-| **地方政府引导基金** | 政策导向强，但资金量有限 | 引导基金的返投比例要求和退出机制 |
-
----
-
-## 三、核心分析框架：支持能力 vs 支持意愿
-
-### 3.1 为什么这是中国信用分析最关键的二元区分
-
-在中国信用市场，"政府会不会救"这个问题的答案取决于两个完全不同的维度：
+### 1.3 Module Position in Engine Architecture
 
 ```
-支持能力（客观/可量化）
-    │
-    │  政府有没有钱？
-    │  集团有没有资产？
-    │  战投有没有实力？
-    │
-    └──────────┬──────────┘
-               │ 综合判断
-    ┌──────────┴──────────┐
-    │                     │
-支持意愿（主观/信号驱动）
-    │
-    │  政府愿不愿意救？
-    │  集团觉得值不值得救？
-    │  战投有没有动力救？
-    │
-```
+Engine Architecture (with this module):
 
-**两个维度的本质区别**：
-
-| 维度 | 性质 | 分析方法 | 数据可得性 | 评估确定性 |
-|------|------|---------|-----------|-----------|
-| **支持能力** | 相对客观、可量化 | 财政指标/财务比率/资产规模分析 | 较高——政府财政数据公开，集团财报可获取 | 高——数据充分时可做出明确判断 |
-| **支持意愿** | 主观、依赖信号和行为推断 | 股权结构/战略定位/历史记录/信号监测 | 低——真正意愿只有在危机时刻才暴露 | 低——在没有内部信息的情况下，支持意愿的评估天然存在较大不确定性 |
-
-**重要警示**：两个维度的评估确定性完全不同。支持能力可以通过公开数据相对准确地判断（一个省政府的财政收入是公开信息）；支持意愿只有在危机时刻才真正暴露（永煤在违约前一直被市场认为"省政府一定会救"）。**本框架诚实标注：支持意愿的评估天然存在较大不确定性，所有基于支持意愿的上调应附带置信度标注。**
-
-### 3.2 二维矩阵：支持能力 × 支持意愿
-
-```
-                   支持能力强             支持能力弱
-                ┌─────────────────┬─────────────────┐
-                │                 │                 │
-  支持意愿强    │   A区：最安全    │   B区：有承诺   │
-                │   发行人获支持    │   但没能力      │
-                │   确定性最高      │   潜在风险高    │
-                │   → +2~3子级    │   → +0~1子级   │
-                │   案例：上海城投  │   案例：部分    │
-                │                 │   西部省级城投  │
-                ├─────────────────┼─────────────────┤
-                │                 │                 │
-  支持意愿弱    │   C区：有能力    │   D区：最危险   │
-                │   但不愿救       │   双弱          │
-                │   评级不应依赖    │   完全不应依赖  │
-                │   外部支持        │   外部支持      │
-                │   → +0子级      │   → +0子级     │
-                │   案例：校企改革  │   案例：区县级  │
-                │   （清华→紫光）  │   边缘城投      │
-                └─────────────────┴─────────────────┘
-```
-
-**矩阵使用规则**：
-
-| 区域 | 外部支持上调幅度 | 置信度 | 报告标注要求 |
-|------|----------------|--------|------------|
-| **A区** | +2~3子级 | 高（80-90%） | 标注"支持方实力强且意愿明确" |
-| **B区** | +0~1子级 | 低-中（40-60%） | 标注"有支持意愿但支持能力有限，建议关注支持方财力变化" |
-| **C区** | 0 | 中（50-70%） | 标注"支持方有能力但支持意愿存疑，不应依赖外部支持" |
-| **D区** | 0 | — | 标注"不支持外部支持假设" |
-
----
-
-## 四、支持能力评估
-
-### 4.1 地方政府支持能力评估（四维模型）
-
-**数据来源说明**：以下所有指标均来自公开数据源。分析日期前一年的数据通常可获得（财政年鉴发布滞后约6-12个月，预决算报告在次年上半年公开）。
-
-| 维度 | 核心指标 | 计算公式/定义 | 数据来源 |
-|------|---------|-------------|---------|
-| **F1 财政实力** | 一般公共预算收入 | 税收收入+非税收入（亿元） | 地方财政年鉴/预决算报告（各省财政厅官网公开） |
-| | 一般公共预算支出 | 维持政府运转和提供公共服务的支出（亿元） | 同上 |
-| | 财政自给率 | 一般公共预算收入 / 一般公共预算支出 × 100% | 同上——计算得出 |
-| | 人均一般公共预算收入 | 一般公共预算收入 / 常住人口 | 统计年鉴+财政年鉴 |
-| **F2 债务负担** | 政府显性债务率 | 地方政府债务余额 / 一般公共预算收入 × 100% | 财政部地方债信息公开平台 + Wind |
-| | 隐性债务估算 | 城投有息负债总和（估算值） | Wind城投债板块——城投平台有息负债加总 |
-| | 综合债务率 | (显性债务 + 隐性债务估算) / (一般公共预算收入 + 政府性基金收入) | 综合计算——注意隐性债务估算的误差 |
-| | 债务率排名 | 在全国31省中的相对位置 | 可计算得出 |
-| **F3 经济基础** | GDP总量及增速 | 地区生产总值及实际增长率 | 统计年鉴/各省统计局 |
-| | 产业结构 | 一产/二产/三产占比 | 统计年鉴 |
-| | 人均GDP | GDP / 常住人口 | 统计年鉴——收入增长的基础 |
-| | 人口趋势 | 常住人口净流入/流出 | 统计年鉴——判断中长期经济活力 |
-| **F4 资源调动能力** | 上级转移支付收入 | 中央对地方的转移支付和税收返还 | 财政年鉴/预决算报告——对西部省份尤为关键 |
-| | 转移支付依赖度 | 上级转移支付 / 一般公共预算收入 × 100% | 计算得出——依赖度>50%表明地方财政自主性弱 |
-| | 政府性基金收入（含土地出让） | 地方政府性基金预算收入，以土地出让收入为主 | 财政年鉴/自然资源部土地出让数据 |
-| | 金融机构本外币存款余额 | 区域内可动用的金融资源总量 | 人民银行各分行/各省统计年鉴 |
-
-**关键指标阈值参考**：
-
-| 指标 | 强（3分） | 中等（2分） | 弱（1分） | 极弱（0分） |
-|------|----------|-----------|----------|-----------|
-| 一般公共预算收入 | >3000亿 | 1000-3000亿 | 300-1000亿 | <300亿 |
-| 财政自给率 | >80% | 50-80% | 30-50% | <30% |
-| 政府显性债务率 | <80% | 80-150% | 150-250% | >250% |
-| GDP增速（近3年均值） | >6% | 4-6% | 2-4% | <2%或负增长 |
-| 转移支付依赖度 | <20% | 20-40% | 40-60% | >60% |
-| 人口趋势 | 持续净流入 | 波动平衡 | 持续净流出 | 大幅净流出 |
-
-### 4.2 省级政府支持能力分级（基于公开数据的参考分类）
-
-**注意**：此分类基于2024-2025年公开财政数据，每年需更新。具体企业的支持能力应以分析时点最新数据为准。
-
-**第一梯队：强支持能力（综合得分2.5-3.0）**
-上海、北京、深圳（计划单列市）、广东、江苏、浙江、福建
-- 特征：财政自给率>70%，显性债务率<100%，人均GDP>10万元，人口持续净流入，产业结构多元化
-- 分析注意：对一线城市国企，政府支持能力评估为强几乎没有争议。但需注意"支持的优先顺序"——政府不会同时救所有企业
-- **分项典型值**：以广东为例——一般公共预算收入~1.4万亿，财政自给率~75%，显性债务率~90%，转移支付依赖度~15%
-
-**第二梯队：中等支持能力（综合得分1.5-2.5）**
-山东、湖北、四川、安徽、湖南、河南、河北、江西、重庆、陕西
-- 特征：财政自给率40-70%，显性债务率100-200%，经济增速中等，人口流出压力可控
-- 分析注意：此类省级政府的城投/国企需要细分到地市级评估——省会城市（武汉/成都/合肥等）的支持能力强于非省会
-- **分项典型值**：以湖北为例——一般公共预算收入~3500亿，财政自给率~45%，显性债务率~150%，转移支付依赖度~35%
-
-**第三梯队：弱支持能力（综合得分0.5-1.5）**
-辽宁、吉林、黑龙江、甘肃、贵州、青海、宁夏、内蒙古、云南、广西、山西
-- 特征：财政自给率<40%，显性债务率>200%（部分省份），人口持续流出，对转移支付高度依赖（>50%）
-- 分析注意：此类省份的国企/城投不应过度依赖省级政府支持。如有支持，需具体到中央转移支付中专项用于该企业的部分
-- **分项典型值**：以贵州为例——一般公共预算收入~2000亿，财政自给率~35%，显性债务率>250%，转移支付依赖度>55%
-
-**特殊说明**：
-- 山西受煤炭周期影响，财政实力波动大——需在煤炭价格高点/低点分别评估
-- 天津/云南/内蒙古近年化债进展显著，需跟踪最新数据而非历史分类
-- 省本级与全省的财政数据不同——省级城投往往由省财政厅直接支持，需使用省本级数据（而非全省汇总）
-
-### 4.3 集团/母公司支持能力评估
-
-| 指标 | 评估方法 | 数据来源 | 强（3分） | 弱（0分） |
-|------|---------|---------|----------|----------|
-| 母公司独立信用质量 | 使用本引擎对其他集团进行独立评估，排除子公司贡献后的实力 | 集团合并报表+母公司单体报表 | AAA/AA+ | BBB-及以下或无评级 |
-| 未质押资产规模 | 集团可用于融资/担保的剩余资产 | 年报附注——受限资产披露 | 充裕覆盖子公司债务的2x+ | 核心资产均已质押 |
-| 融资渠道多样性 | 银行授信+债券市场+股权融资 | Wind/评级报告/募集说明书 | 3种以上活跃渠道 | 仅依赖单一渠道 |
-| 经营活动现金流 | 集团自身经营产生的现金流 | 合并现金流量表 | 持续为正且覆盖利息 | 持续为负 |
-| 资产流动性 | 可变现资产（上市公司股权/金融资产等） | 年报——交易性金融资产+长期股权投资 | 充足且可变现 | 大量非流动性资产（固定资产/在建工程） |
-
-### 4.4 战略投资者支持能力评估
-
-| 指标 | 评估方法 | 数据来源 |
-|------|---------|---------|
-| 战投自身信用评级 | 使用本引擎或外部评级评估战投本身 | 外部评级/公开财报 |
-| 投资金额vs战投资产规模 | 战投对发行人的投资占其总资产的比例 | 战投财报——比例越低，支持越可持续 |
-| 投资承诺的法律约束力 | 增资协议/担保函/支持函的法律效力 | 上市公司公告/协议文本 |
-| 锁定期/退出安排 | 战投锁定期的时长和退出条款 | 投资协议（需关注公开披露中的退出条款） |
-
----
-
-## 五、支持意愿评估
-
-### 5.1 核心原则：从信号推断意愿
-
-支持意愿无法直接观测——只能通过公开信号推断。信号的质量和效用在不同的情境下差异显著。
-
-**信号分级**：
-
-| 信号等级 | 特征 | 示例 |
-|---------|------|------|
-| **L5 明确法律承诺** | 有法律约束力的支持承诺/担保函 | 银行担保、差额补足承诺函、流动性支持协议 |
-| **L4 公开承诺+历史验证** | 官方公开表态支持 + 过去有实际支持行为 | 政府会议纪要明确"保障企业公开债券兑付"+ 历史注资记录 |
-| **L3 历史行为推断** | 过去在类似情景下支持过同类企业 | 省内曾有危机国企获救助（注资/协调贷款） |
-| **L2 结构信号** | 从股权结构/战略定位推断 | 政府直接持股>50%、列入省级重点项目 |
-| **L1 弱信号/传闻** | 市场传闻、分析师猜测 | "据知情人士透露省政府可能会救助" |
-
-**核心规则**：L1-L2信号仅用于"需关注"方向；基于支持意愿进行评级上调至少需要L3+信号。
-
-### 5.2 政府支持意愿评估矩阵
-
-| 评估维度 | 具体指标 | 强支持意愿信号 | 弱支持意愿信号 | 数据来源 |
-|---------|---------|---------------|---------------|---------|
-| **股权控制** | 政府持股比例 | 直接持股>50% | 间接持股<30%或无控股 | 企业年报/工商信息（企查查/天眼查） |
-|  | 实际控制人权属 | 国务院/省级国资委 | 区县级国资委（层级越低意愿越不确定） | 募集说明书/工商信息 |
-|  | 股权变动历史 | 近3年无控制权变动 | 近3年实控人变更/股权下放 | 工商变更记录 |
-| **战略定位** | 企业主营业务 | 承担公共职能/基础设施/能源/粮食安全 | 一般竞争性行业（例如：房地产/贸易/酒店） | 企业官网/募集说明书 |
-|  | 是否为区域内唯一/主要平台 | 省市级唯一发债平台 | 同层级存在3家以上同类平台 | Wind/评级报告 |
-|  | 是否列入国家级/省级重点项目 | 列入"十四五"规划/省级重点项目清单 | 无政府规划支持 | 政策文件/发改委项目清单 |
-| **经济就业** | 就业规模 | 在职员工>1万人 | 在职员工<500人 | 企业年报/社保数据（企查查） |
-|  | 地方税收贡献度 | 入列地方纳税前10 | 纳税额对地方财政无显著影响 | 地方税务局公开表彰/纳税百强榜单 |
-|  | 产业链影响 | 本地核心企业，上下游涉及大量就业 | 独立运营，本地产业链关联度低 | 行业报告/新闻报道 |
-| **历史支持** | 近3年注资记录 | 有政府注资/资产划入/大额补贴 | 无任何历史支持记录 | 企业年报/政府公告 |
-|  | 近3年融资协调 | 政府协调银行续贷/发债支持 | 无融资支持记录 | 募集说明书/新闻报道 |
-|  | 危机中的行为 | 过去有救助本地区企业的先例 | 省内已有国企违约且未得到救助 | 新闻数据库检索 |
-| **违约先例** | 本省国企违约历史 | 省内无国企债券违约先例 | 已有国企违约（尤其是永煤类——省级核心国企违约） | Wind违约数据库/新闻检索 |
-|  | 城投/国企非标违约历史 | 无非标违约 | 非标违约已较普遍 | 新闻检索/政信产品违约统计 |
-| **资产安全** | 核心资产划转风险 | 无核心资产划出 | 近1年有过资产无偿划转 | 政府公告/上市公司公告 |
-|  | 股权质押/资产冻结 | 无重大股权质押 | 控股股东所持股权已被质押/冻结 | 工商登记/上市公司公告 |
-
-### 5.3 集团/母公司支持意愿评估
-
-| 评估维度 | 强支持意愿信号 | 弱支持意愿信号 | 关键数据 |
-|---------|---------------|---------------|---------|
-| **控制权深度** | 全资控股，人事/财务/业务高度整合 | 持股比例<50%，仅财务投资 | 持股比例+董事会构成 |
-| **品牌关联度** | 子公司使用集团品牌/字号 | 独立品牌运营 | 企业名称/品牌使用 |
-| **业务协同度** | 核心业务环节，与集团不可分割 | 非核心/边缘业务 | 内部交易占比+业务定位 |
-| **财务关联度** | 集团为子公司提供大额担保/资金池共享 | 独立融资，无/极少担保 | 关联担保余额/资金归集制度 |
-| **历史支持** | 过去有偿债支持/流动性支持 | 无支持历史，或曾有拒绝支持的先例 | 集团一年内到期的关联方往来款 |
-| **子公司贡献度** | 子公司收入/利润占集团>20% | 占比<5% | 合并报表中的分部信息 |
-
-**特别注意**：母公司对子公司的支持不是无限的。即使支持意愿强，如果母公司自身陷入财务困境（如2021年的苏宁、2022年的复星），支持能力归零——支持意愿再强也无意义。
-
-### 5.4 战略投资者支持意愿评估
-
-| 评估维度 | 强支持意愿信号 | 弱支持意愿信号 |
-|---------|---------------|---------------|
-| **投资目的** | 战略性投资（产业协同/技术合作） | 纯财务投资（PE/VC有退出压力） |
-| **投资金额** | 占发行人股本>20% | 占发行人股本<5% |
-| **董事会参与** | 有董事席位+参与经营管理 | 无董事会席位/放弃投票权 |
-| **资源投入** | 已导入实际业务/技术/客户资源 | 仅提供资金 |
-| **退出考量** | 无明确退出时间表/锁定期>3年 | 锁定期短（1年内）/已有退出传闻 |
-
----
-
-## 六、外部支持评级上调规则
-
-### 6.1 支持强度综合判定
-
-从支持能力评估（第四章）和支持意愿评估（第五章）的综合结果，确定支持强度：
-
-```
-支持强度 =  f(支持能力综合评分, 支持意愿综合评分)
-
-支持能力综合评分 = (F1 + F2 + F3 + F4) / 4    （0-3分）
-支持意愿综合评分 = (各维度信号加权平均)         （0-3分）
-```
-
-**支持强度判定矩阵**：
-
-| 支持意愿 ↓ 支持能力 → | 强 (2.5-3.0) | 中 (1.5-2.5) | 弱 (0-1.5) |
-|----------------------|-------------|-------------|-----------|
-| **高 (2.5-3.0)** | 非常高 | 高 | 中等 |
-| **中 (1.5-2.5)** | 高 | 中等 | 低 |
-| **低 (0-1.5)** | 中等 | 低 | 低/无 |
-
-### 6.2 上调幅度映射
-
-| 支持强度 | 支持方信用等级 | 上调幅度 | 典型场景 |
-|---------|--------------|---------|---------|
-| **非常高** | 极强（中央/强省级/AAA集团） | +2~3子级 | 央企、上海/北京/广东省级核心国企、AAA央企全资子公司 |
-| **高** | 强（省级/计划单列市/AA+集团） | +1~2子级 | 省级主要国企、省会城市城投、AA+集团控股重要子公司 |
-| **中等** | 中等（地市级/AA集团） | 0~1子级 | 地市级城投、一般国企、AA集团子公司 |
-| **低/无** | — | 0 | 竞争性国企、区县级一般平台、无支持假设依据的发行人 |
-
-### 6.3 核心约束：支持方上限原则
-
-**最重要的规则**：外部支持上调不能超过支持方自身的信用等级。
-
-```
-发行人最终评级 ≤ 支持方自身信用等级
-
-示例：
-- 某地市级城投获得地市级政府支持
-- 地市级政府自身信用等级（如使用本引擎评估）为 BBB+
-- 则该城投上调后的最高评级不超过 BBB+
-- 即使支持意愿再强、发行人自身基本面再好，也不能突破此上限
-```
-
-**逻辑**：支持方无法将发行人提升到比自己还高的信用水平。如果地方政府自身的财政状况只能支撑BBB+级别，那么它所支持的企业不可能获得A-或更高的等级——因为一旦地方政府自身陷入危机，它就没有能力继续支持。
-
-**特殊例外**：中央政府支持。中央政府的信用等级为AAA（中国主权评级），因此央企上调不受此上限约束——上限变为中国主权评级。
-
-### 6.4 调整步长与操作规则
-
-| 规则 | 内容 |
-|------|------|
-| **单位** | 上调以子级为单位（每个子级为1/3个大级，如A→A+为1子级） |
-| **单次上限** | 单次外部支持调整不超过3个子级（对标中诚信做法） |
-| **频率** | 连续12个月内外部支持调整不超过一次（除非发生重大事件——如政府层级变更/资产划转） |
-| **最低触发条件** | 支持强度判定为"高"或"非常高"方可触发上调 |
-| **独立基准** | 外部支持上调在金字塔评分+信用等级锚定之后独立进行，不改变金字塔内部权重 |
-
-### 6.5 评级标注要求
-
-所有因外部支持而上调的评级，必须在分析结论中附带以下标注：
-
-```
-┌────────────────────────────────────────────────────────────┐
-│ ⚠️ 隐含担保风险声明                                       │
-│                                                            │
-│ 本评级中包含了外部支持上调 [X] 个子级的调整。              │
-│ 上调假设前提：                                             │
-│   支持方：[政府名称/集团名称]                               │
-│   上调依据：支持能力评分 [X.X/3] + 支持意愿评分 [X.X/3]    │
-│   上调幅度：+[X] 子级                                      │
-│                                                            │
-│ 如果以下情景发生，外部支持假设可能不成立：                  │
-│ 1. 支持方自身信用恶化                                      │
-│ 2. 支持方战略重心转移/政策变化                              │
-│ 3. 发行人核心资产被划转                                    │
-│                                                            │
-│ 剔除外部支持后，发行人独立信用质量评估为：[X] 级           │
-└────────────────────────────────────────────────────────────┘
+Input: Industry + Entity + Analysis Date
+          |
+     +----+----+
+     | Mosaic   |  -> Signal extraction + Assembly + Completeness assessment
+     | Engine   |
+     +----+----+
+          |
+     +----+----+
+     | Track A  |  -> Industry pyramid scoring (7 industry templates)
+     |          |     Each pyramid adds "L5 External Support" signal dimension
+     +----+----+
+          |
+     +----+--------------+
+     | * External Support |  <- This document: Independent adjustment layer
+     |   Module           |     Does not change pyramid weights
+     |   Capacity x        |     Applies uplift above pyramid baseline score
+     |   Willingness       |
+     |   2D Matrix         |
+     +----+--------------+
+          |
+     +----+----+
+     | Track B  |  -> Market pricing signals (spreads, volatility, etc.)
+     +----+----+
+          |
+     +----+--------+
+     | Cross-Valid. |  -> Track A (incl. external support) vs. Track B
+     | 4-Quadrant   |     If market pricing reflects vs. does not reflect
+     | Matrix       |     external support — both are signals
+     +----+--------+
+          |
+     +----+----+
+     | Output  |  -> Rating + Confidence + "Implicit Support" annotation
+     |         |     All ratings uplifted for external support must note
+     |         |     "This rating assumes that..."
+     +----------+
 ```
 
 ---
 
-## 七、外部支持的"陷阱信号"——支持可能被撤回的预警
+## 2. Four Types of External Support and Typical Scenarios
 
-### 7.1 历史案例：外部支持突然消失的三条路径
+### 2.1 Type Overview
 
-**路径一：支持方先行撤退（紫光/校企改革）**
+| Type | Typical Issuers | Support Forms | Analysis Focus |
+|------|----------------|--------------|---------------|
+| **Sovereign Support** | State-owned enterprises, development banks, public utilities | Capital injections, subsidies, guarantees, policy bank coordination, favorable treatment in restructuring, implicit backing | Sovereign credit quality, legal framework for support, strategic importance, historical support record |
+| **Multilateral Support** | Sovereign borrowers, project finance, development projects | IMF programs, EU/ESM stability mechanisms, World Bank/DFI lending, policy-based guarantees | Program conditionality, preferred creditor status, political commitment, policy coherence |
+| **Parent/Group Support** | Subsidiaries of diversified groups, operating companies | Cash pooling, guarantees, asset injections, debt assumption, business synergies | Parent independent credit quality, subsidiary strategic importance, cross-border ring-fencing risks |
+| **GSE / Systemic Entity Implicit Support** | Government-sponsored enterprises, SIFIs, systemically important entities | Implicit guarantee, conservatorship, resolution framework, lender of last resort | Legal mandate, regulatory intent, track record of support, political risk |
 
-| 阶段 | 时间 | 事件 | 对信用质量的影响 |
-|------|------|------|----------------|
-| 正常状态 | 2018年前 | 清华控股为紫光提供全方位的信用背书——资金支持、品牌背书、政府协调 | 市场普遍认为紫光有清华担保，评级AAA |
-| 政策转向 | 2018年5月 | 中央深改委通过《高等学校所属企业体制改革的指导意见》，要求校企剥离 | 支持基础（校企政策）发生变化 |
-| 撤退信号 | 2019年4月 | 清华控股宣布筹划紫光股份/紫光国微股权转让 | 清华明确从"支持"转向"退出" |
-| 撤退完成 | 2020年 | 清华退出紫光实际控制 | 核心外部支持消失 |
-| 违约 | 2020年11月 | 紫光集团"17紫光PPN001"违约 | AAA→违约，外部支持归零 |
+### 2.2 Sovereign Support
 
-**关键教训**：政策变化（校企改革）是外部支持消失的根本驱动力，比财务恶化更致命。
+The most important and most nuanced external support type across global credit markets.
 
-**路径二：政府层级下放（支持能力递减）**
+**Support Dimensions:**
 
-| 情景 | 效果 | 信用影响 |
-|------|------|---------|
-| 省级国企→下放地市级 | 支持方从省级变为地市级，财政实力断崖下降 | 评级可能下调1-2个子级 |
-| 地市级→区县级 | 支持能力进一步下降 | 评级下调2-3个子级 |
-| 国家级新区→正式行政区 | 优惠政策/财税返还减少 | 边际影响，视具体情况而定 |
+| Dimension | Description | Key Indicators | Data Availability |
+|-----------|-------------|----------------|------------------|
+| **Explicit Guarantee** | Formal contractual guarantee backed by sovereign full faith and credit | Legal opinion confirming enforceability; parliamentary appropriation; track record of honor | High — guarantees are public documents |
+| **Implicit Backing** | Market expectation that sovereign will not allow entity to default | State ownership percentage; strategic importance; historical precedent; government statements | Variable — implied by market pricing and political analysis |
+| **Sovereign Rating Cap** | Entity rating is capped by sovereign rating (or sovereign minus N notches) | Sovereign credit rating; rating agency GRI (Government-Related Issuer) methodology | High — sovereign rating is public |
+| **Capacity Constraints** | Sovereign's own fiscal capacity limits its ability to support | Fiscal balance, debt/GDP, foreign exchange reserves, institutional strength | Medium-High — IMF Article IV, sovereign ratings, fiscal data |
 
-**路径三：核心资产划转（支持意愿骤降的信号）**
+**Sovereign Credit Quality Tiers (Indicative):**
 
-永煤（2020）和华晨（2020）在违约前均出现核心资产划转：
+| Tier | Examples | Support Certainty | Typical Uplift |
+|------|----------|-----------------|---------------|
+| **AAA/AA Sovereign** | United States, Germany, Australia, Singapore | Very high — large fiscal capacity; strong institutional frameworks | +2-3 notches for strategic entities |
+| **A/BBB Sovereign** | Italy, Spain, Mexico, Indonesia | Moderate to high — adequate capacity; constrained by fiscal rules or debt levels | +1-2 notches for strategic entities |
+| **BB/B Sovereign (Investment Grade Adjacent)** | Brazil, Turkey, South Africa, Vietnam | Moderate — fiscal space is limited; support is selective | +0-1 notches; limited to most strategic entities |
+| **B and Below Sovereign** | Select emerging and frontier markets | Low — fiscal constraints materially limit support capacity | Minimal to no uplift; sovereign itself may be constrained |
+| **Sovereign in Distress** | Greece (2012), Argentina (recurrent), Lebanon (2020) | Very low — sovereign itself is restructuring; support capacity is near zero | No uplift; entity may be downgraded by sovereign linkage |
 
-| 案例 | 时间 | 资产划转事件 | 信号解读 |
-|------|------|------------|---------|
-| **永煤控股** | 2020年7月 | 将其持有的中原银行股权划转给河南投资集团 | 省政府在"救援前将可动用资产先划走"——支持意愿骤降的关键预警信号 |
-| **永煤违约** | 2020年11月 | 10亿元超短融违约 | 资产划转后仅4个月暴雷 |
-| **华晨集团** | 2020年 | 将其最重要的核心资产（华晨宝马25%股权）划转给辽宁省交投集团 | 核心资产被剥离，自主偿债能力丧失 |
-| **华晨违约** | 2020年10月 | 10亿元私募债违约 | 同样在资产划转后不久违约 |
+### 2.3 Multilateral Support
 
-**关键信号**：如果政府/集团在危机前将企业核心资产划走，这几乎是支持意愿即将消失的确切信号。
+Multilateral institutions provide a unique form of external support, particularly for sovereign borrowers and development-oriented projects.
 
-### 7.2 系统性陷阱信号清单
+| Institution | Support Type | Preferred Creditor Status | Track Record |
+|------------|-------------|--------------------------|-------------|
+| **IMF** | Balance of payments support; policy-based lending; Extended Fund Facility (EFF); Stand-By Arrangement (SBA) | Yes — de facto preferred creditor; sovereign payments to IMF are prioritized | Very strong — zero credit losses on IMF lending; conditionality provides additional discipline |
+| **World Bank (IBRD/IDA)** | Development project lending; policy-based lending; guarantees | Yes — IBRD/IDA have preferred creditor status; non-acceleration clause | Very strong — zero credit losses on sovereign lending; World Bank guarantees |
+| **European Stability Mechanism (ESM)** | Financial assistance to Eurozone members; primary market purchases; credit lines | Yes — ESM loans rank senior to most other sovereign debt | Strong — track record in Greece, Ireland, Portugal, Spain, Cyprus programs |
+| **Regional Development Banks** (AfDB, ADB, EBRD, IDB) | Project finance; policy loans; guarantees | Yes — generally recognized preferred creditor treatment | Strong — minimal credit losses across all major regional DFIs |
+| **EU/European Commission** | Macro-financial assistance; EU budget guarantees | Quasi-preferred | Strong — EU budget backed by member state commitments |
+| **Bilateral DFIs** (DFC, FMO, DEG, PROPARCO) | Direct lending; political risk insurance; project finance | Variable — generally no formal preferred creditor status | Good — lower historical loss rates than comparable commercial lending |
 
-| 信号类别 | 具体信号 | 影响评估 | 危险等级 | 可获取性 |
-|---------|---------|---------|---------|---------|
-| **政策环境变化** | 国企改革政策导向变化（如"竞争中性"/"国退民进"） | 降低所有国企的外部支持确定性 | 🟠 高 | 公开政策文件 |
-|  | 地方政府隐性债务化解"清零"要求 | 城投刚兑信仰可能打破 | 🟠 高 | 政策文件/政府工作报告 |
-|  | 行业领域改革（如校企改革/医疗体制改革） | 特定行业的外部支持消失 | 🔴 极高 | 政策文件 |
-| **资产变动** | 核心资产被无偿划转 | 支持方在"清空救助资产" | 🔴 极高 | 企业公告/工商信息 |
-|  | 股权被质押给第三方 | 实控人可能正在退出 | 🟡 中等 | 工商信息 |
-|  | 主业资产被剥离至另一平台 | 战略定位可能降低 | 🟡 中等 | 企业公告 |
-| **控制权变动** | 实控人由省政府→市政府 | 支持层级降低 | 🟠 高 | 工商变更/企业公告 |
-|  | 国资委持股比例下降 | 政府关联度降低 | 🟡 中等 | 企业年报 |
-|  | 引入民营资本/混改 | 国企属性减弱 | 🟡 中等 | 企业公告 |
-| **财政危机** | 地方政府自身财政恶化（土地出让收入暴跌） | 支持能力下降 | 🟠 高 | 财政数据季度跟踪 |
-|  | 地方融资平台非标违约频繁 | 政府"选择性救助"风险 | 🟠 高 | 新闻/政信产品信息 |
-|  | 地方债务率突破预警线 | 可能限制政府救助能力 | 🟡 中等 | 财政部数据 |
-| **历史行为** | 省内已有国企/城投违约且未获救助 | "信仰"已被打破 | 🔴 极高 | Wind/新闻 |
-|  | 政府对其他企业有逃废债行为 | 信用文化有瑕疵 | 🟠 高 | 新闻/法律判决文书 |
-|  | 到期债务展期/置换而非偿还（非技术性） | 偿债意愿下降 | 🟡 中等 | 债券公告 |
+**Multilateral Support Assessment Dimensions:**
 
-### 7.3 陷阱信号触发后的行动规则
+| Dimension | Description | Indicators |
+|-----------|-------------|-----------|
+| **Program Conditionality** | Policy commitments required for access to funds | Number and scope of prior actions; structural benchmarks; review cycles |
+| **Program Size vs. Financing Gap** | Adequacy of committed resources | Program access as % of quota/GDP; co-financing arrangements |
+| **Political Commitment** | Willingness of stakeholders to continue support | Track record of program completion; political consensus among shareholders |
+| **Preferred Creditor Status** | Legal/conventional protection against rescheduling | Formal recognition in borrowing agreements; track record of preference |
+| **Debt Sustainability Analysis** | Assessment of borrowing country's repayment capacity | IMF/World Bank DSA framework; debt-carrying capacity |
 
-| 触发情景 | 分析响应 | 对评级的影响 |
-|---------|---------|------------|
-| 出现1个🔴 极高危险信号 | 立即启动外部支持重新评估 | 外部支持上调可能降至0，或转为负数 |
-| 出现2个以上🟠 高危险信号 | 降低支持意愿评分至"低" | 外部支持下调幅度减少至少50% |
-| 出现1个以上🟠 高危险信号+资产划转 | 触发"外部支持消失"情景分析 | 必须计算"无支持情景"下的独立信用质量 |
-| 财政持续恶化超过2年 | 下调支持能力评分 | 外部支持调整下降1-2个子级 |
+### 2.4 Parent/Group Support
 
----
+Applicable to group-subsidiary structures. This support type is both commonly overestimated and commonly underestimated in credit analysis.
 
-## 八、与现有引擎框架的集成
+| Sub-type | Typical Scenario | Support Strength Indicators |
+|---------|-----------------|---------------------------|
+| **Wholly-owned subsidiary** | Full consolidation; strategic business unit | Support willingness highest — subsidiary default directly impacts parent credit; but need to assess parent's own capacity to support |
+| **Majority-owned subsidiary** | Group ownership >50% | Support willingness moderately high — consolidated reporting pressures; but minority shareholder interests may constrain |
+| **Equity method affiliate** | Group ownership <50% (no control) | Support willingness weak — group has no legal obligation; reference Moody's Joint Default Analysis framework |
+| **Sibling company (same controlling shareholder)** | Separate entities under common ownership | Highest uncertainty — need to assess each entity's strategic importance and the controlling shareholder's resource allocation priorities |
+| **Cross-border subsidiary** | Subsidiary in different jurisdiction from parent | Ring-fencing risk — legal and regulatory barriers may impede capital flows; exchange controls; withholding taxes |
 
-### 8.1 在七行业金字塔中的集成方式
+**Critical Cross-Border Ring-Fencing Risks:**
 
-**不改变金字塔内部权重结构**，只在完成金字塔评分之后、输出最终评级之前，增加"外部支持调整层"。
+| Ring-Fencing Mechanism | Description | Effect on Support Effectiveness |
+|-----------------------|-------------|-------------------------------|
+| **Regulatory ring-fencing** | Local regulator restricts fund flows to/from parent | Parent may be legally unable to support subsidiary even if willing |
+| **Bank ring-fencing** | Subsidiary capital and liquidity requirements under local regulation | Common for banking groups (e.g., UK ring-fencing, US IHC requirements) |
+| **Exchange controls** | Host country restricts capital outflows | Can prevent parent from repatriating funds but also from injecting capital |
+| **Tax barriers** | Withholding taxes on dividends, interest, or capital contributions | Reduces economic efficiency of cross-border support |
+| **Legal entity isolation** | Bankruptcy remoteness in securitization or project finance structures | Intentionally designed to prevent parent support; creditors should not expect it |
+| **Political risk** | Host government restricts foreign parent intervention | Particularly relevant in strategic sectors (energy, telecom, defense) |
+| **Insolvency law differences** | Different priority and enforcement regimes across jurisdictions | Support may be trapped in one jurisdiction and unavailable to creditors in another |
 
-```
-标准分析流程（更新后）：
+### 2.5 GSE (Government-Sponsored Enterprise) and Systemic Entity Implicit Support
 
-步骤 1: 行业分类 → 选择金字塔模板
-步骤 2: 金字塔评分 → L1-L4/L5逐层评分 → 加权综合得分 → 基准信用等级
-步骤 3: ★ 外部支持评估（新增，仅对国企/城投/有明确支持方的主体启动）
-   ├── 判断是否有明确的支持方 → 无 → 跳过
-   │                             有 → 进入步骤3b
-   ├── 3b: 支持能力评估（第四章）
-   ├── 3c: 支持意愿评估（第五章）
-   ├── 3d: 支持强度矩阵判定（第六章）
-   └── 3e: 输出上调幅度 + 标注"隐含担保风险声明"
-步骤 4: 基准等级 + 外部支持上调 = 最终主体评级
-步骤 5: 轨道B市场定价交叉验证（市场定价与含支持评级的差异）
-步骤 6: 输出综合评级 + 隐含担保风险声明
-```
+Certain entities benefit from an implicit government guarantee by virtue of their systemic importance, legal mandate, or historical precedent.
 
-**更新各行业金字塔规范**：在所有7个行业的金字塔中增加以下标注：
+| Entity Type | Implicit Support Mechanism | Assessment Approach | Historical Precedent |
+|------------|---------------------------|---------------------|---------------------|
+| **Fannie Mae / Freddie Mac (US)** | U.S. Treasury backstop; 2008 conservatorship demonstrated federal willingness to intervene | Pre-conservatorship: implied guarantee priced into debt; Post-conservatorship: explicit Treasury backing via Senior Preferred Stock Purchase Agreements | 2008: placed into conservatorship by FHFA; Treasury provided unlimited capital backstop; senior debt holders fully protected; equity and subordinated debt partially wiped out |
+| **Federal Home Loan Banks (US)** | Joint and several liability among the 11 regional banks; GSE Act provides Treasury authority to purchase FHLB obligations | Near-sovereign for senior debt | Never defaulted; statutory access to Treasury borrowing as discretionary lender |
+| **EU Institutions (EIB, ESM, EU Commission)** | Member state guarantees; EU budget backing | Member state capital commitments and callable capital underpin credit quality | AAA-rated (EIB, ESM, EU); no defaults |
+| **Systemically Important Banks (G-SIBs)** | Post-2008: resolution frameworks (TLAC/MREL) replaced implicit guarantees | Bail-in-able instruments (TLAC/MREL) should not be assumed to carry sovereign support; senior opco debt may carry limited residual expectation | Credit Suisse AT1 write-down (2023): demonstrated that contractual write-down provisions are enforceable; bail-in is real |
+| **Systemically Important Market Infrastructure (FMIs)** | Central counterparties (CCPs), payment systems; typically have central bank access | Very high support probability given systemic importance; regulators have strong interest in continuity | CCPs have never defaulted; central bank backstop mechanisms exist in major jurisdictions |
+| **State Development Banks** | KfW (Germany), CDB (China), BNDES (Brazil); explicit or implicit sovereign backing | Depends on legal guarantee structure and sovereign ownership | KfW: explicit guarantee (statutory liability); CDB: implicit (but sovereign rating cap) |
 
-```
-| L外部支持 | 独立调整层 | 详见 external-support-framework.md |
-|           |            | 仅对国企/城投/有明确支持方的主体启用 |
-|           |            | 上调幅度: 0~3子级 |
-|           |            | 上调上限: 不超过支持方自身信用等级 |
-```
+**GSE Support Assessment Framework:**
 
-具体改动到各行业金字塔文件：
-- 光伏/储能、半导体/IC、新能源车、生物医药、医疗器械、数据中心、存量博弈（各行业都需要标注）
-
-### 8.2 在定性分析框架中的集成
-
-在 qualitative-analysis.md 的政策解读方法中增加"支持能力vs支持意愿"分析框架：
-
-```
-在政策传导链（中央→部委→地方→企业）的基础上，增加：
-  ┌── "支持能力vs支持意愿"分析步骤 ──────────────────────────┐
-  │                                                           │
-  │  当分析对象为国/国企/城投时，在完成标准的政策解读后，      │
-  │  增加以下判断：                                            │
-  │                                                           │
-  │  步骤A: 支持能力判断                                       │
-  │    → 上级政策是否增加了地方政府的财政负担？                │
-  │    → 中央转移支付结构是否变化？                            │
-  │    → 地方政府债务化解政策是否会影响其支持能力？            │
-  │                                                           │
-  │  步骤B: 支持意愿判断                                       │
-  │    → 政策环境是否在弱化"国企信仰"？（竞争中性/国退民进）   │
-  │    → 行业改革是否在降低发行人的战略重要性？                │
-  │    → 是否存在核心资产划转/控制权下放的风险？               │
-  │                                                           │
-  │  步骤C: 综合判断                                           │
-  │    → 当前外部支持是否可能变化？                            │
-  │    → 如果变化，对发行人的信用影响幅度？                    │
-  └───────────────────────────────────────────────────────────┘
-```
-
-### 8.3 在马赛克引擎中的集成
-
-在 mosaic-engine.md 的缺口→风险映射表中增加"外部支持评估缺口"：
-
-```
-| 缺口类型 | 典型缺失数据 | 对应的信息风险 | 替代信号 |
-|---------|-------------|--------------|---------|
-| ...（已有条目）...                                              |
-| 外部支持数据 | 地方政府隐性债务真实规模 | 高估或低估政府的真实支持能力 | 显性债务率+城投有息负债估算，标注"隐性债务估算误差" |
-|  | 政府对特定企业的救助承诺 | 高估支持意愿确定性 | 历史支持记录+股权结构+战略定位推断，标注"非正面承诺" |
-|  | 集团内部资金归集政策和实际执行情况 | 无法判断集团对子公司的资金支持力度 | 关联方往来款+担保余额+业务协同度 |
-|  | 战略投资者的实际支持意愿（非公开表态） | 高估战投支持的可执行性 | 投资协议条款+锁定期+董事会构成 |
-```
-
-此外，在完备性评估层（mosaic-engine.md 第五章）的信号密度维度中增加"**L外部支持**"作为独立维度：
-
-```
-信号密度条形图（更新后）：
-┌─────────────────────────────────────┐
-│ L1 政策/宏观    ████████░░ 82%      │
-│ L2 技术/竞争    ██████░░░░ 75%      │
-│ L3 供应链/运营  ████░░░░░░ 48% ⚠️   │
-│ L4 财务/偿债    █████████░ 89%      │
-│ L5 外部支持     ████░░░░░░ 45% ⚠️   │  ← 新增
-│ 市场定价(轨B)   ███░░░░░░░ 35% ⚠️   │
-└─────────────────────────────────────┘
-```
-
-### 8.4 在双轨分析框架中的集成
-
-在 dual-track-methodology.md 的交叉对撞步骤中增加"外部支持交叉验证"：
-
-```
-轨道A 含外部支持的评级 ←→ 轨道B 市场定价
-
-交叉验证逻辑：
-  - 如果轨道A因外部支持上调至AAA/AA+，但轨道B利差/交易价格反映
-    的是无支持信用质量（利差高/成交收益率高）
-    → 表明市场对外部支持信心不足 → 降低外部支持置信度
-  - 如果轨道A无外部支持（如民企），但轨道B利差持续收窄
-    → 可能市场预期外部支持将出现（如引入战投/政府救助传闻）
-    → 标记为"市场隐含外部支持预期" → 需核实是否有相关信息
-```
-
-### 8.5 与多利益相关者分析框架的集成
-
-在 multi-stakeholder.md 中对M0-M5各类用户的外部支持分析权重做区分：
-
-| 角色 | 外部支持分析权重 | 重点关注 |
-|------|----------------|---------|
-| **M0 信贷审批（银行）** | **高** | 政府/集团支持意愿+支持方自身信用——银行最关心"第二还款来源"的可靠性 |
-| **M1 债券投资** | **高** | 支持能力和支持意愿的可持续性——投资期内支持是否可能变化 |
-| **M2 债券承销** | **中-高** | 外部支持是否能支撑初始评级——影响销售难度和定价 |
-| **M3 市场交易** | **中** | 外部支持是影响利差定价的核心因素之一——但交易更多看边际变化 |
-| **M4 组合风控** | **高** | 外部支持撤回的尾部风险——组合中过度依赖外部支持的集中度风险 |
-| **M5 企业融资** | **高** | 外部支持的变化如何影响融资成本和额度——尤其是政府层级的潜在变更 |
+| Assessment Dimension | Strong Support Signal | Weak Support Signal |
+|---------------------|---------------------|-------------------|
+| Statutory mandate | Clear enabling legislation with explicit guarantee language | No statutory guarantee; only regulatory comfort |
+| Historical precedent | Demonstrated support in prior crisis | No track record; or government allowed similar entity to fail |
+| Capital structure | Government holds equity; retains control rights | Widely held; government ownership without control rights |
+| Resolution framework | Creditor-friendly resolution plan (senior debt protected) | Bail-in framework applies to all debt; no carve-out for senior |
+| Political consensus | Broad support across political spectrum | Contested; subject to political change |
+| Systemic importance | Market disruption would be severe if entity failed | Effective substitutes exist; limited contagion risk |
 
 ---
 
-## 九、模块使用指南
+## 3. Core Analysis Framework: Support Capacity vs. Support Willingness
 
-### 9.1 何时启动外部支持评估
+### 3.1 Why This Binary Distinction is Critical
 
-并非所有发行人都需要外部支持评估。以下清单判断是否启动：
+The question "Will the supporter actually provide support?" depends on two fundamentally different dimensions:
 
-| 启动条件 | 适用对象 | 操作 |
-|---------|---------|------|
-| 实控人为中央政府/地方政府 | 央企、地方国企、城投 | 必须启动政府支持评估 |
-| 有明确的母公司/集团且持股>30% | 集团子公司 | 建议启动集团支持评估 |
-| 有公开披露的战略投资者且持股>10% | 引入战投的企业 | 选择性启动——对信用质量有显著影响时 |
-| 以上均不符合 | 独立民企/无明确支持方 | 不启动——外部支持评估不适用 |
-| 以上均不符合但有特殊背景 | 行业协会支持/产业联盟支持等 | 仅标注"非正式外部支持"，不触发正式评估 |
+```
+Support Capacity (Objective / Quantifiable)
+    |
+    |  Does the sovereign have fiscal room?
+    |  Does the parent have unencumbered assets?
+    |  Can the multilateral institution deploy resources?
+    |
+    +-----------+-----------+
+                |
+      +---------+---------+
+      |                   |
+Support Willingness (Subjective / Signal-driven)
+    |
+    |  Is the sovereign willing to use its capacity?
+    |  Does the parent consider the subsidiary strategically worth saving?
+    |  Is the multilateral commitment politically sustainable?
+    |
+```
 
-### 9.2 评估频率
+**Fundamental Difference Between the Two Dimensions:**
 
-| 评估类型 | 常规更新频率 | 触发事件更新（立即重新评估） |
-|---------|-------------|--------------------------|
-| 政府支持能力 | 年度——与财政年鉴发布同步 | 地方政府债务危机/评级下调/政策重大变化 |
-| 政府支持意愿 | 季度——跟踪信号变化 | 核心资产划转/控制权变更/省内其他国企违约 |
-| 集团支持能力 | 半年度——与集团年报发布同步 | 母公司评级下调/重大亏损/资产重组 |
-| 集团支持意愿 | 季度——跟踪信号变化 | 股权变动/关联交易异常/母公司战略变更 |
-| 战投支持 | 半年度——跟踪战投自身状况 | 战投退出/增资失败/投资方财务恶化 |
+| Dimension | Nature | Analytical Method | Data Availability | Assessment Certainty |
+|-----------|--------|------------------|-------------------|---------------------|
+| **Support Capacity** | Relatively objective, quantifiable | Fiscal indicators, financial ratios, asset size analysis, institutional strength | Higher — sovereign fiscal data is generally public; parent financial statements available | Higher — clear judgments possible with sufficient data |
+| **Support Willingness** | Subjective, signal-driven | Ownership structure, strategic positioning, historical track record, signal monitoring | Lower — true willingness is only revealed during crisis | Lower — inherently uncertain without access to internal decision-making |
 
-### 9.3 数据资源清单
+**Important Warning:** The two dimensions have completely different assessment certainties. Support capacity can be assessed relatively accurately from public data (a sovereign's fiscal accounts or a parent's financial statements are public information). Support willingness is only truly revealed during crisis moments. **This framework honestly acknowledges: support willingness assessment is inherently uncertain; all willingness-based uplift should carry a confidence annotation.**
 
-| 数据类型 | 数据来源 | 获取方式 | 成本 | 更新频率 |
-|---------|---------|---------|------|---------|
-| 地方政府财政数据 | 各省财政厅预决算报告 | 公开网站下载 | 免费 | 年度 |
-| 地方政府债务数据 | 财政部地方债信息公开平台 | www.celma.org.cn | 免费 | 季度 |
-| | Wind/Choice地方债板块 | 金融终端 | 付费 | 实时 |
-| 城投有息负债 | Wind城投债板块 | 金融终端 | 付费 | 实时 |
-| 企业工商信息 | 企查查/天眼查/国家企业信用信息公示系统 | 公开查询/付费API | 基础免费，深度付费 | 实时 |
-| 企业财务数据 | 上市公司公告/募集说明书 | 巨潮资讯网/上清所/交易商协会 | 免费 | 按披露规则 |
-| 国企违约记录 | Wind违约数据库/新闻检索 | 金融终端/公开网络 | 部分免费 | 实时 |
-| 土地出让数据 | 自然资源部土地市场网 | 公开网站 | 免费 | 月度 |
-| 政府部门迁移支付数据 | 财政年鉴 | 公开出版 | 免费（下载） | 年度 |
-| 审计报告/年报 | 发行人年报/审计报告 | 上清所/交易商协会/巨潮资讯网 | 免费 | 年度/半年度 |
+### 3.2 The 2x2 Matrix: Support Capacity x Support Willingness
+
+```
+                     Strong Capacity            Weak Capacity
+                    +---------------------+---------------------+
+                    |                     |                     |
+   High Willingness |   Zone A: Safest    |   Zone B: Committed |
+                    |   Support most      |   but unable        |
+                    |   certain           |   latent risk       |
+                    |   -> +2-3 notches   |   -> +0-1 notches   |
+                    |   Examples:         |   Examples:         |
+                    |   Strategic SOE in  |   Small SOE in      |
+                    |   strong sovereign  |   fiscally strained |
+                    |                     |   sovereign         |
+                    +---------------------+---------------------+
+                    |                     |                     |
+   Low Willingness  |   Zone C: Able but  |   Zone D: Most      |
+                    |   unwilling         |   Dangerous         |
+                    |   Rating should NOT |   Weak on both      |
+                    |   rely on support   |   dimensions        |
+                    |   -> +0 notches     |   -> +0 notches     |
+                    |   Examples:         |   Examples:         |
+                    |   Non-strategic     |   Subsidiary of     |
+                    |   subsidiary of     |   distressed parent |
+                    |   strong parent     |   in non-core mkt   |
+                    +---------------------+---------------------+
+```
+
+**Matrix Usage Rules:**
+
+| Zone | External Support Uplift | Confidence | Report Annotation Requirement |
+|-----|------------------------|-----------|------------------------------|
+| **Zone A** | +2-3 notches | High (80-90%) | Note "Supporter capacity is strong and willingness is well-established" |
+| **Zone B** | +0-1 notches | Low-Medium (40-60%) | Note "Committed but constrained; monitor supporter fiscal capacity" |
+| **Zone C** | 0 notches | Medium (50-70%) | Note "Capable but willingness is uncertain; should not rely on external support" |
+| **Zone D** | 0 notches | -- | Note "No basis for external support assumption" |
 
 ---
 
-## 十、方法论局限性与诚实声明
+## 4. Support Capacity Assessment
 
-### 10.1 支持意愿评估的天然不确定性
+### 4.1 Sovereign Support Capacity Assessment (Five-Dimension Model)
 
-这是本模块最需要诚实地面对的问题：
+**Data Source Note:** All indicators below are from publicly available sources. Annual fiscal data typically available with a lag of 6-18 months depending on the jurisdiction. IMF Article IV staff reports provide independent cross-checks.
 
-| 局限 | 原因 | 影响 |
-|------|------|------|
-| **支持意愿只在危机时刻暴露** | 在正常经营时期，所有国企/城投都"看起来"有政府支持——只有在违约边缘才能看出政府是否真的会救助 | 和平时期的支持意愿评估天然是推断性的，置信度有限 |
-| **决策不透明** | 政府是否救助某个企业，是政治决策而非财务决策——决策过程不透明，无法通过公开数据精确预测 | 重大不确定性无法消除 |
-| **政策变化不可预见** | 校企改革之前，没有人预见到清华会放弃紫光；永煤违约之前，市场普遍认为河南不会让AAA国企违约 | 政策面的突然转向是外部支持评估的"已知的未知" |
-| **信息不对称** | 地方政府/集团是否已经内部决策放弃某个企业，外部人员无法获取 | 资产划转是最强的先验信号，但仅在危机前才出现，时间窗口极短 |
+| Dimension | Core Indicator | Calculation/Definition | Data Source |
+|-----------|---------------|----------------------|-------------|
+| **F1 Fiscal Strength** | General Government Revenue (% GDP) | Total tax and non-tax revenue / GDP | IMF Government Finance Statistics (GFS); national statistical agencies |
+| | General Government Balance (% GDP) | Revenue - Expenditure as % of GDP | Same as above |
+| | Primary Balance (% GDP) | Government balance excluding interest payments | Calculated from GFS |
+| | Revenue Diversification | Share of non-resource/non-commodity revenue in total | National budget documents |
+| **F2 Debt Burden** | General Government Gross Debt (% GDP) | Total government debt / GDP | IMF Global Debt Database; national debt management offices |
+| | Net Debt (% GDP) | Gross debt minus financial assets | IMF GFS; national accounts |
+| | Interest-to-Revenue Ratio | Interest expense / government revenue | National budget execution reports |
+| | Foreign Currency Debt Share | Share of debt denominated in foreign currency | Public debt bulletins |
+| | Maturity Profile | Average maturity; share due within 12 months | Debt management reports; IMF |
+| **F3 Institutional Strength** | Central Bank Independence | Governance and policy autonomy | Central bank charters; de facto independence assessments |
+| | Rule of Law / Contract Enforcement | World Bank Governance Indicators | WGI; Heritage Foundation IEF |
+| | Budget Credibility | Execution variance vs. budget | IMF Fiscal Transparency Evaluations |
+| | Monetary Credibility | Track record of inflation control | Central bank reports; IMF |
+| **F4 External Position** | Foreign Exchange Reserves | Gross reserves / short-term external debt (Greenspan-Guidotti rule) | IMF IFS; central bank data |
+| | Current Account Balance (% GDP) | (Exports - Imports + Net Transfers) / GDP | IMF WEO; national accounts |
+| | External Debt (% GDP) | External debt (public + private) / GDP | World Bank IDS; IIF |
+| | Reserves / Imports | Months of import coverage | Central bank data |
+| **F5 Political Stability** | Political Risk Rating | Composite of institutional and political stability | PRS Group ICRG; EIU; Economist Democracy Index |
+| | Government Bond Spread vs. Benchmark | Sovereign credit default swap (CDS) or bond yield spread | Bloomberg, market data |
+| | Sovereign Rating / Outlook | S&P, Moody's, Fitch; outlook (stable/positive/negative) | Rating agencies |
+| | IMF Program Track Record | Completion/past engagement with Fund programs | IMF Monitoring of Fund Arrangements (MONA) |
 
-**诚实声明**：基于公开数据的支持意愿评估，本质上是对"过去行为+当前结构"的推断，而非对未来行为的准确预测。支持意愿的准确判断需要内部信息（政府会议纪要/国资系统内部讨论/救助方案的审批流程等），这些信息在公开领域不可获取。因此，**所有基于支持意愿的上调应当被视为"有条件的假设"而非"确定性结论"**。
+**Key Indicator Thresholds (Indicative):**
 
-### 10.2 支持能力评估的技术局限
+| Indicator | Strong (3 pts) | Medium (2 pts) | Weak (1 pt) | Very Weak (0 pts) |
+|-----------|---------------|---------------|-------------|-------------------|
+| General Government Debt (% GDP) | <40% | 40-70% | 70-100% | >100% |
+| Fiscal Balance (% GDP) | >0% (surplus) | 0% to -3% | -3% to -6% | <-6% |
+| Interest / Revenue | <5% | 5-10% | 10-15% | >15% |
+| Reserves / Short-Term Debt | >150% | 100-150% | 50-100% | <50% |
+| 5-Year CDS Spread (bps) | <50 | 50-150 | 150-300 | >300 |
+| Rule of Law (WGI percentile) | >80th | 60-80th | 40-60th | <40th |
 
-| 局限 | 说明 | 缓解措施 |
-|------|------|---------|
-| 隐性债务规模不可知 | 地方政府隐性债务的真实规模是非公开信息，城投有息负债加总只是估算 | 标注"隐性债务估算"而非"实际规模"；使用范围（高/中/低）而非具体数字 |
-| 数据滞后 | 财政年鉴发布滞后6-12个月，预决算报告滞后3-6个月 | 使用最新季度数据补充；对急剧变化的省份（如资源型省份）标注"数据可能滞后" |
-| 省本级vs全省混淆 | 省级城投由省本级财政支持，而省本级财政数据有时不单独披露 | 区分省本级vs全省数据；如省本级数据不可获取，使用全省数据并标注"含下级政府数据" |
-| 交叉持股复杂 | 多家国企交叉持股、国资委间复杂持股，真实控制人不易判断 | 遵循"实际控制人"原则——以工商登记的实际控制人为准 |
+### 4.2 Sovereign Support Capacity Assessment: Application Notes
 
-### 10.3 避免"外部支持幻觉"
+Support capacity assessment requires distinguishing between the sovereign's overall fiscal capacity and its *willingness and ability to deploy resources to a specific entity*.
 
-**这个模块的存在，不等于外部支持在任何时候都成立。** 以下是对分析师的提醒：
+**Key Assessment Principles:**
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│ ⚠️ 外部支持分析的核心纪律                                      │
-│                                                               │
-│  1. 先评估独立信用质量（无支持），再考虑是否上调                │
-│  2. 支持方自身不能一夜变强——不要高估弱政府的支持能力            │
-│  3. 资产划转前和划转后的支持意愿可能完全不同                    │
-│  4. 同一政府不会同时救助所有企业——资源永远有限                  │
-│  5. 政策走向比财务数据更重要——校企改革先于违约                  │
-│  6. 当支持意愿和支持能力冲突时，优先相信支持能力的量化评估       │
-│  7. 有违约先例的省份，外部支持要打折扣                          │
-│  8. 外部支持上调后，一定有"如果支持不成立"的逆向情景分析        │
-│                                                               │
-└──────────────────────────────────────────────────────────────┘
-```
+1. **Sovereign rating is the upper bound.** The supported entity's rating cannot exceed the sovereign rating (unless explicit guarantee with different terms exists). This is the sovereign rating cap principle.
 
-### 10.4 版本与更新计划
+2. **Fiscal capacity is not the same as available capacity for a specific entity.** Even a fiscally strong sovereign has constraints on how much it can allocate to a specific enterprise.
 
-| 版本 | 更新内容 | 预计时间 |
-|------|---------|---------|
-| v0.1.0 | 初始版本：框架定义+方法论说明+评估矩阵 | 当前 |
-| v0.2.0 | 量化评分卡：支持能力和支持意愿的量化打分模板 | 后续迭代 |
-| v0.3.0 | 案例验证：在5-10个历史案例中回测外部支持评估 | 后续迭代 |
-| v0.4.0 | 数据接口：对接Wind/Choice地方财政数据自动导入 | 后续迭代 |
-| v0.5.0 | 陷阱信号自动监测：马赛克引擎中嵌入外部支持信号监测 | 后续迭代 |
+3. **Foreign currency constraints matter.** A sovereign may have ample local currency capacity but limited foreign currency reserves — critical for entities with foreign currency debt.
+
+4. **Political economy matters.** Even fiscally strong sovereigns may choose not to support entities that are perceived as having private-sector beneficiaries or where political support for the entity is low.
+
+5. **Historical track record.** Has the sovereign supported entities in distress before? The track record is a critical input to willingness but also reveals capacity boundaries.
+
+### 4.3 Multilateral Support Capacity Assessment
+
+| Assessment Dimension | Indicators | Strong | Weak |
+|---------------------|-----------|-------|------|
+| **IMF Access (Quota Share)** | Program access in % of quota | >300% (exceptional access) | <100% (normal access) |
+| **Program Track Record** | Program completion rate; waivers/modifications | High completion; few modifications | Frequent modifications; programs off-track |
+| **Shareholder Support** | G7/emerging market commitment to institutions | Strong; capital increases approved | Shareholder fatigue; capital constraints |
+| **Preferred Creditor Treatment** | Track record of treatment in sovereign restructurings | Consistent preference maintained | Challenge to preferred status in recent restructurings |
+| **Policy Conditionality Strength** | Design of program conditions | Clear prior actions; structural benchmarks | Weak conditionality; program drift |
+| **Deployment Track Record** | Speed of disbursement; responsiveness to crises | Fast; large-scale when needed | Slow; limited relative to needs |
+
+### 4.4 Parent/Group Support Capacity Assessment
+
+| Indicator | Assessment Method | Data Source | Strong (3 pts) | Weak (0 pts) |
+|-----------|-----------------|-------------|---------------|-------------|
+| Parent independent credit quality | Independent assessment of parent (excluding subsidiary contributions) | Parent consolidated + standalone financials | IG (BBB- or higher) | Below IG or unrated |
+| Unencumbered assets | Assets available for financing/guaranteeing | Annual report ROU / encumbered assets disclosure | 2x+ subsidiary debt coverage | Core assets fully encumbered |
+| Financing channel diversity | Number of active funding channels | Rating reports / market transactions | 3+ active channels | Single channel dependence |
+| Operating cash flow | Parent standalone cash generation | Standalone cash flow statement | Consistently positive covering interest | Consistently negative |
+| Asset liquidity | Liquid assets (listed equity, financial assets) | Annual report — trading securities + L-T investments | Ample and readily marketable | Predominantly illiquid (fixed assets, WIP) |
+| Cross-border transfer ability | Ability to move funds across borders | Regulatory review; local regulations | No restrictions; same jurisdiction | Ring-fencing; exchange controls |
+
+### 4.5 GSE / Systemic Entity Support Capacity
+
+| Parameter | Assessment Method | Strong Signal | Weak Signal |
+|-----------|-----------------|--------------|-------------|
+| Treasury authorization | Legal authority for Treasury to support | Explicit statutory authority | No statutory basis |
+| Capital backstop design | Structure of government capital commitment | Unlimited (e.g., PSPA for Fannie/Freddie) | Limited or expired |
+| Regulatory framework | Resolution regime | Creditors protected; open-bank resolution | Bail-in expected |
+| Political willingness | Government statements and policy | Bipartisan consensus on systemic importance | Political debate on reducing GSE footprint |
+| Historical precedent | Track record | Demonstrated support (e.g., 2008 GSE conservatorship) | No precedent; or precedent of letting similar entity fail |
 
 ---
 
-## 相关内容
+## 5. Support Willingness Assessment
 
-- [引擎架构总览](engine-overview.md) — 核心理念、总体架构、设计原则
-- [行业分类与分析框架](industry-framework.md) — 十维评分、四类行业范式、七行业金字塔
-- [定性分析方法论](qualitative-analysis.md) — 信息源分级、政策解读、马赛克拼图
-- [双轨分析方法论](dual-track-methodology.md) — 轨道A+轨道B、交叉对撞、评级映射
-- [马赛克引擎](mosaic-engine.md) — 信号提取、拼图聚合、完备性评估
-- [评级机构基准审计](audits/rating-agency-benchmark-audit.md) — 外部支持评估的G3/G4缺口分析
+### 5.1 Core Principle: Inferring Willingness from Signals
+
+Support willingness cannot be directly observed — it must be inferred from public signals. The quality and utility of signals vary significantly across contexts.
+
+**Signal Hierarchy:**
+
+| Signal Level | Features | Examples |
+|-------------|---------|----------|
+| **L5 — Explicit Legal Commitment** | Legally binding support commitment or guarantee | Sovereign guarantee; parent keepwell agreement; standby letter of credit; deficiency guarantee |
+| **L4 — Public Commitment + Historical Validation** | Official public commitment + actual support in prior instances | Government white paper on strategic enterprises; prior capital injections; coordinated rescue operations |
+| **L3 — Historical Behavior Inference** | Similar entities supported in similar past scenarios | Record of sovereign/group providing support to entities in distress |
+| **L2 — Structural Signals** | Inferred from ownership structure and strategic positioning | 100% sovereign ownership; designated as strategic sector; inclusion in national development plan |
+| **L1 — Weak Signals / Speculation** | Market rumors, analyst speculation | "According to informed sources, the government may provide support" |
+
+**Core Rule:** L1-L2 signals are only for "monitoring" purposes; rating uplift based on support willingness requires at least L3+ signal level.
+
+### 5.2 Sovereign Support Willingness Assessment Matrix
+
+| Assessment Dimension | Specific Indicator | Strong Willingness Signal | Weak Willingness Signal | Data Source |
+|--------------------|------------------|-------------------------|------------------------|-------------|
+| **Ownership Control** | Government ownership share | Direct ownership >50% | Indirect ownership <30% or no controlling stake | Annual report; corporate registry |
+| | Ultimate controlling authority | Central government / ministry | Regional/local authority with limited capacity | Corporate registry; legal documents |
+| | Ownership history | Stable for 3+ years | Change in control / partial privatization in last 3 years | Regulatory filings |
+| **Strategic Positioning** | Primary business activities | Public service / infrastructure / energy / national security | General commercial / competitive sector (e.g., real estate, trading, hospitality) | Company description; corporate strategy |
+| | Exclusivity of mandate | Sole or primary entity in its mandate | Multiple comparable entities exist; no differentiated mandate | Industry research; policy documents |
+| | National / regional priority designation | Listed in national development plan; critical infrastructure | No government policy recognition | Policy documents; budget documentation |
+| **Economic/Employment Impact** | Employment scale | >10,000 employees | <500 employees | Annual report; public records |
+| | Revenue contribution to government | Among top taxpayers in jurisdiction | Insignificant contribution to fiscal revenue | Tax authority disclosures; annual report |
+| | Supply chain/systemic importance | Core entity; upstream/downstream linkage to broad economy | Independent operation; limited local economic linkages | Industry reports; market analysis |
+| **Historical Support Track Record** | Capital injections | Government injections / asset contributions in last 3 years | No historical support record | Annual report; government announcements |
+| | Financing coordination | Government coordinated bank lending / bond support | No coordination record | News database; financial reports |
+| | Crisis behavior | Prior record of rescuing entities in distress | Existing defaults in sector without government intervention | Case database; news search |
+| **Default Precedent** | Similar entity defaults | No precedent within jurisdiction | Prior default of comparable entity | Credit default database |
+| **Asset Safety** | Core asset transfer risk | No core assets transferred out | Core assets transferred in last 12 months | Government announcements; company filings |
+| | Share pledging / asset freezing | No significant government share pledging | Government shares pledged or frozen | Corporate registry; regulatory filings |
+| **Political Economy** | Political commitment to sector | Broad political consensus on support | Contested support; policy debate on reducing government role | Policy documents; political analysis |
+| | Private vs. public perception | Entity widely perceived as government-backed | Entity perceived as commercial; limited government association | Market pricing; analyst reports |
+
+### 5.3 Parent/Group Support Willingness Assessment
+
+| Assessment Dimension | Strong Willingness Signal | Weak Willingness Signal | Key Data |
+|--------------------|-------------------------|------------------------|----------|
+| **Control Depth** | Wholly owned; integrated management, finance, operations | Ownership <50%; purely financial investment | Ownership % + board composition |
+| **Brand Association** | Subsidiary uses group brand/name | Independent brand | Corporate name; branding strategy |
+| **Business Integration** | Core business segment; inseparable from group | Non-core / peripheral | Intra-group transaction % + strategic positioning |
+| **Financial Interlinkage** | Parent provides large guarantees; cash pooling | Independent financing; minimal parent guarantees | Guarantee balance; cash management agreement |
+| **Historical Support** | Past debt service or liquidity support from parent | No support history; or precedent of refusing support | Related-party balances; aging analysis |
+| **Subsidiary Contribution** | Subsidiary revenue/profit >20% of group | Contribution <5% | Segment reporting in consolidated statements |
+| **Cross-border Commitment** | Parent has made binding cross-border support commitments | No ring-fencing override; local borrowing only | Support agreement; parent company undertakings |
+
+**Critical Note:** Parent support is not unlimited. Even with strong willingness, if the parent itself enters financial distress (e.g., highly leveraged conglomerates facing liquidity pressure), support capacity zeroes out — willingness alone is meaningless without capacity.
+
+### 5.4 Multilateral and GSE Support Willingness Assessment
+
+| Type | Strong Willingness Signal | Weak Willingness Signal |
+|------|-------------------------|------------------------|
+| **IMF Program** | Program on track; all reviews completed | Program repeatedly off-track; waivers needed |
+| **EU/ESM Support** | Strong political consensus; program conditionality being met | Political support fracturing; program fatigue |
+| **World Bank / DFI Lending** | Long-term country partnership framework; active portfolio | No active engagement; declining commitments |
+| **GSE (Fannie/Freddie)** | Explicit Treasury backstop; senior preferred stock agreement in place | Political pressure to reduce GSE footprint; housing reform legislation |
+| **SIFI Resolution Framework** | Clear resolution plan with depositor and senior creditor protection | Bail-in framework extensively tested; no differentiation between creditor classes |
+| **Systemic Entity** | Clear regulatory support commitment; central bank backstop | Regulatory ambiguity; political discussion of bail-in |
+
+---
+
+## 6. External Support Rating Uplift Rules
+
+### 6.1 Combined Support Strength Determination
+
+From the capacity assessment (Section 4) and willingness assessment (Section 5), determine combined support strength:
+
+```
+Support Strength =  f(Capacity Composite Score, Willingness Composite Score)
+
+Capacity Composite Score = (F1 + F2 + F3 + F4 + F5) / 5    (0-3 scale)
+Willingness Composite Score = (signal dimension weighted avg) (0-3 scale)
+```
+
+**Support Strength Determination Matrix:**
+
+| Willingness \ Capacity | Strong (2.5-3.0) | Medium (1.5-2.5) | Weak (0-1.5) |
+|----------------------|-----------------|-----------------|-------------|
+| **High (2.5-3.0)** | Very High | High | Medium |
+| **Medium (1.5-2.5)** | High | Medium | Low |
+| **Low (0-1.5)** | Medium | Low | None |
+
+### 6.2 Uplift Mapping
+
+| Support Strength | Supporter Credit Level | Uplift | Typical Scenario |
+|----------------|----------------------|--------|-----------------|
+| **Very High** | Very strong (AAA/AA sovereign; AAA parent; MDB with strong preferred creditor status) | +2-3 notches | Strategic SOE in strong sovereign; AAA-rated parent wholly-owned subsidiary; explicit sovereign guarantee |
+| **High** | Strong (A/BBB sovereign; AA- parent; IMF program on track) | +1-2 notches | Major SOE in medium-rated sovereign; majority-owned subsidiary of strong parent |
+| **Medium** | Moderate (BBB/BB sovereign; BBB parent; DFI engagement) | 0-1 notch | Regional SOE; minority-owned affiliate; GSE with implicit but not explicit backing |
+| **Low / None** | Weak (B and below sovereign; below-IG parent) | 0 | Non-strategic entity; no support basis |
+
+### 6.3 Core Constraint: Supporter Ceiling Principle
+
+**The single most important rule:** External support uplift cannot exceed the supporter's own credit rating.
+
+```
+Entity Final Rating <= Supporter's Own Credit Rating
+
+Examples:
+- A state-owned enterprise receives sovereign support
+- The sovereign's own credit rating is BBB
+- The SOE's uplifted rating cannot exceed BBB
+- Even if willingness is very strong and entity standalone fundamentals are strong,
+  the sovereign ceiling cannot be breached
+```
+
+**Logic:** The supporter cannot elevate the entity to a higher credit level than its own capacity supports. If the sovereign's own credit is constrained to BBB level, the entity it supports cannot be A- or higher — because if the sovereign itself encounters credit stress, its ability to continue supporting disappears.
+
+**Special Cases:**
+- **Multilateral Development Banks:** MDBs may have higher credit ratings than their borrowing member sovereigns; this is inherent to their capital structure and preferred creditor treatment, not a breach of the supporter ceiling principle.
+- **Explicit Sovereign Guarantee:** Where a sovereign provides an explicit, legally binding, fully enforceable guarantee covering specific debt service, the guaranteed debt may be rated at the sovereign level or higher (e.g., guaranteed by a AAA sovereign).
+- **Non-Sovereign Guarantee:** A parent guarantee may uplift a subsidiary to the parent's level if the guarantee is irrevocable and unconditional.
+
+### 6.4 Adjustment Step Size and Operating Rules
+
+| Rule | Content |
+|------|---------|
+| **Unit** | Uplift in sub-notches (each sub-notch = 1/3 of a major grade, e.g., A to A+ = 1 sub-notch) |
+| **Single Limit** | Maximum 3 sub-notches per single external support adjustment |
+| **Frequency** | External support adjustment no more than once per 12 months (absent material event — e.g., sovereign rating change, change of ownership, asset transfer) |
+| **Minimum Trigger** | Support strength must be assessed as "High" or "Very High" to trigger uplift |
+| **Independent Baseline** | External support uplift is applied independently after pyramid scoring; does not change pyramid internal weights |
+
+### 6.5 Rating Annotation Requirements
+
+All ratings that include external support uplift must carry the following annotation:
+
+```
++------------------------------------------------------------+
+| ! Implicit Support Risk Statement                           |
+|                                                            |
+| This rating includes an external support uplift of [X]      |
+| sub-notches.                                                |
+| Uplift assumptions:                                         |
+|   Supporter: [Sovereign/Parent/Institution Name]            |
+|   Basis: Capacity Score [X.X/3] + Willingness Score [X.X/3] |
+|   Uplift: +[X] sub-notches                                  |
+|                                                            |
+| If the following scenarios materialize, the external support |
+| assumption may not hold:                                    |
+| 1. Supporter's own credit deteriorates                     |
+| 2. Supporter's strategic priorities or policies change      |
+| 3. Entity's core assets are transferred                    |
+| 4. Cross-border ring-fencing restricts support flow        |
+| 5. Regulatory or legal framework changes                   |
+|                                                            |
+| Excluding external support, the entity's standalone credit  |
+| quality assessment is: [X] grade                           |
++------------------------------------------------------------+
+```
+
+---
+
+## 7. "Trap Signals" — Early Warnings That Support May Be Withdrawn
+
+### 7.1 Historical Cases: Three Paths to Support Disappearance
+
+**Path One: Supporter Strategic Retreat (European Sovereign Cases)**
+
+| Phase | Time | Event | Impact on Credit Quality |
+|-------|------|-------|------------------------|
+| Normal | Pre-2009 | Greek government bonds carried same rating as sovereign; implicit EU support assumed | Market assumption that Eurozone membership provided support umbrella |
+| Policy Shift | 2010 | Eurozone sovereign debt crisis; Greek yields spike | Support basis (Eurozone implicit backing) challenged |
+| Retreat Signal | 2010-2012 | EU/IMF program conditionality; private-sector involvement (PSI) for Greek debt | Credit enhancement from Eurozone membership no longer unconditional |
+| Retreat | 2012 | Greek PSI: 53.5% nominal haircut on sovereign bonds; collective action clauses activated | Implicit support for sovereign bonds transformed into explicit loss |
+| Aftermath | 2012+ | Eurozone crisis response (ESM, OMT, Banking Union) partially restored support | But ex-post support was contingent on conditionality |
+
+**Key Lesson:** The European sovereign debt crisis demonstrated that *implicit policy support can fracture when tested by a systemic crisis*.
+
+**Path Two: Ownership/Tier Change (Support Capacity Erosion)**
+
+| Scenario | Effect | Credit Impact |
+|---------|--------|-------------|
+| Central govt -> regional govt ownership transfer | Supporter fiscal capacity declines | Potential 1-2 notch downgrade |
+| SOE privatization / partial listing | Government linkage weakens | Reduction in implicit support |
+| Transfer of entity between government departments | Support priority may change | Marginal to material, depending on transferring entities |
+
+**Path Three: Core Asset Transfer (Willingness Collapse Signal)**
+
+| Case | Year | Asset Transfer Event | Signal Interpretation |
+|------|------|---------------------|---------------------|
+| **Enron** | 2001 | Special purpose entities (SPEs) used to transfer debt off-balance-sheet before bankruptcy | SPEs constructed to shield parent from liability; but creditors assumed parent would stand behind obligations |
+| **Lehman Brothers** | 2008 | Repo 105 transactions temporarily removed assets from balance sheet | Signaled that management was concerned about leverage ratios; support from other institutions (including government) was uncertain |
+| **MF Global** | 2011 | Re-hypothecation of customer segregated funds | Took the most liquid assets and monetized them; support from parent holding company absent |
+| **Wirecard** | 2020 | Missing trust account balances; fictitious revenue recognition | Complete breakdown of trust and control; no support from regulators or auditors |
+| **Credit Suisse** | 2022-2023 | Significant deposit outflows; wealth management franchise attrition | Erosion of franchise value made regulatory resolution (including AT1 write-down) the chosen path |
+
+**Key Signal:** If the supporter transfers away core assets before a crisis, this is nearly always a sign that willingness to support is about to vanish.
+
+### 7.2 Systematic Trap Signal Checklist
+
+| Signal Category | Specific Signal | Impact Assessment | Danger Level | Observability |
+|----------------|----------------|------------------|-------------|---------------|
+| **Policy Environment Change** | "Strategic competitor" / "competitive neutrality" policy shift | Reduces support certainty for all state-linked entities | High | Public policy documents |
+| | Resolution regime reform (post-2008 bail-in frameworks) | Reduces implicit guarantee expectations for financial institutions | High | Legislation; regulatory guidance |
+| | Sector reform (e.g., housing finance reform affecting GSEs) | Specific sector's external support may disappear | Very High | Policy documents |
+| **Asset Changes** | Core assets transferred out without compensation | Supporter is "emptying the rescue pool" | Very High | Company filings; public announcements |
+| | Equity pledged to third parties | Controller may be reducing involvement | Medium | Corporate registry |
+| | Core business transferred to another entity | Strategic priority may be reduced | Medium | Company filings |
+| **Control Changes** | Ownership tier downgrade (central to regional) | Supporter capacity reduced | High | Corporate registry; filings |
+| | Supporter ownership share declining | Government/parent linkage weakening | Medium | Annual reports |
+| | Introduction of private capital / partial privatization | Government affiliation reducing | Medium | Company filings |
+| **Supporter Fiscal/Financial Crisis** | Supporter's own fiscal position deteriorating materially | Support capacity declining | High | Quarterly/annual fiscal data |
+| | Supporter's own credit rating downgraded | Signal of capacity erosion | Very High | Rating agency actions |
+| **Historical Behavior** | Similar entities have defaulted without support | "Support expectation" already broken | Very High | Default database; news |
+| | Supporter has restructured obligations (e.g., sovereign debt restructuring) | Support credit culture impaired | High | Public records |
+| | Maturity extensions / reschedulings rather than full payment | Repayment willingness declining | Medium | Debt announcements |
+
+### 7.3 Trap Signal Trigger Action Rules
+
+| Trigger Scenario | Analytical Response | Effect on Rating |
+|----------------|-------------------|-----------------|
+| 1 Very High danger signal | Initiate immediate external support reassessment | Support uplift may be reduced to 0 or negative |
+| 2+ High danger signals | Reduce willingness score to "Low" | Support adjustment reduced by at least 50% |
+| 1+ High danger signal + asset transfer | Trigger "No Support" scenario analysis | Must calculate standalone credit quality under "no support" assumption |
+| Supporter credit deterioration for 2+ consecutive periods | Downgrade capacity score | External support adjustment reduced by 1-2 notches |
+
+---
+
+## 8. Integration with Existing Engine Framework
+
+### 8.1 Integration with Seven-Industry Pyramids
+
+**Does not change pyramid internal weight structure.** External support is applied as an adjustment layer after pyramid scoring but before final rating output.
+
+```
+Standard Analysis Flow (Updated):
+
+Step 1: Industry classification -> select pyramid template
+Step 2: Pyramid scoring -> L1-L4/L5 layer scoring -> weighted composite -> baseline credit grade
+Step 3: * External Support Assessment (new; only for entities with identifiable supporters)
+   +-- Determine whether clear supporter exists -> No -> Skip
+   |                                              Yes -> Enter Step 3b
+   +-- 3b: Support capacity assessment (Section 4)
+   +-- 3c: Support willingness assessment (Section 5)
+   +-- 3d: Support strength matrix determination (Section 6)
+   +-- 3e: Output uplift magnitude + "Implicit Support Risk Statement"
+Step 4: Baseline grade + External support uplift = Final entity rating
+Step 5: Track B market pricing cross-validation
+Step 6: Output composite rating + Implicit Support Risk Statement
+```
+
+**Update for all industry pyramids:** Add the following annotation to all 7 industry templates:
+
+```
+| L5 External Support | Independent adjustment layer | See external-support-framework.md |
+|                     | Activate only for entities with identifiable supporters |
+|                     | Uplift range: 0-3 sub-notches  |
+|                     | Ceiling: Not to exceed supporter's own credit rating |
+```
+
+### 8.2 Integration with Qualitative Analysis Framework
+
+In qualitative-analysis.md, add the "Support Capacity vs. Support Willingness" analysis framework to the policy interpretation methodology:
+
+```
+Within the policy transmission chain, add:
+  +-- "Support Capacity vs. Support Willingness" analysis step --------+
+  |                                                                     |
+  |  When analyzing a state-owned or government-related entity,         |
+  |  after completing standard policy analysis, add the following:      |
+  |                                                                     |
+  |  Step A: Capacity Assessment                                        |
+  |    -> What is the sovereign's fiscal trajectory?                    |
+  |    -> Are there competing claims on government resources?           |
+  |    -> Does the supporter have unencumbered assets?                  |
+  |                                                                     |
+  |  Step B: Willingness Assessment                                     |
+  |    -> Is the policy environment supportive of the entity's sector?  |
+  |    -> Is there political consensus on the entity's strategic role?  |
+  |    -> Are there signals of asset transfers or control changes?      |
+  |                                                                     |
+  |  Step C: Combined Assessment                                        |
+  |    -> Is external support likely to persist?                        |
+  |    -> If withdrawn, what is the impact on credit quality?           |
+  +---------------------------------------------------------------------+
+```
+
+### 8.3 Integration with Mosaic Engine
+
+In mosaic-engine.md's gap-to-risk mapping, add "External Support Assessment Gap":
+
+```
+| Gap Type | Typical Missing Data | Corresponding Info Risk | Alternative Signal |
+|---------|---------------------|----------------------|-------------------|
+| ... (existing entries) ...                                                    |
+| External Support Data | Supporter's true fiscal/financial capacity | Overestimate or underestimate support capacity | Published fiscal/financial data; IMF Article IV; rating agency reports; annotate estimation error |
+| | Supporter's commitment to specific entity | Overestimate willingness certainty | Historical support record + ownership + strategic positioning; annotate "not a formal commitment" |
+| | Parent's actual cash pooling policies and practice | Cannot determine actual support magnitude | Related-party balances + guarantee amounts + business integration |
+| | Multilateral program commitment sustainability | May overestimate political commitment | Program track record; shareholder consensus |
+```
+
+Additionally, in the mosaic engine completeness assessment, add "**L5 External Support**" as an independent dimension:
+
+```
+Signal Density Bar Chart (Updated):
++-------------------------------------------+
+| L1 Policy/Macro    ████████░░ 82%          |
+| L2 Technology/Comp ██████░░░░ 75%          |
+| L3 Supply Chain/Ops ████░░░░░░ 48% !       |
+| L4 Financial/Debt  █████████░ 89%          |
+| L5 External Support ████░░░░░░ 45% !       |  <- New
+| Market Pricing (B)  ███░░░░░░░ 35% !       |
++-------------------------------------------+
+```
+
+### 8.4 Integration with Dual-Track Framework
+
+In dual-track-methodology.md's cross-validation step, add "External Support Cross-Validation":
+
+```
+Track A (with support uplift) <-> Track B (market pricing)
+
+Cross-validation logic:
+  - If Track A is uplifted to AAA/AA based on external support, but Track B
+    credit spreads / trading prices reflect standalone (no-support) credit quality
+    -> Market has low confidence in external support -> Reduce support confidence
+  - If Track A shows no external support (e.g., independent entity), but Track B
+    spreads are narrowing
+    -> Market may be pricing in expected external support
+    -> Label as "market-implied external support expectation"
+    -> Verify with triangulation from other sources
+```
+
+### 8.5 Integration with Multi-Stakeholder Framework
+
+In multi-stakeholder.md, distinguish external support analysis weight for each role:
+
+| Role | External Support Analysis Weight | Key Focus |
+|------|-------------------------------|-----------|
+| **M0 Credit Underwriting (Bank)** | **High** | Supporter willingness + supporter's own credit quality — banks care most about reliability of the "second way out" |
+| **M1 Bond Investment** | **High** | Sustainability of support capacity and willingness over investment horizon |
+| **M2 Bond Underwriting** | **Medium-High** | Whether external support can support initial rating — affects placement and pricing |
+| **M3 Market Trading** | **Medium** | External support is a core factor in spread pricing — but trading looks more at marginal changes |
+| **M4 Portfolio Risk Control** | **High** | Tail risk of support withdrawal — concentration risk in portfolio of support-dependent credits |
+| **M5 Corporate Finance** | **High** | How external support changes affect financing cost and capacity |
+
+---
+
+## 9. Module Usage Guide
+
+### 9.1 When to Activate External Support Assessment
+
+Not all issuers require external support assessment. The following checklist determines activation:
+
+| Trigger Condition | Applicable Entities | Action |
+|-----------------|-------------------|--------|
+| Sovereign or government is controlling shareholder | SOEs, development banks, public utilities, GSEs | **Must** activate sovereign support assessment |
+| Clear parent/group with ownership >30% | Group subsidiaries | **Recommended** to activate group support assessment |
+| Publicly disclosed strategic investor with >10% stake | Entities with strategic investors | Selective activation — when material to credit quality |
+| None of the above | Independent entities / pure private sector | **Do not activate** — external support assessment not applicable |
+| None of above but with special backing | Industry association support / supply chain backing / informal support | Annotate as "informal external support" only; do not trigger formal assessment |
+
+### 9.2 Assessment Frequency
+
+| Assessment Type | Regular Update Frequency | Event-Driven (Immediate Reassessment) |
+|----------------|------------------------|-------------------------------------|
+| Sovereign support capacity | Annual — aligns with fiscal data release / IMF Article IV | Sovereign rating downgrade; fiscal crisis; material policy change |
+| Sovereign support willingness | Quarterly — track signal changes | Core asset transfer; control change; similar entity default |
+| Multilateral support | Annual — aligns with program review cycles | Program off-track; shareholder commitment changes; new IMF/EU program |
+| Parent/Group support capacity | Semi-annual — aligns with annual/ interim reporting | Parent rating downgrade; material loss; asset restructuring |
+| Parent/Group support willingness | Quarterly — track signal changes | Equity change; abnormal related-party transactions; parent strategy change |
+| GSE/Systemic entity implicit support | Semi-annual — track regulatory and policy developments | Legislative change; resolution plan update; political intervention |
+
+### 9.3 Data Resource Guide
+
+| Data Type | Data Sources | Access Method | Cost | Update Frequency |
+|-----------|-------------|--------------|------|-----------------|
+| Sovereign fiscal data | IMF GFS; World Bank WDI; national finance ministries | Public download | Free | Annual (with lag) |
+| Sovereign debt data | IMF Global Debt Database; national debt offices | Public download | Free | Quarterly/Annual |
+| | Bloomberg; market data terminals | Subscription | Paid | Real-time |
+| Sovereign ratings | S&P, Moody's, Fitch | Rating agency websites | Free (rating); paid (full report) | Event-driven |
+| IMF program data | IMF MONA database; country reports | IMF website | Free | Per review cycle |
+| EU/ESM program data | ESM website; European Commission | Public | Free | Per program cycle |
+| Parent company financials | Listed company filings; unlisted company reports | SEC/regulator EDGAR; company website | Free | Per filing schedule |
+| Credit default / recovery data | Rating agencies; academic databases (e.g., Moody's Default Research) | Subscription (some free summaries) | Paid/Free | Periodic |
+| Market pricing (CDS, bond yields) | Bloomberg; Refinitiv; market data | Subscription | Paid | Real-time |
+| Regulatory info | Central banks; financial regulators; resolution authorities | Public websites | Free | Event-driven |
+
+---
+
+## 10. Methodological Limitations and Honest Disclosure
+
+### 10.1 Inherent Uncertainty of Willingness Assessment
+
+This is the module's most important limitation to acknowledge honestly:
+
+| Limitation | Cause | Impact |
+|------------|-------|--------|
+| **Willingness is only revealed in crisis** | In normal times, all entities "appear" to have backing — only at the edge of default does actual willingness become observable | Peace-time willingness assessment is inherently inferential; confidence is limited |
+| **Decision-making is not transparent** | Whether a sovereign or parent supports a specific entity is a political/strategic decision, not solely a financial one — the decision process is not public | Material uncertainty cannot be eliminated |
+| **Policy changes are not forecastable** | Before the sovereign debt crisis (2009), Greek bonds were treated as having EU support; before the AT1 write-down (2023), Credit Suisse bonds carried an investment-grade rating | Sudden policy/political shifts are a "known unknown" in external support analysis |
+| **Information asymmetry** | Whether a parent has internally decided to abandon a subsidiary is not accessible to external analysts | Asset transfers and strategic signals are the strongest advance indicators but appear late |
+
+**Honest Disclosure:** Public-data-based willingness assessment is essentially an inference from "past behavior + current structure," not a prediction of future behavior. Accurate willingness assessment requires internal information (government meeting minutes, board discussions, rescue plan approval processes) that is not publicly available. Therefore, **all willingness-based uplift should be treated as "conditional assumptions" rather than "deterministic conclusions."**
+
+### 10.2 Technical Limitations of Capacity Assessment
+
+| Limitation | Explanation | Mitigation |
+|------------|-------------|-----------|
+| Hidden liabilities | True fiscal position may include contingent liabilities (implicit guarantees, PPPs, off-budget borrowing) that are not fully disclosed | Annotate "known explicit debt only, contingent liabilities not fully captured"; use broad ranges rather than single figures |
+| Data lag | Fiscal data release lags by 6-18 months; some data is revised | Supplement with more recent indicators (e.g., monthly fiscal data, bond yields); annotate "data subject to revision" |
+| Consolidated vs. budgetary government accounts | Central government budget vs. general government (including sub-national and social security) can differ materially | Distinguish scope of data used; prefer general government data where available |
+| Complex ownership chains | Multiple tiers of state ownership; cross-shareholding complicates control assessment | Follow the "ultimate controlling entity" principle |
+
+### 10.3 Avoiding "External Support Illusion"
+
+**The existence of this module does not mean that external support is always present.** Reminders for analysts:
+
+```
++--------------------------------------------------------------+
+| ! External Support Analysis Core Discipline                    |
+|                                                               |
+|  1. Assess standalone credit quality first (no support),       |
+|     then consider whether uplift is justified                  |
+|  2. The supporter cannot become stronger overnight —           |
+|     do not overestimate weak supporters                       |
+|  3. Willingness before and after an asset transfer             |
+|     may be completely different                               |
+|  4. No supporter rescues everyone simultaneously —             |
+|     resources are always limited                               |
+|  5. Political direction matters more than current             |
+|     financials — policy changes precede defaults               |
+|  6. When willingness and capacity conflict,                    |
+|     trust quantitative capacity assessment more               |
+|  7. Jurisdictions with prior default/support failure           |
+|     should have external support discounted                   |
+|  8. Any support-based uplift must include a                   |
+|     "no-support" reverse scenario analysis                    |
+|                                                               |
++--------------------------------------------------------------+
+```
+
+### 10.4 Version and Update Plan
+
+| Version | Update Content | Target Date |
+|---------|---------------|-------------|
+| v0.1.0 | Initial release: Framework definition + methodology + assessment matrix | Current |
+| v0.2.0 | Quantitative scorecard: Capacity and willingness scoring templates | Next iteration |
+| v0.3.0 | Case validation: Back-test external support assessment on 5-10 historical cases | Next iteration |
+| v0.4.0 | Data interface: Connect to fiscal data APIs / market data feeds | Next iteration |
+| v0.5.0 | Trap signal automated monitoring: Embed external support signal monitoring in mosaic engine | Next iteration |
+
+---
+
+## Related Content
+
+- [Engine Architecture Overview](engine-overview.md) — Core concepts, overall architecture, design principles
+- [Industry Classification and Framework](industry-framework.md) — Ten-dimension scoring, four industry paradigms, seven-industry pyramid
+- [Qualitative Analysis Methodology](qualitative-analysis.md) — Source grading, policy interpretation, mosaic assembly
+- [Dual-Track Methodology](dual-track-methodology.md) — Track A + Track B, cross-validation, rating mapping
+- [Mosaic Engine](mosaic-engine.md) — Signal extraction, mosaic assembly, completeness assessment
+- [Rating Agency Benchmark Audit](audits/rating-agency-benchmark-audit.md) — External support G3/G4 gap analysis

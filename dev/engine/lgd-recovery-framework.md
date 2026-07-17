@@ -1,847 +1,932 @@
-# 违约损失率（LGD）与回收率分析框架
+# Loss Given Default (LGD) and Recovery Analysis Framework
 
-**版本**: v0.8.4-release | **日期**: 2026-07-10 | **状态**: 已发布
+**Version**: v0.8.4-release | **Date**: 2026-07-17 | **Status**: Published
 
-**所属模块**: 固定收益信用分析引擎 — 预期损失（EL）框架补充模块
-
----
-
-> **诚实性声明：** 本框架中的LGD估算方法属于**简化估算**而非精确计量。精确LGD需要内部抵押物估值数据、历史违约回收数据库和清收过程跟踪，这些在中国信用债市场属于机构内部数据，公开渠道不可获取。本框架的目标是在公开数据约束下提供有区分度的LGD排序，而非精确违约损失率预测。文中已标注哪些部分属于"精确指标"（有公开数据支撑的可计算值）、哪些属于"简化估算"（基于条款和行业基准的推断）。
+**Module**: Fixed Income Credit Analysis Engine — Expected Loss (EL) Framework Supplement
 
 ---
 
-## 目录
-
-- [一、LGD在引擎中的定位](#一lgd在引擎中的定位)
-- [二、LGD五级分类体系](#二lgd五级分类体系)
-- [三、影响LGD的关键因子](#三影响lgd的关键因子)
-- [四、LGD评估的标准流程](#四lgd评估的标准流程)
-- [五、债项优先级与增信措施评估](#五债项优先级与增信措施评估)
-- [六、抵押物分类估值框架](#六抵押物分类估值框架)
-- [七、担保增信评估](#七担保增信评估)
-- [八、行业特征对回收率的影响](#八行业特征对回收率的影响)
-- [九、违约后回收路径分析](#九违约后回收路径分析)
-- [十、中国市场的特殊考量](#十中国市场的特殊考量)
-- [十一、公开数据约束下的简化LGD估算方案](#十一公开数据约束下的简化lgd估算方案)
-- [十二、LGD与现有框架的集成](#十二lgd与现有框架的集成)
-- [十三、LGD评估模板与输出规范](#十三lgd评估模板与输出规范)
-- [十四、版本历史与待办事项](#十四版本历史与待办事项)
+> **Honesty Statement:** The LGD estimation methods in this framework constitute **simplified estimates** rather than precise measurements. Accurate LGD requires internal collateral valuation data, historical default-and-recovery databases, and workout process tracking — data that belongs to institutional internal records and is unavailable through public channels across most markets. This framework aims to provide *discriminating LGD rankings* under public-data constraints, not precise loss-given-default predictions. Sections are annotated to indicate which parts are "precise indicators" (computable values with public data support), which are "simplified estimates" (inferences based on covenants and industry benchmarks), and which draw on international recovery studies.
 
 ---
 
-## 一、LGD在引擎中的定位
+## Table of Contents
 
-### 1.1 从PD单维到PD×LGD双维
-
-当前引擎的评级输出是单维度的违约概率排序（AAA→D）。专业评级机构（Moody's/S&P/Fitch）均采用PD+LGD双维框架。同一发行人不同债项的风险差异可达2-4个信用等级——完全取决于抵押、担保和优先级结构。
-
-**LGD模块不替代现有的PD评级，而是作为独立维度与PD评级并行：**
-
-```
-PD评级（现有）        LGD评级（新增）
-AAA→D              LGD1→LGD5
-    │                    │
-    └────────┬───────────┘
-             ↓
-      综合信用评估
-  （预期损失 EL = PD × LGD）
-```
-
-### 1.2 预期损失矩阵
-
-综合信用风险的完整表达应为预期损失（Expected Loss, EL）：
-
-| PD评级 | LGD评级 | 预期损失率（EL） | 含义 |
-|---------|---------|-----------------|------|
-| AAA（低PD） | LGD1（低LGD） | <0.2% | 极低风险，双重保护 |
-| AAA（低PD） | LGD5（高LGD） | ~4% | 主体质量高但债项保护不足 |
-| CCC（高PD） | LGD1（低LGD） | ~10% | 主体濒临违约但抵押充足 |
-| CCC（高PD） | LGD5（高LGD） | ~80%+ | 最坏组合，预期几乎全损 |
-
-**数据说明：** EL=PD×LGD是一个**概念框架公式**。精确的EL计算需要PD和LGD的量化估计值，而非等级。引擎当前使用PD等级（AAA→D）和LGD等级（LGD1→LGD5），EL矩阵采用区间映射。
-
-### 1.3 与国际评级机构的对标
-
-| 评级机构 | PD维度 | LGD维度 | 符号表示 | 备注 |
-|---------|--------|---------|---------|------|
-| Moody's | 评级（Aaa-C） | 损失等级（1-6） | Aaa.lgd1 | 损失等级基于历史回收率 |
-| S&P | 评级（AAA-D） | 回收率评级（1+~5） | AAA/1+ | 回收率评级针对具体债项 |
-| Fitch | 评级（AAA-D） | 回收率等级（RR1-RR6） | AAA(RR1) | 回收率等级对应回收率区间 |
-| **本引擎** | **PD评级（AAA→D）** | **LGD等级（LGD1→LGD5）** | **BBB/LGD2** | **分两行独立输出** |
-
-**数据来源：** Moody's《Loss Given Default (LGD) and Recovery Rate Metrics》Methodology (2017); S&P《Recovery Ratings》Criteria (2019); Fitch《Recovery Ratings and Notching Criteria》(2020)。这些公开方法论文件描述了评级机构的LGD框架结构，但具体回收率基准数据和内部模型未公开。
-
-### 1.4 何时使用LGD模块
-
-| 场景 | LGD分析深度 | 理由 |
-|------|------------|------|
-| 仅评估主体信用质量（通用评级） | 不需要 | 主体评级不考虑具体债项差异 |
-| 评估特定债券的信用风险 | 需要完整LGD分析 | 同一主体的有担保债和无担保债风险差异显著 |
-| 可转债/可交换债评估 | 需要简化LGD分析 | 转股价值降低时债项保护机制重要性上升 |
-| 结构化产品优先级分析 | 需要完整LGD分析 | 优先级分层决定了LGD差异 |
-| 组合风控中的压力测试 | 需要LGD参数输入 | 违约情景下的组合损失依赖于各债项的LGD估计 |
-| 债券相对价值比较 | 需要LGD作为定价输入 | 同类PD评级但不同LGD的债券应存在利差差异 |
+- [1. LGD Positioning in the Engine](#1-lgd-positioning-in-the-engine)
+- [2. Five-Tier LGD Classification](#2-five-tier-lgd-classification)
+- [3. Key Factors Influencing LGD](#3-key-factors-influencing-lgd)
+- [4. Standard LGD Assessment Process](#4-standard-lgd-assessment-process)
+- [5. Debt Priority and Credit Enhancement Evaluation](#5-debt-priority-and-credit-enhancement-evaluation)
+- [6. Collateral Classification and Valuation Framework](#6-collateral-classification-and-valuation-framework)
+- [7. Guarantee and Credit Enhancement Assessment](#7-guarantee-and-credit-enhancement-assessment)
+- [8. Industry Characteristics and Recovery Rates](#8-industry-characteristics-and-recovery-rates)
+- [9. Post-Default Recovery Path Analysis](#9-post-default-recovery-path-analysis)
+- [10. International Bankruptcy and Insolvency Frameworks](#10-international-bankruptcy-and-insolvency-frameworks)
+- [11. Collateral Valuation: International Standards](#11-collateral-valuation-international-standards)
+- [12. Simplified LGD Estimation Under Public Data Constraints](#12-simplified-lgd-estimation-under-public-data-constraints)
+- [13. LGD Integration with Existing Frameworks](#13-lgd-integration-with-existing-frameworks)
+- [14. LGD Assessment Template and Output Specifications](#14-lgd-assessment-template-and-output-specifications)
+- [15. Version History and Roadmap](#15-version-history-and-roadmap)
 
 ---
 
-## 二、LGD五级分类体系
+## 1. LGD Positioning in the Engine
 
-### 2.1 LGD等级定义
+### 1.1 From PD-Only to PD x LGD Two-Dimensional Framework
 
-| LGD等级 | 预期损失率 | 预期回收率 | 典型场景 |
-|---------|-----------|-----------|---------|
-| LGD1 | <20% | >80% | 现金/国债质押覆盖100%+；政策性担保公司全额担保；优先级最高的结构化产品层 |
-| LGD2 | 20% - 40% | 60% - 80% | 优质抵押物覆盖充分（LTV<50%）；上市公司股权质押且维持担保比例>150%；国有大行出具的不可撤销备用信用证 |
-| LGD3 | 40% - 60% | 40% - 60% | 一般抵押覆盖（LTV 50-70%）；有担保但担保方与发行人关联性强；优先级无担保债券 |
-| LGD4 | 60% - 80% | 20% - 40% | 次级债券；信用债券（无抵押无担保）；担保方信用质量弱于发行人的有担保债 |
-| LGD5 | >80% | <20% | 劣后级；深度次级；结构性产品劣后层；已发生违约且无有效增信的债券 |
+The engine's current rating output is a single-dimensional probability-of-default ranking (AAA to D). Major rating agencies (Moody's, S&P, Fitch) all employ a PD + LGD two-dimensional framework. Risk differences between different obligations of the same issuer can span 2-4 notches — determined entirely by collateral, guarantee, and seniority structure.
 
-**数据说明：**
-- 本框架的LGD/回收率区间参考了Moody's《Corporate Default and Recovery Rates》(2020)的全球回收率统计数据，以及S&P《Recovery Rating Scale》的划分逻辑。
-- 中国的历史回收率数据在公开渠道样本量有限（后文第10节详细讨论），上述区间采用了全球基准，再以中国市场特征进行调整。
+**The LGD module does not replace existing PD ratings. It operates as an independent dimension alongside PD ratings:**
 
-### 2.2 LGD等级与PD评级的交互约束
+```
+PD Rating (Existing)        LGD Rating (New)
+AAA to D                    LGD1 to LGD5
+    |                            |
+    +-------------+-------------+
+                  |
+          Integrated Credit Assessment
+     (Expected Loss: EL = PD x LGD)
+```
 
-| PD评级 | 可达到的LGD等级上限 | 约束理由 |
-|--------|-------------------|---------|
-| AAA - AA | LGD1 - LGD4 | 主体质量高但无法改变债项条款的LGD等级极限 |
-| A - BBB | LGD1 - LGD5 | 中等质量主体可通过优质增信达到LGD1；无担保信用债LGD3-LGD4 |
-| BB - B | LGD2 - LGD5 | 低质量主体即使有抵押也可能因执行难度导致LGD不能达到LGD1 |
-| CCC - D | LGD3 - LGD5 | 濒临违约/已违约主体，回收率取决于清算价值而非增信措施的预期效力 |
+### 1.2 Expected Loss Matrix
 
-**约束逻辑：** PD评级影响LGD极限是因为——当发行人的信用质量恶化到一定程度时，一些增信措施的实际效力会下降（如关联担保方同时恶化、抵押物的执行过程因发行人的法律纠纷而受阻等）。
+The complete expression of integrated credit risk is Expected Loss (EL):
+
+| PD Rating | LGD Rating | Expected Loss Rate (EL) | Meaning |
+|-----------|-----------|------------------------|---------|
+| AAA (low PD) | LGD1 (low LGD) | <0.2% | Very low risk, double protection |
+| AAA (low PD) | LGD5 (high LGD) | ~4% | High-quality issuer but weak covenant protection |
+| CCC (high PD) | LGD1 (low LGD) | ~10% | Near-default but ample collateral |
+| CCC (high PD) | LGD5 (high LGD) | ~80%+ | Worst combination, near total loss expected |
+
+**Data Note:** EL = PD x LGD is a **conceptual framework formula**. Precise EL calculation requires quantitative PD and LGD estimates, not ordinal grades. The engine currently uses PD grades (AAA to D) and LGD grades (LGD1 to LGD5); the EL matrix employs interval mapping.
+
+### 1.3 Benchmarking Against International Rating Agencies
+
+| Rating Agency | PD Dimension | LGD Dimension | Notation | Notes |
+|-------------|-------------|--------------|---------|-------|
+| Moody's | Rating (Aaa-C) | Loss Grade (1-6) | Aaa.lgd1 | Loss grades based on historical recovery rates |
+| S&P | Rating (AAA-D) | Recovery Rating (1+ to 5) | AAA/1+ | Recovery rating specific to each obligation |
+| Fitch | Rating (AAA-D) | Recovery Rating (RR1-RR6) | AAA(RR1) | Recovery ratings map to recovery rate ranges |
+| **This Engine** | **PD Rating (AAA to D)** | **LGD Grade (LGD1-LGD5)** | **BBB/LGD2** | **Output as two independent lines** |
+
+**Data Sources:** Moody's *Loss Given Default (LGD) and Recovery Rate Metrics* Methodology (2017); S&P *Recovery Ratings* Criteria (2019); Fitch *Recovery Ratings and Notching Criteria* (2020). These public methodology documents describe the LGD framework structure but do not disclose underlying recovery rate benchmarks or internal models.
+
+### 1.4 When to Use the LGD Module
+
+| Scenario | LGD Analysis Depth | Rationale |
+|---------|-------------------|-----------|
+| Issuer-only credit quality assessment (generic rating) | Not needed | Issuer rating does not consider obligation-specific differences |
+| Specific bond credit risk assessment | Full LGD analysis | Secured vs. unsecured bonds of the same issuer have materially different risk profiles |
+| Convertible/exchangeable bond assessment | Simplified LGD analysis | Bond protection mechanisms become more important as conversion value declines |
+| Structured product seniority analysis | Full LGD analysis | Seniority tranching drives LGD differences |
+| Portfolio stress testing in risk management | LGD parameter inputs required | Portfolio loss under default scenarios depends on each obligation's LGD estimate |
+| Relative value comparison | LGD required as pricing input | Bonds with same PD rating but different LGD should exhibit yield spread differences |
 
 ---
 
-## 三、影响LGD的关键因子
+## 2. Five-Tier LGD Classification
 
-### 3.1 因子总览
+### 2.1 LGD Grade Definitions
 
-| 因子类别 | 具体因子 | 对LGD的影响方向 | 数据来源 | 计算精度 |
-|---------|---------|----------------|---------|---------|
-| **债项优先级** | 有担保/无担保优先级/次级/劣后 | 优先级越高，LGD越低 | 募集说明书（公开） | **精确**——条款通常明确定义 |
-| **抵押物质量** | 抵押物类型、价值覆盖倍数、流动性 | 抵押物越优质/覆盖越充分，LGD越低 | 募集说明书担保条款（公开） | **简化估算**——无公开抵押物评估报告，依赖条款描述和行业基准推断 |
-| **担保增信** | 担保方信用质量、担保比例、担保法律效力 | 担保方信用越强/担保比例越高，LGD越低 | 担保方公开信用信息（公开） | **简化估算**——需评估担保方独立信用质量 |
-| **行业特征** | 重资产vs轻资产、资产专用性 | 资产可回收价值越高，LGD越低 | 行业研究报告、历史回收案例（公开） | **简化估算**——依赖行业基准和案例推断 |
-| **违约路径** | 破产重整/破产清算/庭外重组 | 清算价值通常低于重整价值 | 历史案例、法律环境分析（公开） | **简化估算**——取决于具体案件的法律程序和谈判结果 |
-| **司法环境** | 破产法律完善度、地方保护主义 | 司法效率越高/保护越可预期，LGD越高（回收率越高） | 法律环境报告、历史案例（公开） | **定性评估**——依赖区域司法环境分析 |
+| LGD Grade | Expected Loss Rate | Expected Recovery Rate | Typical Scenario |
+|-----------|-------------------|----------------------|-----------------|
+| LGD1 | <20% | >80% | Cash/treasury collateral covering 100%+, investment-grade sovereign guarantees, highest-seniority structured tranches |
+| LGD2 | 20%-40% | 60%-80% | High-quality collateral with adequate coverage (LTV<50%), listed equity pledge with margin ratio >150%, confirmed irrevocable standby letters of credit from major international banks |
+| LGD3 | 40%-60% | 40%-60% | General collateral coverage (LTV 50-70%), guaranteed but guarantor correlated with issuer, senior unsecured bonds |
+| LGD4 | 60%-80% | 20%-40% | Subordinated bonds, unsecured debentures (no collateral, no guarantee), secured bonds where guarantor credit quality is weaker than issuer |
+| LGD5 | >80% | <20% | Junior tranches, deep subordination, structured product equity tranches, bonds already in default with no effective credit enhancement |
 
-### 3.2 因子分解公式（简化估算）
+**Data Note:** The LGD/recovery rate ranges in this framework reference Moody's *Corporate Default and Recovery Rates* (2020) global recovery statistics, S&P's *Recovery Rating Scale* classification logic, and Altman's seminal research on bond recovery rates.
 
-```
-LGD估计值 = Base_LGD  -  Adjustments
+### 2.2 LGD Grade and PD Rating Interaction Constraints
 
-其中：
-  Base_LGD   = f(债项优先级, 经济周期阶段)
-  Adjustments = Δ_Collateral + Δ_Guarantee + Δ_Industry + Δ_RecoveryPath + Δ_Legal
+| PD Rating | Achievable LGD Grade Range | Constraint Rationale |
+|-----------|---------------------------|---------------------|
+| AAA - AA | LGD1 - LGD4 | High issuer quality cannot alter covenant-level LGD ceiling |
+| A - BBB | LGD1 - LGD5 | Medium-quality issuers can reach LGD1 through superior credit enhancement; unsecured debentures at LGD3-LGD4 |
+| BB - B | LGD2 - LGD5 | Low-quality issuers may be unable to reach LGD1 even with collateral due to enforcement difficulties |
+| CCC - D | LGD3 - LGD5 | Near-default/defaulted issuers — recovery depends on liquidation values rather than expected enhancement effectiveness |
 
-Base_LGD 基准值（仅考虑优先级）：
-  - 有担保优先级债券：Base_LGD = 45%（即回收率约55%）
-  - 无担保优先级债券：Base_LGD = 60%（即回收率约40%）
-  - 次级债券：         Base_LGD = 75%（即回收率约25%）
-  - 劣后级债券：       Base_LGD = 90%（即回收率约10%）
-
-调整项（Δ）：
-  - Δ_Collateral:  抵押物质量调整，范围 -25pp 至 +10pp（优质抵押物降低LGD，劣质或无抵押提高）
-  - Δ_Guarantee:   担保增信调整，范围 -15pp 至 +5pp
-  - Δ_Industry:    行业回收特征调整，范围 -5pp 至 +10pp
-  - Δ_RecoveryPath: 违约路径调整，范围 -5pp 至 +10pp
-  - Δ_Legal:       司法环境调整，范围 -5pp 至 +10pp
-```
-
-**诚实性说明：** 上述公式的系数（如Base_LGD=45%对应有担保优先级）是基于全球历史回收率数据的**简化基准**。Moody's 2019年数据显示，全球有担保优先级债券的加权平均回收率为55.1%（LGD=44.9%）；无担保优先级为39.8%（LGD=60.2%）；次级为23.5%（LGD=76.5%）。但中国市场无公开发布的类似统计数据，这些基准是否适用于中国需要实证验证。框架使用这些基准作为起步，但会在输出中标注"基于全球基准，未经中国市场历史数据校准"。
+**Constraint Logic:** PD rating affects the LGD ceiling because — as an issuer's credit quality deteriorates to a certain point — some credit enhancement measures lose effectiveness (e.g., correlated guarantors deteriorate simultaneously, collateral enforcement is impeded by the issuer's legal entanglements).
 
 ---
 
-## 四、LGD评估的标准流程
+## 3. Key Factors Influencing LGD
+
+### 3.1 Factor Overview
+
+| Factor Category | Specific Factor | Effect on LGD | Data Source | Calculation Precision |
+|----------------|----------------|--------------|-------------|----------------------|
+| **Debt Seniority** | Secured/Unsecured Senior/Subordinated/Junior | Higher seniority = lower LGD | Offering memorandum/prospectus (public) | **Precise** — terms usually clearly defined |
+| **Collateral Quality** | Collateral type, value coverage multiple, liquidity | Higher quality/more coverage = lower LGD | Prospectus collateral clauses (public) | **Simplified Estimate** — no independent collateral appraisal report; relies on covenant descriptions and industry benchmarks |
+| **Guarantee Enhancement** | Guarantor credit quality, guarantee ratio, legal enforceability | Stronger guarantor/higher ratio = lower LGD | Guarantor public credit information (public) | **Simplified Estimate** — requires independent assessment of guarantor credit quality |
+| **Industry Characteristics** | Asset-heavy vs. asset-light, asset specificity | Higher asset recoverability = lower LGD | Industry research, historical recovery cases (public) | **Simplified Estimate** — relies on industry benchmarks and case inference |
+| **Default Path** | Reorganization/Liquidation/Out-of-court restructuring | Liquidation value typically below reorganization value | Historical cases, legal environment analysis (public) | **Simplified Estimate** — depends on specific case legal proceedings and negotiations |
+| **Legal/Judicial Environment** | Bankruptcy law completeness, judicial efficiency | Higher efficiency/predictability = higher recovery (lower LGD) | Legal environment reports, historical cases (public) | **Qualitative Assessment** — depends on jurisdiction-specific judicial analysis |
+
+### 3.2 Factor Decomposition Formula (Simplified Estimate)
 
 ```
-Step 1: 识别债项类型（有担保/无担保/次级/劣后）
-    │  输入：募集说明书"主要条款摘要"
-    │  输出：优先级分类 + Base_LGD基准值
-    ▼
-Step 2: 评估增信措施（抵押物质量/担保方信用）
-    │  输入：募集说明书担保章节、抵押物描述
-    │  输出：Δ_Collateral + Δ_Guarantee
-    ▼
-Step 3: 参考行业回收率基准
-    │  输入：行业资产特性分析报告
-    │  输出：Δ_Industry
-    ▼
-Step 4: 评估违约情景下的回收路径
-    │  输入：发行人所处区域司法环境、可比违约案例
-    │  输出：Δ_RecoveryPath + Δ_Legal
-    ▼
-Step 5: 综合输出LGD等级 + 预期回收率区间
-    │  输出：LGD等级 + 回收率区间 + 置信度评估
-    ▼
-Step 6: （可选）与PD评级合并为EL预期损失评估
-    │  输出：EL区间 + 风险资本占用估计
+LGD Estimate = Base_LGD - Adjustments
+
+Where:
+  Base_LGD   = f(Debt Seniority, Economic Cycle Phase)
+  Adjustments = Delta_Collateral + Delta_Guarantee + Delta_Industry
+                + Delta_RecoveryPath + Delta_Legal
+
+Base_LGD Benchmark (seniority only):
+  - Secured Senior:          Base_LGD = 45%  (i.e., ~55% recovery)
+  - Unsecured Senior:        Base_LGD = 60%  (i.e., ~40% recovery)
+  - Subordinated:            Base_LGD = 75%  (i.e., ~25% recovery)
+  - Junior/Equity Tranche:   Base_LGD = 90%  (i.e., ~10% recovery)
+
+Adjustments (Delta):
+  - Delta_Collateral:  Collateral quality adjustment, range -25pp to +10pp
+  - Delta_Guarantee:   Guarantee enhancement adjustment, range -15pp to +5pp
+  - Delta_Industry:    Industry recovery characteristics, range -5pp to +10pp
+  - Delta_RecoveryPath: Default path adjustment, range -5pp to +10pp
+  - Delta_Legal:       Legal environment adjustment, range -5pp to +10pp
 ```
 
-### 4.1 各步骤数据需求清单
-
-| 步骤 | 所需数据 | 公开可获取？ | 替代方案 |
-|------|---------|------------|---------|
-| Step 1 | 募集说明书"债券条款"章节 | **是**（交易所/银行间市场网站） | — |
-| Step 1 | 信用评级报告中的债项评级 | **是**（评级机构官网） | 需注意外部评级可能滞后 |
-| Step 2 | 抵押物类型和覆盖率 | **部分**（募集说明书描述，但无独立评估报告） | 通过抵押物类型定性判断覆盖充足性 |
-| Step 2 | 担保方信用评级和财务数据 | **是**（如担保方为上市公司或公开评级主体） | 非上市担保方需通过公开信息推断 |
-| Step 3 | 行业资产结构数据 | **是**（券商行业研报、财报附注） | 典型的固定资产/总资产比例等 |
-| Step 4 | 违约案例回收率数据 | **有限**（仅公开报道信息） | 参考下文第9节的历史案例汇总 |
-| Step 4 | 发行人涉诉和执行记录 | **是**（裁判文书网、被执行人信息） | — |
-| Step 5+6 | 主体PD评级 | **是**（引擎已有输出） | — |
+**Honesty Statement:** The coefficients above (e.g., Base_LGD = 45% for secured senior) are **simplified benchmarks** based on global historical recovery rate data. Moody's 2019 data shows global weighted-average recovery rates: secured senior 55.1% (LGD=44.9%), unsecured senior 39.8% (LGD=60.2%), subordinated 23.5% (LGD=76.5%). Altman and Eberhart (1994) documented similar patterns across U.S. corporate bonds. These benchmarks serve as starting points but should be calibrated to specific market contexts where local data is available.
 
 ---
 
-## 五、债项优先级与增信措施评估
+## 4. Standard LGD Assessment Process
 
-### 5.1 中国信用债品种的优先级分类
+```
+Step 1: Identify obligation type (secured/unsecured senior/subordinated/junior)
+    |   Input: Prospectus "Terms of the Bonds" section
+    |   Output: Seniority classification + Base_LGD benchmark
+    v
+Step 2: Assess credit enhancement (collateral quality / guarantor credit)
+    |   Input: Prospectus collateral and guarantee sections
+    |   Output: Delta_Collateral + Delta_Guarantee
+    v
+Step 3: Reference industry recovery rate benchmarks
+    |   Input: Industry asset characteristics analysis
+    |   Output: Delta_Industry
+    v
+Step 4: Assess recovery path under default scenario
+    |   Input: Issuer jurisdiction legal environment, comparable default cases
+    |   Output: Delta_RecoveryPath + Delta_Legal
+    v
+Step 5: Comprehensive output — LGD grade + expected recovery range
+    |   Output: LGD grade + recovery range + confidence assessment
+    v
+Step 6: (Optional) Merge with PD rating for EL expected loss assessment
+    |   Output: EL range + risk capital charge estimate
+```
 
-| 债券类型 | 法律优先级 | 典型LGD等级区间 | 备注 |
-|---------|-----------|----------------|------|
-| **短期融资券（CP）/超短融（SCP）** | 无担保，但一般未设担保，凭信用发行 | LGD3 - LGD4 | 同一发行人的CP回收率经验上略高于中票（因期限短，违约时剩余本金少），但法律上无优先级差异 |
-| **中期票据（MTN）** | 无担保优先级 | LGD3 - LGD4 | 典型信用债券，回收率取决于发行人整体资产 |
-| **公司债（普通）** | 无担保优先级 | LGD3 - LGD4 | 与MTN法律地位类似 |
-| **可转换公司债** | 无担保优先级（转股前为债权） | LGD3 - LGD4 | 含股性，但债项条款保护（下修/回售）可能影响实际LGD |
-| **可交换公司债** | 有担保（以持有的股权质押为担保） | LGD1 - LGD3 | 取决于担保覆盖倍数和标的股权质量 |
-| **有担保公司债（抵押/质押）** | 有担保优先级 | LGD1 - LGD3 | 取决于抵押物类型和覆盖倍数 |
-| **有担保公司债（保证担保）** | 有担保优先级 | LGD2 - LGD4 | 取决于担保方信用质量和担保的法律可执行性 |
-| **资产支持证券优先级** | 优先级（结构化分层） | LGD1 - LGD3 | 依赖于基础资产质量和信用增级措施 |
-| **资产支持证券次级/劣后** | 劣后级 | LGD5 | 承受第一损失，LGD极高 |
-| **次级债券/二级资本债** | 次级 | LGD4 - LGD5 | 清偿顺序在普通债权人之后 |
-| **永续债（计入权益）** | 无担保，但含延期条款 | LGD4 - LGD5 | 法律优先级可能低于普通信用债（取决于具体条款） |
+### 4.1 Data Requirements by Step
 
-**数据来源：** 各债券品种的法律清偿顺序参见《中华人民共和国企业破产法》第109-113条；各类债券品种的条款结构通过募集说明书公开获取。上表中的LGD区间为**框架设定基准值**，非精确统计。
-
-### 5.2 债项评级与主体评级的钩稽关系
-
-在评级机构的评级体系中，债项评级是在主体评级基础上的"notching"（调级）：
-
-| 增信措施 | Moody's notching | S&P notching | 本引擎LGD等级调整 |
-|---------|-----------------|-------------|------------------|
-| 无担保信用债券 | 0 notch（基础） | 0 notch（回收率评级3-4） | LGD3 - LGD4 |
-| 有担保（保证担保，担保方质量同主体） | +0 notch | +0 notch（回收率评级2-3） | LGD3（基本不变） |
-| 有担保（保证担保，担保方质量高于主体） | +1 notch | +1 notch（回收率评级1-2） | LGD2 |
-| 有担保（优质抵押物，覆盖充分） | +1 to +2 notches | +1 to +2 notches | LGD1 - LGD2 |
-| 次级 | -1 to -2 notches | 回收率评级5 | LGD4 - LGD5 |
-
-**数据来源：** Moody's《Notching Criteria》(2018); S&P《Issue Credit Rating Methodology》(2017)。本框架参考了notching逻辑但未采用定量notching，因为在公开数据约束下无法精确量化。
+| Step | Data Required | Publicly Available? | Alternative Approach |
+|------|--------------|-------------------|---------------------|
+| Step 1 | Prospectus "Bond Terms" section | **Yes** (exchange/regulator filings) | -- |
+| Step 1 | Issue credit rating from rating agencies | **Yes** (rating agency websites) | Note: external ratings may lag |
+| Step 2 | Collateral type and coverage ratio | **Partial** (prospectus descriptions, no independent appraisal) | Qualitative judgment on coverage adequacy by collateral type |
+| Step 2 | Guarantor credit rating and financials | **Yes** (if guarantor is publicly rated or listed) | Unrated guarantors require public information inference |
+| Step 3 | Industry asset structure data | **Yes** (industry research, financial statement footnotes) | Typical fixed-asset/total-asset ratios, etc. |
+| Step 4 | Default case recovery rate data | **Limited** (public reporting only) | Reference Section 9 historical case compilation |
+| Step 4 | Issuer litigation and enforcement records | **Yes** (court databases, public records) | -- |
+| Step 5+6 | Issuer PD rating | **Yes** (engine output) | -- |
 
 ---
 
-## 六、抵押物分类估值框架
+## 5. Debt Priority and Credit Enhancement Evaluation
 
-### 6.1 各类抵押物的回收价值评估
+### 5.1 International Debt Instrument Seniority Classification
 
-#### 6.1.1 现金及现金等价物质押
+| Bond Type | Legal Seniority | Typical LGD Grade Range | Notes |
+|-----------|---------------|------------------------|-------|
+| **Senior Secured Bonds** | Highest priority among creditors; backed by specific collateral | LGD1 - LGD3 | Depends on collateral type and coverage multiple |
+| **Senior Unsecured Notes** | Unsecured but senior to subordinated debt | LGD3 - LGD4 | Recovery depends on issuer's unencumbered asset pool |
+| **Senior Unsecured Bonds (MTN/Public)** | Pari passu with other unsecured senior debt | LGD3 - LGD4 | Typical unsecured corporate bond |
+| **Convertible Bonds** | Senior unsecured (debt prior to conversion) | LGD3 - LGD4 | Embedded equity optionality; put/call provisions may affect actual LGD |
+| **Exchangeable Bonds** | Secured (by pledged equity of the underlying company) | LGD1 - LGD3 | Depends on coverage multiple and quality of underlying shares |
+| **Asset-Backed Securities — Senior Tranche** | Senior (structured waterfall) | LGD1 - LGD3 | Depends on underlying asset quality and credit enhancement |
+| **Asset-Backed Securities — Junior/Equity** | Junior/equity tranche | LGD5 | First-loss piece, very high LGD |
+| **Subordinated Notes** | Subordinate to senior creditors | LGD4 - LGD5 | Lower priority in liquidation waterfall |
+| **Perpetual/Hybrid Securities** | Unsecured, deep subordination, deferrable coupons | LGD4 - LGD5 | May rank below conventional subordinated debt; coupon deferral risk |
+| **Secured Bank Loans (Term Loans A/B)** | Senior secured, typically first lien | LGD1 - LGD3 | Covenants and collateral monitoring provide additional protection |
 
-| 评估维度 | 指标 | 数据来源 | 精度 |
-|---------|------|---------|------|
-| 质押率 | 通常为95%-100% | 募集说明书质押条款 | **精确** |
-| 价值波动 | 极低 | — | — |
-| 执行难度 | 低（冻结+扣划即可） | 法律实践 | **定性评估** |
-| LGD调整 | Δ_Collateral = -20pp to -25pp | — | **简化估算** |
+**Data Sources:** Legal priority of claims references international insolvency frameworks discussed in Section 10. LGD ranges are **framework baseline values**, not precise statistics.
 
-**典型场景：** 结构化产品中的现金质押增信、保证金账户质押。
+### 5.2 Issue Rating vs. Issuer Rating: Notching Relationship
 
-#### 6.1.2 国债/政策性金融债质押
+Rating agencies determine issue ratings by "notching" from the issuer rating:
 
-| 评估维度 | 指标 | 数据来源 | 精度 |
-|---------|------|---------|------|
-| 质押率 | 通常为95%-100% | 质押协议条款 | **精确** |
-| 价值波动 | 极低（利率风险有限） | 公开市场行情 | **精确** |
-| 执行难度 | 低（标准化的质押式回购机制） | — | **定性评估** |
-| LGD调整 | Δ_Collateral = -20pp to -25pp | — | **简化估算** |
+| Credit Enhancement | Moody's Notching | S&P Notching | This Engine LGD Grade Adjustment |
+|-------------------|-----------------|-------------|----------------------------------|
+| Unsecured debenture | 0 notch (baseline) | 0 notch (recovery rating 3-4) | LGD3 - LGD4 |
+| Secured (guarantee, same credit quality as issuer) | +0 notch | +0 notch (recovery rating 2-3) | LGD3 (substantially unchanged) |
+| Secured (guarantor stronger than issuer) | +1 notch | +1 notch (recovery rating 1-2) | LGD2 |
+| Secured (high-quality collateral, ample coverage) | +1 to +2 notches | +1 to +2 notches | LGD1 - LGD2 |
+| Subordinated | -1 to -2 notches | Recovery rating 5 | LGD4 - LGD5 |
 
-#### 6.1.3 上市公司股权质押
-
-**关键风险指标：**
-
-| 评估维度 | 指标 | 安全阈值 | 危险阈值 | 数据来源 |
-|---------|------|---------|---------|---------|
-| 质押率 | 质押贷款金额 / 质押股权市值 | <50% | >70% | 募集说明书担保条款 |
-| 维持担保比例 | 质押股权市值 / 贷款余额 | >150% | <130%（触发追加担保） | 定期报告披露 |
-| 股价波动率 | 30日年化波动率 | <30% | >50% | 公开行情数据 |
-| 质押股权流动性 | 日均换手率 | >1% | <0.3% | 公开行情数据 |
-| 集中度风险 | 质押股数/总股本 | <30% | >50%（平仓冲击大） | Wind/Choice公开数据 |
-| 质押方身份 | 控股股东 vs 其他 | 控股股东质押可协商；非控股质押易平仓 | — | 权益变动公告 |
-
-**LGD调整计算（简化估算）：**
-
-```
-Δ_Collateral(股权质押) = 
-  -20pp  IF (质押率<50% AND 波动率<30% AND 换手率>1%)
-  -15pp  IF (质押率50-60% AND 波动率<40%)
-  -10pp  IF (质押率60-70% AND 波动率<50%)
-  -5pp   IF (质押率70-80% AND 维持担保比例>150%)
-  0pp    IF (质押率>80% OR 维持担保比例<130%)
-  +5pp   IF (集中度>50% OR 质押方为控股股东且法律纠纷中)
-```
-
-**诚实性说明：** 上述赋值是**经验基准**而非回归结果。国际研究（如Moody's《Equity Pledge LGD》2018）表明股权质押的回收率高度依赖于质押率和标的股价波动，但中国市场由于质押物执行的法律不确定性和大宗交易折扣，回收率可能低于国际市场。
-
-#### 6.1.4 房地产抵押
-
-| 评估维度 | 安全 | 关注 | 危险 | 数据来源 |
-|---------|------|------|------|---------|
-| 抵押率（LTV） | <50% | 50-70% | >70% | 募集说明书（有披露时）或在建工程评估报告摘要 |
-| 物业类型 | 一线城市住宅/写字楼 | 二线城市住宅 | 三线及以下/工业地产/特殊物业 | 公开区域房地产市场数据 |
-| 流动性 | 去化周期<6个月 | 去化周期6-12个月 | 去化周期>12个月 | 克尔瑞/中指研究院等第三方数据 |
-| 法拍折扣 | 通常为市场价的70-80% | 60-70% | <60% | 阿里司法拍卖历史数据 |
-
-**LGD调整计算（简化估算）：**
-
-```
-Δ_Collateral(房地产抵押) = (LTV% × 法拍折扣系数) - 60%
-
-其中法拍折扣系数：一线0.75, 二线0.65, 三线及以下0.55
-
-例：抵押率60%, 二线城市 → 60% × 0.65 - 60% = -21% → Δ_Collateral = -15pp
-例：抵押率80%, 三线城市 → 80% × 0.55 - 60% = -16% → Δ_Collateral = -10pp
-例：抵押率90%, 三线城市 → 90% × 0.55 - 60% = -10.5% → Δ_Collateral = -5pp
-```
-
-**数据来源：** 司法拍卖折扣率参考阿里司法拍卖平台公开数据和中国不良资产处置市场实践。住宅类法拍成交价约为市场价的70-80%，工业地产更低。
-
-#### 6.1.5 应收账款质押
-
-| 评估维度 | 安全特征 | 危险特征 | 数据来源 |
-|---------|---------|---------|---------|
-| 分散度 | 多笔小额，债务人分散 | 单一大额债务人（集中度>50%） | 募集说明书应收账款清单 |
-| 债务人质量 | 央企/大型国企/上市公司 | 中小民企/已出现信用事件 | 债务人公开信用信息 |
-| 账龄 | 1年以内 | 超过1年 | 募集说明书应收账款账龄表 |
-| 质押登记 | 已在中国人民银行征信中心办理质押登记 | 未办理登记 | 中登网可查询 |
-
-**LGD调整：** Δ_Collateral(应收账款) 调整范围 -5pp 到 +5pp。应收账款的回收难度通常高于不动产抵押物，但低于无担保信用债。
-
-**注意：** 应收账款质押的实际增信价值在中国市场存在显著争议。多个违约案例显示，即使办理了质押登记的应收账款，在破产重整中实际回收率也远低于账面价值（如渤海钢铁案例中的应收账款回收率不足30%）。
-
-#### 6.1.6 机器设备抵押
-
-| 评估维度 | 通用设备 | 专用设备 | 数据来源 |
-|---------|---------|---------|---------|
-| 设备类型 | 车床、注塑机、空调系统等 | 光伏拉晶炉、芯片光刻机、制药发酵罐 | 募集说明书抵押物清单 |
-| 二手市场 | 存在活跃二手市场 | 二手市场极窄或不存在 | 行业设备二手交易平台 |
-| 折旧速率 | 10-20年线性折旧 | 技术迭代快，可能因技术淘汰归零 | 设备使用年限 + 行业技术更新周期 |
-| 拆除/运输成本 | 低 | 高（可能超过设备残值） | 设备类型对应的行业实践 |
-
-**LGD调整：** Δ_Collateral(设备抵押) 调整范围 -5pp 到 +10pp。通用设备的回收价值通常较高；专用设备在违约情景下的回收不确定性大，可能需要从"加分项"变成"不加分"甚至减值。
-
-### 6.2 抵押物评估的约束条件汇总
-
-| 评估维度 | 精确度判定 | 原因 |
-|---------|-----------|------|
-| 抵押物类型识别 | **精确** | 募集说明书通常披露抵押物类型 |
-| 抵押物价值 | **简化估算** | 募集说明书中的评估值通常是发行人聘请的评估机构出具，可能存在高估；且违约时点的抵押物价值可能与发行时差异很大 |
-| 抵押率(LTV) | **部分精确** | 若募集说明书明确披露贷款金额和抵押物评估值，可以计算；但评估值可能有水分，且违约时抵押物价值已经变化 |
-| 抵押物变现折扣 | **简化估算** | 取决于违约时的市场环境和司法处置效率，无法提前精确预测 |
-| 共益债务/优先费用影响 | **简化估算** | 破产法规定处置抵押物的费用优先于抵押债权受偿，具体金额不确定 |
+**Data Sources:** Moody's *Notching Criteria* (2018); S&P *Issue Credit Rating Methodology* (2017). This framework references the notching logic but does not employ quantitative notching, as precise quantification is not feasible under public data constraints.
 
 ---
 
-## 七、担保增信评估
+## 6. Collateral Classification and Valuation Framework
 
-### 7.1 担保方信用质量评估
+### 6.1 Recovery Value Assessment by Collateral Type
 
-担保增信的核心逻辑是：**担保方的独立信用质量决定了担保的实际增信效果**。关联担保（母公司为子公司担保、子母公司互保）的增信效果远低于独立第三方担保。
+#### 6.1.1 Cash and Cash Equivalents Pledge
 
-**担保增信的双重打分矩阵：**
+| Assessment Dimension | Indicator | Data Source | Precision |
+|--------------------|----------|-------------|----------|
+| Pledge ratio | Typically 95%-100% | Prospectus pledge terms | **Precise** |
+| Value volatility | Very low | -- | -- |
+| Enforcement difficulty | Low (freeze + transfer) | Legal practice | **Qualitative** |
+| LGD adjustment | Delta_Collateral = -20pp to -25pp | -- | **Simplified Estimate** |
 
-| 发行人的信用质量 | 担保方信用质量显著更高 | 担保方信用质量相近 | 担保方信用质量更差 |
-|----------------|---------------------|------------------|------------------|
-| 高（AA及以上） | 担保无额外价值 | 担保无额外价值 | 担保为负价值（增加了关联风险） |
-| 中（A-BBB） | LGD降低1-2级 | LGD降低0-1级 | LGD不变或提高 |
-| 低（BB及以下） | LGD降低1级 | LGD不变 | LGD提高1级 |
+**Typical Scenario:** Cash collateral accounts in structured products, margin deposits.
 
-**数据来源：** 担保方的信用评级（如有）可从评级机构官网获取；担保方的财务数据（如为上市公司）从公开财报获取。
+#### 6.1.2 Government/ Treasury Bond Pledge
 
-### 7.2 中国债券市场常见担保类型
+| Assessment Dimension | Indicator | Data Source | Precision |
+|--------------------|----------|-------------|----------|
+| Pledge ratio | Typically 95%-100% | Pledge agreement terms | **Precise** |
+| Value volatility | Very low (limited interest rate risk) | Public market data | **Precise** |
+| Enforcement difficulty | Low (standardized repo mechanism) | -- | **Qualitative** |
+| LGD adjustment | Delta_Collateral = -20pp to -25pp | -- | **Simplified Estimate** |
 
-| 担保类型 | 增信效力 | 典型LGD调整 | 代表案例/机构 | 备注 |
-|---------|---------|------------|-------------|------|
-| **中债信用增进公司** | 极强 | Δ=-15pp | 中债信用增进投资股份有限公司（中债增），AAA评级 | 政策性信用增进机构，信用质量接近国家主权，实际增信效果最强 |
-| **中投保/中证增等专业担保** | 强 | Δ=-10pp to -15pp | 中国投融资担保股份有限公司（中投保）、中证信用增进股份有限公司 | 专业担保公司，信用评级通常AAA/AA+，但需关注集中度风险 |
-| **省级担保公司** | 中等偏强 | Δ=-5pp to -10pp | 各省再担保/担保集团 | 信用质量因省而异，江苏/浙江等财政强省的担保公司信用较好 |
-| **母公司/集团担保（独立信用好）** | 中等 | Δ=-5pp to -10pp | 央企为其子公司担保 | 需评估母公司独立信用质量，央企子公司的担保价值取决于央企自身的信用 |
-| **母公司/集团担保（关联担保）** | 弱 | Δ=0pp to -5pp | 子公司发债由集团公司担保 | 母子公司已经合并报表，"互相担保"在法律上有效但实际增信价值有限——永煤违约案例中，河南能源化工集团担保的债券同样违约 |
-| **个人连带责任担保** | 很弱到中等 | Δ=0pp to -5pp | 实际控制人个人担保 | 法律上有效，但实际执行取决于个人资产的可执行性和是否已在境外；在中国破产实践中，个人连带责任的回收率极低 |
-| **地方政府安慰函/支持函** | 极弱 | Δ=0pp | 地方财政局或国资委出具的"支持函" | 法律上无强制执行效力——《最高人民法院关于适用〈中华人民共和国担保法〉若干问题的解释》明确安慰函不构成保证担保；永煤违约后河南国资委的支持函无法阻止违约 |
-| **银行备用信用证/保函** | 强（取决于开证行） | Δ=-10pp to -15pp | 四大国有银行出具的备用信用证 | 增信效果取决于开证行信用评级；国有大行（工农中建）的信用证增信效果最强 |
+#### 6.1.3 Listed Equity Pledge
 
-**数据来源：** 专业担保公司评级数据来自评级机构官网公开信息；担保类型对回收率的影响分析参考了中国银行间市场交易商协会（NAFMII）和中国证监会关于债券增信措施的监管指引。
+**Key Risk Indicators:**
 
-### 7.3 关联担保的特殊风险
+| Assessment Dimension | Indicator | Safe Threshold | Danger Threshold | Data Source |
+|--------------------|----------|--------------|-----------------|-------------|
+| Loan-to-Value (LTV) | Loan amount / pledged equity market value | <50% | >70% | Prospectus guarantee terms |
+| Maintenance margin ratio | Pledged equity value / loan balance | >150% | <130% (margin call triggered) | Periodic filings |
+| Stock price volatility | 30-day annualized volatility | <30% | >50% | Public market data |
+| Pledged equity liquidity | Average daily turnover rate | >1% | <0.3% | Public market data |
+| Concentration risk | Shares pledged / total shares outstanding | <30% | >50% (large liquidation impact) | Exchange/regulatory filings |
+| Pledgor identity | Controlling shareholder vs. other | Controlling shareholder can negotiate; non-controlling easier to liquidate | -- | Beneficial ownership filings |
 
-关联担保是中国债券市场中最も常见的担保形式，但也是**增信信息含量最低**的担保形式。
-
-| 关联类型 | 风险特征 | 识别方法 | 输出调整 |
-|---------|---------|---------|---------|
-| 子公司发债+母公司担保 | 母子公司已合并报表，集团内信用风险高度相关 | 查看发行人和担保方是否为同一集团内关联方 | LGD调整减半（如常规担保Δ=-10pp，关联担保调整为Δ=-5pp） |
-| 母公司发债+子公司担保 | 子公司财务贡献已经是母公司信用的一部分 | 查看担保方是否实质上用自己的资产为母公司债务增信 | LGD调整不适用（合并口径下增信虚置） |
-| 兄弟公司互保 | 担保链循环，一方违约可能传染 | 查看担保链是否形成闭环 | LGD调整减半或无调整 |
-| 实际控制人担保 | 法律层面有效、执行层面困难 | 查看担保协议是否经过公证和登记 | 仅在担保人有可识别且可执行的独立核心资产时做调整 |
-
-**诚实性说明：** 关联担保的定量调整是**高度主观的定性判断**，本框架不提供精确的Δ值公式，仅提供方向性指引。
-
----
-
-## 八、行业特征对回收率的影响
-
-### 8.1 行业资产可回收性分类
-
-**核心逻辑：** 不同行业的资产结构和资产特性决定了违约后的回收价值。
-
-| 行业类型 | 资产特征 | 回收率参考区间 | 典型示例 |
-|---------|---------|--------------|---------|
-| **重资产-通用设备型** | 固定资产占比高（>40%），设备通用性强 | 40% - 60% | 传统制造业、通用设备制造、化工 |
-| **重资产-专用设备型** | 固定资产占比高（>40%），设备专用性强 | 20% - 40% | 光伏制造（拉晶炉/铸锭炉专用）、半导体制造（光刻机专用，但二手市场存在）、新能源车制造 |
-| **轻资产-核心IP型** | 无形资产为主（专利/IP/软件），账面价值低 | 10% - 30% | 芯片设计（Fabless）、生物医药（管线价值难评估）、软件公司 |
-| **轻资产-平台型** | 核心资产为数据和用户关系，账面几乎无资产 | 5% - 20% | 互联网平台、金融科技公司 |
-| **资产租约型** | 核心资产为长期租约/合同，现金流可预测 | 50% - 70% | 数据中心（有长期电力合同和客户租约）、收费公路（有特许经营协议） |
-| **不动产密集型** | 物业/土地占资产绝大部分 | 50% - 75% | 商业地产、产业园、物流地产 |
-
-**数据来源：** 行业的固定资产/总资产比例可从各行业上市公司财务报表附注统计获取；设备二手市场的流动性分析参考各行业专业设备交易平台。本框架的回收率区间参考了Moody's《Industry Recovery Rate Study》(2018)的各行业回收率分布，但以中国案例做了定性调整。
-
-### 8.2 关键行业的Δ_Industry调整
-
-| 行业 | Δ_Industry调整 | 理由 | 数据支撑 |
-|------|---------------|------|---------|
-| **光伏制造** | +5pp | 重资产但设备专用性强，技术迭代快（PERC→TOPCon→BC），老旧产线回收价值极低 | 光伏设备二手交易数据显示，三代前的技术设备几乎零回收价值。数据来源：PVInfoLink设备研报 |
-| **半导体-Foundry** | -5pp | 重资产且设备高度专用，但光刻机/刻蚀设备等存在国际二手市场，回收率相对有保障 | 二手半导体设备交易市场（如SurplusGlobal）显示设备残值率约30-50% |
-| **半导体-Fabless** | +10pp | 轻资产，IP价值变现不确定性高，且员工团队（核心资产）在违约后会流失 | 无公开数据，基于案例分析推断 |
-| **生物医药** | +5pp to +10pp | 管线价值极不确定——Late-stage品种可能有机会出售但折价严重，早期管线几乎归零 | BioPharma Dive等媒体报道的破产资产出售案例 |
-| **数据中心** | -5pp | 电力合同和客户租约可出售，资产持续产生现金流 | 数据中心并购案例显示PUE效率高的数据中心资产可溢价出售 |
-| **新能源汽车** | +10pp | 库存车贬值快（市场每周都在降价），专用生产线改造成本高，电池回收价值有限 | 新能源汽车市场公开报价数据；电池回收市场仍不成熟 |
-| **高端装备** | 0pp | 通用设备与专用设备并存，取中值 | — |
-| **医疗器械** | 0pp | 通常轻资产但渠道价值可转化；注册证有独立价值 | 医疗器械注册证在并购中可单独定价（参见体外诊断/影像设备并购案例） |
-
-**诚实性说明：** Δ_Industry调整参数是**框架设定值**，非实证回归结果。各行业的历史真实回收率数据在中国信用债市场不可获取（因违约样本有限且回收数据未系统披露）。
-
-### 8.3 行业集中度对回收率的间接影响
-
-| 行业集中度特征 | 对LGD的影响 | 逻辑 |
-|--------------|------------|------|
-| 高度集中（寡头市场，CR3>70%） | LGD可能降低 | 优质资产可能被竞争对手收购，形成"买方市场"提升回收率 |
-| 高度分散（CR3<20%） | LGD可能提高 | 资产买方的专业运营能力有限，设备处置折价更大 |
-| 产能严重过剩 | LGD显著提高 | 全行业产能过剩时，闲置设备几乎没有二手买家 |
-
-**数据来源：** 行业集中度（CR3/CR5）来自各类行业研究报告中可获取的数据。此项调整定性为主。
-
----
-
-## 九、违约后回收路径分析
-
-### 9.1 三种违约后处置路径
-
-| 路径 | 定义 | 平均回收率（全球参考） | 在中国市场的典型性 |
-|------|------|---------------------|------------------|
-| **破产重整** | 在破产保护程序下，法院主导的重组，保壳+保留部分业务继续运营 | 40-60%（有担保债权人）；5-30%（普通债权人） | 大型国企违约的首选路径（如东北特钢、渤海钢铁、海航集团） |
-| **破产清算** | 企业终止经营，资产变卖后按清偿顺序分配 | 20-40%（有担保债权人）；0-20%（普通债权人） | 中小企业违约的主要路径；有产债人质企业的供应商通常回收率极低 |
-| **庭外重组** | 不经过破产程序，债权人与债务人协商达成债务重组方案 | 分布极广，无法给出均值 | 在中国越来越常见（如永煤展期2020）；但缺乏法定约束，执行风险高 |
-
-**数据来源：** 全球回收率参考Moody's《Annual Default and Recovery Rate Report》、S&P《Global Recovery Rates》。中国数据来自个案报道的汇总（非系统性统计）。
-
-### 9.2 中国重要破产重整案例回收率参考
-
-| 案例名称 | 违约年份 | 行业 | 普通债权清偿率 | 数据来源 | 备注 |
-|---------|---------|------|--------------|---------|------|
-| **东北特钢** | 2016 | 钢铁 | ~22%（10万元以下部分100%清偿，10万元以上部分22%） | 大连市中级人民法院公告（2017年），重整计划裁定书公开 | 大型国企首例实质性破产重整 |
-| **渤海钢铁** | 2018 | 钢铁 | ~38%（50万元以下部分100%，以上部分约38%现金或留债） | 天津市高级人民法院重整计划 | 涉及千亿级债务重组 |
-| **海航集团** | 2021 | 综合航空 | 普通债权约10-40%（视具体板块和债权类型） | 海南省高级人民法院公告 | 中国最大的破产重整案，结构极其复杂 |
-| **紫光集团** | 2021 | 半导体/ICT | 约57%（有财产担保债权100%） | 北京市第一中级人民法院重整计划（2022年裁定） | 集团内数家上市公司（紫光股份/紫光国微等）未纳入破产主体 |
-| **华晨汽车** | 2020 | 汽车 | 普通债权约16%（重整方案经历多次调整） | 华晨集团重整计划（2021年裁定） | 重整历时超过2年，进展缓慢 |
-| **康美药业** | 2021 | 医药 | 普通债权约100%（但需通过"资本公积金转增股票"方式，实际回收率取决于股价） | 康美药业重整计划 | 大股东马兴田占款侵占，民事赔偿大幅增加了负债 |
-| **北大方正** | 2020 | ICT/教育 | 普通债权约33%（"有财产担保债权100%") | 重整计划公告（2021年裁定） | 清华系/北大系 大型校企解体 |
-| **永城煤电** | 2020 | 煤炭 | 展期后逐步兑付，本金约100%但利息大幅减免 | 场外协商结果（非破产程序） | **并非破产重整**而是庭外重组，因"逃废债"争议导致市场冲击极大 |
-| **华夏幸福** | 2021 | 房地产 | 债务重组方案：本金展期+利息减免+以物抵债，实际回收率约40-60% | 华夏幸福债务重组进展公告（2021-2023） | 房地产行业违约的典型 |
-
-**数据来源：** 上述清算率和回收率数据来自各案例的重整计划公告、法院裁定书和公开媒体报道。这些数据是**个案统计**，不代表行业加权平均水平。
-
-**重要提示：** 上述案例的普通债权清偿率仅为参考。实际回收率受以下因素影响：
-1. **债权规模**：小额债权通常获得更高的清偿比例（如东北特钢对10万以下债权100%清偿）
-2. **重整时间**：重整周期通常1-3年，到期现金回收时间价值未被反映在上述清偿率中
-3. **以股抵债的实际价值**：多数重整方案包含以股抵债，而抵债股权的实际出售价格和时点决定了最终回收率
-4. **重整后企业存活情况**：部分重整后企业再次违约（如二重集团重整后仍未能恢复）
-
-### 9.3 庭外重组的特殊风险
-
-| 特征 | 庭外重组 | 破产重整 | 对中国LGD的影响 |
-|------|---------|---------|----------------|
-| 法定约束力 | 弱（需90%以上债权人同意） | 强（法院裁定，少数服从多数） | 庭外重组可能需要多次反复谈判，时间成本高 |
-| 信息透明度 | 低 | 高（管理人制度+债权人会议） | 庭外重组中小债权人信息劣势更大 |
-| 债务减免幅度 | 较小（通常展期+降息） | 较大（本金可以打折） | 庭外重组名义回收率高但实际回收周期长 |
-| 清算威胁 | 可选（无法达成则进入破产） | 最终方案 | — |
-
-**诚实性说明：** 庭外重组的回收率数据在中国无公开统计。以上分析基于实务报道和个案描述，属于定性判断。
-
-### 9.4 Δ_RecoveryPath 调整参考
-
-| 情景 | Δ调整 | 适用条件 |
-|------|------|---------|
-| 预计为破产重整，且发行人资产质量尚可 | -5pp | 有持续经营价值，可通过重整保留部分业务 |
-| 预计为破产重整，但发行人资产已空心化 | 0pp | 重整后普通债权人回收率极低 |
-| 预计为破产清算 | +5pp to +10pp | 清算折价大于重整，且持续时间更长 |
-| 预计为庭外重组但发行人谈判能力强 | +5pp | 发行人可能利用庭外程序的灵活性压低回收率 |
-
----
-
-## 十、中国市场的特殊考量
-
-### 10.1 破产重整的普通债权清偿率——历史汇总
-
-| 案例 | 行业 | 违约时间 | 普通债权清偿率 | 关键特征 |
-|------|------|---------|--------------|---------|
-| **东北特钢** | 钢铁 | 2016-03 | ~22% | 首例大型国企破产重整；10万元以下全额清偿 |
-| **云南煤化工** | 化工/煤炭 | 2016 | ~30% | 债务规模较小 |
-| **重庆钢铁** | 钢铁 | 2017 | ~100%（留债+债转股） | 四源合基金接手，重整后复产 |
-| **渤海钢铁** | 钢铁 | 2018 | ~38% | 50万元以下全额清偿 |
-| **北大方正** | 综合 | 2020-02 | ~33% | 普通债权+权益类债权=约33% |
-| **海航集团** | 综合 | 2021-02 | ~10-40% | 分板块差异大 |
-| **紫光集团** | 半导体 | 2021-07 | ~57% | 核心子公司未破产 |
-| **华晨汽车** | 汽车 | 2020-11 | ~16% | 重整方案多轮调整 |
-| **康美药业** | 医药 | 2021-04 | ~100%（转增股票+现金） | 实际回收率高度依赖股票变现价格 |
-
-**观察结论：**
-1. **小额债权保护是普遍特征**——多数重整方案对小额（10-50万元）以下普通债权100%清偿
-2. **大型国企重整的清偿率普遍低于民企重整**——国企通常负债体量巨大且资产更分散
-3. **核心子公司未进入破产的集团重整**（紫光），普通债权人回收率显著更高
-4. **重整清偿率的跨度极大**（16%至100%），很难用一个"中国平均回收率"来概括
-
-### 10.2 逃废债风险对LGD的影响
-
-| 事件 | 特征 | 对LGD框架的启示 |
-|------|------|----------------|
-| **永煤违约（2020）** | AAA国企违约，违约前不到1个月还发了10亿中票，违约后立即被质疑逃废债 | 逃废债嫌疑导致债券持有人回收前景严重恶化。非市场化的违约行为使回收路径不可预测 |
-| **华晨违约（2020）** | 发行人违约但核心子公司华晨宝马持续盈利，母公司刻意回避资产处置 | 母子公司资可分离使"壳公司"债务的LGD高于正常水平 |
-| **紫光违约（2020）** | 母公司AAA评级违约但核心子公司仍在正常运营 | 核心上市公司的"防火墙"保护了子公司债券但母公司的债券回收率较低 |
-| **苏宁（2021）** | 多次展期，通过关联交易转移优质资产（苏宁小店等） | 资产转移风险在违约前难以识别，会导致LGD估算严重低估 |
-
-**对中国LGD框架的特殊调整：**
+**LGD Adjustment Calculation (Simplified Estimate):**
 
 ```
-Δ_Legal(逃废债风险加成) =
-  +5pp   IF (发行人为地方国企且所在省份此前有逃废债案例)
-  +5pp   IF (发行人在违约前6个月内仍有大额资产处置/分红的)
-  +10pp  IF (发行人实际控制人已被采取强制措施或境外失联)
-  +10pp  IF (发行人存在系统性关联交易和资产转移嫌疑)
-  0pp    OTHERWISE
+Delta_Collateral (Equity Pledge) =
+  -20pp  IF (LTV<50% AND vol<30% AND turnover>1%)
+  -15pp  IF (LTV 50-60% AND vol<40%)
+  -10pp  IF (LTV 60-70% AND vol<50%)
+  -5pp   IF (LTV 70-80% AND maintenance margin>150%)
+  0pp    IF (LTV>80% OR maintenance margin<130%)
+  +5pp   IF (concentration>50% OR pledgor is controlling shareholder in legal dispute)
 ```
 
-**诚实性说明：** 逃废债风险的Δ_Legal调整是**定性判断**，无法通过公开数据精确量化。上述指标的组合使用仅作为风险提示，不应被视为逃废债可能性的预测。
+**Data Note:** The above assignments are **experience-based benchmarks**, not regression results. International research (e.g., Moody's *Equity Pledge LGD* 2018) indicates equity pledge recovery rates are highly dependent on LTV and underlying stock volatility. Recovery rates may be lower in markets where enforcement is subject to legal uncertainty and block-trade discounts.
 
-### 10.3 区域司法环境差异
+#### 6.1.4 Real Estate / Property Collateral
 
-| 省份/区域 | 司法效率和可预期性 | 对担保执行的影响 | 数据来源 |
-|----------|------------------|-----------------|---------|
-| 北京/上海/广东 | 较高——破产法院专业能力强，案件推进较快 | 抵押物处置可预期 | 各地破产法庭公开案件统计 |
-| 江苏/浙江 | 较高——民营经济发达，破产重整实践经验丰富 | 抵押物处置相对市场化 | 杭州破产法庭、苏州破产法庭案例 |
-| 天津/重庆 | 中等 | — | 评估依赖于具体法官 |
-| 辽宁/吉林/黑龙江 | 较低——东北特钢等案例显示案件推进缓慢 | 抵押物执行可能被地方保护主义干扰 | 东北特钢重整案耗时18个月 |
-| 河南/河北/山西 | 中低——永煤违约后河南省司法环境引起市场质疑 | 担保执行不确定性增加 | 市场普遍认知（无法精确量化） |
-| 西部省份（甘肃/青海/新疆等） | 较低——破产案件数量少，经验不足 | 执行效率不确定 | — |
+| Assessment Dimension | Safe | Watch | Danger | Data Source |
+|--------------------|------|-------|--------|-------------|
+| LTV ratio | <50% | 50-70% | >70% | Prospectus (if disclosed) or property appraisal summary |
+| Property type | Prime city office/residential | Secondary city residential | Tertiary/industrial/special-purpose | Property market data |
+| Liquidity | Absorption cycle <6 months | Absorption cycle 6-12 months | Absorption cycle >12 months | Third-party market data (consulting firms) |
+| Auction discount | Typically 70-80% of market value | 60-70% | <60% | Court auction historical data |
 
-**Δ_Legal(区域司法环境调整)：**
-- 北京/上海/广东：-5pp（司法效率较高，回收可预期）
-- 江苏/浙江：-5pp
-- 辽宁/吉林/黑龙江：+5pp
-- 河南/河北：+5pp
-- 西部省份：+5pp to +10pp
-- 其他：0pp
+**LGD Adjustment Calculation (Simplified Estimate):**
 
-### 10.4 地方政府协调能力的影响
+```
+Delta_Collateral (Real Estate) = (LTV% x Auction Discount Factor) - 60%
 
-中国信用债市场的独有特征——地方政府在国有企业债务处置中的角色：
+Auction Discount Factors: Prime metro 0.75, Secondary city 0.65, Tertiary 0.55
 
-| 地方政府的协调能力 | 影响方向 | 示例 |
-|-------------------|---------|------|
-| **强协调型**（广东省） | 可能提升回收率——通过协调国有资产接手、寻找战略投资者 | 广东恒大项目虽破产但地方政府积极协调保交楼 |
-| **中等协调型**（江苏/浙江） | 一定程度的回收率保障——引导地方国企参与重整 | 相关企业案例散见 |
-| **弱协调型**（资源型省份） | 对回收率影响有限——政府自身财力有限 | 东北特钢的政府协调力度明显不足 |
-| **消极型**（有逃废债嫌疑的案例） | 可能降低回收率——协调方向是降低地方国企的偿债压力 | 永煤违约中河南省政府被质疑配合逃废债 |
+Example: LTV 60%, secondary city -> 60% x 0.65 - 60% = -21% -> Delta_Collateral = -15pp
+Example: LTV 80%, tertiary city -> 80% x 0.55 - 60% = -16% -> Delta_Collateral = -10pp
+Example: LTV 90%, tertiary city -> 90% x 0.55 - 60% = -10.5% -> Delta_Collateral = -5pp
+```
 
-**框架调整：** 此项为**定性标注**而非定量调整。在LGD评估的完备性报告中注明"地方政府协调能力的正面/负面影响"。
+**Data Source:** Judicial auction discount rates reference court auction platform data and distressed asset market practice. Residential auction transaction prices typically range from 70-80% of market value; industrial properties trade at steeper discounts.
+
+#### 6.1.5 Accounts Receivable Pledge
+
+| Assessment Dimension | Safe Characteristics | Danger Characteristics | Data Source |
+|--------------------|---------------------|----------------------|-------------|
+| Diversification | Many small receivables, diversified obligors | Single large obligor (concentration >50%) | Prospectus receivable schedule |
+| Obligor quality | Investment-grade/large cap/sovereign | Sub-investment-grade/distressed | Obligor public credit information |
+| Aging | <1 year | >1 year | Prospectus aging schedule |
+| Perfection of security interest | Properly filed/registered | Not perfected | Public filing registry |
+
+**LGD Adjustment:** Delta_Collateral (Receivables) adjustment range -5pp to +5pp. Receivables recovery is generally more challenging than real estate collateral but offers better recovery than unsecured debt.
+
+**Note:** The actual credit enhancement value of receivables pledges varies significantly by market. In several jurisdictions, even perfected receivables pledges have realized substantially less than book value in reorganization proceedings.
+
+#### 6.1.6 Machinery and Equipment Collateral
+
+| Assessment Dimension | General-purpose Equipment | Specialized Equipment | Data Source |
+|--------------------|-------------------------|----------------------|-------------|
+| Equipment type | Machine tools, injection molds, HVAC | Solar ingot furnaces, lithography machines, pharmaceutical fermenters | Prospectus collateral schedule |
+| Secondary market | Active secondary market exists | Very narrow or nonexistent secondary market | Industry equipment trading platforms |
+| Depreciation rate | 10-20 year straight-line | Rapid technological obsolescence, may become zero | Equipment useful life + tech refresh cycle |
+| Removal/transport cost | Low | High (may exceed residual value) | Industry practice by equipment type |
+
+**LGD Adjustment:** Delta_Collateral (Equipment) adjustment range -5pp to +10pp. General-purpose equipment typically has higher recovery value; specialized equipment carries significant recovery uncertainty under default scenarios and may require a penalty rather than a credit.
+
+### 6.2 Collateral Assessment Constraints Summary
+
+| Assessment Dimension | Precision Determination | Reason |
+|--------------------|----------------------|--------|
+| Collateral type identification | **Precise** | Prospectus typically discloses collateral type |
+| Collateral value | **Simplified Estimate** | Appraisal values in prospectus may be optimistic; value at default may differ materially from issuance |
+| LTV ratio | **Partially Precise** | Computable when loan amount and appraisal value are both disclosed; but appraisal may be stale and value at default uncertain |
+| Collateral realization discount | **Simplified Estimate** | Depends on market conditions and judicial enforcement efficiency at default — cannot be precisely forecast |
+| Seniority of enforcement costs | **Simplified Estimate** | Insolvency law provisions on treatment of enforcement expenses vary by jurisdiction |
 
 ---
 
-## 十一、公开数据约束下的简化LGD估算方案
+## 7. Guarantee and Credit Enhancement Assessment
 
-### 11.1 数据约束汇总
+### 7.1 Guarantor Credit Quality Assessment
 
-| 需要但不可获取的数据 | 为什么不可获取 | 替代方案 |
-|-------------------|--------------|---------|
-| 精确的抵押物评估报告 | 内部数据（仅银行或评级机构可获取） | 基于募集说明书中的抵押物描述和行业基准进行档次分类 |
-| 历史违约回收率数据库 | 中国无公开的系统性违约回收率数据库 | 采用全球基准+中国案例调整；参考Moody's/S&P公开数据（全球口径） |
-| 发行人的抵押物实时估值 | 抵押物价值随市场波动，需持续跟踪 | 在抵押物分类框架中标注"评估时点的抵押物价值"，并按月/按季更新 |
-| 同一发行人不同债项的精确清偿顺序 | 不完全公开（交叉违约/相互担保复杂） | 基于债券条款中最可能的清偿顺序推定 |
-| 重整/清算的具体时间表 | 个案情况差异巨大 | 使用历史案例的平均重整周期做定性参考 |
-| 违约后债权人的谈判博弈细节 | 非公开 | 不纳入框架，注明"未考虑谈判博弈对回收率的影响" |
+The core logic of guarantee-based credit enhancement: **the guarantor's independent credit quality determines the actual enhancement effect.** Related-party guarantees (parent for subsidiary, sibling company cross-guarantees) provide far less enhancement than independent third-party guarantees.
 
-### 11.2 简化LGD估算流程（公开数据版本）
+**Guarantee Enhancement Dual Scoring Matrix:**
 
-```
-输入：债券代码/简称 + 分析日期
-  │
-  ├── 步骤1：从募集说明书提取债项优先级
-  │    输出：优先级类型（有担保/无担保优先/次级/劣后）
-  │
-  ├── 步骤2：从募集说明书担保条款提取增信信息
-  │    ├── 抵押物类型和描述
-  │    ├── 担保方名称
-  │    └── 担保比例
-  │    输出：增信类型和质量等级（高/中/低/无）
-  │
-  ├── 步骤3：从发行人的行业和资产结构推断行业LGD基准
-  │    输出：行业LGD基准调整
-  │
-  ├── 步骤4：查询该行业/区域在框架中的历史案例参考
-  │    输出：可比案例的回收率参考区间
-  │
-  └── 步骤5：综合估算
-        输出：LGD等级 + 回收率区间 + 置信度
-```
+| Issuer Credit Quality | Guarantor Significantly Stronger | Guarantor Similar | Guarantor Weaker |
+|---------------------|--------------------------------|------------------|-----------------|
+| High (AA and above) | No additional value from guarantee | No additional value from guarantee | Negative value (adds correlation risk) |
+| Medium (A-BBB) | LGD improves by 1-2 grades | LGD improves by 0-1 grades | LGD unchanged or increases |
+| Low (BB and below) | LGD improves by 1 grade | LGD unchanged | LGD increases by 1 grade |
 
-### 11.3 估算精度分类
+**Data Source:** Guarantor credit ratings (if available) from rating agency websites; guarantor financial data (if listed) from public financial statements.
 
-| 输入维度 | 估算精度 | 说明 |
-|---------|---------|------|
-| **债项优先级分类** | **高** | 募集说明书明确记载，可直接读取 |
-| **有无担保** | **高** | 募集说明书明确记载 |
-| **抵押物类型** | **高** | 募集说明书明确记载 |
-| **担保方身份** | **高** | 募集说明书明确记载 |
-| **担保方信用质量** | **中** | 如担保方有公开评级可直接获取；无评级则需通过公开信息推断 |
-| **抵押物覆盖倍数** | **中低** | 募集说明书可能不披露抵押物的市场评估值，仅披露账面价值 |
-| **抵押物当前价值** | **低** | 发行后抵押物价值已经变化，需通过行业指数/市场价格估算 |
-| **行业回收率基准** | **中** | 全球数据可用但不能直接套用中国，中国历史案例样本量不足 |
-| **违约路径预测** | **低** | 取决于诸多不可预测因素（发行人、债权人、法院、政府的博弈） |
-| **实际回收率** | **极低** | 受上述所有因素的交互影响，精确预测近乎不可能 |
+### 7.2 International Guarantee/Enhancement Types
 
-### 11.4 LGD估算的统计不确定区间
+| Guarantee Type | Enhancement Effectiveness | Typical LGD Adjustment | Typical Examples/Institutions | Notes |
+|---------------|-------------------------|----------------------|------------------------------|-------|
+| **Sovereign/Government Guarantee** | Strongest | Delta=-15pp to -20pp | Explicit sovereign guarantee backed by full faith and credit; typically requires parliamentary appropriation | Effectiveness depends on sovereign credit quality |
+| **Multilateral Development Bank Guarantee** | Very Strong | Delta=-15pp | World Bank (IBRD) guarantees, regional development banks (ADB, AfDB, EBRD) | Preferred creditor status; very low historical loss rates |
+| **Export Credit Agency Guarantee** | Strong | Delta=-10pp to -15pp | US EXIM, UKEF, EDC (Canada), Euler Hermes (Germany), Sinosure | Country risk + agency-specific assessment |
+| **Monoline Financial Guarantee** | Strong (pre-crisis); Moderate (post-2008) | Delta=-10pp to -15pp | Assured Guaranty, Ambac (legacy), MBIA (legacy) | Post-2008 financial guarantor capacity is more constrained |
+| **Parent/Group Guarantee (Independent Credit)** | Moderate to Strong | Delta=-5pp to -15pp | Strong parent guaranteeing subsidiary debt | Requires assessment of parent's independent credit quality |
+| **Parent/Group Guarantee (Related Party)** | Weak | Delta=0pp to -5pp | Subsidiary debt guaranteed by parent; consolidated group | Legal validity but limited incremental credit benefit — parent and subsidiary are already economically integrated |
+| **Personal Guarantee (Controlling Shareholder)** | Weak to Moderate | Delta=0pp to -5pp | Founder/controlling shareholder personal guarantee | Legally valid but enforcement depends on personal asset recoverability and jurisdictional asset-protection laws |
+| **Standby Letter of Credit / Bank Guarantee** | Strong (depending on issuing bank) | Delta=-10pp to -15pp | Major international banks | Enhancement depends on issuing bank credit rating |
+| **Keepwell Agreement / Support Letter** | Very Weak | Delta=0pp | Agreement to maintain ownership/liquidity support | Limited legal enforceability in most jurisdictions |
+| **Debt Service Reserve Account** | Moderate to Strong | Delta=-5pp to -10pp | Cash reserve account typically 6-12 months of debt service | Most effective when reserve is fully funded and subject to perfected security interest |
+| **Excess Cash Flow Sweep** | Moderate | Delta=-5pp | Mandatory prepayment from excess cash flow | Effectiveness depends on the definition of excess cash flow and sweep percentage |
 
-| LGD等级 | 回收率中位数（全球参考） | 90%置信区间（全球参考） | 对中国市场的调整后范围 |
-|---------|----------------------|----------------------|---------------------|
-| LGD1 | 85% | 70% - 98% | 65% - 98%（中国市场司法执行效率降低下限） |
-| LGD2 | 70% | 50% - 85% | 45% - 80%（逃废债风险和司法不确定性压低下限） |
-| LGD3 | 50% | 30% - 70% | 25% - 65%（历史案例显示重整清偿率可能低于全球中位数） |
-| LGD4 | 25% | 10% - 45% | 10% - 40%（次级债券在中国无专门统计） |
-| LGD5 | 8% | 2% - 20% | 2% - 15%（结构化产品劣后层可接近0%） |
+**Data Source:** Guarantor rating data from rating agency public information. Analysis of guarantee types references international bond market practice and regulatory guidance on credit enhancement.
 
-**数据来源：** 全球统计参考Moody's《Corporate Default and Recovery Rates, 1920-2019》（2020年2月发布），第26-30页。中国市场调整区间为框架基于现有案例的定性判断。
+### 7.3 Related-Party Guarantee Special Risks
 
-### 11.5 关于ML/AI预测LGD的局限性说明
+Related-party guarantees are among the most common guarantee forms in many markets, but also carry the **lowest information content** regarding incremental credit enhancement.
 
-在金融科技领域，存在使用机器学习模型预测LGD的方法（如随机森林、XGBoost、深度神经网络），但这些方法在中国债券市场面临以下约束：
+| Related-Party Type | Risk Characteristics | Identification Method | Output Adjustment |
+|-------------------|---------------------|---------------------|------------------|
+| Subsidiary issuing + parent guarantee | Parent and subsidiary are consolidated; intra-group credit risk is highly correlated | Check whether issuer and guarantor are within the same group | LGD adjustment halved (e.g., standard guarantee Delta=-10pp becomes Delta=-5pp) |
+| Parent issuing + subsidiary guarantee | Subsidiary financial contribution is already part of parent's credit assessment | Check whether the subsidiary is effectively providing asset backing for parent debt | LGD adjustment not applicable (enhancement is circular under consolidation) |
+| Cross guarantees among sibling companies | Guarantee chain may form a loop; default of one may propagate | Check whether the guarantee chain forms a closed loop | LGD adjustment halved or eliminated |
+| Controlling shareholder guarantee | Effective at legal level, difficult at enforcement level | Check whether guarantee agreement is notarized and perfected | Adjustment only if the guarantor has identifiable and enforceable independent core assets |
 
-| 方法 | 在中国市场的限制 | 可用性判定 |
-|------|----------------|-----------|
-| 基于大型历史数据库的统计回归 | 中国信用债违约样本量不足200个（截至2025年末），远不足以训练稳健的LGD预测模型 | ❌ 当前不可行 |
-| 基于违约回收数据的时间序列模型 | 中国违约事件的时间跨度短（2014年首例违约至今），且回收数据未系统化披露 | ❌ 当前不可行 |
-| 条款驱动的专家系统/规则引擎 | 不依赖训练数据，基于公开条款和行业基准规则推理 | ⚠️ 可以尝试（本框架采用的方法） |
-| 迁移学习（使用全球数据预训练+中国数据微调） | 中国债券市场结构与全球市场差异大（国企主导+逃废债风险+地方政府协调），迁移学习的有效性存疑 | ⚠️ 学术可行但实际效果未验证 |
+**Honesty Statement:** Quantitative adjustment of related-party guarantees is a **highly subjective qualitative judgment**. This framework does not provide precise Delta formulas but only directional guidance.
 
-**结论：** 在当前数据约束下，基于条款和行业基准的**规则引擎方法**是唯一可行的LGD估算方案。ML/AI方法在样本量足够（可预期的未来较难实现）时才能超越规则引擎。
+### 7.4 GSE and Implicit Guarantee Framework
+
+Government-Sponsored Enterprises (GSEs) and entities with implicit government backing present a unique assessment challenge:
+
+| Entity Type | Implicit Guarantee Strength | Assessment Approach | Historical Reference |
+|------------|---------------------------|---------------------|---------------------|
+| **Fannie Mae / Freddie Mac (GSEs)** | Very Strong (U.S. federal conservatorship since 2008) | Conservative assumption: effective sovereign backing during crisis | 2008 conservatorship demonstrated willingness to support; senior and subordinated debt treated differently |
+| **Federal Home Loan Banks (FHLB)** | Strong (joint and several liability among 11 banks) | Senior debt: near-sovereign; no guarantee of standalone debt | Never defaulted; access to U.S. Treasury as lender of last resort is statutory |
+| **European Union Institutions** | Strong (EU budget + member state backing) | EIB, ESM, EU Commission bonds trade near sovereign levels | EU budget guarantee; ECB backstop mechanisms |
+| **State-Owned Enterprises (Investment Grade)** | Varies by ownership, legal framework, strategic importance | Separate capacity vs. willingness assessment | Explicit guarantee vs. implicit assumption must be distinguished |
+| **Systemically Important Financial Institutions (SIFIs)** | Conditional (resolution frameworks post-2008) | TLAC/MREL instruments are bail-in-able; senior opco debt may retain implicit support | Post-crisis resolution regimes have materially reduced implicit expectations |
 
 ---
 
-## 十二、LGD与现有框架的集成
+## 8. Industry Characteristics and Recovery Rates
 
-### 12.1 在双轨方法论中的集成
+### 8.1 Industry Asset Recoverability Classification
 
-dual-track-methodology.md的评级映射中增加LGD维度：
+**Core Logic:** Different industries have different asset structures and asset characteristics, which determine recovery value after default.
 
-**当前（修改前）：**
+| Industry Type | Asset Characteristics | Recovery Rate Reference Range | Examples |
+|--------------|----------------------|------------------------------|----------|
+| **Asset-Heavy — General Equipment** | Fixed assets ratio >40%, equipment widely usable across industries | 40%-60% | Traditional manufacturing, general equipment manufacturing, chemicals |
+| **Asset-Heavy — Specialized Equipment** | Fixed assets ratio >40%, equipment is highly specialized | 20%-40% | Solar cell manufacturing (specialized furnaces), semiconductor manufacturing (lithography — secondary market exists), advanced battery production |
+| **Asset-Light — Core IP** | Intangible assets dominate (patents/IP/software), low book value | 10%-30% | Chip design (fabless), biotech (pipeline value hard to assess), software companies |
+| **Asset-Light — Platform** | Core assets are data and user relationships, minimal book assets | 5%-20% | Internet platforms, fintech companies |
+| **Contractual/Concession Assets** | Core assets are long-term contracts/concessions, cash flow predictable | 50%-70% | Data centers (long-term power + customer contracts), toll roads (concession agreements) |
+| **Real Estate Intensive** | Property/land dominates balance sheet | 50%-75% | Commercial real estate, industrial parks, logistics property |
 
-| 综合评分区间 | 评级 | 含义 |
-|-------------|------|------|
-| 9.5 - 10.0 | AAA | 极低风险，信用质量极高 |
+**Data Sources:** Industry fixed-asset/total-asset ratios from listed company financial statement footnotes. Equipment secondary market liquidity from industry-specific trading platforms. Recovery ranges reference Moody's *Industry Recovery Rate Study* (2018) and Altman's recovery rate database.
+
+### 8.2 Key Industry Delta_Industry Adjustments
+
+| Industry | Delta_Industry | Rationale | Data Support |
+|---------|---------------|-----------|-------------|
+| **Solar Manufacturing** | +5pp | Asset-heavy but equipment highly specialized; rapid technology cycles (PERC to TOPCon to BC); older production lines have minimal recovery value | Equipment trading data shows near-zero recovery for technology that is three generations obsolete |
+| **Semiconductor — Foundry** | -5pp | Asset-heavy with highly specialized equipment, but lithography/etch equipment has international secondary market; recovery reasonably supported | Secondary semiconductor equipment market (e.g., SurplusGlobal) shows residual value rates of 30-50% |
+| **Semiconductor — Fabless** | +10pp | Asset-light; IP monetization highly uncertain; core asset (engineering team) disperses after default | Case study inference; no systematic public data |
+| **Biotechnology** | +5pp to +10pp | Pipeline value extremely uncertain — late-stage assets may be sold but at steep discounts; early-stage pipeline essentially zero | BioPharma M&A and bankruptcy asset sale cases |
+| **Data Centers** | -5pp | Power contracts and customer leases are salable; assets continue generating cash flows | Data center M&A shows efficient, high-PUE assets can trade at premiums |
+| **Electric Vehicle Manufacturing** | +10pp | Inventory depreciates rapidly (market prices drop weekly); specialized production lines costly to retool; battery recovery value limited | EV market pricing data; battery recycling market still immature |
+| **Medical Devices** | 0pp | Generally asset-light but channel value convertible; regulatory registrations have independent value | Registration certificates can be separately priced in M&A transactions |
+
+**Honesty Statement:** Delta_Industry adjustment parameters are **framework-set values**, not empirically regressed results. Historical real recovery rates by industry are typically not available in systematic form across most markets.
+
+### 8.3 Industry Concentration Indirect Effects on Recovery
+
+| Industry Concentration Characteristic | Effect on LGD | Logic |
+|--------------------------------------|-------------|-------|
+| Highly concentrated (oligopoly, CR3>70%) | LGD may decrease | Quality assets may be acquired by competitors, creating "buyer's market" for recovery |
+| Highly fragmented (CR3<20%) | LGD may increase | Limited specialized operational capacity among asset buyers; larger disposal discounts |
+| Severe overcapacity | LGD significantly increases | Idle equipment has virtually no secondary buyers during industry-wide overcapacity |
+
+**Data Sources:** Industry concentration metrics (CR3/CR5) from industry research reports. This adjustment is primarily qualitative.
+
+---
+
+## 9. Post-Default Recovery Path Analysis
+
+### 9.1 Three Post-Default Resolution Paths
+
+| Path | Definition | Average Recovery (Global Reference) | Typical Application |
+|------|-----------|-----------------------------------|-------------------|
+| **Reorganization (Chapter 11 / Administration)** | Court-supervised restructuring under bankruptcy protection; going-concern preservation | 40-60% (secured creditors); 5-30% (unsecured creditors) | Preferred path for larger enterprises with going-concern value |
+| **Liquidation (Chapter 7 / Winding-up)** | Enterprise ceases operations; assets sold and distributed per priority | 20-40% (secured creditors); 0-20% (unsecured creditors) | Main path for SMEs; unsecured creditors typically experience very low recoveries |
+| **Out-of-Court Restructuring (Scheme of Arrangement / London Approach)** | Consensual debt restructuring outside formal insolvency proceedings | Highly variable; no reliable global average | Increasingly common; lacks automatic stay, execution risk varies |
+
+**Data Sources:** Global recovery rates reference Moody's *Annual Default and Recovery Rate Report* and S&P *Global Recovery Rates*. U.S. Chapter 11 data from UCLA-LoPucki Bankruptcy Research Database; European data from the European Banking Authority.
+
+### 9.2 International Reorganization Case Recovery Rate References
+
+| Case | Year | Jurisdiction | Industry | Unsecured Creditor Recovery | Key Features |
+|------|------|-------------|---------|---------------------------|-------------|
+| **Enron** | 2001 | United States (Chapter 11) | Energy/Trading | ~20% (initial plan); ~52% (final distribution after years of litigation) | Complex structured entities; off-balance-sheet liabilities inflated recovery uncertainty |
+| **WorldCom** | 2002 | United States (Chapter 11) | Telecommunications | ~36% (unsecured bonds); ~100% (bank debt) | Largest U.S. bankruptcy at the time; asset sales to Verizon |
+| **General Motors** | 2009 | United States (Chapter 11 — 363 Sale) | Automotive | ~10-25% (unsecured bonds); New GM equity offered as partial compensation | Pre-packaged restructuring via Section 363 sale; government-backed rescue |
+| **Lehman Brothers** | 2008 | United States (Chapter 11) | Financial | Varies by entity and jurisdiction; senior unsecured ~21-34% (depending on legal entity) | Largest bankruptcy in history; cross-border complexity (over 80 legal entities across jurisdictions) |
+| **Nortel Networks** | 2009 | US (Chapter 11) / Canada (CCAA) | Telecom Equipment | Variable; total recovery pool was ultimately ~$7B vs. initial estimates of $2-3B | Cross-border coordination between U.S. and Canadian proceedings; 7-year process |
+| **MF Global** | 2011 | United States (Chapter 11) | Financial Brokerage | ~100% recovery of customer segregated funds (after extensive recovery efforts) | Segregation rules and commodity customer protection |
+| **Abengoa** | 2016 | Spain (Pre-concurso) | Energy/Infrastructure | ~50% (restructuring agreement with creditors) | Complex multi-jurisdictional pre-insolvency restructuring |
+| **Thomas Cook** | 2019 | United Kingdom (Compulsory Liquidation) | Travel/Tourism | Unsecured creditors received near zero; ATOL-bond protected package holiday customers | Comprehensive compulsory liquidation with government-backed repatriation |
+| **Wirecard** | 2020 | Germany (Insolvency) | Fintech/Payments | Expected <5% for unsecured creditors | Fraud-driven insolvency; missing trust account balances |
+| **Greensill Capital** | 2021 | United Kingdom (Administration) | Supply Chain Finance | Expected 35-65% depending on asset type | Complex structured credit; single-buyer concentration |
+| **Credit Suisse (AT1) Write-down** | 2023 | Switzerland (Finma-orchestrated) | Banking | Additional Tier 1 (AT1) bonds: 100% write-down; senior bonds: 0.59-7.52% (risk-adjusted) | Regulatory resolution; contractual write-down mechanism triggered; shareholder value zero |
+
+**Data Sources:** Recovery rates from court-approved plans, court filings, and public media reports. These are **case-specific statistics**, not weighted industry averages.
+
+**Important Notes:** The above unsecured creditor recovery rates should be considered indicative only. Actual recovery rates are affected by:
+1. **Claim size**: Smaller claims often receive proportionally higher recovery (e.g., U.S. Chapter 11 small-claim priority treatment)
+2. **Reorganization duration**: Typical cycles of 1-5 years; time value of money is not reflected in stated recovery rates
+3. **Debt-to-equity swap value**: Many reorganization plans include equity; the actual sale price and timing of equity disposition determine the ultimate recovery
+4. **Post-reorganization survival**: Some reorganized entities subsequently default (e.g., the "Chapter 22" phenomenon)
+5. **Cross-border complexity**: Multi-jurisdictional legal entities compound recovery uncertainty
+
+### 9.3 Out-of-Court Restructuring Special Risks
+
+| Characteristic | Out-of-Court Restructuring | Formal Insolvency Proceeding | Effect on LGD |
+|---------------|--------------------------|------------------------------|--------------|
+| Legal binding force | Weak (requires high consensus threshold) | Strong (court-ordered, majority binds minority) | Out-of-court may require multiple renegotiations; high time cost |
+| Information transparency | Low | High (court-appointed administrator + creditor committee) | Out-of-court places smaller creditors at greater information disadvantage |
+| Debt relief magnitude | Smaller (typically extensions + rate reductions) | Larger (principal may be discounted) | Out-of-court has higher nominal recovery but longer actual recovery cycle |
+| Liquidation threat | Optional (proceeds to formal process if no deal) | The ultimate outcome if no going-concern plan | -- |
+
+**Honesty Statement:** Recovery rate data for out-of-court restructurings is not systematically available in any major market. The above analysis is based on practitioner reporting and case descriptions, constituting qualitative judgment.
+
+### 9.4 Delta_RecoveryPath Adjustment Reference
+
+| Scenario | Delta Adjustment | Applicable Conditions |
+|---------|----------------|---------------------|
+| Expected reorganization, issuer asset quality acceptable | -5pp | Going-concern value exists; business can be preserved through restructuring |
+| Expected reorganization, issuer assets already hollowed out | 0pp | Unsecured creditor recovery very low even after reorganization |
+| Expected liquidation | +5pp to +10pp | Liquidation discounts exceed reorganization; longer duration |
+| Expected out-of-court restructuring with strong issuer bargaining power | +5pp | Issuer may use flexibility of out-of-court process to suppress recovery |
+
+---
+
+## 10. International Bankruptcy and Insolvency Frameworks
+
+### 10.1 Framework Overview
+
+LGD assessment must account for the legal and insolvency framework governing the issuer's jurisdiction. The three most influential international frameworks are:
+
+| Framework | Jurisdiction | Key Features | Impact on LGD |
+|-----------|-------------|-------------|--------------|
+| **Chapter 11 (U.S. Bankruptcy Code)** | United States | Debtor-in-possession; automatic stay; exclusivity period; cram-down provisions; 363 sales | Generally higher unsecured recovery due to going-concern preservation; DIP financing priority |
+| **Scheme of Arrangement (UK Companies Act)** | United Kingdom / Common Law jurisdictions | Court-sanctioned compromise between company and creditors; no automatic stay; requires class voting | Flexible but no automatic protection; pre-pack schemes are common; recovery depends on class composition |
+| **EU Insolvency Regulation (Recast)** | EU Member States (cross-border) | Main proceeding in COMI jurisdiction; automatic recognition across member states; secondary proceedings permitted | Harmonized framework reduces cross-border uncertainty; secondary proceedings can complicate recovery waterfall |
+| **CCAA (Companies' Creditors Arrangement Act)** | Canada | Similar to Chapter 11 with stay and plan of arrangement; more court involvement | Intermediate recovery outcomes; relatively efficient restructuring process |
+| **Civil Law Insolvency (France, Germany, Japan)** | Civil law jurisdictions | Typically more creditor-protective than debtor-protective; administrator-driven rather than DIP | Generally lower unsecured recovery rates than Chapter 11; faster but potentially less value-maximizing |
+
+### 10.2 Chapter 11 (United States)
+
+**Key LGD Implications:**
+
+| Feature | Description | LGD Impact |
+|---------|-----------|-----------|
+| Automatic Stay | Immediately halts all collection efforts upon filing | Preserves asset pool; gives debtor breathing room; potentially higher recovery |
+| Debtor-in-Possession | Existing management retains control unless cause is shown | Incentivizes timely filing; may preserve value; risk of management entrenchment |
+| Exclusivity Period | Debtor has exclusive right to propose plan for 120 days (extendable) | Provides negotiation leverage to debtor; may delay resolution |
+| Cram-Down | Court can confirm plan over dissenting creditor class if fair-and-equitable test met | Protects against holdout creditors; facilitates restructuring |
+| 363 Sale | Sale of assets outside a plan; free and clear of liens | Increasingly used; can achieve higher value through market-tested sale |
+| Priority Waterfall | Secured claims -> administrative expenses -> DIP financing -> unsecured priority -> general unsecured -> subordinated -> equity | Clear hierarchy reduces negotiation cost |
+| DIP Financing | Super-priority financing to fund operations during bankruptcy | Provides liquidity; existing secured creditors may be primed |
+
+**Recovery Data (U.S.):** Moody's reports that U.S. senior unsecured bond recovery rates average ~40-50% under Chapter 11 (depending on industry cycle). The UCLA-LoPucki Bankruptcy Research Database shows median time to plan confirmation of ~18 months for large public companies.
+
+### 10.3 Scheme of Arrangement (United Kingdom and Commonwealth)
+
+**Key LGD Implications:**
+
+| Feature | Description | LGD Impact |
+|---------|-----------|-----------|
+| No Automatic Stay | No statutory moratorium; interim court order can provide limited protection | Less breathing room; creditor action continues unless the court intervenes |
+| Class Voting | Creditors divided into classes; each class votes by majority in value (75%) and majority in number (50%) | Minority creditors can be crammed down; but class composition is litigated frequently |
+| Cross-Class Cram-Down | UK does not have cross-class cram-down (unlike Chapter 11); all impaired classes must approve | More difficult to bind dissenting classes; may reduce restructuring success rate |
+| Pre-Pack Administration | Company enters administration with a pre-negotiated sale of business pre-arranged | Very fast (can complete in days); maximizes going-concern value; creditors limited to reviewing deal |
+| Administration | Equivalent to Chapter 11 moratorium but administrator-controlled rather than DIP | Administrator has duty to act in interests of all creditors |
+
+**Recovery Data (UK):** Pre-pack administration typical recovery for unsecured creditors is low (often <20%) because the business is sold free of liabilities. Scheme of arrangement recoveries vary widely but are generally comparable to Chapter 11 for senior classes.
+
+### 10.4 EU Insolvency Regulation (Recast)
+
+**Key LGD Implications:**
+
+| Feature | Description | LGD Impact |
+|---------|-----------|-----------|
+| Main Proceeding | Opened in the jurisdiction of the debtor's COMI (center of main interests) | Determines which insolvency law governs the main proceeding |
+| Secondary Proceeding | Can be opened in any member state where the debtor has an establishment | Creates coordination challenges; assets in secondary proceedings are administered separately |
+| Automatic Recognition | Main proceeding and its judgments recognized across all EU member states (except Denmark) | Reduces cross-border legal uncertainty; critical for LGD assessment of multi-jurisdictional entities |
+| Group Coordination | Provisions for coordinating insolvency proceedings of group members | Relevant for parent/subsidiary LGD analysis across EU |
+
+**Recovery Data (EU):** European Banking Authority reports that recovery rates vary significantly by member state, with German and Dutch proceedings typically yielding higher unsecured recoveries than Southern European counterparts.
+
+### 10.5 Framework Comparison and LGD Calibration
+
+| Framework | Typical Secured Recovery | Typical Unsecured Recovery | Avg. Duration | Predictability of Outcome |
+|-----------|------------------------|---------------------------|---------------|--------------------------|
+| **Chapter 11 (US)** | 50-80% | 20-50% | 12-24 months | Moderate — court has wide discretion |
+| **Scheme / Administration (UK)** | 50-80% | 15-35% | 6-12 months (pre-pack); 12-18 months (scheme) | Moderate — pre-pack outcomes predictable, schemes less so |
+| **EU Insolvency (varies)** | 30-70% (varies by MS) | 5-30% (varies by MS) | 12-36 months | Low — significant variation by member state |
+| **Civil Law (Japan)** | 60-80% | 20-40% | 6-12 months | Moderate — civil rehabilitation and liquidation procedures well-defined |
+
+**Delta_Legal Adjustment by Framework:**
+
+| Jurisdiction/Framework | Delta_Legal Adjustment | Rationale |
+|----------------------|----------------------|-----------|
+| Chapter 11 (US) — predictable application | -5pp to 0pp | Established jurisprudence; generally efficient |
+| Chapter 11 (US) — unpredictable outcome | 0pp to +5pp | Some districts have inconsistent outcomes |
+| UK Scheme / Administration | -5pp to 0pp | Efficient process; pre-pack provides value preservation |
+| EU MS — efficient (Germany, Netherlands) | -5pp to 0pp | Effective administration and legal certainty |
+| EU MS — less efficient (selected Southern European) | +5pp to +10pp | Longer timelines; lower unsecured recovery |
+| Civil Law — predictable (Japan, Korea) | 0pp to -5pp | Efficient and creditor-protective |
+| Emerging market — untested framework | +5pp to +10pp | No track record of large-scale insolvencies |
+| Emerging market — tested and weak | +10pp to +15pp | Documentation indicates low recovery expectations |
+
+---
+
+## 11. Collateral Valuation: International Standards
+
+### 11.1 International Valuation Standards (IVS)
+
+The International Valuation Standards Council (IVSC) provides the globally recognized framework for collateral valuation. The relevant standards for LGD assessment:
+
+| IVS Standard | Subject | Relevance to LGD |
+|-------------|---------|-----------------|
+| **IVS 101 — Scope of Work** | Defines the valuation assignment, basis of value, and assumptions | All collateral valuations used in LGD should reference the applicable basis of value |
+| **IVS 102 — Investigation and Compliance** | Requires valuer to collect sufficient data and comply with standards | Due diligence on valuer qualifications and methodology is critical for LGD reliability |
+| **IVS 103 — Reporting** | Specifies content of valuation report | LGD framework should require that collateral valuations meet IVS 103 reporting standards |
+| **IVS 104 — Bases of Value** | Market Value, Mortgage Lending Value (MLV), Fair Value, Investment Value | MLV is most relevant for LGD because it reflects long-term sustainable value, excluding speculative elements |
+| **IVS 105 — Valuation Approaches** | Market approach, Income approach, Cost approach | Different approaches yield different value conclusions; the forced-sale/liquidation value is most relevant for default scenarios |
+| **IVS 400 — Real Property Interests** | Valuation of real estate for secured lending | Core standard for real estate collateral — the most common collateral type in corporate lending |
+| **IVS 410 — Development Property** | Valuation of development and construction property | Relevant for project finance and real estate development LGD |
+| **IVS 500 — Financial Instruments** | Valuation of financial instruments (equity, bonds, derivatives) | Relevant for equity and financial instrument pledges |
+
+### 11.2 Valuation Bases for LGD Assessment
+
+| Basis of Value | Definition | Appropriate Use for LGD | Typical Discount from Market Value |
+|---------------|-----------|------------------------|-----------------------------------|
+| **Market Value** | Estimated amount for which an asset should exchange on the valuation date between a willing buyer and a willing seller in an arm's-length transaction | Baseline reference; not appropriate for forced-sale scenarios | 0% (by definition, market value is benchmark) |
+| **Mortgage Lending Value (MLV)** | Value of property determined by prudent assessment of its future marketability, ignoring speculative elements | **Recommended for LGD** — long-term sustainable value | 10-25% below market value depending on property type and market |
+| **Fair Value** | IFRS 13 / ASC 820 — price that would be received to sell an asset in an orderly transaction between market participants | Useful where mark-to-market is applied; "orderly transaction" assumption may not hold in default | Varies; depends on assumptions about "orderly" nature of sale |
+| **Liquidation / Forced Sale Value** | Estimated amount when insufficient marketing period, typically in a distressed context | **Most appropriate for LGD default scenario** | 20-50% below market value depending on asset type and market conditions |
+| **Orderly Liquidation Value (OLV)** | Estimated gross amount that could be received from a sale with reasonable marketing period | Intermediate between market value and forced sale | 10-20% below market value |
+| **Salvage Value** | Net amount expected to be realized at end of useful life | Less relevant for LGD (typically post-default is before end of useful life) | Not directly comparable |
+
+### 11.3 LTV (Loan-to-Value) Standards by Asset Class
+
+| Asset Class | Prudent LTV (Senior Secured) | Conservative LTV | Margin of Safety | Source Standards |
+|------------|------------------------------|-----------------|-----------------|----------------|
+| **Prime Residential Real Estate** | <60% | <45% | 40-55% | EBA Guidelines on LTV limits; Basel CRE guidance |
+| **Commercial Real Estate (Prime Office)** | <55% | <40% | 45-60% | Basel III CRE risk weights; IPF valuation guidelines |
+| **CRE — Secondary / Tertiary** | <45% | <30% | 55-70% | Higher volatility; larger auction discounts |
+| **Industrial Property** | <50% | <35% | 50-65% | Greater specialization; narrower buyer pool |
+| **Listed Equity (Liquid, Blue Chip)** | <50% | <35% | 50-65% | Haircuts per ECB/EBA margination practices |
+| **Listed Equity (Small Cap / Illiquid)** | <30% | <20% | 70-80% | Higher volatility; larger liquidation impact |
+| **Treasury Bonds (OECD Sovereign)** | <95% | <90% | 5-10% | Standard repo haircuts per Basel; ECB collateral framework |
+| **Corporate Bonds (IG)** | <85% | <75% | 15-25% | Based on haircuts applied by central banks for liquidity operations |
+| **Corporate Bonds (HY)** | <60% | <45% | 40-55% | Higher default correlation; lower secondary market liquidity |
+| **Aircraft (Modern Narrow-body)** | <65% | <50% | 35-50% | ISTAT appraisals; semi-annual value decline; specific to aircraft type |
+| **Ships (Large Bulk/Cargo)** | <60% | <45% | 40-55% | Baltic Exchange indices; freight rate volatility |
+| **Inventory (Generic)** | <50% | <35% | 50-65% | Valuation subject to obsolescence; physical inspection challenges |
+| **Accounts Receivable (Diversified)** | <75% | <60% | 25-40% | Advance rate based on obligor quality and aging |
+
+### 11.4 Real Estate Collateral Valuation — International Methodologies
+
+| Valuation Method | Description | Data Requirements | Reliability in Default |
+|-----------------|-----------|------------------|----------------------|
+| **Comparable Sales Approach** | Value = adjusted comparable property sales | Active market with transaction data | High in active markets; low in distressed or illiquid markets |
+| **Income Capitalization Approach** | Value = net operating income / capitalization rate | Rental income and cap rate data | Moderate to high for income-producing property; cap rates subject to judgment |
+| **Discounted Cash Flow Approach** | Value = PV of projected cash flows | Long-term lease and market data | Moderate — assumptions become more speculative under default scenario |
+| **Cost Approach** | Value = replacement cost - depreciation | Construction cost data | Lower — cost may not reflect market value; more relevant for specialized assets |
+| **Automated Valuation Model (AVM)** | Statistical model based on public data | Large transaction database | Low to moderate — reliant on data quality; less accurate for unique properties |
+| **Forced Sale / Auction Value** | Estimated price under time-constrained sale | Historical auction data | Most relevant for LGD — typically 20-50% below market value |
+
+**Honesty Statement:** Property valuation for LGD purposes is inherently uncertain. Even professional appraisals prepared under IVS standards carry a typical margin of error of +/-10-15% for standard property types in active markets, and significantly wider for specialized or illiquid assets. Valuation becomes more uncertain at the point of default, which may coincide with a market downturn.
+
+---
+
+## 12. Simplified LGD Estimation Under Public Data Constraints
+
+### 12.1 Data Constraint Summary
+
+| Data Needed But Unavailable | Why Unavailable | Alternative Approach |
+|---------------------------|----------------|---------------------|
+| Precise collateral appraisal reports | Internal data (available only to banks or rating agencies) | Tier classification based on prospectus collateral descriptions and industry benchmarks |
+| Historical default recovery database | No publicly available systematic recovery database in most markets | Global benchmarks + case-specific adjustment; reference Moody's/S&P public data |
+| Real-time collateral valuation | Collateral value fluctuates with markets; continuous tracking required | Annotate "collateral value as of assessment date" and update monthly/quarterly |
+| Precise inter-creditor priority among same-issuer obligations | Not fully public (cross-default / cross-guarantee complexity) | Most likely priority ranking based on bond terms |
+| Reorganization/liquidation timeline | Highly case-specific | Qualitative reference using historical average restructuring cycles |
+| Post-default creditor negotiation dynamics | Non-public | Not included; annotated as "not considering negotiation dynamics" |
+
+### 12.2 Simplified LGD Estimation Process (Public Data Version)
+
+```
+Input: Bond ISIN/ticker + Analysis Date
+    |
+    +-- Step 1: Extract debt seniority from prospectus
+    |     Output: Seniority type (secured/unsecured senior/subordinated/junior)
+    |
+    +-- Step 2: Extract credit enhancement from prospectus covenants
+    |    +-- Collateral type and description
+    |    +-- Guarantor name
+    |    +-- Guarantee percentage
+    |     Output: Enhancement type and quality (high/medium/low/none)
+    |
+    +-- Step 3: Infer industry LGD benchmark from issuer industry and asset structure
+    |     Output: Industry LGD baseline adjustment
+    |
+    +-- Step 4: Reference historical comparable cases for the industry/jurisdiction
+    |     Output: Comparable case recovery range
+    |
+    +-- Step 5: Comprehensive estimate
+          Output: LGD grade + recovery range + confidence level
+```
+
+### 12.3 Estimation Accuracy Classification
+
+| Input Dimension | Estimation Accuracy | Explanation |
+|----------------|-------------------|-------------|
+| **Debt seniority classification** | **High** | Prospectus clearly states priority |
+| **Whether secured** | **High** | Prospectus clearly states collateral/guarantee |
+| **Collateral type** | **High** | Prospectus clearly describes collateral |
+| **Guarantor identity** | **High** | Prospectus clearly identifies guarantor |
+| **Guarantor credit quality** | **Medium** | If public rating exists, directly available; unrated requires public information inference |
+| **Collateral coverage multiple** | **Medium-Low** | Prospectus may not disclose market value of collateral, only book value |
+| **Current collateral value** | **Low** | Post-issuance value changes; requires industry index/market price estimation |
+| **Industry recovery benchmark** | **Medium** | Global data available but may not directly apply to specific markets; local case sample insufficient |
+| **Default path prediction** | **Low** | Depends on multiple unpredictable factors (issuer, creditors, court, government dynamics) |
+| **Actual recovery rate** | **Very Low** | Interaction of all above factors makes precise prediction nearly impossible |
+
+### 12.4 Statistical Uncertainty Range of LGD Estimates
+
+| LGD Grade | Recovery Median (Global Reference) | 90% Confidence Interval (Global) | Cross-Market Adjusted Range |
+|-----------|-----------------------------------|-------------------------------|---------------------------|
+| LGD1 | 85% | 70% - 98% | 65% - 98% (jurisdictional enforcement efficiency reduces lower bound) |
+| LGD2 | 70% | 50% - 85% | 45% - 80% (legal uncertainty depresses lower bound) |
+| LGD3 | 50% | 30% - 70% | 25% - 65% (restructuring recovery rates may fall below global median in less efficient jurisdictions) |
+| LGD4 | 25% | 10% - 45% | 10% - 40% (subordinated bonds lack dedicated cross-market statistics) |
+| LGD5 | 8% | 2% - 20% | 2% - 15% (structured product equity tranches can approach 0%) |
+
+**Data Sources:** Global statistics reference Moody's *Corporate Default and Recovery Rates, 1920-2019* (February 2020), pp. 26-30, and Altman & Hotchkiss *Corporate Financial Distress and Bankruptcy* (2019). Cross-market adjustments are qualitative judgments based on observed case patterns.
+
+### 12.5 Limitations of ML/AI for LGD Prediction
+
+Various machine learning approaches have been proposed for LGD prediction. Their applicability depends on data availability:
+
+| Method | Limitations Across Most Markets | Feasibility |
+|--------|-------------------------------|------------|
+| Statistical regression on large historical database | Default sample sizes are typically insufficient (many markets have fewer than 200 corporate default observations) | **Not currently feasible** |
+| Time-series models on default recovery data | Default events span a short history in most emerging markets; recovery data is not systematically disclosed | **Not currently feasible** |
+| Covenant-driven expert system / rule engine | Does not rely on training data; based on public terms and industry benchmark rules | **Viable approach** (method adopted by this framework) |
+| Transfer learning (global data pre-training + local data fine-tuning) | Market structure differences (state ownership, legal frameworks, government coordination) limit transfer learning effectiveness | **Academically possible but unproven** |
+
+**Conclusion:** Under current data constraints across most markets, the **rule-engine approach** based on covenants and industry benchmarks is the only viable LGD estimation method. ML/AI approaches can only surpass rule engines when sufficient local market default and recovery data becomes available — a condition unlikely to be met in the near to medium term for most markets.
+
+---
+
+## 13. LGD Integration with Existing Frameworks
+
+### 13.1 Integration with Dual-Track Methodology
+
+Adding an LGD dimension to the rating mapping in dual-track-methodology.md:
+
+**Current (Pre-Modification):**
+
+| Composite Score Range | Rating | Meaning |
+|---------------------|--------|---------|
+| 9.5 - 10.0 | AAA | Very low risk, extremely high credit quality |
 | ... | ... | ... |
-| 0.0 - 0.9 | D | 违约或实质性违约 |
+| 0.0 - 0.9 | D | Default or material default |
 
-**建议扩展（修改后）：**
+**Proposed Extension (Post-Modification):**
 
-| 综合评分区间 | PD评级 | LGD附加输出 | 完整评级表示 |
-|-------------|-------|------------|------------|
+| Composite Score Range | PD Rating | LGD Additional Output | Full Rating Notation |
+|---------------------|----------|---------------------|--------------------|
 | 9.5 - 10.0 | AAA | LGD1 - LGD5 | AAA/LGD2 |
 | 8.5 - 8.9 | AA | LGD1 - LGD5 | AA/LGD3 |
 | 7.5 - 7.9 | A+ | LGD1 - LGD5 | A+/LGD3 |
 | ... | ... | ... | ... |
 
-但**建议**将LGD作为独立模块输出而非嵌入评级字符串，原因：
-1. 保持对现有PD评级框架的向后兼容
-2. LGD是针对债项而非发行人的属性，同一发行人的不同债券可能有不同LGD
-3. 双轨方法论的核心输出（评级+信号+完备性报告）在每个债券层面可附加LGD信息
+**Recommendation:** LGD should be output as an independent module rather than embedded in the rating string, for the following reasons:
+1. Maintains backward compatibility with the existing PD rating framework
+2. LGD is an obligation-level attribute, not an issuer-level attribute — different bonds of the same issuer may have different LGD
+3. The dual-track methodology's core output (rating + signal + completeness report) can attach LGD information at each bond level
 
-### 12.2 在多利益方决策矩阵中的集成
+### 13.2 Integration with Multi-Stakeholder Decision Matrix
 
-在multi-stakeholder.md中，各身份角色的决策矩阵中增加LGD考量：
+In multi-stakeholder.md, LGD considerations are added to the decision matrix for each role:
 
-| 角色 | LGD的使用方式 | 决策影响 |
-|------|-------------|---------|
-| **M0 信贷审批** | 抵押物LGD分析是M0决策的核心输入之一 | 有抵押贷款的LGD低于信用贷款，影响贷款价格和期限 |
-| **M1 债券投资** | 在"条款保护(M1.2)"维度中增加LGD评估 | 两个相同PD评级的债券，LGD更低的更有投资价值 |
-| **M3 市场交易** | 在Carry收益分析中考虑LGD风险调整 | 高Carry但高LGD的债券可能不是真正的价值机会 |
-| **M4 组合风控** | 压力测试中LGD参数决定违约损失 | 组合层面的预期损失 = Σ(各债项的PD × LGD × 敞口) |
+| Role | Use of LGD | Decision Impact |
+|------|-----------|----------------|
+| **M0 Credit Underwriting** | Collateral LGD analysis is a core input to underwriting decisions | Secured loans have lower LGD than unsecured; affects loan pricing and tenor |
+| **M1 Bond Investment** | Add LGD assessment under "Covenant Protection (M1.2)" dimension | Between two bonds with the same PD rating, the one with lower LGD offers better investment value |
+| **M3 Market Trading** | Consider LGD risk adjustment in carry analysis | High carry but high LGD may not represent genuine value opportunity |
+| **M4 Portfolio Risk Control** | LGD parameter determines loss severity in stress testing | Portfolio expected loss = sum(each bond's PD x LGD x exposure) |
 
-### 12.3 在财务深度分析中的集成
+### 13.3 Integration with Financial Deep Dive
 
-在financial-deep-dive.md的场景敏感性矩阵中增加"回收率假设变化"情景：
+In the scenario sensitivity matrix of financial-deep-dive.md, a "Recovery Rate Shock" scenario is added:
 
-**建议新增：**
-- **情景4：回收率冲击**——假设违约发生时，抵押物价值下降30%（如房地产价格下跌）或抵押物权执行周期延长
+**Proposed Addition:**
+- **Scenario 4: Recovery Rate Shock** — assumes collateral value declines 30% (e.g., real estate price decline) or collateral enforcement cycle extends
 
-| 场景变量 | Base | Bull | Bear | 回收率冲击 |
-|---------|------|------|------|-----------|
-| 收入变动 | 基准 | +10% | -10% | 基准 |
-| 毛利率变动 | 基准 | +5pp | -5pp | 基准 |
-| 利率变动 | 基准 | -100bp | +100bp | 基准 |
-| **抵押物价值变动** | — | — | — | **-30%** |
-| **违约回收率变动** | — | — | — | **-15pp** |
-| 调整后LGD等级 | — | — | — | **可能上升1-2级** |
-
----
-
-## 十三、LGD评估模板与输出规范
-
-### 13.1 单一债券的LGD评估输出模板
-
-```
-═══════════════════════════════════════════════════════════
-LGD评估报告
-═══════════════════════════════════════════════════════════
-
-基本信息
-----------------------------------------
-债券名称/代码：XX转债 / 123456.SH
-发行人：XX股份有限公司
-发行金额/余额：20亿元 / 15亿元
-分析日期：2026-07-08
-
-债项优先级与担保
-----------------------------------------
-优先级类别：无担保信用债券（优先级）
-增信类型：保证担保
-担保方：XX集团有限公司（母公司担保）
-担保比例：100%
-
-抵押/质押详情
-----------------------------------------
-抵押物类型：无抵押物（仅保证担保）
-抵押物覆盖倍数：不适用
-非抵押物增信：母公司提供全额无条件不可撤销连带责任担保
-
-LGD估算结果
-----------------------------------------
-LGD等级：LGD3
-预期损失率区间：40% - 60%（LGD3）
-预期回收率区间：40% - 60%
-基准确信度：中低
-
-估算过程
-----------------------------------------
-Base_LGD（无担保优先级）：60%                    ← 全球基准
-Δ_Collateral：0pp（无抵押物）                    ← 高确信度
-Δ_Guarantee：-5pp（母公司担保，关联担保减半调整） ← 中等确信度
-Δ_Industry：0pp（高端装备行业）                   ← 中等确信度
-Δ_RecoveryPath：0pp（假设破产重整路径）           ← 低确信度
-Δ_Legal：+5pp（发行人所在省份有逃废债前例）       ← 低确信度
-LGD估算值：60% - 5% + 0% + 0% + 5% = ~60%       ← 中低确信度
-
-注释：虽然母公司提供全额担保，但母子公司为关联关系，且该省份此前
-出现过国有企业逃废债争议（XX集团违约案例），担保的实际增信效果有限。
-建议对担保方的独立信用质量进行额外分析。
-
-比较分析
-----------------------------------------
-同主体其他有担保债券（XX担保）：LGD2（预期回收率50-70%）
-同主体无担保信用债（本次）：LGD3
-本债券 vs 同行业同评级债券中位数：LGD3 vs LGD3（中位）
-
-关键风险提示
-----------------------------------------
-1. 关联担保增信效力有限——母子公司已合并报表
-2. 区域司法环境偏弱可能影响担保执行
-3. 无抵押物覆盖，完全依赖担保方信用
-
-数据缺口与不确定性
-----------------------------------------
-□ 担保方的独立信用评级  →  可使用母公司外部评级
-□ 担保方的财务状况       → 母公司为非上市公司，财务数据不完整
-□ 历史担保执行案例       → 无数据
-□ 抵押物实时估值         → 不适用（无抵押物）
-```
-
-### 13.2 PD+LGD完整信用评估报告模板
-
-```
-═══════════════════════════════════════════════════════════
-综合信用评估报告（PD + LGD 双维度）
-═══════════════════════════════════════════════════════════
-
-一、发行人信息
-  ...
-  
-二、PD评级（双轨方法论输出）
-  PD评级：[AAA-D]
-  轨道A评分：[X.X/10]
-  轨道B状态：[平静/关注/异常/危机/无数据]
-  交叉对撞状态：[共识/分歧A/分歧B]
-  数据完备性：[X%]
-
-三、LGD评级（本报告主体）
-  LGD等级：[LGD1 - LGD5]
-  预期回收率区间：[X% - X%]
-  估算确信度：[高/中/低]
-
-四、预期损失（EL）综合评估
-  PD × LGD 矩阵综合判断：
-  ┌─────────────┬──────────────┐
-  │ PD评级      │ [AAA-D]      │
-  │ LGD等级     │ [LGD1-LGD5]  │
-  │ EL区间      │ [低/中/高]   │
-  │ 风险分类     │ [投资级/投机级/违约级] │
-  └─────────────┴──────────────┘
-
-五、关键驱动因素
-  1. PD驱动：[发行人层面核心信用因素摘要]
-  2. LGD驱动：[债项层面增信措施和回收路径摘要]
-
-六、跨债券对比
-  ┌───────────┬──────────┬──────────┬──────────┐
-  │ 债券     │ PD评级   │ LGD等级  │ EL判定   │
-  ├───────────┼──────────┼──────────┼──────────┤
-  │ 债券A    │ [评级]   │ [LGD]    │ [EL]     │
-  │ 债券B    │ [评级]   │ [LGD]    │ [EL]     │
-  │ 债券C    │ [评级]   │ [LGD]    │ [EL]     │
-  └───────────┴──────────┴──────────┴──────────┘
-```
+| Scenario Variable | Base | Bull | Bear | Recovery Shock |
+|-----------------|------|------|------|---------------|
+| Revenue change | Baseline | +10% | -10% | Baseline |
+| Gross margin change | Baseline | +5pp | -5pp | Baseline |
+| Interest rate change | Baseline | -100bp | +100bp | Baseline |
+| **Collateral value change** | -- | -- | -- | **-30%** |
+| **Recovery rate change** | -- | -- | -- | **-15pp** |
+| Adjusted LGD grade | -- | -- | -- | **May rise 1-2 grades** |
 
 ---
 
-## 十四、版本历史与待办事项
+## 14. LGD Assessment Template and Output Specifications
 
-### 14.1 版本历史
+### 14.1 Single Bond LGD Assessment Output Template
 
-| 版本 | 日期 | 变更内容 |
-|------|------|---------|
-| 0.1.0 | 2026-07-08 | 初始发布：LGD五级分类、关键因子、抵押物估值框架、担保评估、中国市场特殊考量、与现有框架集成方案 |
+```
+=========================================================
+LGD Assessment Report
+=========================================================
 
-### 14.2 待办事项（按优先级）
+Basic Information
+----------------------------------------
+Bond Name/ISIN: XX Bond / XS1234567890
+Issuer: XX Corporation
+Issue Amount/Outstanding: USD 1,000M / USD 800M
+Analysis Date: 2026-07-17
 
-| 优先级 | 事项 | 说明 | 依赖 |
-|--------|------|------|------|
-| **P0** | 完成LGD模块的马赛克引擎集成 | 将LGD评估信号接入mosaic-engine.md的信号提取管道 | mosaic-engine.md的模式扩展 |
-| **P0** | 历史违约案例回收率数据库（整理） | 将中国信用债市场已发生的违约案例按行业/区域/债项类型整理回收率数据 | 公开信息收集 |
-| **P1** | 实装LGD评估模板 | 将第13节的评估模板实现为本引擎的可操作模块 | 本框架的稳定 |
-| **P1** | 在POC验证中增加LGD维度 | 在现有光伏案例（隆基/一道）的回测中测试LGD模块的区分度 | P0完成 |
-| **P2** | 债项评级notching量化 | 基于评级机构的notching方法开发简化的中国债项notching规则 | — |
-| **P2** | 永续债LGD特殊规则 | 永续债的清偿顺序和法律地位存在争议，需单独研究 | — |
-| **P3** | 结构产品/ABS LGD分拆 | ABS的优先级/劣后级LGD差异大，需单独框架 | — |
-| **P3** | LGD对债券定价的量化模型 | PD×LGD→信用利差的理论映射，需足够多的市场数据验证 | — |
+Debt Seniority and Enhancement
+----------------------------------------
+Seniority Category: Senior Unsecured
+Enhancement Type: Guarantee
+Guarantor: XX Group Limited (Parent Guarantee)
+Guarantee Ratio: 100%
 
-### 14.3 相关内容
+Collateral Details
+----------------------------------------
+Collateral Type: None (guarantee only)
+Collateral Coverage Multiple: N/A
+Non-Collateral Enhancement: Full unconditional and irrevocable
+  joint-and-several liability guarantee from parent
 
-- [引擎架构总览](engine-overview.md) — 核心理念、总体架构、设计原则
-- [双轨分析方法论](dual-track-methodology.md) — 轨道A+轨道B、交叉对撞、评级映射
-- [多利益方视角框架](multi-stakeholder.md) — 各身份角色的决策矩阵
-- [财务深度分析模块](financial-deep-dive.md) — 三表联动、场景敏感性矩阵
-- [马赛克引擎](mosaic-engine.md) — 信号提取、拼图、完备性评估
+LGD Estimation Results
+----------------------------------------
+LGD Grade: LGD3
+Expected Loss Rate Range: 40% - 60% (LGD3)
+Expected Recovery Rate Range: 40% - 60%
+Base Confidence: Medium-Low
+
+Estimation Process
+----------------------------------------
+Base_LGD (Unsecured Senior): 60%                  <- Global benchmark
+Delta_Collateral: 0pp (no collateral)              <- High confidence
+Delta_Guarantee: -5pp (parent guarantee,           <- Medium confidence
+                    related-party halving adjustment)
+Delta_Industry: 0pp (industrial equipment)         <- Medium confidence
+Delta_RecoveryPath: 0pp (assumed reorganization)   <- Low confidence
+Delta_Legal: +5pp (issuer jurisdiction has         <- Low confidence
+                   untested insolvency framework)
+LGD Estimate: 60% - 5% + 0% + 0% + 5% = ~60%      <- Medium-low confidence
+
+Notes: Although the parent provides a full guarantee, the parent
+and subsidiary are related parties with highly correlated credit
+risk. The jurisdiction's insolvency framework is not well tested
+for large corporate restructurings. Independent assessment of the
+guarantor's credit quality is recommended.
+
+Comparative Analysis
+----------------------------------------
+Same issuer secured bond (XX Secured): LGD2 (expected recovery 50-70%)
+Same issuer unsecured bond (this issue): LGD3
+This bond vs. same-industry same-rating median: LGD3 vs. LGD3 (median)
+
+Key Risk Notes
+----------------------------------------
+1. Related-party guarantee provides limited incremental enhancement
+2. Legal environment in issuer's jurisdiction may affect enforcement
+3. No collateral coverage; full dependence on guarantor credit
+
+Data Gaps and Uncertainties
+----------------------------------------
+[] Guarantor independent credit rating  -> Parent external rating available
+[] Guarantor financial condition         -> Parent is unlisted; financial data incomplete
+[] Historical guarantee enforcement      -> No data
+[] Current collateral value              -> N/A (no collateral)
+```
+
+### 14.2 PD + LGD Integrated Credit Assessment Template
+
+```
+=========================================================
+Integrated Credit Assessment (PD + LGD Two-Dimension)
+=========================================================
+
+I. Issuer Information
+   ...
+
+II. PD Rating (Dual-Track Methodology Output)
+   PD Rating: [AAA-D]
+   Track A Score: [X.X/10]
+   Track B Status: [Calm / Watch / Anomaly / Crisis / No Data]
+   Cross-Validation Status: [Consensus / Divergence-A / Divergence-B]
+   Data Completeness: [X%]
+
+III. LGD Rating (This Report Subject)
+   LGD Grade: [LGD1 - LGD5]
+   Expected Recovery Range: [X% - X%]
+   Estimation Confidence: [High / Medium / Low]
+
+IV. Expected Loss (EL) Composite Assessment
+   PD x LGD Matrix Integrated Judgment:
+   +---------------------+--------------------+
+   | PD Rating           | [AAA-D]            |
+   | LGD Grade           | [LGD1-LGD5]        |
+   | EL Range            | [Low/Medium/High]  |
+   | Risk Classification  | [IG / HY / Default]|
+   +---------------------+--------------------+
+
+V. Key Drivers
+   1. PD Driver: [Issuer-level core credit factor summary]
+   2. LGD Driver: [Obligation-level enhancement and recovery path summary]
+
+VI. Cross-Bond Comparison
+   +-----------+-----------+-----------+-----------+
+   | Bond      | PD Rating | LGD Grade | EL Status |
+   +-----------+-----------+-----------+-----------+
+   | Bond A    | [Rating]  | [LGD]     | [EL]      |
+   | Bond B    | [Rating]  | [LGD]     | [EL]      |
+   | Bond C    | [Rating]  | [LGD]     | [EL]      |
+   +-----------+-----------+-----------+-----------+
+```
+
+---
+
+## 15. Version History and Roadmap
+
+### 15.1 Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 0.1.0 | 2026-07-17 | Initial international release: Five-tier LGD classification, international bankruptcy frameworks (Chapter 11, Scheme of Arrangement, EU Insolvency Regulation), IVS-based collateral valuation, five-sector recovery benchmarks from Moody's/Altman studies, global case library |
+
+### 15.2 Roadmap (by Priority)
+
+| Priority | Item | Description | Dependencies |
+|---------|------|-------------|-------------|
+| **P0** | LGD module integration with mosaic engine | Integrate LGD assessment signals into the mosaic-engine.md signal extraction pipeline | Mosaic engine pattern extension |
+| **P0** | Historical default recovery database (compilation) | Compile and organize default case recovery rates by industry/jurisdiction/debt type from published sources | Public information collection |
+| **P1** | Implement LGD assessment template | Implement the Section 14 template as an operational engine module | Framework stabilization |
+| **P1** | Add LGD dimension to POC validation | Test LGD module discrimination in existing case back-testing | P0 completion |
+| **P2** | Issue rating notching quantification | Develop simplified notching rules based on rating agency methodologies | -- |
+| **P2** | Perpetual/hybrid LGD special rules | Research the settlement priority and legal standing of perpetuals | -- |
+| **P3** | Structured product/ABS LGD treatment | Develop separate framework for ABS senior/junior tranche LGD assessment | -- |
+| **P3** | LGD-to-bond-pricing quantitative model | PD x LGD -> credit spread mapping; requires sufficient market data | -- |
+
+### 15.3 Related Content
+
+- [Engine Architecture Overview](engine-overview.md) — Core concepts, overall architecture, design principles
+- [Dual-Track Methodology](dual-track-methodology.md) — Track A + Track B, cross-validation, rating mapping
+- [Multi-Stakeholder Framework](multi-stakeholder.md) — Decision matrix for each role
+- [Financial Deep Dive Module](financial-deep-dive.md) — Three-statement linkage, scenario sensitivity matrix
+- [Mosaic Engine](mosaic-engine.md) — Signal extraction, mosaic assembly, completeness assessment

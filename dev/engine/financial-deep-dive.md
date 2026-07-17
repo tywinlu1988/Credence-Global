@@ -1,509 +1,648 @@
-# 财务深度分析子模块
+# Financial Deep Dive Sub-Module
 
-**版本**: v0.8.4-release | **日期**: 2026-07-10 | **状态**: 已发布
-
----
-
-> **说明：** 本模块是双轨方法论（dual-track-methodology.md）中L4财务层的深度分析子模块，提供行业框架（industry-framework.md）中所有7个行业的财务层指标详细计算规格。模块设计为三表联动+四维深度分析+三场景敏感性矩阵。
+**Version**: v0.8.4-release | **Date**: 2026-07-17 | **Status**: Published
 
 ---
 
-## 目录
-
-- [A. 三表联动核心逻辑](#a-三表联动核心逻辑)
-- [B. 营运资金效率分析](#b-营运资金效率分析)
-- [C. 债务到期排程](#c-债务到期排程)
-- [D. FCF生成能力](#d-fcf生成能力)
-- [E. 场景敏感性矩阵](#e-场景敏感性矩阵)
-- [附录：数据科目对照表](#附录数据科目对照表)
+> **Note:** This module is a deep-dive sub-module of the L4 Financial Layer within the Dual-Track Methodology (dual-track-methodology.md). It provides detailed calculation specifications for the financial layer indicators across all 7 industries in the industry framework (industry-framework.md). The module is structured as three-statement linkage + four-dimensional deep analysis + three-scenario sensitivity matrix, with additional extensions for sovereign and banking sector analysis.
 
 ---
 
-## A. 三表联动核心逻辑
+## Table of Contents
 
-### A.1 核心流程图
+- [A. Three-Statement Linkage Core Logic](#a-three-statement-linkage-core-logic)
+- [B. Working Capital Efficiency Analysis](#b-working-capital-efficiency-analysis)
+- [C. Debt Maturity Scheduling](#c-debt-maturity-scheduling)
+- [D. FCF Generation Capacity](#d-fcf-generation-capacity)
+- [E. Scenario Sensitivity Matrix](#e-scenario-sensitivity-matrix)
+- [F. Sovereign-Specific Metrics](#f-sovereign-specific-metrics)
+- [G. Bank CAMELS Framework](#g-bank-camels-framework)
+- [Appendix: Data Account Reconciliation (IFRS/US GAAP)](#appendix-data-account-reconciliation-ifrsus-gaap)
 
-企业的三张财务报表通过现金流形成闭环联动：
+---
+
+## A. Three-Statement Linkage Core Logic
+
+### A.1 Core Flow Diagram
+
+The three financial statements form a closed-loop linkage through cash flows:
 
 ```
-利润表                               现金流量表                             资产负债表
-─────────                           ──────────                            ──────────
-营业收入                             经营活动现金流净额 (CFO)
-  - 营业成本                            = 净利润                              现金及等价物
-  - 期间费用                              + D&A（折旧摊销）                     （期初余额）
-  - 利息支出                              - 营运资金变动                          │
-  - 税费                                  - 已付利息/所得税                      │  CFO流入
-  = 净利润                                + 其他调整                            │  Capex流出
-    │                                                                          │  偿债流出
-    │         加回折旧摊销                                                    │  融资流入
-    │         减营运资金变动          投资活动现金流                            │  分红流出
-    │         减资本支出                 = -资本支出（购建固产/无形资产）        ▼
-    │                                ─────────────────                    现金及等价物
-    └─────────────────────────────►  FCF = CFO - Capex                     （期末余额）
-                                         │
-                                         ├── 偿债：利息支出 + 到期债务
-                                         ├── 投资：新项目/并购
-                                         └── 分红：股东回报
+Income Statement                    Cash Flow Statement                    Balance Sheet
+---------------                     -----------------                    ----------------
+Revenue                              Cash Flow from Operations (CFO)      Cash & Equivalents
+  - Cost of Revenue                    = Net Income                       (Beginning Balance)
+  - Operating Expenses                   + D&A                               |
+  - Interest Expense                     - Working Capital Changes           | CFO Inflow
+  - Income Tax                           - Interest/Taxes Paid              | Capex Outflow
+  = Net Income                           + Other Adjustments                | Debt Service Outflow
+    |                                                                       | Financing Inflow
+    |        Add back D&A                                                  | Dividend Outflow
+    |        Subtract working capital changes            CF from Investing     v
+    |        Subtract capex                  = -Capital Expenditures      Cash & Equivalents
+    |                                   -----------------                (Ending Balance)
+    +--------------------------------> FCF = CFO - Capex
+                                         |
+                                         +-- Debt service: interest + maturing debt
+                                         +-- Investment: new projects / M&A
+                                         +-- Dividends: shareholder returns
 ```
 
-### A.2 三表勾稽关系验证
+### A.2 Three-Statement Reconciliation
 
-| 勾稽关系 | 公式 | 验证方法 |
+| Reconciliation | Formula | Verification Method |
 |---|---|---|
-| 现金变动验证 | 期末现金 - 期初现金 = CFO + CFI + CFF | 三张现金流量表合计应等于资产负债表现金变动 |
-| FCF验证 | FCF = 净利润 + D&A - 营运资金变动 - Capex | 从利润表出发间接验证CFO计算是否正确 |
-| 偿债能力验证 | FCF应 >= 利息支出 + 未来12个月到期债务 | 偿债后剩余现金才是真正的自由现金流 |
-| 营运资金验证 | 营运资金变动 = Δ应收账款 + Δ存货 - Δ应付账款 | 应与资产负债表科目变动一致 |
+| Cash Change Verification | Ending Cash - Beginning Cash = CFO + CFI + CFF | Sum of three cash flow sections should equal balance sheet cash change |
+| FCF Verification | FCF = Net Income + D&A - Working Capital Changes - Capex | Indirect calculation from income statement validates CFO |
+| Debt Service Verification | FCF should be >= Interest Expense + Next 12-Month Debt Maturities | Cash remaining after debt service is true free cash flow |
+| Working Capital Verification | Working Capital Change = Delta AR + Delta Inventory - Delta AP | Should match balance sheet working capital changes |
+
+### A.3 IFRS vs. US GAAP Reconciliation Notes
+
+Analysts should be aware of key differences between IFRS and US GAAP that affect financial deep-dive calculations:
+
+| Item | IFRS | US GAAP | Impact on Analysis |
+|------|------|---------|-------------------|
+| **Revenue Recognition** | IFRS 15 (same as US GAAP ASC 606 after convergence) | ASC 606 | Largely converged; differences may arise in interim reporting and specific industry guidance |
+| **Lease Accounting** | IFRS 16: lessees recognize right-of-use (ROU) asset and lease liability; single classification | ASC 842: similar ROU model but dual classification (finance vs. operating leases in P&L) | EBITDA different: IFRS classes all lease as finance (D&A + interest); US GAAP operating lease expense recorded as single operating expense. Adjust for comparability. |
+| **Inventory Costing** | LIFO prohibited | LIFO permitted | For US companies using LIFO, DSO/DIO calculations must adjust for LIFO reserve |
+| **Development Costs** | Capitalization required if criteria met | Capitalization generally prohibited (expensed as incurred) | R&D-intensive companies: IFRS balance sheet includes capitalized development costs; US GAAP generally does not. Affects asset base and D&A. |
+| **Borrowing Costs** | Capitalization required for qualifying assets | Capitalization required for qualifying assets (substantially similar) | Generally comparable; subtle differences in what qualifies |
+| **Impairment (Long-lived Assets)** | Single-step: compare carrying amount to recoverable amount (higher of FVLCD and VIU) | Two-step: test recoverability (undiscounted cash flows), then measure impairment (fair value) | US GAAP impairment less frequent (higher threshold). For LGD analysis, IFRS impairment may be more timely. |
+| **Financial Instruments (Impairment)** | IFRS 9: expected credit loss (ECL) model — 12-month ECL (Stage 1); lifetime ECL if credit risk increased significantly (Stage 2); lifetime ECL + interest on net carrying (Stage 3) | ASC 326 (CECL): lifetime expected losses recognized upon origination or purchase | CECL is more conservative (larger upfront allowance); affects book value and regulatory capital. Important for bank analysis. |
+| **Statement of Cash Flows** | Interest paid can be classified as operating or financing; dividends paid as operating or financing | Interest paid must be operating; dividends paid must be financing | FCF calculation may treat interest differently; adjust for cross-border comparability |
+| **Extraordinary Items** | Prohibited | Prohibited (since 2016) | Largely converged |
+
+**Adjustment Note for Cross-Border Comparisons:** When comparing financial metrics across companies reporting under IFRS vs. US GAAP, analysts should identify the key reconciling items (leases, development costs, impairment methodology) and make pro-forma adjustments to ensure comparability. For purposes of this engine, IFRS-based metrics are the default baseline; for US GAAP reporters, adjust the following as noted in individual line items.
 
 ---
 
-## B. 营运资金效率分析
+## B. Working Capital Efficiency Analysis
 
-### B.1 四项核心指标定义
+### B.1 Four Core Metrics
 
-| 指标 | 英文 | 公式 | 数据来源（年报科目） | 含义 |
-|---|---|---|---|---|
-| DSO | Days Sales Outstanding | 应收账款 /（营业收入 / 365） | 资产负债表：应收账款（含应收票据）；利润表：营业收入 | 销售回款平均天数 |
-| DIO | Days Inventory Outstanding | 存货 /（营业成本 / 365） | 资产负债表：存货（含原材料/在产品/产成品）；利润表：营业成本 | 存货从入库到销售的平均天数 |
-| DPO | Days Payables Outstanding | 应付账款 /（营业成本 / 365） | 资产负债表：应付账款（含应付票据）；利润表：营业成本 | 占用上游供应商资金的平均天数 |
-| CCC | Cash Conversion Cycle | DSO + DIO - DPO | 由前三项计算得出 | 从付出现金到收回现金的完整周期天数 |
+| Metric | Full Name | Formula | Data Source (IFRS/US GAAP Accounts) | Meaning |
+|--------|-----------|--------|--------------------------------------|---------|
+| DSO | Days Sales Outstanding | Trade Receivables / (Revenue / 365) | Balance Sheet: Trade Receivables (incl. notes receivable); Income Statement: Revenue | Average days to collect from customers |
+| DIO | Days Inventory Outstanding | Inventory / (Cost of Revenue / 365) | Balance Sheet: Inventory (raw materials/WIP/finished goods); Income Statement: Cost of Revenue | Average days inventory is held before sale |
+| DPO | Days Payables Outstanding | Trade Payables / (Cost of Revenue / 365) | Balance Sheet: Trade Payables (incl. notes payable); Income Statement: Cost of Revenue | Average days to pay suppliers |
+| CCC | Cash Conversion Cycle | DSO + DIO - DPO | Calculated from the above three | Complete cycle days from cash out to cash in |
 
-### B.2 通用阈值
+### B.2 General Thresholds
 
-| 指标 | 健康 | 关注 | 危险 | 数据来源 |
-|---|---|---|---|---|
-| DSO | <60天 | 60-90天 | >90天（>180天严重） | 年报应收账款附注 |
-| DIO | 依行业（见下表） | 依行业（见下表） | 依行业（见下表） | 年报存货附注（区分原材料/在制品/产成品） |
-| DPO | 30-90天 | <30天或>90天且无合理解释 | >120天（可能为拖欠） | 年报应付账款附注（含账龄分析） |
-| CCC | <100天 | 100-150天 | >150天 | 由前三项计算 |
+| Metric | Healthy | Watch | Danger | Data Source |
+|--------|---------|-------|--------|-------------|
+| DSO | <60 days | 60-90 days | >90 days (>180 days severe) | Annual report receivables note |
+| DIO | Industry-dependent (see below) | Industry-dependent | Industry-dependent | Inventory note (raw/WIP/finished) |
+| DPO | 30-90 days | <30 or >90 without reasonable explanation | >120 days (may indicate distress) | Payables note (aging analysis) |
+| CCC | <100 days | 100-150 days | >150 days | Calculated from above |
 
-### B.3 七行业差异化DSO/DIO/DPO/CCC阈值表
+### B.3 Seven-Industry Differentiated DSO/DIO/DPO/CCC Thresholds
 
-| 行业 | DSO健康线 | DSO危险线 | DIO健康线 | DIO危险线 | DPO参考 | CCC参考 | 行业特性说明 |
-|---|---|---|---|---|---|---|---|
-| **光伏/储能** | <60天 | >90天 | <45天 | >60天需触发跌价测试，>120天高度关注 | 30-90天 | >150天关注 | 组件价格周跌，存货贬值极快 |
-| **半导体/IC** | Fabless<45天，Foundry<60天 | >90天（受制裁客户单独计算） | Fabless<60天，Foundry<90天 | >120天 | 30-60天 | <100天健康 | 需分客户看DSO，受制裁企业付款通道受限 |
-| **高端装备/机床** | <180天（验收周期长） | >365天 | <120天（含WIP） | WIP堆积+应付缩减=取消订单 | 30-120天 | >200天关注 | DSO天然长，需区分合同节点 vs 实际回款 |
-| **生物医药—Pharma** | <90天 | >120天 | <60天 | >90天 | 30-90天 | >120天关注 | Biotech侧重现金跑道，营运资金参考价值有限 |
-| **医疗器械** | 经销<90天，直销<180天 | 经销>120天，直销>240天 | <90天 | >120天渠道积压 | 30-90天 | >150天关注 | 公立医院回款周期长，分渠道分析 |
-| **新能源汽车—OEM** | <45天 | >90天 | <45天 | >60天面临降价风险 | 30-120天 | <100天 | 含补贴/积分应收，需区分 |
-| **新能源汽车—供应链** | <90天 | >120天 | <60天 | >90天 | 受OEM挤压，30-60天 | >180天关注 | 主机厂占款严重 |
-| **数据中心** | <30天（预收模式） | DSO上升趋势 | 不适用（无实体存货） | 不适用 | 不适用 | CCC天然为负，转正=经营问题 | 预收租金模式，CCC负值正常 |
+| Industry | DSO Healthy | DSO Danger | DIO Healthy | DIO Danger | DPO Reference | CCC Reference | Notes |
+|----------|------------|-----------|------------|-----------|--------------|--------------|-------|
+| **Solar/Energy Storage** | <60 days | >90 days | <45 days | >60 days triggers impairment test; >120 days high concern | 30-90 days | >150 days watch | Module prices decline weekly; inventory depreciation very fast |
+| **Semiconductor/IC** | Fabless <45d; Foundry <60d | >90d (sanctioned customers separate) | Fabless <60d; Foundry <90d | >120 days | 30-60 days | <100d healthy | Check DSO by customer; sanctioned entity payment channels may be restricted |
+| **Capital Equipment / Machine Tools** | <180 days (long acceptance cycles) | >365 days | <120 days (incl. WIP) | WIP accumulation + payable contraction = order cancellations | 30-120 days | >200d watch | DSO naturally long; distinguish contractual milestones vs. actual collections |
+| **Biopharma — Pharma** | <90 days | >120 days | <60 days | >90 days | 30-90 days | >120d watch | Biotech focuses on cash runway; working capital less relevant |
+| **Medical Devices** | Distributor <90d; Direct <180d | Distrib >120d; Direct >240d | <90 days | >120d channel stuffing | 30-90 days | >150d watch | Public hospital payment cycles are long; analyze by channel |
+| **NEV — OEM** | <45 days | >90 days | <45 days | >60 days faces price-cut risk | 30-120 days | <100d | Includes subsidy/credit receivables; separate these out |
+| **NEV — Supply Chain** | <90 days | >120 days | <60 days | >90 days | Squeezed by OEMs; 30-60d | >180d watch | OEM payment pressure significant |
+| **Data Centers** | <30 days (prepaid model) | DSO rising trend | N/A (no physical inventory) | N/A | N/A | CCC naturally negative; positive CCC indicates operational issue | Prepaid rental model; negative CCC is normal |
 
-### B.4 营运资金突变检测规则
+### B.4 Working Capital Spike Detection Rules
 
-| 突变信号 | 检测条件 | 可能含义 | 应对措施 |
+| Spike Signal | Detection Condition | Possible Meaning | Response |
 |---|---|---|---|
-| DSO单季跳升>30天 | 本季DSO - 上季DSO > 30天 | 客户回款恶化或收入确认激进 | 检查Top5客户账龄变化，核实收入确认政策 |
-| DIO单季跳升>30天 | 本季DIO - 上季DIO > 30天 | 产品滞销或备货失误 | 检查产成品库龄，评估跌价准备充分性 |
-| DPO单季跳升>45天 | 本季DPO - 上季DPO > 45天 | 供应商关系恶化或资金紧张 | 检查供应商付款条款变化，排查流动性压力 |
-| CCC恶化>50天 | 本季CCC - 上季CCC > 50天 | 整体营运资金循环效率下降 | 综合三表联动分析，评估现金跑道 |
-| 应付账款增长远快于收入 | Δ应付账款增长率 - Δ收入增长率 > 20pp | 靠压供应商维持现金流 | 不可持续的短期优化，后续面临报复性付款压力 |
+| DSO single-quarter jump >30 days | Current quarter DSO - prior quarter DSO > 30 days | Customer payment deterioration or aggressive revenue recognition | Check Top 5 customer aging; verify revenue recognition policy |
+| DIO single-quarter jump >30 days | Current DIO - prior DIO > 30 days | Product obsolescence or inventory mismatch | Check finished goods aging; assess impairment provision adequacy |
+| DPO single-quarter jump >45 days | Current DPO - prior DPO > 45 days | Supplier relationship deterioration or cash pressure | Check supplier payment terms changes; investigate liquidity pressure |
+| CCC deterioration >50 days | Current CCC - prior CCC > 50 days | Overall working capital cycle efficiency decline | Comprehensive three-statement linkage; assess cash runway |
+| Payable growth far exceeding revenue growth | Delta AP growth rate - Delta Revenue growth rate > 20pp | Paying suppliers late to preserve cash | Unsustainable short-term optimization; subsequent retaliatory payment pressure |
 
 ---
 
-## C. 债务到期排程
+## C. Debt Maturity Scheduling
 
-### C.1 到期债务分布构建方法
+### C.1 Maturity Distribution Construction Method
 
-期限结构分析的核心理念：**不是看"短期债务占比"（静态快照），而是看未来12/24/36个月的到期债务分布（动态到期排程）。**
+Core philosophy: **The relevant metric is not "short-term debt ratio" (static snapshot), but the dynamic debt maturity profile over the next 12/24/36 months.**
 
-数据来源路径（年报附注摘录）：
-
-```
-短期借款                    → 年报附注"短期借款"明细
-  ├── 信用借款              → 按到期日列示
-  ├── 抵押/质押借款        → 按到期日列示
-  └── 开证/保理融资        → 按到期日列示
-
-一年内到期的非流动负债      → 年报附注"一年内到期的非流动负债"
-  ├── 一年内到期的长期借款   → 按到期日列示
-  ├── 一年内到期的应付债券   → 按到期日列示
-  └── 一年内到期的租赁负债   → 按到期日列示
-
-应付债券                    → 年报附注"应付债券"
-  ├── 本期到期债券          → 按到期日列示
-  ├── 未来12个月到期        → 按到期日列示
-  └── 12-36个月到期         → 按到期日列示
-
-长期借款                    → 年报附注"长期借款"
-  ├── 1-2年内到期           → 按到期日列示
-  ├── 2-3年内到期           → 按到期日列示
-  └── 3年以上到期            → 按到期日列示
-```
-
-### C.2 到期债务分布图构建
-
-将上述数据汇总为月度/季度到期分布：
-
-| 到期时段 | 短期借款 | 一年内到期非流动负债 | 应付债券 | 长期借款（分期） | 合计 | 累计占比 |
-|---|---|---|---|---|---|---|
-| 未来1-3个月 | A1 | B1 | C1 | D1 | S1 | S1/总债务 |
-| 未来4-6个月 | A2 | B2 | C2 | D2 | S2 | (S1+S2)/总债务 |
-| 未来7-12个月 | A3 | B3 | C3 | D3 | S3 | (S1+S2+S3)/总债务 |
-| 13-24个月 | A4 | B4 | C4 | D4 | S4 | (S1..S4)/总债务 |
-| 25-36个月 | A5 | B5 | C5 | D5 | S5 | (S1..S5)/总债务 |
-| >36个月 | A6 | B6 | C6 | D6 | S6 | 100% |
-
-### C.3 危险分级
-
-| 分级 | 条件 | 判定 | 参考案例 |
-|---|---|---|---|
-| 🟢 平滑 | 未来12个月到期 < 总债务30% | 到期分布均匀，再融资压力小 | — |
-| 🟡 关注 | 未来12个月到期 30-50% | 需确认银行授信额度是否足够覆盖 | — |
-| 🟠 高风险 | 未来12个月到期 50-70% | 市场环境恶化时可能续不上 | — |
-| 🔴 极高风险 | 未来12个月到期 >70% 或 单月集中到期 >20% | 集中到期风险——**永煤/紫光/华晨都是这个特征** | 永煤2020年11月违约前，2020年Q1到期债务占全年63% |
-
-### C.4 银行授信覆盖比率
+Data source path (annual report note extraction):
 
 ```
-银行授信覆盖比率 = 未使用授信额度 / 未来12个月到期债务
+Short-term borrowings            -> Note: "Short-term borrowings" details
+  +-- Credit borrowings           -> By maturity
+  +-- Secured/pledged borrowings -> By maturity
+  +-- Discounted / factoring     -> By maturity
+
+Current portion of long-term debt -> Note: "Current portion of non-current liabilities"
+  +-- Current portion of long-term borrowings -> By maturity
+  +-- Current portion of bonds payable        -> By maturity
+  +-- Current portion of lease liabilities    -> By maturity
+
+Bonds payable                    -> Note: "Bonds payable"
+  +-- Maturing this period       -> By maturity
+  +-- Maturing next 12 months    -> By maturity
+  +-- 12-36 month maturity       -> By maturity
+
+Long-term borrowings             -> Note: "Long-term borrowings"
+  +-- 1-2 years                  -> By maturity
+  +-- 2-3 years                  -> By maturity
+  +-- 3+ years                   -> By maturity
 ```
 
-| 比率 | 判定 |
-|---|---|
-| >2.0x | 充足——到期债务有充裕的授信空间覆盖 |
-| 1.0-2.0x | 适当——需关注授信到期日与债务到期日的匹配 |
-| 0.5-1.0x | 不足——部分到期债务需依赖经营现金流偿还或新增融资 |
-| <0.5x | 危险——到期集中度高且备用流动性不足 |
+### C.2 Maturity Profile Construction
+
+Summarize the above data into quarterly/ monthly maturity buckets:
+
+| Maturity Window | Short-term Borrowings | Current Portion of LTD | Bonds Payable | Long-term Borrowings (Installments) | Total | Cumulative % |
+|----------------|----------------------|----------------------|--------------|-----------------------------------|-------|-------------|
+| Next 1-3 months | A1 | B1 | C1 | D1 | S1 | S1/Total Debt |
+| Next 4-6 months | A2 | B2 | C2 | D2 | S2 | (S1+S2)/Total Debt |
+| Next 7-12 months | A3 | B3 | C3 | D3 | S3 | (S1+S2+S3)/Total Debt |
+| 13-24 months | A4 | B4 | C4 | D4 | S4 | (S1..S4)/Total Debt |
+| 25-36 months | A5 | B5 | C5 | D5 | S5 | (S1..S5)/Total Debt |
+| >36 months | A6 | B6 | C6 | D6 | S6 | 100% |
+
+### C.3 Danger Classification
+
+| Level | Condition | Assessment | Reference Cases |
+|-------|-----------|-----------|-----------------|
+| Smooth | Next 12M maturities < 30% of total debt | Even distribution; low refinancing pressure | -- |
+| Watch | Next 12M maturities 30-50% | Need to confirm committed credit lines are sufficient | -- |
+| High Risk | Next 12M maturities 50-70% | May not roll in adverse market conditions | -- |
+| Extreme Risk | Next 12M maturities >70% or single-month concentration >20% | **Maturity wall** — same pattern observed in multiple corporate defaults globally | Enron (2001): significant near-term debt; Lehman (2008): short-term funding mismatch; many others |
+
+### C.4 Committed Credit Line Coverage Ratio
+
+```
+Committed Credit Line Coverage = Undrawn committed credit facilities / Next 12M maturing debt
+```
+
+| Ratio | Assessment |
+|-------|-----------|
+| >2.0x | Ample — sufficient committed capacity to cover maturities |
+| 1.0-2.0x | Adequate — need to monitor the match between facility expiry and debt maturity |
+| 0.5-1.0x | Insufficient — part of maturing debt relies on operating cash flow or new financing |
+| <0.5x | Dangerous — high concentration of near-term maturities with insufficient backup liquidity |
 
 ---
 
-## D. FCF生成能力
+## D. FCF Generation Capacity
 
-### D.1 核心比率
+### D.1 Core Ratios
 
-| 指标 | 公式 | 数据来源 | 含义 |
-|---|---|---|---|
-| FCF | 经营活动现金流净额 - 资本支出 | 现金流量表：经营活动现金流净额 - 购建固定资产/无形资产/其他长期资产支付的现金 | 企业真实可自由支配的现金流 |
-| FCF/收入 | FCF / 营业收入 × 100% | 现金流量表 + 利润表 | 每元收入的现金转化率 |
-| FCF/利息 | FCF / 利息支出 | 现金流量表：分配股利/利润/偿付利息支付的现金中的利息部分（或利润表：利息支出） | FCF对利息的覆盖倍数 |
-| FCF/总债务 | FCF / 总有息负债 | FCF /（短期借款+一年内到期非流动负债+长期借款+应付债券+租赁负债） | FCF对总债务的偿还能力 |
+| Metric | Formula | Data Source | Meaning |
+|--------|--------|-------------|---------|
+| FCF | CFO - Capital Expenditures | Cash flow statement: CFO - capex (purchases of PP&E + intangible assets) | True discretionary cash flow |
+| FCF / Revenue | FCF / Revenue x 100% | Cash flow statement + income statement | Cash conversion per dollar of revenue |
+| FCF / Interest | FCF / Interest Expense | Cash flow statement: interest paid (or income statement: interest expense) | FCF coverage of interest |
+| FCF / Total Debt | FCF / Total Interest-bearing Debt | FCF / (short-term borrowings + current portion LTD + LTD + bonds payable + lease liabilities) | FCF repayment capacity for total debt |
 
-### D.2 FCF分类矩阵
+### D.2 FCF Classification Matrix
 
-| FCF/收入 | FCF/利息 | FCF/总债务 | 分类 | 行业典型 |
-|---|---|---|---|---|
-| >10% | >5x | >15% | 🟢 强造血型 | 数据中心（稳定收租）、成熟Pharma |
-| 5-10% | 3-5x | 8-15% | 🟢 健康型 | 医疗器械、高端装备龙头 |
-| 0-5% | 1-3x | 3-8% | 🟡 维持型 | 光伏制造、半导体代工 |
-| -5%-0% | 0-1x | 0-3% | 🟠 脆弱型 | 新能源车初期、Biotech |
-| <-5% | <0 | <0% | 🔴 失血型 | 持续亏损企业、庞氏融资嫌疑（紫光、华晨） |
+| FCF/Revenue | FCF/Interest | FCF/Total Debt | Classification | Industry Typical |
+|------------|-------------|---------------|---------------|-----------------|
+| >10% | >5x | >15% | Strong cash generator | Data centers (stable rental), mature Pharma |
+| 5-10% | 3-5x | 8-15% | Healthy | Medical devices, capital equipment leaders |
+| 0-5% | 1-3x | 3-8% | Maintenance | Solar manufacturing, semiconductor foundries |
+| -5%-0% | 0-1x | 0-3% | Fragile | NEV early stage, Biotech |
+| <-5% | <0x | <0% | Bleeding | Persistent loss-making; potential Ponzi financing |
 
-### D.3 七行业FCF特征与合理区间
+### D.3 Seven-Industry FCF Characteristics
 
-| 行业 | FCF特征 | FCF/收入典型区间 | 特殊注意事项 |
-|---|---|---|---|
-| **光伏/储能** | 强周期性，产能扩张期FCF常为负 | -5% ~ 8% | 产能扩张期的负FCF不一定危险，需结合扩张ROI判断 |
-| **半导体/IC** | Fabless较轻资产，FCF通常为正；Foundry重资本开支，FCF波动大 | Fabless: 5-15%；Foundry: -10% ~ 10% | 资本开支节奏决定FCF，需区分维护性Capex vs 扩张性Capex |
-| **高端装备/机床** | 订单式生产，FCF集中在交付Q4 | -5% ~ 10% | 注意Q4集中确认带来的FCF季节性，年化看全年 |
-| **生物医药—Biotech** | 无商业化收入，FCF深度为负 | -50% ~ -20% | FCF为负是常态，核心看现金跑道而非FCF |
-| **生物医药—Pharma** | 成熟重磅品种带来稳定FCF | 10-25% | 专利悬崖前FCF可能骤降 |
-| **医疗器械** | 耗材模式FCF稳定，设备模式FCF波动 | 10-20% | "设备+耗材"锁定模式下FCF更可预测 |
-| **新能源车—OEM** | 早期投入大，FCF深度为负 | -20% ~ 5% | 正FCF通常是盈利转折点信号 |
-| **新能源车—供应链** | 受OEM挤压，FCF通常在0-8% | 0-8% | 需关注应收款周转是否在恶化 |
-| **数据中心** | 稳定收租，FCF强 | 15-30% | 维护性Capex占比高，需区分维护vs扩张 |
-
----
-
-## E. 场景敏感性矩阵
-
-> **来源**：风险管理标准审计报告（G2 — 压力测试严谨性评估）
-> **修改说明**：升级冲击幅度以符合Basel"严重但可能"标准；新增Severe场景并引入行业历史校准锚；新增逆向压力测试模块；增加二阶效应反馈循环
-
-### E.1 三场景参数设定
-
-| 参数 | Base | Bear（悲观） | Severe（严重冲击） |
-|---|---|---|---|
-| 收入变动 | 基准 | -10% | -30%（参考行业历史最大回撤校准） |
-| 毛利率变动 | 基准 | -5个百分点 | -15个百分点 |
-| 融资成本变动 | 基准 | +100bp | +200bp |
-
-**场景设计原则**（风险管理审计G2）：
-- **Base**：基准情景，使用最新财报数据
-- **Bear**：温和恶化情景，用于常规安全边际判断
-- **Severe**："有历史先例的严重冲击"——不是"最坏可能"，而是该行业历史上真实发生过的严重冲击幅度
-  - 校准锚：各行业的"历史最大回撤"（即该行业在历史上最严重衰退期的实际冲击幅度）
-  - Severe参数不应超过行业历史最大回撤，但应接近该水平
-
-**七行业Severe场景校准锚**（基于历史数据）：
-
-| 行业 | 历史冲击事件 | 收入最大降幅 | 毛利率最大压缩 | Severe校准说明 |
-|---|---|---|---|---|
-| **光伏/储能** | 531新政（2018）、产能过剩周期（2023-2024） | -35% | -20pp | 531新政后全行业收入平均下降约30%，龙头隆基收入-25% |
-| **半导体/IC** | 下行周期（2022-2023）、美国出口管制升级 | -25% | -12pp | 2022年存储芯片收入降幅达40%，代工降幅约15-20% |
-| **高端装备/机床** | 制造业投资下滑（2015-2016） | -25% | -10pp | 周期下行时收入降幅通常在20-25% |
-| **生物医药—Pharma** | 集采冲击（2020-2022） | -30% | -18pp | 核心品种纳入集采后毛利率压缩可达15-20pp |
-| **医疗器械** | 集采+FF管理（2021-2023） | -25% | -15pp | 冠脉支架集采后降幅超90%（历史极端），取中观冲击 |
-| **新能源汽车—OEM** | 补贴退坡（2019-2020）、价格战（2024） | -30% | -15pp | 2024年价格战导致全行业毛利率压缩超10pp |
-| **数据中心** | 供给过剩周期（2023-2024） | -15% | -10pp | 轻资产模式抗冲击能力较强，但租金收入仍会承压 |
-
-> **注**：Severe参数应每半年根据行业最新历史数据重新校准。行业历史最大回撤数据来源为WIND/中信行业指数在该行业历史最大回撤期间的收入/毛利率变动。
-
-### E.2 场景传导路径
-
-```
-收入变动 ──► 营业收入变化 ──► 净利润变化 ──► CFO变化 ──► FCF变化
-毛利率变动 ──► 毛利额变化 ──► 净利润变化 ──► CFO变化 ──► FCF变化
-融资成本变动 ──► 利息支出变化 ──► 净利润变化 ──► FCF/利息变化
-
-二阶效应（压力情景下的反馈循环）：
-  融资成本上升 ──► 财务费用增加 ──► 净利润下降 ──► 内部现金流减少
-    └──► 外部融资依赖增加 ──► 杠杆率上升 ──► 评级下调压力
-      └──► 融资成本进一步上升（负反馈循环，仅在Severe场景中启用）
-
-资产减值传导（Severe场景启用）：
-  收入下降 + 毛利率压缩 ──► 存货跌价 ──► 资产减值损失 ──► 净资产下降
-    └──► 资产负债率上升 ──► 触发交叉违约条款风险
-```
-
-### E.3 场景计算逻辑
-
-**注**：计算逻辑为简化线性模型，Severe场景需额外启用二阶效应校正（详见E.7）。
-
-| 计算项 | 公式 | 备注 |
-|---|---|---|
-| 变动后收入 | 基准收入 × (1 + 收入变动率) | — |
-| 变动后毛利 | 变动后收入 × (基准毛利率 + 毛利率变动) | Severe场景需叠加资产减值 |
-| 变动后净利润（简化） | (变动后毛利 - 基准期间费用) × (1 - 税率) | — |
-| 变动后CFO（简化） | 变动后净利润 + D&A（假设不变） | Severe场景需考虑营运资金恶化 |
-| 变动后FCF | 变动后CFO - 资本支出（假设不变） | Severe场景下Capex可能被削减 |
-| 变动后利息支出 | 基准利息支出 × (1 + 融资成本变动) | Severe场景含二阶融资成本上浮 |
-| 变动后利息覆盖倍数 | EBITDA（变动后） / 变动后利息支出 | — |
-| 变动后FCF/利息 | 变动后FCF / 变动后利息支出 | — |
-
-### E.4 场景输出模板
-
-| 场景 | 指标 | 基准值 | 场景值 | 变动 | 安全判定 |
-|---|---|---|---|---|---|
-| **Base** | 利息覆盖倍数 | X | X | — | 🟢/🟡/🟠/🔴 |
-| | FCF/利息 | Y | Y | — | 🟢/🟡/🟠/🔴 |
-| | 现金跑道（月） | Z | Z | — | 🟢/🟡/🟠/🔴 |
-| **Bear** | 利息覆盖倍数 | X | X_down | -Δ | — |
-| | FCF/利息 | Y | Y_down | -Δ | — |
-| | 现金跑道（月） | Z | Z_down | -Δ | — |
-| **Severe** | 利息覆盖倍数 | X | X_severe | -Δ_severe | — |
-| | FCF/利息 | Y | Y_severe | -Δ_severe | — |
-| | 现金跑道（月） | Z | Z_severe | -Δ_severe | — |
-| **逆向测试** | 临界收入降幅 | — | X_crit | — | — |
-| | 临界毛利率压缩 | — | Y_crit | — | — |
-| | 临界融资成本升幅 | — | Z_crit | — | — |
-
-### E.5 安全边际判定标准
-
-| 安全边际级别 | Bear场景下利息覆盖倍数 | Bear场景下FCF/利息 | Bear场景下现金跑道 | 判定 |
-|---|---|---|---|---|
-| 🟢 强健 | >3.0x | >2.0x | >18个月 | 重度恶化下仍安全 |
-| 🟡 有弹性 | 1.5-3.0x | 1.0-2.0x | 12-18个月 | 中度恶化可承受 |
-| 🟠 脆弱 | 1.0-1.5x | 0.5-1.0x | 6-12个月 | Bear场景下接近违约 |
-| 🔴 危险 | <1.0x | <0.5x | <6个月 | Bear场景下必然违约 |
-
-**Severe场景补充判定**：若Severe场景下任一指标落入🔴区间，则该主体在极端冲击下必然违约，应触发"尾部风险警告"标记在综合评级输出中，但不自动降级（Severe场景不是基准判断）。
-
-### E.6 临界点识别
-
-识别"什么程度的恶化会触发偿债困难"：
-
-```
-偿债困难触发条件：
-  (Bear场景下利息覆盖倍数 < 1.0x) OR
-  (Bear场景下FCF/利息 < 0.5x且持续) OR
-  (Bear场景下现金跑道 < 6个月且无可用的未使用授信)
-
-临界恶化幅度：
-  收入可以承受的下降幅度 = X% （超过此值利息覆盖倍数<1.0x）
-  毛利率可以承受的缩水幅度 = Y个百分点
-  融资成本可以承受的上行幅度 = Zbp
-```
-
-**逆向压力测试**（风险管理审计G2）：计算使利息覆盖倍数=1.0x的临界冲击幅度——"企业能承受多大程度的恶化才会违约？"
-
-```
-临界收入降幅：
-  令 (变动后EBITDA / 变动后利息支出) = 1.0x
-  求解：变动后收入 = 变动后利息支出 / (基准毛利率 + 毛利率调整)
-  输出：收入临界降幅 = (基准收入 - 变动后收入) / 基准收入
-
-临界毛利率压缩：
-  令 (变动后EBITDA / 变动后利息支出) = 1.0x
-  求解：临界毛利率 = 变动后利息支出 / 变动后收入 + 费用率
-  输出：临界毛利率压缩 = 基准毛利率 - 临界毛利率
-
-逆向后输出：
-  "该企业可以承受收入下降约 X% 或毛利率压缩约 Ypp 而不会触发利息覆盖倍数<1.0x条件"
-```
-
-### E.7 二阶效应与反馈循环（仅Severe场景启用）
-
-在Severe场景中，启用以下二阶效应来修正简化线性模型：
-
-| 二阶效应 | 触发条件 | 修正逻辑 |
-|---|---|---|
-| **存货跌价** | 收入降幅>20%且毛利率压缩>10pp | 存货跌价损失 = 存货余额 × 10%（假设跌价率），额外减少净利润 |
-| **营运资金冻结** | 收入降幅>25% | DSO被动延长20天（客户付款延迟），DIO因滞销延长30天，额外占用营运资金 |
-| **融资成本二阶上升** | 假设在Severe场景下评级下调1-2档 | 融资成本在+200bp基础上再上浮50-100bp（反映评级迁移后的信用利差走阔） |
-| **Capex削减** | FCF为负且现金跑道<12个月 | 企业主动削减50%非必要Capex，缓解FCF压力 |
-| **资产减值-净资产侵蚀** | 持续亏损>2年 | 净资产缩水→资产负债率上升→触发补充抵押要求或交叉违约 |
-
-### E.8 场景分行业校准说明
-
-场景参数在不同行业间存在系统性差异。下表列出各行业场景参数的偏离度校准因子：
-
-| 行业 | Bear收入偏离度 | Severe收入偏离度 | Bear毛利率偏离度 | Severe毛利率偏离度 | 说明 |
-|---|---|---|---|---|---|
-| **光伏/储能** | 1.0x | 1.2x | 1.0x | 1.3x | 强周期性，毛利率压缩幅度大于收入 |
-| **半导体—Fabless** | 0.8x | 0.9x | 0.8x | 1.0x | Fabless抗周期性略强 |
-| **半导体—Foundry** | 1.0x | 1.1x | 1.0x | 1.1x | 重资产折旧固定，收入敏感性高 |
-| **高端装备/机床** | 0.9x | 1.0x | 0.9x | 0.9x | 订单周期长，收入波动滞后 |
-| **生物医药—Biotech** | 不适用 | 不适用 | 不适用 | 不适用 | Biotech无稳定收入，改用现金跑道压力测试 |
-| **生物医药—Pharma** | 0.8x | 1.0x | 0.8x | 1.2x | 集采冲击幅度大，收入相对稳定 |
-| **医疗器械** | 0.9x | 0.9x | 1.0x | 1.0x | 耗材模式抗周期，设备模式波动大 |
-| **新能源车—OEM** | 1.0x | 1.2x | 1.0x | 1.0x | 价格战对毛利率冲击大，收入韧性相对强 |
-| **新能源车—供应链** | 1.1x | 1.3x | 1.0x | 1.1x | 供应链受OEM挤压和订单波动双重影响 |
-| **数据中心** | 0.6x | 0.7x | 0.8x | 0.8x | 收租模式抗冲击能力强，但需关注续租率 |
-
-**使用方法**：场景默认参数（Bear: -10%/+100bp; Severe: -30%/+200bp）乘以行业偏离度因子。如光伏Severe收入偏离度因子1.2x，则实际收入降幅为 -30% × 1.2 = -36%。
-
-> **注**：校准偏离度因子基于历史事件回溯分析，每季度根据最新行业宏观数据更新。首次发布于2026-07-08。
-
-### E.9 实盘演练：隆基绿能 Severe场景压力测试
-
-> **目的**：展示Severe场景在真实案例中的应用，验证方法论是否能在光伏行业实际案例中跑通。
-> **分析时点**：2025年年报数据（截止2025-12-31）
-> **数据来源**：隆基绿能2025年年报、行业价格周报、光伏行业产能数据（全部公开数据）
-
-#### E.9.1 基准数据（2025年实际数）
-
-| 指标 | 数值 | 来源说明 |
-|------|------|---------|
-| 营业收入 | 900亿 | 年报合并利润表 |
-| 营业成本 | 892.7亿 | 年报合并利润表 |
-| 毛利率 | 0.81% | 计算值 [来源: poc-validation-longi-vs-yidao.md] |
-| EBITDA | ~35亿 | 年报：净利润+所得税+利息支出+折旧摊销 |
-| 折旧摊销（D&A） | ~45亿 | 年报现金流量表附注 |
-| 净利润 | -83亿 | 年报合并利润表 |
-| 经营现金流（CFO） | +43.59亿 | 年报现金流量表 [来源: dual-track-validation-longi.html] |
-| 资本支出（Capex） | ~60亿 | 年报现金流量表（购建固产） |
-| 利息支出 | ~6亿 | 年报财务费用附注（150亿有息负债×~4%） |
-| 现金及等价物 | 526亿 | 年报资产负债表 [来源: same] |
-| 总有息负债 | ~150亿 | 年报附注 |
-| 总资产 | ~1500亿 | 年报资产负债表 |
-| 总负债 | ~991亿 | 年报资产负债表 |
-| 资产负债率 | 66.08% | 计算值 [来源: poc-validation-longi-vs-yidao.md] |
-
-#### E.9.2 Severe参数设定（光伏行业校准）
-
-依据E.1节的光伏行业校准锚：
-- **收入变动**: -30%（参考531新政冲击，龙头隆基当时收入降幅达25%，取30%作为Severe）
-- **毛利率变动**: -15个百分点（从0.81%降至-14.19%）
-- **融资成本变动**: +200bp（评级下调1-2档后的利差走阔）
-
-#### E.9.3 场景传导计算
-
-| 计算项 | 公式 | 基准值 | Severe场景值 | 变动 |
-|--------|------|--------|-------------|------|
-| 变动后收入 | 900亿 × (1 - 30%) | 900亿 | **630亿** | -270亿 |
-| 变动后毛利 | 630亿 × (0.81% - 15%) | 7.29亿 | **-89.4亿** | -96.7亿 |
-| 变动后EBITDA | 变动后毛利 - 期间费用(假设不变) + D&A | ~35亿 | **~-60亿** | -95亿 |
-| 变动后净利润(简化) | (变动后EBITDA - D&A - 利息支出) × (1-税率) | -83亿 | **~-160亿** | -77亿 |
-| 变动后CFO(简化) | 变动后净利润 + D&A | +43.59亿 | **~-115亿** | -159亿 |
-| 变动后Capex | 主动削减50%(二阶效应) | 60亿 | **30亿** | -30亿 |
-| 变动后FCF | 变动后CFO - 变动后Capex | -16.41亿 | **-145亿** | -129亿 |
-| 变动后利息支出 | 6亿 × (1 + 200bp / 4%) | 6亿 | **9亿** | +3亿 |
-| 存货跌价损失(二阶) | 存货余额×10% | — | **~-20亿** | 额外净利润减少 |
-
-**二阶效应启用**（依据E.7）：
-1. 收入降幅>20%且毛利率压缩>10pp → 存货跌价损失约20亿
-2. 收入降幅>25% → 营运资金冻结：DSO被动延长20天，额外占用营运资金约10亿
-3. 融资成本二阶上升：评级下调1-2档假设，融资成本再上浮50bp至+250bp
-
-#### E.9.4 三个核心指标变化
-
-| 指标 | 基准值 | Bear场景 | Severe场景 | Severe下安全判定 |
-|------|--------|---------|------------|----------------|
-| **利息覆盖倍数（EBITDA/利息）** | 5.83x | ~2.5x | ~-6.7x (EBITDA转负) | 🔴 危险——EBITDA为负，无法覆盖利息 |
-| **现金跑道（月）** | 无限期（CFO为正） | ~18个月 | ~4.4个月 | 🔴 危险——CFO大幅转负，526亿现金支撑约4.4个月 |
-| **资产负债率** | 66.08% | ~72% | ~80-85% | 🟠 脆弱——接近交叉违约触发阈值 |
-
-**现金跑道计算说明（Severe）**：
-```
-月均现金消耗 = (-115亿 CFO + 30亿 Capex回补) / 12 ≈ 12亿/月
-  (注：CFO已为负，实际现金消耗比CFO负值更严重)
-有效现金 = 526亿 - 150亿(受限或预留偿债) ≈ 376亿
-现金跑道 ≈ 376亿 / 12亿 ≈ 4.4个月
-```
-注：此计算已计入二阶效应中的Capex削减50%，但存货跌价和营运资金冻结进一步消耗现金。
-
-#### E.9.5 逆向压力测试
-
-计算使利息覆盖倍数=1.0x的临界冲击幅度：
-
-| 临界参数 | 临界值 | 与基准的差距 | 解读 |
-|---------|--------|------------|------|
-| 临界收入降幅 | ~52% | -900亿×52%=468亿 | 收入降至432亿时利息覆盖=1.0x |
-| 临界毛利率压缩 | ~10pp | 从0.81%降至-9.19% | 毛利率恶化至-9.19%时触发 |
-| 临界融资成本升幅 | ~480bp | 从4%升至8.8% | 融资成本上升480bp后利息覆盖=1.0x |
-
-#### E.9.6 结论与判定
-
-| 场景 | 利息覆盖倍数 | 现金跑道 | 资产负债率 | 安全判定 |
-|------|------------|---------|-----------|---------|
-| **Base** | 5.83x 🟢 | 无限 🟢 | 66.08% 🟡 | 健康——现金流充裕覆盖债务 |
-| **Bear** | ~2.5x 🟡 | ~18月 🟡 | ~72% 🟠 | 有弹性——可承受温和恶化 |
-| **Severe** | ~-6.7x 🔴 | ~4.4月 🔴 | ~80-85% 🔴 | **危险——触发尾部风险警告** |
-
-**最终判定**：
-- Severe场景下利息覆盖倍数转负、现金跑道<6个月→三项指标均落入🔴区间
-- 依据E.5补充判定规则：Severe场景下任一指标落入🔴→触发"尾部风险警告"
-- **不自动降级**（Severe不是基准判断），但该标记应出现在综合评级输出中
-- 关键缓冲：隆基526亿现金储备在Severe场景下仅能支撑~4.4个月，但其已上市且银行授信充足，实际生存时间可能长于理论值
-
-**诚实标注**：
-1. 简化线性模型未考虑企业管理层在Severe场景下的积极应对（紧急融资、资产处置、政府协调）
-2. 二阶效应中使用的是标准假设（存货跌价10%、DSO延长20天），实际幅度可能因企业管理能力而异
-3. 隆基的BC技术领先优势和央企集采份额（50.3GW/85.3%入围率）在Severe场景中仍构成缓冲——这是数据模型无法完全量化的定性因素
-4. 现金跑道计算假设月均现金消耗持续，实际上企业在现金消耗过程中会主动削减开支
+| Industry | FCF Profile | FCF/Revenue Typical Range | Special Notes |
+|----------|------------|--------------------------|---------------|
+| **Solar/Energy Storage** | Highly cyclical; often negative during capacity expansion | -5% to 8% | Negative FCF during capacity expansion is not necessarily dangerous; assess expansion ROI |
+| **Semiconductor/IC** | Fabless lighter asset, FCF usually positive; Foundry heavy capex, FCF volatile | Fabless: 5-15%; Foundry: -10% to 10% | Capex cadence drives FCF; distinguish maintenance vs. growth capex |
+| **Capital Equipment** | Order-based production; FCF concentrated in Q4 deliveries | -5% to 10% | Watch Q4 concentration seasonality; annualize |
+| **Biotech (Pre-revenue)** | No commercial revenue; deeply negative FCF | -50% to -20% | Negative FCF is normal; focus on cash runway, not FCF |
+| **Pharma (Revenue-stage)** | Mature blockbuster products generate stable FCF | 10-25% | Patent cliff may cause FCF discontinuity |
+| **Medical Devices** | Consumables: stable FCF; capital equipment: volatile | 10-20% | "Device + consumable" lock-in provides more predictable FCF |
+| **NEV — OEM** | Large early-stage investment; deeply negative FCF | -20% to 5% | Positive FCF is often a profitability inflection signal |
+| **NEV — Supply Chain** | Squeezed by OEM margin pressure; FCF usually 0-8% | 0-8% | Monitor receivable turnover deterioration |
+| **Data Centers** | Stable rental income; strong FCF | 15-30% | Maintenance capex is high proportion; distinguish maintenance vs. expansion |
 
 ---
 
-## 附录：数据科目对照表
+## E. Scenario Sensitivity Matrix
 
-### 现金流量表科目
+> **Source:** Risk Management Standards Audit (G2 — Stress Testing Rigor Assessment)
+> **Modification Note:** Shock magnitudes upgraded to meet Basel "severe but plausible" standard; Severe scenario introduced with industry historical calibration anchors; Reverse stress testing module added; Second-order feedback loop effects incorporated
 
-| 分析指标 | 现金流量表行项目 | 备注 |
-|---|---|---|
-| 经营活动现金流净额（CFO） | 经营活动产生的现金流量净额 | 合并报表口径 |
-| 资本支出（Capex） | 购建固定资产、无形资产和其他长期资产支付的现金 | 不包括并购支付的现金 |
-| 利息支出 | 分配股利、利润或偿付利息支付的现金 中利息部分（或利润表"利息支出"） | 现金流量表为实际支付数，利润表为应计数 |
-| FCF | CFO - Capex | 简化算法，不包括利息的税盾调整 |
+### E.1 Three-Scenario Parameter Settings
 
-### 资产负债科目
+| Parameter | Base | Bear | Severe |
+|-----------|------|------|--------|
+| Revenue change | Baseline | -10% | -30% (calibrated to industry historical maximum drawdown) |
+| Gross margin change | Baseline | -5 ppts | -15 ppts |
+| Financing cost change | Baseline | +100bp | +200bp |
 
-| 分析指标 | 资产负债表行项目 | 附注位置 |
-|---|---|---|
-| 应收账款 | 应收账款 + 应收票据 | 附注按账龄/客户分类 |
-| 存货 | 存货（原材料 + 在产品 + 产成品） | 附注按类别/库龄分类 |
-| 应付账款 | 应付账款 + 应付票据 | 附注按账龄分类 |
-| 短期借款 | 短期借款 | 附注按到期日/担保方式 |
-| 一年内到期非流动负债 | 一年内到期的非流动负债 | 附注按到期日列示 |
-| 应付债券 | 应付债券 | 附注按到期日/票面利率 |
-| 长期借款 | 长期借款 | 附注按到期日/担保方式 |
-| 未使用授信额度 | 董事会报告/管理层讨论/附注 | 通常在"银行授信"部分披露 |
+**Scenario Design Principles (Risk Management Audit G2):**
+- **Base:** Baseline scenario using most recent financial data
+- **Bear:** Moderate deterioration scenario for conventional margin-of-safety assessment
+- **Severe:** "Severe but historically precedented" — not the absolute worst possible, but a magnitude of shock that the industry has actually experienced in history
+  - Calibration anchor: each industry's "historical maximum drawdown" (the actual shock magnitude experienced in the industry's most severe historical recession)
+  - Severe parameters should not exceed historical maximum drawdown but should approach it
 
-### 利润表科目
+**Seven-Industry Severe Scenario Calibration Anchors (Based on Historical Data):**
 
-| 分析指标 | 利润表行项目 | 备注 |
-|---|---|---|
-| 营业收入 | 营业收入 | 合并口径 |
-| 营业成本 | 营业成本 | 含原材料/人工/制造费用 |
-| 毛利率 | (营业收入 - 营业成本) / 营业收入 | — |
-| 利息支出（利润表） | 利息支出（财务费用明细） | 财务费用中的利息支出 |
-| D&A | 固定资产折旧 + 无形资产摊销 + 长期待摊费用摊销 | 通常在现金流量表附注或报表附注中列示 |
+| Industry | Historical Shock Event | Max Revenue Decline | Max Gross Margin Compression | Severe Calibration Rationale |
+|----------|----------------------|-------------------|---------------------------|-----------------------------|
+| **Solar/Storage** | 531 Policy Shift (2018 China); Overcapacity Cycle (2023-2024 Global) | -35% | -20pp | Post-531 industry revenue fell ~30% on average; leader LONGi revenue -25% |
+| **Semiconductor/IC** | Downcycle (2022-2023); US Export Controls Escalation | -25% | -12pp | Memory chip revenue down 40% in 2022; foundry down 15-20% |
+| **Capital Equipment** | Manufacturing investment downturn (2015-2016 Global) | -25% | -10pp | Cyclical downturn typically 20-25% revenue decline |
+| **Pharma** | VBP/Procurement Shock (2020-2022 China); Patent Cliff (various) | -30% | -18pp | Core product included in procurement: gross margin compression 15-20pp possible |
+| **Medical Devices** | Procurement + FF Management (2021-2023); Reimbursement cuts (various markets) | -25% | -15pp | Coronary stent VBP cut >90% historically extreme; mid-range shock selected |
+| **NEV — OEM** | Subsidy Phase-out (2019-2020, various markets); Price War (2024) | -30% | -15pp | 2024 price war compressed industry gross margin >10pp |
+| **Data Centers** | Supply glut cycle (2023-2024); Hyperscaler demand pause | -15% | -10pp | Asset-light model provides stronger shock resistance |
+
+> **Note:** Severe parameters should be recalibrated semi-annually based on latest industry historical data. Sources: WIND / CITIC industry indices or equivalent industry index providers for each market.
+
+### E.2 Scenario Transmission Path
+
+```
+Revenue Change --> Revenue Change --> Net Income Change --> CFO Change --> FCF Change
+Gross Margin Change --> Gross Profit Change --> Net Income Change --> CFO Change --> FCF Change
+Financing Cost Change --> Interest Expense Change --> Net Income Change --> FCF/Interest Change
+
+Second-order effects (feedback loop under stress):
+  Financing cost increase --> Finance charge increase --> Net income decrease
+    --> Internal cash flow reduction
+    --> External financing dependence increases --> Leverage rises
+    --> Rating downgrade pressure
+    --> Financing cost further increases (negative feedback; Severe scenario only)
+
+Asset impairment feedback (Severe scenario):
+  Revenue decline + Gross margin compression --> Inventory write-down
+    --> Asset impairment loss --> Net equity decline
+    --> Debt-to-asset ratio increases --> Cross-default clause trigger risk
+```
+
+### E.3 Scenario Calculation Logic
+
+**Note:** Calculation logic is a simplified linear model. Severe scenario requires second-order effect corrections (see E.7).
+
+| Calculation Item | Formula | Notes |
+|-----------------|---------|-------|
+| Adjusted Revenue | Base Revenue x (1 + Revenue Change Rate) | -- |
+| Adjusted Gross Profit | Adjusted Revenue x (Base Gross Margin + Gross Margin Change) | Severe scenario must layer on asset impairment |
+| Adjusted Net Income (Simplified) | (Adjusted Gross Profit - Base Operating Expenses) x (1 - Tax Rate) | -- |
+| Adjusted CFO (Simplified) | Adjusted Net Income + D&A (assumed unchanged) | Severe scenario: consider WC deterioration |
+| Adjusted FCF | Adjusted CFO - Capex (assumed unchanged) | Severe scenario: capex may be cut |
+| Adjusted Interest Expense | Base Interest Expense x (1 + Financing Cost Change) | Severe scenario: second-order financing cost increase |
+| Adjusted Interest Coverage | Adjusted EBITDA / Adjusted Interest Expense | -- |
+| Adjusted FCF/Interest | Adjusted FCF / Adjusted Interest Expense | -- |
+
+### E.4 Scenario Output Template
+
+| Scenario | Metric | Base Value | Scenario Value | Change | Safety |
+|----------|--------|-----------|---------------|--------|--------|
+| **Base** | Interest Coverage | X | X | -- | G/Y/O/R |
+| | FCF/Interest | Y | Y | -- | G/Y/O/R |
+| | Cash Runway (months) | Z | Z | -- | G/Y/O/R |
+| **Bear** | Interest Coverage | X | X_down | -Delta | -- |
+| | FCF/Interest | Y | Y_down | -Delta | -- |
+| | Cash Runway | Z | Z_down | -Delta | -- |
+| **Severe** | Interest Coverage | X | X_severe | -Delta_severe | -- |
+| | FCF/Interest | Y | Y_severe | -Delta_severe | -- |
+| | Cash Runway | Z | Z_severe | -Delta_severe | -- |
+| **Reverse** | Critical Revenue Decline | -- | X_crit | -- | -- |
+| | Critical Gross Margin Compression | -- | Y_crit | -- | -- |
+| | Critical Financing Cost Increase | -- | Z_crit | -- | -- |
+
+### E.5 Margin of Safety Criteria
+
+| Safety Level | Bear Interest Coverage | Bear FCF/Interest | Bear Cash Runway | Assessment |
+|-------------|----------------------|------------------|-----------------|------------|
+| Robust | >3.0x | >2.0x | >18 months | Safe even under severe deterioration |
+| Resilient | 1.5-3.0x | 1.0-2.0x | 12-18 months | Moderate deterioration absorbable |
+| Fragile | 1.0-1.5x | 0.5-1.0x | 6-12 months | Near default under Bear scenario |
+| Dangerous | <1.0x | <0.5x | <6 months | Certain default under Bear scenario |
+
+**Severe Scenario Supplementary:** If any metric falls into the Dangerous range under Severe scenario, the entity would certainly default under extreme shock; this should trigger a "tail risk warning" flag in the composite rating output, but not an automatic downgrade (Severe is not the base case).
+
+### E.6 Critical Point Identification
+
+Identify the level of deterioration that would trigger debt service difficulty:
+
+```
+Debt Service Difficulty Trigger:
+  (Bear Scenario Interest Coverage < 1.0x) OR
+  (Bear Scenario FCF/Interest < 0.5x and sustained) OR
+  (Bear Scenario Cash Runway < 6 months AND no undrawn committed credit facilities)
+
+Critical Deterioration Magnitude:
+  Maximum tolerable revenue decline = X% (beyond which interest coverage <1.0x)
+  Maximum tolerable gross margin compression = Y ppts
+  Maximum tolerable financing cost increase = Z bp
+```
+
+**Reverse Stress Test** (Risk Management Audit G2): Calculate the shock magnitude that would cause interest coverage = 1.0x — "How much deterioration can the entity absorb before it defaults?"
+
+```
+Critical Revenue Decline:
+  Let (Adjusted EBITDA / Adjusted Interest Expense) = 1.0x
+  Solve: Adjusted Revenue = Adjusted Interest Expense / (Base Gross Margin + Margin Adjustment)
+  Output: Critical Revenue Decline = (Base Revenue - Adjusted Revenue) / Base Revenue
+
+Critical Gross Margin Compression:
+  Let (Adjusted EBITDA / Adjusted Interest Expense) = 1.0x
+  Solve: Critical Gross Margin = Adjusted Interest Expense / Adjusted Revenue + Expense Ratio
+  Output: Critical Gross Margin Compression = Base Gross Margin - Critical Gross Margin
+
+Reverse Output:
+  "This entity can tolerate a revenue decline of approximately X% or gross margin compression
+   of approximately Y ppts without triggering interest coverage <1.0x"
+```
+
+### E.7 Second-Order Effects and Feedback Loops (Severe Scenario Only)
+
+Under Severe scenario, apply the following second-order effects to correct the simplified linear model:
+
+| Second-Order Effect | Trigger Condition | Correction Logic |
+|--------------------|-----------------|-----------------|
+| **Inventory Write-Down** | Revenue decline >20% AND gross margin compression >10pp | Inventory write-down = Inventory balance x 10% (assumed impairment rate); additional reduction in net income |
+| **Working Capital Freeze** | Revenue decline >25% | DSO passively extends 20 days (customer payment delays); DIO extends 30 days (obsolescence); additional WC consumption |
+| **Financing Cost Second-Order Increase** | Severe scenario assumes 1-2 notch rating downgrade | Financing cost increases further 50-100bp on top of +200bp (reflecting credit spread widening from rating migration) |
+| **Capex Reduction** | FCF negative AND cash runway <12 months | Entity actively cuts 50% of non-essential capex; alleviates FCF pressure |
+| **Asset Impairment — Net Equity Erosion** | Sustained losses >2 years | Net equity decline -> Debt-to-asset ratio increases -> Triggers additional collateral requirements or cross-default |
+
+### E.8 Industry Calibration Factors
+
+Scenario parameters differ systematically by industry. The table below provides industry-specific calibration factors:
+
+| Industry | Bear Revenue Factor | Severe Revenue Factor | Bear GM Factor | Severe GM Factor | Notes |
+|----------|-------------------|---------------------|---------------|-----------------|-------|
+| **Solar/Energy Storage** | 1.0x | 1.2x | 1.0x | 1.3x | Strong cyclicality; GM compression faster than revenue decline |
+| **Semiconductor — Fabless** | 0.8x | 0.9x | 0.8x | 1.0x | Fabless slightly more counter-cyclical |
+| **Semiconductor — Foundry** | 1.0x | 1.1x | 1.0x | 1.1x | Heavy fixed depreciation; high revenue sensitivity |
+| **Capital Equipment** | 0.9x | 1.0x | 0.9x | 0.9x | Long order cycles; lagging revenue fluctuation |
+| **Biotech (Pre-revenue)** | N/A | N/A | N/A | N/A | No stable revenue; use cash runway stress test instead |
+| **Pharma** | 0.8x | 1.0x | 0.8x | 1.2x | Procurement shock severe; revenue relatively stable |
+| **Medical Devices** | 0.9x | 0.9x | 1.0x | 1.0x | Consumables model counter-cyclical; capital equipment volatile |
+| **NEV — OEM** | 1.0x | 1.2x | 1.0x | 1.0x | Price war pressures GM; revenue relatively resilient |
+| **NEV — Supply Chain** | 1.1x | 1.3x | 1.0x | 1.1x | Dual pressure from OEM squeeze and order fluctuation |
+| **Data Centers** | 0.6x | 0.7x | 0.8x | 0.8x | Rental model shock-resistant; monitor renewal rates |
+
+**Usage:** Multiply the default scenario parameters (Bear: -10% / +100bp; Severe: -30% / +200bp) by the industry-specific factor. For example, Solar Severe revenue factor 1.2x -> actual revenue decline = -30% x 1.2 = -36%.
+
+> **Note:** Calibration factors are based on historical event back-analysis. Update quarterly based on latest industry macro data.
 
 ---
 
-## 相关内容
+## F. Sovereign-Specific Metrics
 
-- [行业分类与分析框架](industry-framework.md) — 各行业L4财务层完整规格与阈值
-- [双轨分析方法论](dual-track-methodology.md) — 现金流深度分析在评级映射中的衔接逻辑
-- [引擎架构总览](engine-overview.md) — 核心理念与总体架构
+### F.1 Scope and Purpose
+
+This section extends financial deep-dive analysis to sovereign borrowers. Sovereign credit analysis requires metrics beyond corporate financial statements, covering fiscal sustainability, external vulnerability, and institutional strength.
+
+### F.2 Core Sovereign Credit Metrics
+
+| Dimension | Metric | Formula | Interpretation | Data Source |
+|-----------|--------|--------|---------------|-------------|
+| **Fiscal Sustainability** | General Government Debt / GDP | Total government gross debt / nominal GDP | <40%: low; 40-70%: moderate; 70-100%: elevated; >100%: high risk (thresholds vary by institutional strength) | IMF WEO; national statistical agencies |
+| | Fiscal Balance / GDP | (Revenue - Expenditure) / GDP | >0%: surplus; 0% to -3%: manageable; -3% to -6%: concerning; <-6%: risky | Same as above |
+| | Primary Balance / GDP | Fiscal balance excluding net interest payments | Positive primary balance: debt-stabilizing; Negative: debt may be on unsustainable path | Same as above |
+| | Interest / Revenue | Interest expense / total government revenue | <5%: low burden; 5-10%: moderate; 10-15%: elevated; >15%: severe constraint | Budget execution reports |
+| **External Vulnerability** | External Debt / GDP | Total external debt (public + private) / GDP | <50%: low; 50-100%: moderate; >100%: elevated | World Bank IDS; IIF |
+| | Foreign Exchange Reserves / Short-Term External Debt | Greenspan-Guidotti rule | >100%: adequate coverage of short-term external debt | IMF IFS; central bank data |
+| | Reserves / Imports (months) | Gross reserves / monthly imports | >6 months: strong; 3-6 months: adequate; <3 months: vulnerable | Same as above |
+| | Current Account Balance / GDP | (Exports - Imports + Net Income + Net Transfers) / GDP | Surplus: net external creditor; deficit >5%: potentially vulnerable to sudden stops | IMF WEO |
+| **Debt Structure** | Average Maturity (years) | Weighted average maturity of government debt | Longer = lower rollover risk | National debt management reports |
+| | Foreign Currency Debt Share | Foreign currency debt / total debt | Higher share = greater vulnerability to exchange rate depreciation | Public debt bulletins |
+| | Concessional Debt Share | Concessional / total external debt | Higher = lower financing cost and more stable creditor base | World Bank IDS |
+| | Holders' composition | Share held by residents vs. non-residents; central bank vs. banks vs. non-banks | Higher domestic institutional holding = more stable investor base | National central bank financial accounts |
+
+### F.3 Sovereign Rating Drivers and Thresholds
+
+Indicator thresholds for sovereign creditworthiness depend on a country's institutional strength and income level. The following framework uses a composite sovereign risk score:
+
+| Indicator | Very Strong (100-80) | Strong (80-60) | Medium (60-40) | Weak (40-20) | Very Weak (20-0) |
+|-----------|---------------------|---------------|---------------|-------------|-----------------|
+| Debt / GDP | <30% | 30-55% | 55-75% | 75-100% | >100% |
+| Fiscal Balance / GDP | >+2% | 0% to +2% | -3% to 0% | -6% to -3% | <-6% |
+| Primary Balance / GDP | >+3% | +1% to +3% | -1% to +1% | -3% to -1% | <-3% |
+| Interest / Revenue | <3% | 3-7% | 7-12% | 12-18% | >18% |
+| Reserves / ST External Debt | >200% | 150-200% | 100-150% | 50-100% | <50% |
+| Current Account / GDP | >+3% | 0% to +3% | -3% to 0% | -6% to -3% | <-6% |
+| GDP per Capita Growth (3yr avg) | >5% | 3-5% | 1-3% | 0-1% | <0% |
+| Inflation (CPI, annual avg) | <2% | 2-4% | 4-8% | 8-15% | >15% |
+| Rule of Law (WGI percentile) | >90th | 75-90th | 50-75th | 25-50th | <25th |
+| Political Stability (WGI percentile) | >80th | 60-80th | 40-60th | 20-40th | <20th |
+
+### F.4 Sovereign Debt Stress Test Scenarios
+
+The following sovereign-specific scenarios supplement the general corporate scenario framework:
+
+| Scenario Type | Key Variables | Typical Shock Magnitude | Transmission Channels |
+|--------------|--------------|------------------------|---------------------|
+| **Interest Rate Shock** | Financing cost increase; bond yield spike | +200bp to +500bp (depending on current spread) | Higher interest expense -> wider fiscal deficit -> higher debt -> adverse debt dynamics |
+| **GDP Growth Shock** | Real GDP growth decline | -3pp to -5pp (recession stress) | Lower revenue -> wider deficit -> higher debt/GDP (denominator effect) |
+| **Exchange Rate Shock** | Currency depreciation against USD | -15% to -30% (emerging markets) | Higher FX debt service -> wider fiscal deficit; imported inflation -> central bank response |
+| **Commodity Price Shock** | Export commodity price decline | -20% to -40% (for commodity exporters) | Lower export revenue -> wider current account deficit -> FX reserve depletion |
+| **Contingent Liability Shock** | Materialization of SOE or banking sector contingent liabilities | 10-30% of GDP (banking crisis; SOE bailout) | One-time increase in debt level; may shift debt trajectory |
+| **Sudden Stop Shock** | Capital flow reversal; loss of market access | Complete loss of access for 3-12 months | Forced adjustment; potential balance-of-payments crisis; potential sovereign default |
+
+### F.5 Sovereign Stress Test Output Template
+
+| Metric | Base | Bear | Severe | Assessment |
+|--------|------|------|--------|------------|
+| Debt / GDP | XX% | XX% (+Δ) | XX% (+Δ) | G/Y/O/R |
+| Fiscal Balance / GDP | XX% | XX% | XX% | G/Y/O/R |
+| External Debt Service / Reserves | XX% | XX% | XX% | G/Y/O/R |
+| Gross Financing Need / GDP | XX% | XX% | XX% | G/Y/O/R |
+| Sovereign Spread (bp) | XX | XX | XX | G/Y/O/R |
+
+**Key Threshold Levels:**
+
+| Risk Level | Debt/GDP (EM) | Debt/GDP (DM) | Interest/Revenue | Gross Financing Need / GDP |
+|-----------|--------------|--------------|-----------------|--------------------------|
+| Robust | <40% | <60% | <5% | <10% |
+| Moderate | 40-60% | 60-90% | 5-10% | 10-15% |
+| Elevated | 60-80% | 90-120% | 10-15% | 15-20% |
+| High Risk | >80% | >120% | >15% | >20% |
+
+---
+
+## G. Bank CAMELS Framework
+
+### G.1 Scope and Purpose
+
+This section extends financial deep-dive analysis to banking institutions using the CAMELS supervisory framework. CAMELS is the internationally recognized framework (adopted by the U.S. Federal Reserve, FDIC, OCC, and adapted by banking regulators worldwide) for assessing bank financial condition and identifying potential solvency and liquidity issues.
+
+### G.2 CAMELS Dimensions
+
+| Component | Full Name | Weight (Supervisory) | Focus |
+|-----------|-----------|---------------------|-------|
+| **C** | Capital Adequacy | 20% | Ability to absorb losses; regulatory capital ratios |
+| **A** | Asset Quality | 20% | Quality of loans, securities, and other assets; credit risk profile |
+| **M** | Management | 25% | Board and management capability; strategic planning; governance |
+| **E** | Earnings | 15% | Profitability; sustainability of earnings; earnings quality |
+| **L** | Liquidity | 10% | Ability to meet cash flow obligations; funding stability |
+| **S** | Sensitivity to Market Risk | 10% | Exposure to interest rate, foreign exchange, and other market risks |
+
+**Total Score:** Composite 1 (strongest) to 5 (weakest)
+
+### G.3 Capital Adequacy (C)
+
+**Regulatory Framework:** Basel III (as implemented by local jurisdiction)
+
+| Metric | Formula | Strong (1) | Adequate (2) | Watch (3) | Weak (4-5) | Data Source |
+|--------|--------|-----------|-------------|-----------|------------|-------------|
+| **CET1 Ratio** | Common Equity Tier 1 / Risk-Weighted Assets | >12% | 10.5-12% | 8-10.5% | <8% (below regulatory minimum) | Pillar 3 disclosures; regulatory filings |
+| **Tier 1 Ratio** | Tier 1 Capital / RWA | >13% | 11.5-13% | 9-11.5% | <9% | Same as above |
+| **Total Capital Ratio** | Total Capital / RWA | >15% | 13-15% | 10.5-13% | <10.5% | Same as above |
+| **Leverage Ratio** | Tier 1 Capital / Total Exposure | >5% | 4-5% | 3-4% | <3% (below Basel III minimum of 3%) | Same as above |
+| **Capital Conservation Buffer** | CET1 above minimum requirement | >2.5% (buffer fully met) | 1.5-2.5% | 0-1.5% | <0% (buffer breached) | Same as above |
+| **TLAC / MREL (G-SIBs)** | Total Loss-Absorbing Capacity / RWA | >20% | 18-20% | 16-18% | <16% (below minimum) | Resolution authority disclosures |
+| **Tangible Common Equity / Tangible Assets** | (Common Equity - Intangibles) / (Total Assets - Intangibles) | >8% | 6-8% | 4-6% | <4% | Balance sheet |
+
+### G.4 Asset Quality (A)
+
+| Metric | Formula | Strong (1) | Adequate (2) | Watch (3) | Weak (4-5) | Data Source |
+|--------|--------|-----------|-------------|-----------|------------|-------------|
+| **NPL Ratio** | Non-Performing Loans / Gross Loans | <1% | 1-3% | 3-5% | >5% | Financial statements; regulatory filings |
+| **NPL Coverage Ratio (LLR/NPL)** | Loan Loss Reserves / NPLs | >150% | 100-150% | 70-100% | <70% | Same as above |
+| **Provisioning Coverage Ratio** | Total provisions / NPLs | >100% | 80-100% | 60-80% | <60% | Same as above |
+| **Net Charge-Off (NCO) Ratio** | Net charge-offs / Average Loans | <0.5% | 0.5-1.0% | 1.0-2.0% | >2.0% | Same as above |
+| **Loan Growth (3yr CAGR)** | CAGR of gross loans | 5-15% (measured growth) | 15-20% or 0-5% | 20-25% or negative | >25% (too fast) or < -5% (contracting) | Same as above |
+| **Sector Concentration (CRE, C&I, Consumer)** | Share of loans in each highly cyclical sector | <20% in any single cyclical sector | 20-30% | 30-40% | >40% | Segment reporting |
+| **Geographic Concentration** | Share of loans in any single stressed region | <15% | 15-25% | 25-35% | >35% | Geographic segment data |
+| **Forbearance Ratio** | Forborne loans / Gross loans | <1% | 1-3% | 3-5% | >5% | IFRS 9 / CECL disclosures |
+| **Stage 2 / Stage 3 Ratio (IFRS 9)** | (Stage 2 + Stage 3) / Total Loans | <10% | 10-20% | 20-30% | >30% | IFRS 9 disclosure notes |
+
+### G.5 Management (M)
+
+Management assessment is inherently qualitative but can be guided by structural and performance indicators:
+
+| Indicator | Strong (1) | Adequate (2) | Watch (3) | Weak (4-5) | Data Source |
+|-----------|-----------|-------------|-----------|------------|-------------|
+| **Management Stability** | Stable team; average tenure >5 years | Some recent changes but orderly | CFO/CEO departed in last 12 months | Multiple key departures; no succession plan | Annual report; regulatory filings |
+| **Regulatory History** | No enforcement actions in 5+ years | Minor regulatory findings addressed | Current regulatory MOU / formal agreement | Cease-and-desist order; PCA prompt corrective action | Regulator websites |
+| **Strategic Clarity** | Clear, measurable strategic plan; consistent execution | Reasonable strategy with minor pivots | Unclear strategy; frequent changes | No coherent strategy; reactive decisions | Investor presentations; annual reports |
+| **Risk Management Framework** | Independent CRO; board risk committee; ERM framework | Adequate risk governance | Risk management gaps identified | Material risk management failures | Pillar 3 disclosures; regulatory reports |
+| **Internal Audit** | Independent IA; direct board reporting | IA exists but not fully independent | IA under-resourced or constrained | No effective IA function | Annual report (corporate governance section) |
+| **Board Oversight** | Majority independent directors; financial expertise | Complies with independence requirements | Board lacks relevant expertise | Board dominated by management or insiders | Proxy statements; governance reports |
+| **Succession Planning** | Documented plan for all key roles | Informal but adequate | No clear successor for CEO/CFO | Key person risk; no plan | Engagement with IR; governance disclosures |
+
+### G.6 Earnings (E)
+
+| Metric | Formula | Strong (1) | Adequate (2) | Watch (3) | Weak (4-5) | Data Source |
+|--------|--------|-----------|-------------|-----------|------------|-------------|
+| **ROAA** | Net Income / Average Total Assets | >1.2% | 0.8-1.2% | 0.4-0.8% | <0.4% or negative | Income statement + balance sheet |
+| **ROAE** | Net Income / Average Common Equity | >12% | 8-12% | 4-8% | <4% | Same as above |
+| **Net Interest Margin (NIM)** | Net Interest Income / Average Earning Assets | >3.5% | 2.5-3.5% | 1.5-2.5% | <1.5% | Same as above |
+| **Efficiency Ratio** | Non-Interest Expense / (Net Interest Income + Non-Interest Income) | <55% | 55-65% | 65-75% | >75% | Income statement |
+| **Cost of Risk** | Provision Expense / Average Gross Loans | <0.5% | 0.5-1.0% | 1.0-2.0% | >2.0% | Income statement + balance sheet |
+| **Non-Interest Income / Total Revenue** | Non-interest Income / Total Income | 20-40% (diversified) | 15-20% or 40-50% | 10-15% or >50% (excessive reliance) | <10% or >60% | Income statement |
+| **Earnings Volatility** | Standard deviation of quarterly ROAA over 3 years | <10% of mean ROAA | 10-20% | 20-30% | >30% | Quarterly financial data |
+| **Dividend Payout Ratio** | Dividends / Net Income | 30-50% (sustainable) | 20-30% or 50-60% | 0-20% or 60-80% | >80% (excessive) or negative payout | Cash flow statement |
+
+### G.7 Liquidity (L)
+
+| Metric | Formula | Strong (1) | Adequate (2) | Watch (3) | Weak (4-5) | Data Source |
+|--------|--------|-----------|-------------|-----------|------------|-------------|
+| **LCR** | Liquidity Coverage Ratio: High-Quality Liquid Assets / Net Cash Outflows over 30 days | >150% (well above 100% minimum) | 120-150% | 100-120% | <100% (below minimum) | Pillar 3 disclosures |
+| **NSFR** | Net Stable Funding Ratio: Available Stable Funding / Required Stable Funding | >120% | 110-120% | 100-110% | <100% (below minimum) | Same as above |
+| **Loan-to-Deposit Ratio** | Gross Loans / Total Deposits | 70-90% (traditional banking) | 60-70% or 90-100% | 50-60% or 100-110% | <50% or >110% | Balance sheet |
+| **Deposit Concentration** | Top 20 depositor share of total deposits | <10% | 10-20% | 20-30% | >30% | Regulatory filings (limited public disclosure) |
+| **Wholesale Funding Dependence** | (Wholesale deposits + market funding) / Total Liabilities | <15% | 15-25% | 25-35% | >35% | Funding disclosure notes |
+| **Core Deposits / Total Deposits** | Insured/stable retail deposits / total deposits | >70% | 60-70% | 50-60% | <50% | Same as above |
+| **Liquid Assets / Total Assets** | Cash + government securities / total assets | >15% | 10-15% | 5-10% | <5% | Balance sheet |
+| **Undrawn Committed Lines / Total Assets** | Confirmed undrawn credit lines / total assets | >5% | 3-5% | 1-3% | <1% | Regulatory filings |
+
+### G.8 Sensitivity to Market Risk (S)
+
+| Metric | Formula | Strong (1) | Adequate (2) | Watch (3) | Weak (4-5) | Data Source |
+|--------|--------|-----------|-------------|-----------|------------|-------------|
+| **EVE / Economic Value of Equity Sensitivity** | Change in EVE for +/- 200bp parallel interest rate shock | <10% of Tier 1 capital | 10-20% | 20-30% | >30% | Regulatory filings; Pillar 3 |
+| **Net Interest Income Sensitivity** | Change in NII for +/- 200bp over 12 months | <5% of NII | 5-10% | 10-15% | >15% | Same as above |
+| **Trading Book VaR (99%, 1-day)** | Value at Risk as % of Tier 1 capital | <0.5% | 0.5-1.0% | 1.0-2.0% | >2.0% | Pillar 3; annual report risk section |
+| **FX Exposure** | Net open FX position / Tier 1 capital | <5% | 5-15% | 15-25% | >25% | Regulatory filings |
+| **Derivatives / Total Assets (notional)** | Derivative notional / Total assets | <100% | 100-300% | 300-500% | >500% | Annual report; derivatives note |
+| **Counterparty Credit Risk** | Peak positive exposure / Tier 1 capital | <20% | 20-50% | 50-100% | >100% | Regulatory filings |
+
+### G.9 CAMELS Composite Score and Credit Implications
+
+| Composite Score | Rating | Description | Credit Implication |
+|----------------|--------|-------------|-------------------|
+| **1** | Strong | Well-managed; resistant to external shocks; all dimensions satisfactory | Minimal default risk; strong credit quality |
+| **2** | Satisfactory | Fundamentally sound; minor weaknesses correctable | Low default risk; investment grade compatible |
+| **3** | Watch | Moderate weaknesses requiring attention; vulnerable to adverse conditions | Moderate default risk; may correspond to lower IG or HY |
+| **4** | Weak | Serious weaknesses; inadequate risk management; vulnerable without corrective action | High default risk; likely HY |
+| **5** | Critically Deficient | Extremely weak; immediate corrective action needed; probable failure | Imminent default risk |
+
+### G.10 Bank-Specific Stress Test Parameters
+
+For banks, the following stress parameters supplement the general corporate scenario framework:
+
+| Parameter | Base | Bear | Severe | Source |
+|-----------|------|------|--------|--------|
+| NPL Ratio increase | Unchanged | +2pp | +5pp | Historical bank crisis data |
+| Provisioning Cost (bps of loans) | Current level | Current + 100bp | Current + 200bp | Basel calibration studies |
+| Net Interest Margin compression | Unchanged | -20bp | -50bp | Central bank stress test scenarios |
+| Loan Growth | Current trend | -50% of trend | 0% (no growth) | Macro downturn scenarios |
+| Market shock (govt bond yield increase) | Unchanged | +100bp (parallel shift) | +200bp (bear flattener) | Historical market stress events |
+| Deposits outflow (% of total) | 0% | 3% over 30 days | 10% over 30 days | Historical bank run/stress scenarios |
+
+---
+
+## Appendix: Data Account Reconciliation (IFRS/US GAAP)
+
+### Cash Flow Statement Accounts
+
+| Analysis Metric | Cash Flow Statement Line Item | IFRS/US GAAP Note |
+|----------------|------------------------------|-------------------|
+| CFO (Cash from Operations) | Net cash provided by operating activities | IFRS: may include interest and dividends paid/received at discretion; US GAAP: interest paid and dividends received are operating, dividends paid are financing |
+| Capital Expenditure (Capex) | Purchases of property, plant, equipment, and intangible assets | Excludes M&A-related payments |
+| Interest Expense | Interest paid (cash flow) OR interest expense (income statement) | IFRS: interest paid can be in CFO or CFF; US GAAP: interest paid is CFO. For cross-border comparison, use income statement interest expense consistently |
+| FCF | CFO - Capex | Simplified; excludes interest tax shield adjustment |
+| Dividends Paid | Dividends paid | IFRS: can be operating or financing; US GAAP: financing |
+
+### Balance Sheet Accounts
+
+| Analysis Metric | Balance Sheet Line Items | Note |
+|----------------|-------------------------|------|
+| Trade Receivables | Trade receivables + Notes receivable (current) | IFRS 9: expected credit loss allowance deducted; US GAAP: CECL allowance deducted. Remove allowance for comparability |
+| Inventory | Inventory (raw materials + WIP + finished goods) | IFRS: LIFO prohibited; US GAAP: LIFO permitted. If US company uses LIFO, adjust for LIFO reserve |
+| Trade Payables | Trade payables + Notes payable (current) | Include accrued expenses only if they represent trade payables |
+| Short-term Borrowings | Short-term borrowings / Bank overdrafts | IFRS: overdrafts often netted against cash (unlike US GAAP). Reclassify if needed |
+| Current Portion of Non-Current Liabilities | Current portion of long-term debt / bonds payable / lease liabilities | IFRS 16: all leases included; US GAAP: operating lease liabilities classified as current portion of operating leases |
+| Bonds Payable | Bonds payable (non-current) | IFRS: amortized cost or fair value; US GAAP: generally amortized cost |
+| Long-term Borrowings | Long-term borrowings (non-current) | By maturity date |
+| Lease Liabilities (Non-current) | Non-current lease liabilities | IFRS: all leases; US GAAP: finance leases only (operating leases presented separately) |
+| Undrawn Committed Lines | Off-balance-sheet disclosure: "Bank Credit Facilities" / "Committed Lines of Credit" | Disclosed in notes; not on balance sheet |
+
+### Income Statement Accounts
+
+| Analysis Metric | Income Statement Line Item | Note |
+|----------------|--------------------------|------|
+| Revenue | Revenue / Net Sales | IFRS 15 / ASC 606: five-step model. Revenue is net of returns, discounts, and allowances |
+| Cost of Revenue | Cost of sales / Cost of revenue | IFRS: includes cost of inventory sold; US GAAP: same, but LIFO may affect COGS |
+| Gross Margin | (Revenue - Cost of Revenue) / Revenue | Compare within accounting framework; adjust for IFRS vs US GAAP differences (leases, stock compensation) |
+| Interest Expense (Income Statement) | Interest expense (within finance costs) | IFRS: finance costs include all borrowing costs; US GAAP: interest expense classification varies |
+| Depreciation and Amortization (D&A) | Depreciation + Amortization (PP&E + intangible assets) | IFRS: depreciation of ROU asset included; US GAAP: operating lease expense is a single line (no separate D&A). Adjust for comparability |
+| EBITDA | Net Income + Tax + Interest + D&A | **IFRS vs US GAAP adjustment:** For US GAAP reporters with operating leases add back implied D&A component; IFRS lessees already have D&A in EBITDA. This can cause 5-15% EBITDA differences for lease-intensive companies. |
+| Non-recurring / Exceptional Items | Restructuring charges, impairment losses, gains/losses from asset sales | IFRS: "exceptional items" classification is not specifically defined but used in practice; US GAAP: "unusual and/or infrequent" items classified separately in non-operating section |
+
+### IFRS vs US GAAP: Key Adjustment Table for Cross-Border Analysis
+
+| Metric | IFRS Treatment | US GAAP Treatment | Adjustment for Comparability |
+|--------|---------------|------------------|---------------------------|
+| **Lease-adjusted EBITDA** | EBITDA includes D&A of ROU asset (IFRS 16) | EBITDA excludes operating lease expense (operating lease is single line in operating expenses) | Add back 2/3 of operating lease expense to US GAAP EBITDA (approximation: 2/3 = implicit D&A component; 1/3 = implicit interest) |
+| **Pre-provision Net Revenue (PPNR) — Banks** | Net interest income + non-interest income - operating expenses (before provisions) | Same concept; classification differences in fee income may apply | Adjust for specific line item classification differences |
+| **Tangible Common Equity (TCE)** | Common equity - goodwill - intangible assets (excluding servicing rights) | Common equity - goodwill - intangible assets (excluding mortgage servicing rights) | Generally comparable; check whether capitalized development costs (IFRS) should be excluded for TCE |
+| **Loan Loss Provision** | IFRS 9 ECL: 12-month (Stage 1) or lifetime (Stage 2/3) expected losses | ASC 326 CECL: lifetime expected losses at origination | CECL provision is typically larger than IFRS 9. When comparing, note the methodology difference |
+| **Risk-Weighted Assets (RWA)** | Basel III standardized or IRB approaches | Basel III standardized or IRB (US modifications) | US implementation may differ from EU implementation; compare within same regime |
+
+---
+
+## Related Content
+
+- [Industry Classification and Framework](industry-framework.md) — L4 financial layer specifications and thresholds by industry
+- [Dual-Track Methodology](dual-track-methodology.md) — Cash flow deep-dive linkage to rating mapping
+- [Engine Architecture Overview](engine-overview.md) — Core concepts and overall architecture
+- [LGD Recovery Framework](lgd-recovery-framework.md) — Loss given default estimation
+- [External Support Framework](external-support-framework.md) — Sovereign, multilateral, and group support assessment
