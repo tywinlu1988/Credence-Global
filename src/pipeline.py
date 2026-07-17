@@ -9,8 +9,8 @@
 - **阶段定义不硬编码**：四个阶段的名称、承载 skill、产物标签均从
   `dev/engine/pipeline-contract.md` 的阶段总览表解析而来（见 load_contract）。链式边
   （chaining_edges）同样从该契约的 yaml 块读取，供端点引用完整性校验复用。
-- **不新编码任何引擎**：引擎文档是规范源，`src/sri_calculator.py` 与
-  `src/concentration_scorer.py` 是其**可执行实现**。编排器只在路径已接线时调用它们
+- **不新编码任何引擎**：引擎文档是规范源，`src/sri_calculator.py`、`src/concentration_scorer.py`
+  与 `src/contagion_engine.py` 是其**可执行实现**。编排器只在路径已接线时调用它们
   （EXECUTABLE_ENGINES），不复制任何阈值/权重/档位语义。
 - **复用 path_sheet.py**：路径单校验、registry 解析、planned 判定与"待开发"提示一律
   复用 `src/path_sheet.py`，不重复实现。
@@ -23,6 +23,12 @@ from pathlib import Path
 import yaml
 
 from src.concentration_scorer import concentration_risk_score, rating_adjustment
+from src.contagion_engine import (
+    apply_escalation,
+    high_intensity_links,
+    load_matrix,
+    portfolio_exposure,
+)
 from src.path_sheet import (
     YAML_BLOCK_RE,
     is_planned,
@@ -230,9 +236,33 @@ def _run_concentration(inputs: dict) -> dict:
     }
 
 
+def _run_contagion(inputs: dict) -> dict:
+    """WP-M4-02 → contagion-matrix 的可执行实现（组合暴露 + 高传染链路 + 压力跳升）。"""
+    m = load_matrix()
+    factors = list(inputs.get("escalation_factors") or [])
+    if factors:
+        m = apply_escalation(m, factors)
+    holdings = inputs["holdings"]
+    return {
+        "exposure": portfolio_exposure(m, holdings),
+        "links": [
+            {
+                "source": c.source,
+                "target": c.target,
+                "intensity": c.intensity,
+                "types": list(c.types),
+                "bidirectional": c.bidirectional,
+            }
+            for c in high_intensity_links(m, list(holdings))
+        ],
+        "factors_applied": factors,
+    }
+
+
 # 已接线（wired）编码引擎登记表：path_id → 运行该路径编码引擎的可调用对象。
-# 保持显式且极小——本系列仅接入 WP-M4-03(SRI) 与 WP-M4-01(集中度) 两个已编码引擎。
+# 保持显式且极小——本系列接入 WP-M4-01(集中度)、WP-M4-02(传染矩阵)、WP-M4-03(SRI)。
 EXECUTABLE_ENGINES = {
     "WP-M4-03": _run_sri,
     "WP-M4-01": _run_concentration,
+    "WP-M4-02": _run_contagion,
 }

@@ -64,6 +64,19 @@ def _sheet(path_id, **overrides) -> dict:
             "quality_gates": ["五维集中度 (dev/engine/concentration-framework.md §一)"],
             "notes": "",
         },
+        "WP-M4-02": {
+            "role": "M4",
+            "object": "portfolio",
+            "depth": "专项",
+            "mode": "A",
+            "path_id": "WP-M4-02",
+            "engine_reading_order": [
+                "dev/engine/contagion-matrix.md",
+                "dev/engine/contagion-theory.md",
+            ],
+            "quality_gates": ["传染矩阵 (dev/engine/contagion-matrix.md §二)"],
+            "notes": "",
+        },
         "WP-M0-01": {
             "role": "M0",
             "object": "single-issuer",
@@ -258,3 +271,26 @@ def test_chaining_edge_endpoints_resolve(contract, registry_paths):
         # every enumerated `to` endpoint resolves to a registered path_id
         for target in to:
             assert target in registry_paths, f"{edge['id']}: unknown to {target}"
+
+
+# --------------------------------------------------------------------------
+# T9.8 — WP-M4-02 wired: contagion engine executes at analysis stage
+# --------------------------------------------------------------------------
+
+def test_t9_8_contagion_wired_and_runs(contract, registry_paths):
+    assert "WP-M4-02" in EXECUTABLE_ENGINES
+    plan = load_stage_plan(_sheet("WP-M4-02"), registry_paths, contract)
+    assert plan[1].executable is True
+    manifest = run_executable_stages(plan, {
+        "holdings": {"光伏/储能": 0.4, "半导体/集成电路": 0.35, "食品饮料": 0.25},
+        "escalation_factors": ["市场恐慌"],
+    })
+    analysis = next(s for s in manifest["stages"] if s["name"] == "analysis")
+    assert analysis["mode"] == "code"
+    out = analysis["outputs"]
+    assert set(out) == {"exposure", "links", "factors_applied"}
+    assert out["factors_applied"] == ["市场恐慌"]
+    assert len(out["exposure"]) == 3 and out["links"]
+    # 显式跳升生效：半导体→光伏 在压力矩阵中为 5
+    jump = [l for l in out["links"] if l["source"] == "半导体/集成电路" and l["target"] == "光伏/储能"]
+    assert jump and jump[0]["intensity"] == 5

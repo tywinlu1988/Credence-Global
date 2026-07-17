@@ -5,8 +5,9 @@ release, not any single component:
 
 - T11.1: every one of the 8 active work paths yields a valid 4-stage plan (S1..S4,
   non-empty names/skills) via the thin orchestrator.
-- T11.2: the 2 wired paths (WP-M4-01 concentration, WP-M4-03 SRI) execute code at the
-  analysis stage; the other 6 active paths produce a complete LLM-orchestrated plan.
+- T11.2: the 3 wired paths (WP-M4-01 concentration, WP-M4-02 contagion, WP-M4-03 SRI)
+  execute code at the analysis stage; the other 5 active paths produce a complete
+  LLM-orchestrated plan.
 - T11.3: the end-to-end walkthrough record exists and literally names all 8 path ids.
 - T11.4: version promotion is consistent (EXPECTED_VERSION well-formed and aligned with
   pyproject/package.json; every CORE_DOCS doc + skill declares it), mirroring
@@ -66,7 +67,7 @@ ACTIVE_PATHS = [
     "WP-M0-01", "WP-M1-01", "WP-M4-01", "WP-M4-02",
     "WP-M4-03", "WP-X-01", "WP-X-02", "WP-X-03",
 ]
-WIRED_PATHS = ["WP-M4-01", "WP-M4-03"]
+WIRED_PATHS = ["WP-M4-01", "WP-M4-02", "WP-M4-03"]
 UNWIRED_ACTIVE = [p for p in ACTIVE_PATHS if p not in WIRED_PATHS]
 
 FOUR_SKILLS = (
@@ -169,8 +170,19 @@ def _concentration_inputs():
     }
 
 
+def _contagion_inputs():
+    return {
+        "holdings": {"光伏/储能": 0.4, "半导体/集成电路": 0.35, "食品饮料": 0.25},
+        "escalation_factors": ["市场恐慌"],
+    }
+
+
 def _wired_inputs(path_id):
-    return _sri_inputs() if path_id == "WP-M4-03" else _concentration_inputs()
+    return {
+        "WP-M4-01": _concentration_inputs,
+        "WP-M4-02": _contagion_inputs,
+        "WP-M4-03": _sri_inputs,
+    }[path_id]()
 
 
 # --------------------------------------------------------------------------
@@ -199,8 +211,15 @@ def test_t11_1_all_active_paths_yield_valid_four_stage_plan(contract, registry_p
 
 
 # --------------------------------------------------------------------------
-# T11.2 — 2 wired paths execute code; the other 6 are LLM-orchestrated
+# T11.2 — 3 wired paths execute code; the other 5 are LLM-orchestrated
 # --------------------------------------------------------------------------
+
+EXPECTED_OUTPUT_KEYS = {
+    "WP-M4-03": {"sri", "thermometer"},
+    "WP-M4-01": {"score", "adjustment", "levels", "bb_cap_triggered"},
+    "WP-M4-02": {"exposure", "links", "factors_applied"},
+}
+
 
 def test_t11_2_wired_execute_code_others_llm_orchestrated(contract, registry_paths):
     assert set(WIRED_PATHS) == set(EXECUTABLE_ENGINES), "wired set drifted from EXECUTABLE_ENGINES"
@@ -214,13 +233,10 @@ def test_t11_2_wired_execute_code_others_llm_orchestrated(contract, registry_pat
         analysis = next(s for s in manifest["stages"] if s["name"] == "analysis")
         assert analysis["mode"] == "code", f"{pid}: analysis must run as code"
         assert analysis["outputs"], f"{pid}: analysis must return real outputs"
-        if pid == "WP-M4-03":
-            assert set(analysis["outputs"]) == {"sri", "thermometer"}
-        else:  # WP-M4-01
-            assert set(analysis["outputs"]) == {"score", "adjustment", "levels", "bb_cap_triggered"}
+        assert set(analysis["outputs"]) == EXPECTED_OUTPUT_KEYS[pid]
 
     # unwired: complete plan, analysis not executable, every stage llm-orchestrated
-    assert len(UNWIRED_ACTIVE) == 6
+    assert len(UNWIRED_ACTIVE) == 5
     for pid in UNWIRED_ACTIVE:
         assert pid not in EXECUTABLE_ENGINES
         plan = load_stage_plan(_sheet_for(pid, registry_paths), registry_paths, contract)
