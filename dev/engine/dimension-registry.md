@@ -2,7 +2,7 @@
 
 **版本**: v0.8.4-release | **日期**: 2026-07-16
 
-本注册表把引擎的**分析维度**物件化（objectify）为可寻址（addressable）的机器可读条目：**6 个分析范式 + 1 个 LGFV 特殊类别**，以及 **6 类利益相关者角色（M0–M5）**。它是 v0.8.0 skill 架构中"按维度路由/检索"的统一索引层。
+本注册表把引擎的**分析维度**物件化（objectify）为可寻址（addressable）的机器可读条目：**6 个分析范式**，以及 **6 类利益相关者角色（M0–M5）**。它是 v0.8.0 skill 架构中"按维度路由/检索"的统一索引层。
 
 **单一事实源原则**：本表是一个**指针层（pointer layer）**——它只把每个维度登记为一个可寻址条目（id + 指向定义文档的指针 + 适用行业 + 被哪些工作路径消费），**不复制任何定义正文、阈值或权重**。每个维度的判定条件、金字塔权重、一票否决等规则正文，永远以 `definition` 指针所引用的引擎文档对应章节为最终裁决；本表如出现与之不一致之处，以引擎文档为准。
 
@@ -14,7 +14,7 @@
 
 ## 一、分析范式维度（dimensions）
 
-每个条目对应一个分析范式（A–F）或 LGFV 特殊类别。`industries` 反映该行业在传染矩阵中的**主要范式**归属（单一事实源：[contagion-matrix.md](contagion-matrix.md) §1.2 范式映射表）；次要范式属性（如半导体兼具范式B、生物医药兼具范式A、数据中心兼具范式F）不在本表展开，以该映射表"次要范式"列为准。
+每个条目对应一个分析范式（A–F）。`industries` 反映该行业在传染矩阵中的**主要范式**归属（单一事实源：[contagion-matrix.md](contagion-matrix.md) §1.2 范式映射表）；次要范式属性（如半导体兼具范式B、生物医药兼具范式A、数据中心兼具范式F）不在本表展开，以该映射表"次要范式"列为准。
 
 ```yaml
 dimensions:
@@ -66,13 +66,6 @@ dimensions:
     industries: [交通运输, 商贸零售, 传媒/互联网]
     used_by_paths: [WP-M0-01, WP-M1-02, WP-X-02, WP-X-03]
 
-  - id: lgfv
-    name: 政府信用绑定型
-    letter: 特殊
-    definition: 政府信用绑定型 (dev/engine/industry-framework.md §七)
-    standalone_doc: dev/engine/lgfv-framework.md
-    industries: [城投债 / LGFV]
-    used_by_paths: [WP-M0-01, WP-M1-02, WP-X-02, WP-X-03]
 ```
 
 ## 二、利益相关者角色维度（roles）
@@ -118,9 +111,9 @@ roles:
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
-| `id` | string | 维度唯一标识：`paradigm-{A..F}` 或 `lgfv` |
-| `name` | string | 维度中文名（政策驱动型/技术壁垒型/存量博弈型/资产租约型/品牌+渠道型/网络+流量型/政府信用绑定型） |
-| `letter` | string | 范式字母 `A`–`F`，LGFV 特殊类别填 `特殊` |
+| `id` | string | 维度唯一标识：`paradigm-{A..F}` |
+| `name` | string | 维度中文名（政策驱动型/技术壁垒型/存量博弈型/资产租约型/品牌+渠道型/网络+流量型） |
+| `letter` | string | 范式字母 `A`–`F` |
 | `definition` | string | 定义指针，格式 `关键字 (文档路径 §节)`（见下方溯源约定） |
 | `standalone_doc` | string | 完整规格所在：独立范式文档的仓库根相对路径，或 `embedded in …`（表示规格内嵌于 industry-framework.md） |
 | `industries` | string[] | 该范式作为主要范式覆盖的行业（与 contagion-matrix.md §1.2 主范式列一致） |
@@ -141,17 +134,16 @@ roles:
 
 ### `used_by_paths` 归集口径
 
-- **范式维度**：工作路径注册表的 `paradigm_selection` 字段以"六范式+LGFV（按行业映射表）"整体引用范式集合（而非逐个范式点名），故所有选择该映射表的范式消费路径——WP-M0-01、WP-M1-02、WP-X-02、WP-X-03——对每个范式维度均计入。`paradigm_selection` 为 `n/a` 或 `待定` 的路径不消费范式维度。
+- **范式维度**：工作路径注册表的 `paradigm_selection` 字段以"六范式（按行业映射表）"整体引用范式集合（而非逐个范式点名），故所有选择该映射表的范式消费路径——WP-M0-01、WP-M1-02、WP-X-02、WP-X-03——对每个范式维度均计入。`paradigm_selection` 为 `n/a` 或 `待定` 的路径不消费范式维度。
 - **角色维度**：按工作路径注册表各路径的 `role` 字段直接归集；`role: meta` 的跨角色路径（WP-X-*）不归属于任一 M0–M5 角色维度。
 
-> **推迟项（back-reference）**：原计划可选改动"work-path-registry 的 `paradigm_selection` 可引维度 ID"（路径→维度的反向指针）**本版本未实施**。因注册表的 `paradigm_selection` 以"六范式+LGFV"整体引用范式集合（集体粒度，而非逐范式点名），反向指针无法比现有 `used_by_paths` 提供更细粒度，故维持现状。维度→路径的正向归集（本节口径 + 一致性测试强制对账）已满足路由寻址需求；若未来 `paradigm_selection` 改为逐范式点名，再回补反向指针。
+> **推迟项（back-reference）**：原计划可选改动"work-path-registry 的 `paradigm_selection` 可引维度 ID"（路径→维度的反向指针）**本版本未实施**。因注册表的 `paradigm_selection` 以"六范式"整体引用范式集合（集体粒度，而非逐范式点名），反向指针无法比现有 `used_by_paths` 提供更细粒度，故维持现状。维度→路径的正向归集（本节口径 + 一致性测试强制对账）已满足路由寻址需求；若未来 `paradigm_selection` 改为逐范式点名，再回补反向指针。
 
 ## 相关内容
 
 - [行业分类与分析框架](industry-framework.md) — 四种行业范式判定（§三）· 七行业金字塔规格（§四）· 各行业类型判定（§七）
 - [品牌+渠道型分析范式](paradigm-brand-channel.md) — 范式E 完整规格（食品饮料·纺织服装）
 - [网络+流量型分析范式](paradigm-network-traffic.md) — 范式F 完整规格（交运·零售·传媒互联网）
-- [城投债分析框架](lgfv-framework.md) — LGFV 特殊类别完整规格
 - [13行业传染矩阵](contagion-matrix.md) — §1.2 范式映射表（行业→主要/次要范式）
 - [多利益相关者视角框架](multi-stakeholder.md) — M0–M5 角色定义（§一）
 - [工作路径注册表](work-path-registry.md) — 各路径的 role 与 paradigm_selection

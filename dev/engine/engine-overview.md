@@ -21,7 +21,6 @@
 | **outlook-monitoring-framework.md** | 评级展望 · 观察名单 · 持续监控 · 迁移矩阵 | 需要前瞻方向和监控机制 |
 | **financial-deep-dive.md** | 三表联动 · 营运资金 · FCF · 场景敏感性· 压力测试升级 | 需要财务深度分析 |
 | **governance-fraud-risk.md** | 20+欺诈信号 · 逃废债检测 · 存贷双高 · 治理评估 | 需要检测财务欺诈 |
-| **lgfv-framework.md** | 城投债双轨(政府+平台) · 四级分类 · 六大预警 | 需要分析城投债 |
 | **non-credit-risk-overlay.md** | 市场/操作/声誉/战略/流动性风险叠加层 | 需要非信用风险评估 |
 | [false-positive-negative-testing.md](../../validation/docs/false-positive-negative-testing.md) | 假阳性/假阴性测试方法 · 测试执行记录（存档于 validation/docs/，非项目本体） | 需要验证引擎准确性 |
 | **output-layered-framework.md** | L0信号卡+L1快照+L2深度 · 三层输出 · 工作流嵌入 | 需要产品输出规范 |
@@ -229,7 +228,6 @@ Indicator Score = f(Raw Value, Threshold, Direction)
 | governance-fraud-risk.md | v0.8.4-release | 治理/欺诈风险框架 |
 | outlook-monitoring-framework.md | v0.8.4-release | 展望与持续监控框架 |
 | lgd-recovery-framework.md | v0.8.4-release | LGD 与回收率分析框架 |
-| lgfv-framework.md | v0.8.4-release | 城投债分析框架 |
 | multi-stakeholder.md | v0.8.4-release | 多利益相关者框架 |
 | financial-deep-dive.md | v0.8.4-release | 财务深度分析框架 |
 | paradigm-brand-channel.md | v0.8.4-release | 品牌+渠道范式规格 |
