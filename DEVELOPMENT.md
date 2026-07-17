@@ -39,3 +39,13 @@
 - 验证 SSH 连接成功
 - 完成项目代码库全面审查（四层架构、16条工作路径、4个编码引擎、197项测试）
 - 建立 `record/` 工作区 + `DEVELOPMENT.md` 交互日志
+
+### 2026-07-17 #2 — Phase 1 Foundation Cleanup Complete
+- **Task 1.1**: Version reset to v0.0.1 across package.json, pyproject.toml, engine-overview.md, dev/README.md, build_dist.py, consistency_check.py
+- **Task 1.2**: Cleared version/ directory; .gitkeep placeholder; .gitignore updated
+- **Task 1.3**: Purged version history tables; engine-overview.md and dev/README.md section headers translated to English
+- **Task 1.4**: Deleted lgfv-framework.md; cleaned cross-references in engine-overview.md, dimension-registry.md, dual-track-methodology.md
+- **Task 1.5**: Rewrote AGENTS.md in English with international roles and updated path references
+- **Task 1.6**: Created English canonical README + 4 translations (ZH, JA, KO, FR); updated package.json description
+- **Verification**: Consistency check — 30 issues (all expected: VERSION mismatches → Phase 2, MISSING lgfv → expected, SKILL version → Phase 3). Tests — 1 collection error (test_integration_v08 expects deleted version/ dir → Phase 3)
+- **Commits**: 8c9b69d → 9e76ee6 (6 commits)
