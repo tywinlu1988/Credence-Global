@@ -1,4 +1,4 @@
-"""Integration tests for the v0.8.0 release (T11.1-T11.5).
+"""Integration tests for the v0.8 release line (T11.1-T11.5).
 
 These tests assert the *integration* of the v0.7.6-v0.7.9 staircase into a coherent
 release, not any single component:
@@ -8,10 +8,12 @@ release, not any single component:
 - T11.2: the 2 wired paths (WP-M4-01 concentration, WP-M4-03 SRI) execute code at the
   analysis stage; the other 6 active paths produce a complete LLM-orchestrated plan.
 - T11.3: the end-to-end walkthrough record exists and literally names all 8 path ids.
-- T11.4: version promotion is consistent (EXPECTED_VERSION == v0.8.0-release and every
-  CORE_DOCS doc + skill declares it), mirroring consistency_check.check_versions.
-- T11.5: the v0.8.0 snapshot exists as the installable agent package (skills @
-  .claude/skills, flattened engine/, generated entry/install docs) with no dead links.
+- T11.4: version promotion is consistent (EXPECTED_VERSION well-formed and aligned with
+  pyproject/package.json; every CORE_DOCS doc + skill declares it), mirroring
+  consistency_check.check_versions / check_version_alignment.
+- T11.5: the current snapshot (the single version/*-release dir, named == EXPECTED_VERSION)
+  exists as the installable agent package (skills @ .claude/skills, flattened engine/,
+  generated entry/install docs) with no dead links.
 
 Single-source rule: the tests assert structure/versions only. They never restate engine
 thresholds/weights -- the only numbers here are the *fixture inputs* and the *real engine
@@ -39,7 +41,24 @@ REGISTRY = ROOT / "dev" / "engine" / "work-path-registry.md"
 ENGINE_DIR = ROOT / "dev" / "engine"
 SKILLS_DIR = ROOT / "dev" / ".claude" / "skills"
 WALKTHROUGH = ROOT / "validation" / "docs" / "v0.8.0-end-to-end-walkthroughs.md"
-SNAPSHOT = ROOT / "version" / "v0.8.0-release"
+def _current_snapshot_dir() -> Path:
+    """version/ 下唯一**被 git 跟踪**的 *-release 目录即当前快照（install.js 语义，
+    但按 git ls-files 过滤——维护者本地磁盘上残留的历史快照目录不参与）。"""
+    import subprocess
+
+    out = subprocess.run(
+        ["git", "ls-files", "version/"], cwd=ROOT,
+        capture_output=True, text=True, encoding="utf-8", errors="replace", check=True,
+    ).stdout
+    dirs = {line.split("/")[1] for line in out.splitlines() if line.count("/") >= 2}
+    releases = sorted(d for d in dirs if d.endswith("-release"))
+    assert len(releases) == 1, (
+        f"version/ 被跟踪的 *-release 目录应唯一，实际: {releases}"
+    )
+    return ROOT / "version" / releases[0]
+
+
+SNAPSHOT = _current_snapshot_dir()
 CONSISTENCY_CHECK = ROOT / "scripts" / "consistency_check.py"
 BUILD_DIST = ROOT / "scripts" / "build_dist.py"
 
@@ -229,7 +248,9 @@ def test_t11_3_walkthrough_covers_all_eight_paths():
 # --------------------------------------------------------------------------
 
 def test_t11_4_version_promotion_consistent(cc):
-    assert cc.EXPECTED_VERSION == "v0.8.0-release"
+    # 版本无关：形式合法 + 三处对齐（pyproject/package.json），镜像 P2 硬校验
+    assert cc.VERSION_RELEASE_RE.match(cc.EXPECTED_VERSION), cc.EXPECTED_VERSION
+    assert cc.check_version_alignment() == []
     # check_versions must report no errors: all CORE_DOCS + the executor skill declare it
     assert cc.check_versions() == [], "check_versions reported errors after promotion"
     # every CORE_DOCS doc header declares the promoted version (mirror check_versions logic)
@@ -253,6 +274,10 @@ def test_t11_4_version_promotion_consistent(cc):
 
 def test_t11_5_snapshot_integrity(cc, bd, tmp_path):
     assert SNAPSHOT.is_dir(), f"snapshot missing: {SNAPSHOT}"
+    assert SNAPSHOT.name == cc.EXPECTED_VERSION, (
+        f"快照目录 {SNAPSHOT.name} 与 EXPECTED_VERSION {cc.EXPECTED_VERSION} 不一致——"
+        "快照未随晋升更新"
+    )
 
     # generated entry/install docs (single universal package, per-tool entries)
     for entry in ("AGENTS.md", "CLAUDE.md", "GEMINI.md", "INSTALL.md", "README.md"):
@@ -295,7 +320,7 @@ def test_t11_5_snapshot_integrity(cc, bd, tmp_path):
     assert not dead, f"dead links in snapshot: {dead[:20]}"
 
     # distribution packaging: the snapshot dir can be zipped into the release artifact
-    # (top-level v0.8.0-release/). The zip itself is NOT committed (*.zip is gitignored)
+    # (top-level <v>-release/). The zip itself is NOT committed (*.zip is gitignored)
     # — it is built on demand and attached to GitHub Releases, so we build it into a
     # tmp dir here to verify the packaging path works on any clean clone.
     import zipfile
@@ -303,8 +328,8 @@ def test_t11_5_snapshot_integrity(cc, bd, tmp_path):
     files = sorted(p for p in SNAPSHOT.rglob("*") if p.is_file())
     with zipfile.ZipFile(tmp_zip, "w", zipfile.ZIP_DEFLATED) as z:
         for p in files:
-            z.write(p, f"v0.8.0-release/{p.relative_to(SNAPSHOT).as_posix()}")
+            z.write(p, f"{SNAPSHOT.name}/{p.relative_to(SNAPSHOT).as_posix()}")
     with zipfile.ZipFile(tmp_zip) as z:
         names = z.namelist()
-    assert names and all(n.startswith("v0.8.0-release/") for n in names)
+    assert names and all(n.startswith(f"{SNAPSHOT.name}/") for n in names)
     assert sum(n.endswith("SKILL.md") for n in names) == len(FOUR_SKILLS)
