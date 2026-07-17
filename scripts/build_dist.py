@@ -1,45 +1,47 @@
-#!/usr/bin/env python3
-"""Credence 可安装 agent 包的确定性组装器（版本戳派生自 engine-overview.md 头，见 _version()）。
+"""Deterministic assembler for the Credence installable agent package (version derived from
+engine-overview.md header -- see _version()).
 
-把 `dev/` 工作区（源）组装为 `dist/credence/`（产物）——一个自包含、可移植、
-可按行业惯例安装到 Claude Code / Codex / Cursor / Gemini / OpenCode 的 agent 包。
-`dev/` 布局保持不变（checker 与测试继续验证它）；本脚本只**复制+重写+清除**，
-产出即 `version/<v>-release/` 与 zip 的内容。这是标准的 source-vs-artifact 模型。
+Transforms the `dev/` workspace (source) into `dist/credence/` (artifact) -- a self-contained,
+portable, industry-standard agent package installable in Claude Code / Codex / Cursor / Gemini /
+OpenCode. The `dev/` layout remains unchanged (checker and tests continue to verify it); this
+script only **copies+rewrites+cleanses** to produce what goes into `version/<v>-release/` and the
+zip archive. This is the standard source-vs-artifact model.
 
-## 布局契约（dist 测试 test_dist_package.py 与本脚本共同遵守的唯一参照）
+## Layout Contract (sole reference shared by dist test test_dist_package.py and this script)
 
 dist/credence/
-├── AGENTS.md / CLAUDE.md / GEMINI.md / INSTALL.md / README.md   (生成)
-├── .claude-plugin/plugin.json                                   (生成)
-├── .claude/skills/<4 skills>/{SKILL.md,references/}            (dev/.claude/skills 复制+重写)
-├── engine/          (dev/engine 剔除 audits/, 重写+清除溯源指针)
-├── templates/       (dev/templates 全量)
-├── src/             (剔除 __pycache__/*.pyc, 注释重写)
-└── adapters/codex.md (自 docs/adapters 移入+重写)
+|-- AGENTS.md / CLAUDE.md / GEMINI.md / INSTALL.md / README.md   (generated)
+|-- .claude-plugin/plugin.json                                   (generated)
+|-- .claude/skills/<4 skills>/{SKILL.md,references/}            (copied+rewritten from dev/.claude/skills)
+|-- engine/          (dev/engine excluding audits/, rewritten+pointer-cleansed)
+|-- templates/       (dev/templates full copy)
+|-- src/             (excluding __pycache__/*.pyc, comments rewritten)
+`-- adapters/codex.md (moved from docs/adapters + rewritten)
 
-## 引用重写规则（有序，最长前缀优先；对每个复制的文本文件应用）
-1. `dev/.claude/skills/` → `.claude/skills/`
-2. `dev/engine/`         → `engine/`
-3. `dev/templates/`      → `templates/`
-4. `../../src/`          → `../src/`        (engine-overview.md 的深度位移链接)
-注：`multi-stakeholder.md` 的 `../engine/`、`../templates/` 在两种布局下都解析，不动。
+## Reference Rewrite Rules (ordered, longest prefix first; applied to every copied text file)
+1. `dev/.claude/skills/` -> `.claude/skills/`
+2. `dev/engine/`         -> `engine/`
+3. `dev/templates/`      -> `templates/`
+4. `../../src/`          -> `../src/`        (deep link fix for engine-overview.md)
+Note: `multi-stakeholder.md`'s `../engine/`, `../templates/` resolve in both layouts; left unchanged.
 
-## 溯源指针清除（模式化，非行号；每处记日志）
-- 行内片段剥除：`（…audits/…）` / `(…audits/…)` 括号片段（保留句子）。
-- 整行删除：剥除后仍含 `audits/` 的纯指针行（表行/来源注/要点）。
-- 整行删除：含 `validation/` 路径 token 的行（validation/ 已剔除出包）。
+## Pointer Cleansing (pattern-based, not line-number-based; each occurrence is logged)
+- Inline fragment removal: `(audits/)` parenthetical snippets (retain sentence remainder).
+- Full-line deletion: lines still containing `audits/` after parenthetical stripping (table rows,
+  source notes, bullet points).
+- Full-line deletion: lines containing `validation/` path tokens (validation/ excluded from package).
 
-## 剔除（绝不允许进入 dist）
-`settings.local.json`、`__pycache__`、`*.pyc`、`engine/audits/`、`design/`、
-`product/`、`data/`、`validation/`、`.git/`、`version/`、`tests/`、`scripts/`、
-`docs/`（除 adapters/codex.md）、`dev/README.md`（生成新包 README 替代）。
+## Exclusions (never allowed into dist)
+`settings.local.json`, `__pycache__`, `*.pyc`, `engine/audits/`, `design/`,
+`product/`, `data/`, `validation/`, `.git/`, `version/`, `tests/`, `scripts/`,
+`docs/` (except adapters/codex.md), `dev/README.md` (replaced by generated README).
 
-## 校验（--check 或构建后自动执行；任一失败即响亮退出）
-(i) 零 `[A-Za-z]:[\\/]` 绝对路径；(ii) 零残留 `dev/` 路径 token；(iii) 每个相对
-链接在 dist 内可解析；(iv) 4 个 SKILL.md 且 frontmatter 恰为 name+description；
-(v) 28 份 CORE_DOCS 全部在 engine/ 下；(vi) src 能在 dist 布局定位 engine/templates；
-(vii) 无任何被剔除的产物。
-(viii) 文本文件无 CRLF（LF 强制，见根 .gitattributes）。
+## Validation (--check or auto-run after build; any failure exits loudly)
+(i) Zero `[A-Za-z]:[\\/]` absolute paths; (ii) zero residual `dev/` path tokens; (iii) every
+relative link resolves within dist; (iv) 4 SKILL.md with frontmatter exactly name+description;
+(v) 27 CORE_DOCS all present under engine/; (vi) src can locate engine/templates in dist layout;
+(vii) zero excluded artifacts present.
+(viii) No CRLF in text files (LF enforced per root .gitattributes).
 """
 
 import argparse
@@ -55,8 +57,8 @@ DIST = ROOT / "dist" / "credence"
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from consistency_check import CORE_DOCS  # noqa: E402  单一事实源，不复制清单
 
-# 有序引用重写（最长前缀优先）。skills 规则不带尾斜杠以同时覆盖
-# `dev/.claude/skills` 与 `dev/.claude/skills/...` 两种形态。
+# Ordered rewrite rules (longest prefix first). The skills rule has no trailing slash
+# to cover both `dev/.claude/skills` and `dev/.claude/skills/...` forms.
 REWRITE_RULES = [
     ("dev/.claude/skills", ".claude/skills"),
     ("dev/engine/", "engine/"),
@@ -73,9 +75,9 @@ SKILL_NAMES = [
     "credit-qa-verifier",
 ]
 
-ABS_PATH_RE = re.compile(r"(?<![A-Za-z])[A-Za-z]:[\\/]")  # 盘符前不得为字母（排除 https:// 等 scheme）
+ABS_PATH_RE = re.compile(r"(?<![A-Za-z])[A-Za-z]:[\\/]")  # drive letter not preceded by a letter (excludes https:// etc.)
 DEV_TOKEN_RE = re.compile(r"(?<![\w/.-])dev[/\\]")
-# 行内 audits 括号片段（全角/半角括号），剥除但保留句子。
+# Inline audits parentheses fragments (full-width/half-width brackets), stripped while retaining sentence.
 AUDIT_FRAGMENT_RE = re.compile(r"（[^（）]*audits/[^（）]*）|\([^()]*audits/[^()]*\)")
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 
@@ -91,7 +93,7 @@ def _apply_rewrites(text: str) -> str:
 
 
 def _scrub(text: str, rel: str, log: list) -> str:
-    """溯源指针清除：先剥行内 audits 片段，再删残留 audits//validation/ 指针行。"""
+    """Pointer cleansing: strip inline audits fragments, then drop residual audits/validation/ pointer lines."""
     text, n_frag = AUDIT_FRAGMENT_RE.subn("", text)
     for _ in range(n_frag):
         log.append(f"fragment-strip (audits paren) in {rel}")
@@ -140,171 +142,174 @@ def _version() -> str:
 
 
 def _gen_agents_md(v: str) -> str:
-    return f"""# AGENTS.md — Credence 跨 CLI 通用入口
+    return f"""# AGENTS.md — Credence Cross-CLI Universal Entry
 
-**项目**：Credence（固收信贷智能分析引擎）
-**引擎版本**：{v}
-**一句话**：方法论优先（methodology-first）的信用分析引擎；可移植单元是 `SKILL.md`。
+**Project**: Credence (Fixed-Income Credit Intelligent Analysis Engine)
+**Engine Version**: {v}
+**Tagline**: Methodology-first credit analysis engine; portable unit is `SKILL.md`.
 
-> 任何 agent CLI 都从这里开始：先读你的 instructions file，再读当前任务对应的那份 `SKILL.md`。
-> 安装与按工具接入详见 `INSTALL.md`。
+> Any agent CLI starts here: read your instructions file first, then the `SKILL.md` for the current task.
+> For installation and tool-specific setup, see `INSTALL.md`.
 
-## 这个包是什么
+## What This Package Is
 
-面向中国固定收益市场的信用分析引擎，分四层（four-layer）：
+A credit analysis engine for international fixed-income markets, organized into four layers:
 
-1. **马赛克引擎（Mosaic）** — 把碎片化公开数据拼成连贯信号；数据缺口本身即风险信号。
-2. **双轨引擎（Dual-Track）** — 行业多层金字塔（基本面）与市场定价信号并行，再交叉对撞。
-3. **多利益相关者（Multi-Stakeholder）** — M0 审贷 / M1 投资 / M2 承销 / M3 交易 / M4 风控 / M5 融资多视角。
-4. **系统智能层（System-Intelligence, SRI）** — 跨行业传染、五维集中度、系统性风险指数（SRI）。
+1. **Mosaic Engine** — Assembles fragmented public data into coherent signals; data gaps are themselves risk signals.
+2. **Dual-Track Engine** — Industry multi-layer pyramids (fundamentals) and market pricing signals run in parallel, then cross-validated.
+3. **Multi-Stakeholder** — Credit Selector / Portfolio Manager / Trader / Risk Officer / Advisor / Individual Investor viewpoints.
+4. **System-Intelligence Layer (SRI)** — Cross-industry contagion, five-dimension concentration, Systemic Risk Index (SRI).
 
-**阈值、权重、评级映射只存放在 `engine/*.md`。** 本文件与任何 skill 都不复制这些数值；凡涉及数值判断，一律引用引擎文档 + 章节。
+**Thresholds, weights, and rating maps live only in `engine/*.md`.** This file and every skill never duplicate these values; any numerical judgment must reference the engine document and section.
 
-## 如何在你的 agent CLI 中使用
+## How to Use in Your Agent CLI
 
-本包是自包含的可安装 agent 包，skills 实体在 `.claude/skills/`。**最简单的方式（Model A）**：把本包根目录作为你的项目打开即可，全部引用自动解析。
+This package is a self-contained installable agent package, with skills under `.claude/skills/`. **Simplest approach (Model A)**: Open the package root as your project and all references resolve automatically.
 
-| agent CLI | 如何接入 |
+| Agent CLI | How to Access |
 |---|---|
-| **Claude Code** | 自动发现 `.claude/skills/`（把本包根当项目打开）；`CLAUDE.md` 指向本文件。惯例分发渠道为 plugin/marketplace（见 `.claude-plugin/plugin.json`）。 |
-| **Codex** | 原生读本 `AGENTS.md`；随后手动读当前任务的 `SKILL.md` 正文。深度适配见 `adapters/codex.md`。 |
-| **Cursor** | 读本 `AGENTS.md`，并兼容读取 `.claude/skills/`。 |
-| **Gemini** | 读 `GEMINI.md`，并兼容读取 `.claude/skills/`。 |
-| **OpenCode** | 读本 `AGENTS.md`，并兼容读取 `.claude/skills/`。 |
+| **Claude Code** | Auto-discovers `.claude/skills/` (open the package root as project); `CLAUDE.md` points here. Distribution channel: plugin/marketplace (see `.claude-plugin/plugin.json`). |
+| **Codex** | Natively reads `AGENTS.md`; then manually read the current task's `SKILL.md`. Deep adapter guidance in `adapters/codex.md`. |
+| **Cursor** | Reads `AGENTS.md` and compatibly reads `.claude/skills/`. |
+| **Gemini** | Reads `GEMINI.md` and compatibly reads `.claude/skills/`. |
+| **OpenCode** | Reads `AGENTS.md` and compatibly reads `.claude/skills/`. |
 
-统一姿势：**先读你的 instructions file，再读当前任务对应的那份 `SKILL.md`。** 把本包整合进你已有的项目（Model B）或做全局安装的目标路径，见 `INSTALL.md`。
+Uniform approach: **Read your instructions file first, then the `SKILL.md` for the current task.** For integrating into an existing project (Model B) or global installation paths, see `INSTALL.md`.
 
-## Skill 索引
+## Skill Index
 
-| Skill | 何时使用（Use when…） | 路径 |
+| Skill | Use When... | Path |
 |---|---|---|
-| `credit-analysis-router` | 需求模糊或复合（"帮我看看这家公司""该做哪种分析""该从哪儿入手"），需先四问路由到工作路径 | `.claude/skills/credit-analysis-router/SKILL.md` |
-| `fixed-income-credit-analysis` | 已点名的具体方法论任务或引擎路径，按路径单或核心文档集执行分析 | `.claude/skills/fixed-income-credit-analysis/SKILL.md` |
-| `credit-report-builder` | 把完成的信用分析装配为交付报告（选模板 Type 1–15、映射 L0/L1/L2 层、装配仪表盘）；需上游分析产物，自身不做分析 | `.claude/skills/credit-report-builder/SKILL.md` |
-| `credit-qa-verifier` | 交付前复核报告/分析（质量门、密度规则、一票否决上限、Mode B 护栏、单源合规）；四段链终态质检 | `.claude/skills/credit-qa-verifier/SKILL.md` |
+| `credit-analysis-router` | Requirements are vague or composite: route to a work path via four-question protocol | `.claude/skills/credit-analysis-router/SKILL.md` |
+| `fixed-income-credit-analysis` | Concrete methodology task or engine path: execute analysis per path sheet or core doc set | `.claude/skills/fixed-income-credit-analysis/SKILL.md` |
+| `credit-report-builder` | Assemble completed credit analysis into deliverables (select template Type 1-15, map L0/L1/L2 layers, dashboard); needs upstream analysis output | `.claude/skills/credit-report-builder/SKILL.md` |
+| `credit-qa-verifier` | Pre-delivery review of report/analysis (quality gates, density rules, veto ceiling, Mode B guardrails, single-source compliance); terminal QA for four-stage chain | `.claude/skills/credit-qa-verifier/SKILL.md` |
 
-## 四段管线
+## Four-Stage Pipeline
 
-引擎把一次信用分析拆成四段链式契约，`path_id` 是贯穿各段的 join key：
+The engine decomposes each credit analysis into a four-stage chained contract, with `path_id` as the join key across stages:
 
-| 阶段 | 职责 | 承载 skill |
+| Stage | Responsibility | Carrying Skill |
 |---|---|---|
-| ① intake | 四问路由，产出《工作路径单》 | `credit-analysis-router` |
-| ② analysis | 按路径单 `engine_reading_order` 执行分析 | `fixed-income-credit-analysis` |
-| ③ report | 把完成的分析装配为交付报告 | `credit-report-builder` |
-| ④ qa | 交付前质量门复核 | `credit-qa-verifier` |
+| 1 intake | Four-question routing, produces Path Sheet | `credit-analysis-router` |
+| 2 analysis | Execute analysis per `engine_reading_order` | `fixed-income-credit-analysis` |
+| 3 report | Assemble analysis into deliverable report | `credit-report-builder` |
+| 4 qa | Pre-delivery quality gate review | `credit-qa-verifier` |
 
-四段产物（工作路径单 / 分析产物 / 交付单 / 质检裁决）的字段形状与链式边的单一事实源为 `engine/pipeline-contract.md`。
+Four-stage artifacts (Path Sheet / Analysis Artifact / Delivery Note / QA Verdict) field shapes and chaining edges are single-sourced in `engine/pipeline-contract.md`.
 
-**可执行编排器**：`src/pipeline.py` 以代码驱动四段链，从 `pipeline-contract.md` 读阶段定义，仅对已接线路径调用编码引擎——**WP-M4-03 → SRI（`src/sri_calculator.py`）、WP-M4-01 → 五维集中度（`src/concentration_scorer.py`）**；其余路径仍由 LLM 按引擎文档编排。
+**Executable Orchestrator**: `src/pipeline.py` drives the four-stage chain as code, reading stage definitions from `pipeline-contract.md`. It calls coded engines only for wired paths -- **WP-RO-03 -> SRI (`src/sri_calculator.py`), WP-RO-01 -> Concentration (`src/concentration_scorer.py`)**; remaining paths are LLM-orchestrated via engine documents.
 
-## 单一事实源规则
+## Single Source of Truth Rule
 
-**绝不复制阈值、权重、SRI 档位、评级映射或分层时间预算。** 任何数值判断都引用 `engine/<doc>.md §节`；引擎文档未定义就输出 `引擎未定义`，不得编造数值。
+**Never duplicate thresholds, weights, SRI tiers, rating maps, or layer time budgets.** Any numerical judgment must reference `engine/<doc>.md SS<section>`; if the engine document does not define it, output `engine_undefined` -- do not fabricate values.
 
-## 路由基线（工作路径注册表）
+## Routing Baseline (Work Path Registry)
 
-`engine/work-path-registry.md` 是路由单一事实源：**16 条工作路径（8 条 active / 6 条 partial / 2 条 planned）**。router 据此把模糊需求路由到具体工作路径；推荐到 planned 路径时须如实告知"待开发"并给出可替代的 active 路径。
+`engine/work-path-registry.md` is the single source of truth for routing: **16 work paths (8 active / 6 partial / 2 planned)**. The router maps ambiguous requirements to concrete work paths; when recommending a planned path, honestly state "not yet implemented" and suggest an active alternative.
 
-## 平台中立说明
+## Platform Neutrality Note
 
-本文件与各 skill 统一称"你的 instructions file"——每个 agent CLI 的项目级指令文件名各不相同，本包不假定任何特定产品文件名。引用字面路径 `.claude/skills` 是允许的：那是一个路径，不是一条行为指令。
+This file and each skill uniformly refer to "your instructions file" -- every agent CLI has a different project-level instruction filename, and this package does not assume any specific product filename. Literal path references to `.claude/skills` are allowed: that is a path, not a behavioral instruction.
 
-## 开发者回归门（需完整源码仓库）
+## Developer Regression Gate (Full Source Repository Required)
 
-本安装包是**运行时产物**，不含测试与一致性校验脚本。若要运行回归门（`pytest` + `consistency_check.py`）或修改方法论本身，请克隆完整源码仓库。
+This installable package is a **runtime artifact** and does not include tests or consistency-check scripts. To run the regression gate (`pytest` + `consistency_check.py`) or modify the methodology itself, clone the full source repository.
 """
 
 
 def _gen_claude_md() -> str:
     return """# CLAUDE.md — Credence
 
-先读 `AGENTS.md`。skills 在 `.claude/skills/`。
+Read `AGENTS.md` first. Skills are in `.claude/skills/`.
 
-阈值、权重、评级映射只存放在 `engine/*.md`；绝不编造数值——引用 `engine/<doc>.md §节`，引擎未定义就输出 `引擎未定义`。
+Thresholds, weights, and rating maps live only in `engine/*.md`; never fabricate values -- reference `engine/<doc>.md SS<section>`, output `engine_undefined` if not defined.
 """
 
 
 def _gen_gemini_md() -> str:
     return """# GEMINI.md — Credence
 
-先读 `AGENTS.md`。skills 在 `.claude/skills/`（Gemini CLI 兼容读取该目录）。
+Read `AGENTS.md` first. Skills are in `.claude/skills/` (Gemini CLI compatibly reads this directory).
 
-阈值、权重、评级映射只存放在 `engine/*.md`；绝不编造数值——引用 `engine/<doc>.md §节`，引擎未定义就输出 `引擎未定义`。
+Thresholds, weights, and rating maps live only in `engine/*.md`; never fabricate values -- reference `engine/<doc>.md SS<section>`, output `engine_undefined` if not defined.
 """
 
 
 def _gen_install_md(v: str) -> str:
-    return f"""# INSTALL — 安装 Credence（{v}）
+    return f"""# INSTALL — Install Credence ({v})
 
-Credence 是一个自包含的 agent 包。**关键前提**：skills 并非自包含——它们在运行时从
-**项目根**读取 `engine/` 方法论文档与 `templates/` 报告模板（单一事实源，绝不复制）。
-因此安装单元是**整个包根**，不是单独的 skills 文件夹。
+Credence is a self-contained agent package. **Key premise**: skills are not self-contained --
+they read `engine/` methodology documents and `templates/` report templates from the
+**project root** at runtime (single source of truth, never duplicated).
+Therefore the install unit is the **entire package root**, not individual skill folders.
 
-## Model A — 打开为项目（推荐，零配置）
+## Model A -- Open as Project (Recommended, Zero Config)
 
-把本包根目录 `credence/` 作为你的项目/工作区打开，直接用自然语言提问
-（如"帮我看看这家公司""这个组合有没有问题"），`credit-analysis-router` 会接管四问路由。
-所有引用（`engine/`、`templates/`、`.claude/skills/`）从包根自动解析，各工具零拷贝即用。
-
-```
-unzip credence-{v}.zip        # 或 git clone <repo> credence
-cd credence                   # 以包根为项目根
-# Claude Code: claude   ·   Codex: codex   ·   其他: 打开该文件夹
-```
-
-## Model B — 整合进你已有的项目
-
-把**整个运行时核**拷到你项目的根目录（不只是 skills 文件夹）：
+Open the package root directory `credence/` as your project/workspace and ask questions
+directly in natural language; `credit-analysis-router` handles the four-question routing.
+All references (`engine/`, `templates/`, `.claude/skills/`) resolve automatically.
 
 ```
-.claude/skills/   →  <你的项目>/.claude/skills/
-engine/           →  <你的项目>/engine/
-templates/        →  <你的项目>/templates/
-src/              →  <你的项目>/src/        (可选，仅当要用可执行编排器)
-AGENTS.md / CLAUDE.md / GEMINI.md  →  并入你项目对应的 instructions file
+unzip credence-{v}.zip        # or git clone <repo> credence
+cd credence                   # use package root as project root
+# Claude Code: claude   .   Codex: codex   .   Others: open the folder
 ```
 
-## 按工具的全局安装目标（可选）
+## Model B -- Integrate Into Your Existing Project
 
-把 `.claude/skills/` 下的 4 个 skill 目录（连同 `engine/`、`templates/`）放到对应工具的
-全局技能位置，可在任意项目中使用：
+Copy the **entire runtime core** to your project root (not just the skills folder):
 
-| 工具 | 全局技能目标 | 入口文件 |
+```
+.claude/skills/   ->  <your-project>/.claude/skills/
+engine/           ->  <your-project>/engine/
+templates/        ->  <your-project>/templates/
+src/              ->  <your-project>/src/        (optional, only if using executable orchestrator)
+AGENTS.md / CLAUDE.md / GEMINI.md  ->  merge into your project's instructions file
+```
+
+## Tool-Specific Global Installation Targets (Optional)
+
+Place the 4 skill directories under `.claude/skills/` (along with `engine/`, `templates/`)
+into the corresponding tool's global skills location for use across any project:
+
+| Tool | Global Skills Target | Entry File |
 |---|---|---|
 | Claude Code | `~/.claude/skills/` | `CLAUDE.md` |
-| Codex | `~/.codex/skills/`（技能为实验特性；主用 `AGENTS.md`） | `AGENTS.md` |
+| Codex | `~/.codex/skills/` (skills are experimental; primary: `AGENTS.md`) | `AGENTS.md` |
 | Cursor | `~/.cursor/skills/` | `AGENTS.md` |
 | Gemini CLI | `~/.gemini/skills/` | `GEMINI.md` |
 | OpenCode | `~/.config/opencode/skills/` | `AGENTS.md` |
 
-> 全局安装时 `engine/` 与 `templates/` 同样需对 skills 可达（见顶部前提）。最省事、
-> 最可靠的仍是 Model A——把本包根当项目打开。
+> For global install, `engine/` and `templates/` must also be reachable by skills (see premise above).
+> The simplest and most reliable approach remains Model A -- open the package root as your project.
 
-## Claude Code plugin / marketplace
+## Claude Code Plugin / Marketplace
 
-`.claude-plugin/plugin.json` 是一个最小的 marketplace 清单，使本包可被作为 plugin
-列出/安装。注意：因 `engine/` 单一事实源依赖，作为 plugin 安装后运行时仍需 `engine/`
-对 agent 的工作目录可达——可靠路径仍是 Model A。
+`.claude-plugin/plugin.json` is a minimal marketplace manifest enabling this package to be
+listed/installed as a plugin. Note: due to `engine/` single-source dependency, `engine/`
+must remain reachable from the agent's working directory -- Model A is the reliable path.
 """
 
 
 def _gen_readme_md(v: str) -> str:
-    return f"""# Credence — 固收信贷智能分析引擎（{v}）
+    return f"""# Credence — Fixed-Income Credit Intelligent Analysis Engine ({v})
 
-方法论优先的中国固定收益信用分析引擎：行业多层金字塔 + 双轨交叉验证 + 马赛克公开数据引擎 +
-多利益相关者视角 + 系统智能层（传染/集中度/SRI）。以 **Agent Skills**（`SKILL.md`）形式分发，
-可在 Claude Code / Codex / Cursor / Gemini / OpenCode 中安装使用。
+A methodology-first international fixed-income credit analysis engine: industry multi-layer
+pyramids + dual-track cross-validation + mosaic public-data engine + multi-stakeholder
+perspectives + system-intelligence layer (contagion/concentration/SRI). Distributed as
+**Agent Skills** (`SKILL.md`), installable in Claude Code / Codex / Cursor / Gemini / OpenCode.
 
-## 快速开始
-见 **`INSTALL.md`**（推荐 Model A：把本包根当项目打开，零配置）。入口为 **`AGENTS.md`**。
+## Quick Start
+See **`INSTALL.md`** (Model A recommended: open package root as project, zero config).
+Entry point: **`AGENTS.md`**.
 
-## 包内容
-- `.claude/skills/` — 四段链技能（intake 路由 → analysis 分析 → report 报告 → qa 质检）
-- `engine/` — 28 份方法论文档（阈值/权重/评级映射的单一事实源）
-- `templates/` — Type 1–15 报告模板
-- `src/` — 可执行编排器与 2 个编码引擎（SRI、五维集中度）
-- `adapters/` — 按工具的深度适配说明
+## Package Contents
+- `.claude/skills/` -- Four-stage chain skills (intake router -> analysis -> report -> qa)
+- `engine/` -- 27 methodology documents (thresholds/weights/rating maps: single source of truth)
+- `templates/` -- Type 1-15 report templates
+- `src/` -- Executable orchestrator and 2 coded engines (SRI, Concentration)
+- `adapters/` -- Tool-specific deep adapter guidance
 """
 
 
@@ -313,8 +318,9 @@ def _gen_plugin_json(v: str) -> str:
     manifest = {
         "name": "credence",
         "version": v.lstrip("v"),
-        "description": "固收信贷智能分析引擎（Credence）：行业多层金字塔 + 双轨交叉验证 + "
-        "马赛克引擎 + 系统智能层。四段链技能：intake 路由 / analysis 分析 / report 报告 / qa 质检。",
+        "description": "Credence Fixed-Income Credit Analysis Engine: industry multi-layer "
+        "pyramids + dual-track cross-validation + mosaic engine + system-intelligence layer. "
+        "Four-stage skills: intake router / analysis / report / qa.",
         "skills": ".claude/skills/",
     }
     return json.dumps(manifest, ensure_ascii=False, indent=2) + "\n"
@@ -324,11 +330,13 @@ def _gen_adapter_codex(log: list) -> str:
     src = ROOT / "docs" / "adapters" / "codex.md"
     text = src.read_text(encoding="utf-8")
     text = _apply_rewrites(text)
-    # dist 无 tests/scripts：把"运行两道校验器"改为 Model-A 用法说明。
+    # dist has no tests/scripts: replace "run two validators" with Model-A usage.
     text = re.sub(
-        r"## 4\. 运行两道校验器.*",
-        "## 4. 说明\n\n本适配面向**安装包**使用者。安装包为运行时产物，不含测试与一致性校验脚本；"
-        "若要运行回归门（`pytest` + `consistency_check.py`）或修改方法论，请克隆完整源码仓库。\n",
+        r"## 4\. .*",
+        "## 4. Notes\n\nThis adapter targets **install package** users. The installable package "
+        "is a runtime artifact and does not include tests or consistency-check scripts. "
+        "To run the regression gate (`pytest` + `consistency_check.py`) or modify the "
+        "methodology, clone the full source repository.\n",
         text,
         flags=re.DOTALL,
     )
@@ -391,7 +399,7 @@ def validate(out_dir=None) -> list:
         if keys != ["name", "description"]:
             errors.append(f"FRONTMATTER: {name} keys={keys}, want ['name','description']")
 
-    # (v) 28 CORE_DOCS 在 engine/ 下
+    # (v) 27 CORE_DOCS under engine/
     for doc in CORE_DOCS:
         if not (base / "engine" / doc).exists():
             errors.append(f"MISSING_CORE_DOC: engine/{doc}")
@@ -417,7 +425,7 @@ def build(out_dir=None) -> list:
     out.mkdir(parents=True)
 
     _copy_and_transform(DEV / ".claude" / "skills", out / ".claude" / "skills", log, scrub=True)
-    # engine：剔除 audits/
+    # engine: exclude audits/
     engine_src = DEV / "engine"
     for f in sorted(engine_src.rglob("*")):
         if f.is_dir() or "audits" in f.parts:

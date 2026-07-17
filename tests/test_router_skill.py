@@ -22,12 +22,12 @@ SKILL_TEXT = SKILL_MD.read_text(encoding="utf-8")
 WORK_PATHS_TEXT = WORK_PATHS_MD.read_text(encoding="utf-8")
 REGISTRY_TEXT = REGISTRY.read_text(encoding="utf-8")
 
-PATH_ID_RE = re.compile(r"WP-(?:M[0-5]|X)-\d{2}")
+PATH_ID_RE = re.compile(r"WP-(?:M[0-5]|CS|PM|AD|TR|RO|II|X)-\d{2}")
 YAML_BLOCK_RE = re.compile(r"```yaml\s*\n(.*?)```", re.DOTALL)
 
 # Marker used in the Routing Table for the vague-requirement scenario, which
 # routes to the four-question protocol rather than a concrete path id.
-FOUR_QUESTION_MARKER = "四问协议"
+FOUR_QUESTION_MARKER = "Four Questions protocol"
 
 # Fields the emitted work-path sheet must always declare (T3.4).
 REQUIRED_SHEET_FIELDS = [
@@ -91,10 +91,10 @@ def test_t3_1_routing_table_coverage():
     """T3.1: Routing Table has >=10 scenario rows; each recommended path id exists.
 
     The vague-requirement row routes to the four-question protocol (marked
-    '四问协议') instead of a path id -- that row is allowed and must be present.
+    'Four Questions protocol') instead of a path id -- that row is allowed and must be present.
     """
     header, rows = _routing_table()
-    rec_idx = header.index("推荐路径")
+    rec_idx = header.index("Recommended Path")
     assert len(rows) >= 10, f"expected >=10 scenario rows, found {len(rows)}"
     saw_four_question = False
     for cells in rows:
@@ -154,8 +154,8 @@ def test_t3_4_path_sheet_schema():
 
 def test_t3_5_mode_b_guardrail_present():
     """T3.5: the Mode B anti-hallucination guardrail is stated in the protocol."""
-    assert "未显式提供" in SKILL_TEXT, "Mode B guardrail keyword '未显式提供' missing"
-    assert "数据缺口" in SKILL_TEXT, "Mode B guardrail keyword '数据缺口' missing"
+    assert "not explicitly provided" in SKILL_TEXT, "Mode B guardrail keyword 'not explicitly provided' missing"
+    assert "data gaps" in SKILL_TEXT, "Mode B guardrail keyword 'data gaps' missing"
 
 
 def test_t3_6_skill_structure():
@@ -173,13 +173,13 @@ def test_t3_6_skill_structure():
     assert n_lines <= 200, f"SKILL.md has {n_lines} lines (>200)"
 
     # references/work-paths.md version header matches the registry version header
-    ver_re = re.compile(r"\*\*版本\*\*\s*[:：]?\s*([^\s|]+)")
+    ver_re = re.compile(r"\*\*(?:版本|Version)\*\*\s*[:：]?\s*([^\s|]+)")
 
     def _ver(text: str) -> str | None:
         m = ver_re.search(text)
         return m.group(1) if m else None
 
     ref_ver, reg_ver = _ver(WORK_PATHS_TEXT), _ver(REGISTRY_TEXT)
-    assert ref_ver is not None, "references/work-paths.md missing 版本 header"
-    assert reg_ver is not None, "registry missing 版本 header"
+    assert ref_ver is not None, "references/work-paths.md missing Version header"
+    assert reg_ver is not None, "registry missing Version header"
     assert ref_ver == reg_ver, f"work-paths.md version {ref_ver} != registry {reg_ver}"

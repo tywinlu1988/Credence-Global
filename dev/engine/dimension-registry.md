@@ -1,6 +1,6 @@
 # Dimension Registry
 
-**Version**: v0.8.4-release | **Date**: 2026-07-18
+**Version**: v0.0.1 | **Date**: 2026-07-18
 
 This registry objectifies the engine's **analysis dimensions** into addressable, machine-readable entries: **6 analysis paradigms (P1-P6)**, and **6 stakeholder role types**. It serves as the unified index layer for "route-by-dimension / search-by-dimension" in the v0.8.0 skill architecture.
 
@@ -23,7 +23,7 @@ dimensions:
     letter: P1
     definition: Cyclical (dev/engine/industry-framework.md §3)
     standalone_doc: embedded in dev/engine/industry-framework.md §3 (determination) and §4 (pyramid weights)
-    industries: [Solar/Storage, Semiconductor/IC]
+    industries: [Energy (Oil & Gas), Chemicals, Financials (Banks/Insurance), Sovereigns & GSEs]
     used_by_paths: [WP-CS-01, WP-PM-02, WP-X-02, WP-X-03]
 
   - id: paradigm-P2
@@ -31,7 +31,7 @@ dimensions:
     letter: P2
     definition: Defensive (dev/engine/industry-framework.md §3)
     standalone_doc: embedded in dev/engine/industry-framework.md §3 (determination) and §4 (pyramid weights)
-    industries: [High-end Equipment/Industrial Machinery, Biotech/Innovative Drugs, Medical Devices]
+    industries: [Capital Goods, Technology Hardware (Semis), Software & Services, Biotech & Pharma, Healthcare Equipment]
     used_by_paths: [WP-CS-01, WP-PM-02, WP-X-02, WP-X-03]
 
   - id: paradigm-P3
@@ -39,7 +39,7 @@ dimensions:
     letter: P3
     definition: Growth (dev/engine/industry-framework.md §3)
     standalone_doc: embedded in dev/engine/industry-framework.md §3 (determination) and §4 (pyramid weights)
-    industries: [New Energy Vehicles]
+    industries: [Metals & Mining, Automobiles]
     used_by_paths: [WP-CS-01, WP-PM-02, WP-X-02, WP-X-03]
 
   - id: paradigm-P4
@@ -47,23 +47,23 @@ dimensions:
     letter: P4
     definition: Regulated Utility (dev/engine/industry-framework.md §3)
     standalone_doc: embedded in dev/engine/industry-framework.md §3 (determination) and §4 (pyramid weights)
-    industries: [Data Center/Computing Infrastructure]
+    industries: [Construction Materials, Transportation (Air/Rail/Shipping), Utilities (Regulated), Telecommunications]
     used_by_paths: [WP-CS-01, WP-PM-02, WP-X-02, WP-X-03]
 
   - id: paradigm-P5
     name: Financial
     letter: P5
-    definition: Financial (dev/engine/paradigm-financial.md §1)
-    standalone_doc: dev/engine/paradigm-financial.md
-    industries: [Food & Beverage, Textile & Apparel]
+    definition: Financial (dev/engine/industry-framework.md §3)
+    standalone_doc: embedded in dev/engine/industry-framework.md §3 (determination) and §4 (pyramid weights)
+    industries: [Consumer Durables, Consumer Staples]
     used_by_paths: [WP-CS-01, WP-PM-02, WP-X-02, WP-X-03]
 
   - id: paradigm-P6
     name: Sovereign-Linked
     letter: P6
-    definition: Sovereign-Linked (dev/engine/paradigm-sovereign-linked.md §1)
-    standalone_doc: dev/engine/paradigm-sovereign-linked.md
-    industries: [Transportation, Retail/Trade, Media/Internet]
+    definition: Sovereign-Linked (dev/engine/industry-framework.md §3)
+    standalone_doc: embedded in dev/engine/industry-framework.md §3 (determination) and §4 (pyramid weights)
+    industries: [Commercial Services, Retail]
     used_by_paths: [WP-CS-01, WP-PM-02, WP-X-02, WP-X-03]
 
 ```
@@ -76,32 +76,32 @@ Each entry corresponds to a stakeholder role type. The core decision question, d
 roles:
   - id: role-credit-selector
     name: Credit Selector
-    definition: Credit Underwriting (dev/engine/multi-stakeholder.md §1)
+    definition: Credit Selector (dev/engine/multi-stakeholder.md §1)
     used_by_paths: [WP-CS-01, WP-CS-02]
 
   - id: role-portfolio-manager
     name: Portfolio Manager
-    definition: Bond Investment (dev/engine/multi-stakeholder.md §1)
+    definition: Portfolio Manager (dev/engine/multi-stakeholder.md §1)
     used_by_paths: [WP-PM-01, WP-PM-02]
 
   - id: role-advisor
     name: Advisor
-    definition: Bond Underwriting (dev/engine/multi-stakeholder.md §1)
+    definition: Advisor (dev/engine/multi-stakeholder.md §1)
     used_by_paths: [WP-AD-01]
 
   - id: role-trader
     name: Trader
-    definition: Market Trading (dev/engine/multi-stakeholder.md §1)
+    definition: Trader (dev/engine/multi-stakeholder.md §1)
     used_by_paths: [WP-TR-01]
 
   - id: role-risk-officer
     name: Risk Officer
-    definition: Portfolio Risk Control (dev/engine/multi-stakeholder.md §1)
+    definition: Risk Officer (dev/engine/multi-stakeholder.md §1)
     used_by_paths: [WP-RO-01, WP-RO-02, WP-RO-03, WP-RO-04]
 
   - id: role-individual-investor
     name: Individual Investor
-    definition: Corporate Financing (dev/engine/multi-stakeholder.md §1)
+    definition: Individual Investor (dev/engine/multi-stakeholder.md §1)
     used_by_paths: [WP-II-01]
 ```
 

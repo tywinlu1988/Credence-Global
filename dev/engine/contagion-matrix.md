@@ -1,6 +1,6 @@
 # International Industry Contagion Matrix
 
-**Version:** v0.8.4-release | **Date:** 2026-07-10
+**Version**: v0.0.1 | **Date**: 2026-07-10
 
 > **[PRELIMINARY]** Matrix intensities are initial methodological estimates pending empirical calibration against international default correlation data. All scores are theoretical constructs based on economic linkage analysis and historical precedent mapping, not statistical estimation. Users should treat these as directional indicators rather than precise measures.
 
@@ -952,8 +952,8 @@ Each industry methodology document should include a "Contagion Exposure" chapter
 |---|---|---|---|
 | v0.6.3-alpha | 2026-07-10 | Initial creation: 13x13 contagion matrix (China industry classification), industry clustering, escalation factor mapping, engine integration | Engine Team |
 | v0.7.0-alpha | 2026-07-10 | Systemic intelligence layer integration: engine version unified to v0.7.0-alpha, forming complete contagion framework with contagion theory | Engine Team |
-| v0.8.4-release | 2026-07-10 | **Internationalization rewrite**: replaced 13 China-specific industries with 19 GICS-based international industries; new paradigm mapping via P1-P6 framework; full 19x19 annotated matrix; derived metrics (CFC, CVC, CNER); stress escalation jump tables; harmonized with international contagion theory | Engine Team |
+| v0.0.1 | 2026-07-10 | **Internationalization rewrite**: replaced 13 China-specific industries with 19 GICS-based international industries; new paradigm mapping via P1-P6 framework; full 19x19 annotated matrix; derived metrics (CFC, CVC, CNER); stress escalation jump tables; harmonized with international contagion theory | Engine Team |
 
 ---
 
-*This document is the operational extension of [Contagion Theory](contagion-theory.md) (v0.8.4-release). The two documents must be used together.*
+*This document is the operational extension of [Contagion Theory](contagion-theory.md) (v0.0.1). The two documents must be used together.*

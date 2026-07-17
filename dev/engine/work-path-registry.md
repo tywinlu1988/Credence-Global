@@ -1,6 +1,6 @@
 # Work Path Registry
 
-**Version**: v0.8.4-release | **Date**: 2026-07-18
+**Version**: v0.0.1 | **Date**: 2026-07-18
 
 This registry is the design baseline for the v0.8.0 skill architecture refactoring (requirement understanding -> path routing -> engine invocation -> report delivery, all fully controllable). It makes all 16 work paths explicit and machine-readable, serving as the single source of truth for the Intake Router (v0.7.3) routing and execution-layer skill decomposition (v0.7.4).
 
@@ -447,7 +447,7 @@ quality_gates:
 
 ### WP-X-05 Outlook & Continuous Monitoring (✅ active)
 
-Specialized path: provides a 12-24 month rating outlook, maintains a 90-day watchlist, and triggers continuous monitoring (including rating migration matrix). The outlook-monitoring-framework + Type 18 template + outlook_engine coding engine are fully implemented (activated in v0.8.4).
+Specialized path: provides a 12-24 month rating outlook, maintains a 90-day watchlist, and triggers continuous monitoring (including rating migration matrix). The outlook-monitoring-framework + Type 18 template + outlook_engine coding engine are fully implemented (activated in v0.0.1).
 
 ```yaml
 id: WP-X-05
@@ -515,6 +515,6 @@ The following 🔴 gaps are the development backlog for upcoming versions. Each 
 | 3 | Trader (formerly M3) framework completion | engine | WP-TR-01 | Trader-specific engine (currently only L0 spec + thermometer, partial) |
 | 4 | Type 16 origination report template | template | WP-AD-01 | Origination feasibility conclusion + pricing range report |
 | 5 | Type 17 individual investor advisory template | template | WP-II-01 | Financing channel comparison + timing recommendation report |
-| 6 | Outlook monitoring template | template | WP-X-05 | ✅ Delivered (v0.8.4, template-type18.html) |
+| 6 | Outlook monitoring template | template | WP-X-05 | ✅ Delivered (v0.0.1, template-type18.html) |
 
 > Evolution tracking: each version release should update the status distribution in this table (🔴->🟡->✅) and record it in engine-overview.md §6 Version History.

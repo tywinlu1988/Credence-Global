@@ -61,8 +61,6 @@ def _checklist_gate_rows() -> list[tuple[str, str]]:
         if doc_idx is None or doc_idx == 0:
             continue
         rule = cells[doc_idx - 1]
-        if "规则名" in rule or "规则源" in rule:
-            continue
         doc = DOC_PATH_RE.search(cells[doc_idx]).group(0)
         rows.append((rule, doc))
     return rows
@@ -91,8 +89,7 @@ def test_t8_1_frontmatter_structure_and_guardrails():
     assert n_lines <= 200, f"SKILL.md has {n_lines} lines (>200)"
 
     assert "never relaxes a gate" in SKILL_TEXT, "'never relaxes a gate' guardrail missing"
-    assert "从不放宽门禁" in SKILL_TEXT, "'从不放宽门禁' guardrail missing"
-    assert "信号密度" in SKILL_TEXT, "density keyword '信号密度' missing"
+    assert "signal density" in SKILL_TEXT, "density keyword 'signal density' missing"
     assert "Mode B" in SKILL_TEXT, "Mode B keyword missing"
 
 

@@ -82,10 +82,10 @@ def test_code_thermometer_boundaries_match_doc():
 def test_doc_states_track_a_base_and_track_b_penalties():
     """§2.2 states the Track-A base bands and the red/orange/yellow penalty magnitudes."""
     # Track-A base: worst band (<3.0) → 3分, best band (≥6.0) → 0分
-    assert "轨道A评分 < 3.0" in SRI_DOC
-    assert re.search(r"→\s+3分", SRI_DOC), "doc missing Track-A worst-band '→ 3分'"
+    assert "Track A < 3.0" in SRI_DOC
+    assert re.search(r"→\s+3\s+points", SRI_DOC), "doc missing Track-A worst-band '→ 3 points'"
     # Track-B penalty magnitudes by colour (yellow/orange/red)
-    for token in ("+0.5分", "+1.0分", "+1.5分"):
+    for token in ("+0.5 points", "+1.0 points", "+1.5 points"):
         assert token in SRI_DOC, f"doc missing Track-B penalty {token!r}"
     for colour in ("🟡", "🟠", "🔴"):
         assert colour in SRI_DOC
@@ -122,11 +122,11 @@ def test_doc_states_five_dim_weights():
     """
     sec = _section(CONC_DOC, "8.2")
     for dim, weight in (
-        ("行业集中度", "25%"),
-        ("区域集中度", "20%"),
-        ("评级集中度", "20%"),
-        ("期限集中度", "20%"),
-        ("融资渠道集中度", "15%"),
+        ("Industry Concentration", "25%"),
+        ("Regional Concentration", "20%"),
+        ("Rating Concentration", "20%"),
+        ("Maturity Concentration", "20%"),
+        ("Funding Channel Concentration", "15%"),
     ):
         assert any(
             dim in line and weight in line for line in sec.splitlines()
@@ -147,8 +147,8 @@ def test_code_default_weights_match_doc():
 
 def test_doc_states_stacking_and_bb_cap():
     """§7.2 states the non-linear stacking values; §7.3 states the BB-cap trigger."""
-    assert "非线性" in CONC_DOC
-    for token in ("-0.5", "-2.5", "上限BB"):
+    assert "Non-Linear" in CONC_DOC
+    for token in ("-0.5", "-2.5", "cap BB"):
         assert token in CONC_DOC, f"doc missing stacking/BB-cap token {token!r}"
 
 

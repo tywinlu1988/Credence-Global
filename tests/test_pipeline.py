@@ -42,67 +42,67 @@ def registry_paths():
 
 
 def _sheet(path_id, **overrides) -> dict:
-    """A valid sheet for an M4 wired path; overridable per-test."""
+    """A valid sheet for a wired path; overridable per-test."""
     base = {
-        "WP-M4-03": {
-            "role": "M4",
+        "WP-RO-03": {
+            "role": "risk-officer",
             "object": "market",
-            "depth": "专项",
+            "depth": "special",
             "mode": "A",
-            "path_id": "WP-M4-03",
+            "path_id": "WP-RO-03",
             "engine_reading_order": ["dev/engine/systemic-warning-framework.md"],
-            "quality_gates": ["温度计四级 (dev/engine/systemic-warning-framework.md §三)"],
+            "quality_gates": ["thermometer_4_tier (dev/engine/systemic-warning-framework.md SS3)"],
             "notes": "",
         },
-        "WP-M4-01": {
-            "role": "M4",
+        "WP-RO-01": {
+            "role": "risk-officer",
             "object": "portfolio",
-            "depth": "专项",
+            "depth": "special",
             "mode": "A",
-            "path_id": "WP-M4-01",
+            "path_id": "WP-RO-01",
             "engine_reading_order": ["dev/engine/concentration-framework.md"],
-            "quality_gates": ["五维集中度 (dev/engine/concentration-framework.md §一)"],
+            "quality_gates": ["five_dimension_concentration (dev/engine/concentration-framework.md SS1)"],
             "notes": "",
         },
-        "WP-M4-02": {
-            "role": "M4",
+        "WP-RO-02": {
+            "role": "risk-officer",
             "object": "portfolio",
-            "depth": "专项",
+            "depth": "special",
             "mode": "A",
-            "path_id": "WP-M4-02",
+            "path_id": "WP-RO-02",
             "engine_reading_order": [
                 "dev/engine/contagion-matrix.md",
                 "dev/engine/contagion-theory.md",
             ],
-            "quality_gates": ["传染矩阵 (dev/engine/contagion-matrix.md §二)"],
+            "quality_gates": ["contagion_matrix (dev/engine/contagion-matrix.md SS2)"],
             "notes": "",
         },
         "WP-X-05": {
             "role": "meta",
             "object": "single-issuer",
-            "depth": "专项",
+            "depth": "special",
             "mode": "A",
             "path_id": "WP-X-05",
             "engine_reading_order": ["dev/engine/outlook-monitoring-framework.md"],
-            "quality_gates": ["评级展望 (dev/engine/outlook-monitoring-framework.md §二)"],
+            "quality_gates": ["rating_outlook (dev/engine/outlook-monitoring-framework.md SS2)"],
             "notes": "",
         },
-        "WP-M0-01": {
-            "role": "M0",
+        "WP-CS-01": {
+            "role": "credit-selector",
             "object": "single-issuer",
             "depth": "L2",
             "mode": "A",
-            "path_id": "WP-M0-01",
+            "path_id": "WP-CS-01",
             "engine_reading_order": ["dev/engine/industry-framework.md"],
-            "quality_gates": ["一票否决 (dev/engine/industry-framework.md §五)"],
+            "quality_gates": ["veto_rule (dev/engine/industry-framework.md SS5)"],
             "notes": "",
         },
-        "WP-M2-01": {
-            "role": "M2",
+        "WP-AD-01": {
+            "role": "advisor",
             "object": "single-issuer",
-            "depth": "专项",
+            "depth": "special",
             "mode": "A",
-            "path_id": "WP-M2-01",
+            "path_id": "WP-AD-01",
             "engine_reading_order": [],
             "quality_gates": [],
             "notes": "",
@@ -153,7 +153,7 @@ def _concentration_inputs() -> dict:
 # --------------------------------------------------------------------------
 
 def test_t9_1_stage_plan_order_and_executable(contract, registry_paths):
-    plan = load_stage_plan(_sheet("WP-M4-03"), registry_paths, contract)
+    plan = load_stage_plan(_sheet("WP-RO-03"), registry_paths, contract)
     assert [s.name for s in plan] == ["intake", "analysis", "report", "qa"]
     analysis = plan[1]
     assert analysis.executable is True
@@ -168,9 +168,9 @@ def test_t9_1_stage_plan_order_and_executable(contract, registry_paths):
 # --------------------------------------------------------------------------
 
 def test_t9_2_sri_end_to_end_matches_2026q2(contract, registry_paths):
-    plan = load_stage_plan(_sheet("WP-M4-03"), registry_paths, contract)
+    plan = load_stage_plan(_sheet("WP-RO-03"), registry_paths, contract)
     manifest = run_executable_stages(plan, _sri_2026q2_inputs())
-    assert manifest["path_id"] == "WP-M4-03"
+    assert manifest["path_id"] == "WP-RO-03"
     analysis = next(s for s in manifest["stages"] if s["name"] == "analysis")
     assert analysis["mode"] == "code"
     sri_value = analysis["outputs"]["sri"]
@@ -183,7 +183,7 @@ def test_t9_2_sri_end_to_end_matches_2026q2(contract, registry_paths):
 # --------------------------------------------------------------------------
 
 def test_t9_3_concentration_wired(contract, registry_paths):
-    plan = load_stage_plan(_sheet("WP-M4-01"), registry_paths, contract)
+    plan = load_stage_plan(_sheet("WP-RO-01"), registry_paths, contract)
     assert plan[1].executable is True
     manifest = run_executable_stages(plan, _concentration_inputs())
     analysis = next(s for s in manifest["stages"] if s["name"] == "analysis")
@@ -196,12 +196,12 @@ def test_t9_3_concentration_wired(contract, registry_paths):
 
 
 # --------------------------------------------------------------------------
-# T9.4 — unwired path (WP-M0-01): analysis not executable, graceful skip
+# T9.4 — unwired path (WP-CS-01): analysis not executable, graceful skip
 # --------------------------------------------------------------------------
 
 def test_t9_4_unwired_path_skips_gracefully(contract, registry_paths):
-    assert "WP-M0-01" not in EXECUTABLE_ENGINES
-    plan = load_stage_plan(_sheet("WP-M0-01"), registry_paths, contract)
+    assert "WP-CS-01" not in EXECUTABLE_ENGINES
+    plan = load_stage_plan(_sheet("WP-CS-01"), registry_paths, contract)
     assert plan[1].executable is False
     manifest = run_executable_stages(plan, {})
     analysis = next(s for s in manifest["stages"] if s["name"] == "analysis")
@@ -212,16 +212,16 @@ def test_t9_4_unwired_path_skips_gracefully(contract, registry_paths):
 
 
 # --------------------------------------------------------------------------
-# T9.5 — planned path (WP-M2-01): 待开发 notice, no execution
+# T9.5 — planned path (WP-AD-01): planned notice, no execution
 # --------------------------------------------------------------------------
 
 def test_t9_5_planned_path_notice(registry_paths):
-    notice = planned_path_notice(_sheet("WP-M2-01"), registry_paths)
+    notice = planned_path_notice(_sheet("WP-AD-01"), registry_paths)
     assert notice is not None
-    assert "待开发" in notice
-    assert "WP-M2-01" in notice
+    assert "planned" in notice
+    assert "WP-AD-01" in notice
     # an active path yields no notice
-    assert planned_path_notice(_sheet("WP-M4-03"), registry_paths) is None
+    assert planned_path_notice(_sheet("WP-RO-03"), registry_paths) is None
 
 
 # --------------------------------------------------------------------------
@@ -232,16 +232,16 @@ def test_t9_6_stage_names_sourced_from_contract(tmp_path, registry_paths):
     renamed = tmp_path / "contract.md"
     renamed.write_text(
         "# contract fixture\n\n"
-        "| 阶段 | 产物 | 承载 skill | 上游 | 下游 |\n"
+        "| Stage | Artifact | Carrying Skill | Upstream | Downstream |\n"
         "|---|---|---|---|---|\n"
-        "| S1 ingest | 工作路径单 | `credit-analysis-router` | — | S2 |\n"
-        "| S2 deep-analysis | 分析产物 | `fixed-income-credit-analysis` | S1 | S3 |\n"
-        "| S3 render | 交付单 | `credit-report-builder` | S2 | S4 |\n"
-        "| S4 verify | 质检裁决 | `credit-qa-verifier` | S1+S2+S3 | — |\n",
+        "| S1 ingest | Path Sheet | `credit-analysis-router` | -- | S2 |\n"
+        "| S2 deep-analysis | Analysis Artifact | `fixed-income-credit-analysis` | S1 | S3 |\n"
+        "| S3 render | Delivery Note | `credit-report-builder` | S2 | S4 |\n"
+        "| S4 verify | QA Verdict | `credit-qa-verifier` | S1+S2+S3 | -- |\n",
         encoding="utf-8",
     )
     renamed_contract = load_contract(renamed)
-    plan = load_stage_plan(_sheet("WP-M4-03"), registry_paths, renamed_contract)
+    plan = load_stage_plan(_sheet("WP-RO-03"), registry_paths, renamed_contract)
     # names reflect the renamed contract, not hardcoded intake/analysis/report/qa
     assert [s.name for s in plan] == ["ingest", "deep-analysis", "render", "verify"]
     # ... while positional chain semantics are preserved (analysis still executable)
@@ -255,7 +255,7 @@ def test_t9_6_stage_names_sourced_from_contract(tmp_path, registry_paths):
 def test_t9_7_invalid_sheet_rejected(contract, registry_paths):
     # illegal enum value
     with pytest.raises(ValueError):
-        load_stage_plan(_sheet("WP-M4-03", mode="C"), registry_paths, contract)
+        load_stage_plan(_sheet("WP-RO-03", mode="C"), registry_paths, contract)
     # unknown path_id
     bad = _sheet("WP-M4-03")
     bad["path_id"] = "WP-M9-99"
@@ -284,25 +284,25 @@ def test_chaining_edge_endpoints_resolve(contract, registry_paths):
 
 
 # --------------------------------------------------------------------------
-# T9.8 — WP-M4-02 wired: contagion engine executes at analysis stage
+# T9.8 — WP-RO-02 wired: contagion engine executes at analysis stage
 # --------------------------------------------------------------------------
 
 def test_t9_8_contagion_wired_and_runs(contract, registry_paths):
-    assert "WP-M4-02" in EXECUTABLE_ENGINES
-    plan = load_stage_plan(_sheet("WP-M4-02"), registry_paths, contract)
+    assert "WP-RO-02" in EXECUTABLE_ENGINES
+    plan = load_stage_plan(_sheet("WP-RO-02"), registry_paths, contract)
     assert plan[1].executable is True
     manifest = run_executable_stages(plan, {
-        "holdings": {"光伏/储能": 0.4, "半导体/集成电路": 0.35, "食品饮料": 0.25},
-        "escalation_factors": ["市场恐慌"],
+        "holdings": {"Solar/Storage": 0.4, "Semiconductor/IC": 0.35, "Food/Beverage": 0.25},
+        "escalation_factors": ["market_panic"],
     })
     analysis = next(s for s in manifest["stages"] if s["name"] == "analysis")
     assert analysis["mode"] == "code"
     out = analysis["outputs"]
     assert set(out) == {"exposure", "links", "factors_applied"}
-    assert out["factors_applied"] == ["市场恐慌"]
+    assert out["factors_applied"] == ["market_panic"]
     assert len(out["exposure"]) == 3 and out["links"]
-    # 显式跳升生效：半导体→光伏 在压力矩阵中为 5
-    jump = [l for l in out["links"] if l["source"] == "半导体/集成电路" and l["target"] == "光伏/储能"]
+    # explicit escalation active: Semiconductor->Solar becomes 5 under stress
+    jump = [l for l in out["links"] if l["source"] == "Semiconductor/IC" and l["target"] == "Solar/Storage"]
     assert jump and jump[0]["intensity"] == 5
 
 
@@ -317,15 +317,15 @@ def test_t9_9_outlook_wired_and_runs(contract, registry_paths):
     manifest = run_executable_stages(plan, {
         "signals": [
             {"layer": "L1", "direction": "negative"},
-            {"layer": "外部支持", "direction": "negative"},
+            {"layer": "external_support", "direction": "negative"},
         ],
         "rating": "AA",
-        "paradigm": "政策驱动型",
-        "watchlist_triggers": [{"side": "negative", "event": "被监管立案调查"}],
+        "paradigm": "policy_driven",
+        "watchlist_triggers": [{"side": "negative", "event": "regulatory_investigation"}],
     })
     analysis = next(s for s in manifest["stages"] if s["name"] == "analysis")
     assert analysis["mode"] == "code"
     out = analysis["outputs"]
     assert set(out) == {"outlook", "confidence", "net_score", "watchlist", "migration"}
-    assert out["outlook"] == "负面" and out["watchlist"]["side"] == "负面观察"
-    assert out["migration"]["下调"] == "15-20%"
+    assert out["outlook"] == "negative" and out["watchlist"]["side"] == "negative_watch"
+    assert out["migration"]["downgrade"] == "15-20%"

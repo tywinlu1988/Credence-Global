@@ -48,7 +48,6 @@ CORE_DOCS = [
     "governance-fraud-risk.md",
     "outlook-monitoring-framework.md",
     "lgd-recovery-framework.md",
-    "lgfv-framework.md",
     "multi-stakeholder.md",
     "financial-deep-dive.md",
     "paradigm-brand-channel.md",
@@ -139,7 +138,7 @@ REFERENCE_TO_ENGINE_MAP = {
     "report-mapping.md": "output-layered-framework.md",
     "qa-checklist.md": "output-layered-framework.md",
 }
-VERSION_HEADER_RE = re.compile(r"\*\*(?:版本|对应引擎版本)\*\*\s*[:：]?\s*([^\s|]+)")
+VERSION_HEADER_RE = re.compile(r"\*\*(?:Version|版本|对应引擎版本)\*\*\s*[:：]?\s*([^\s|]+)")
 YAML_BLOCK_RE = re.compile(r"```yaml\s*\n(.*?)```", re.DOTALL)
 PATH_SHEET_SECTION_RE = re.compile(r"## Path Sheet Output[^\n]*\n(.*?)(?=\n## |\Z)", re.DOTALL)
 
@@ -160,7 +159,9 @@ def check_versions() -> list[str]:
         if (f"**版本**: {EXPECTED_VERSION}" not in text
                 and f"**版本** {EXPECTED_VERSION}" not in text
                 and f"**对应引擎版本**: {EXPECTED_VERSION}" not in text
-                and f"**对应引擎版本** {EXPECTED_VERSION}" not in text):
+                and f"**对应引擎版本** {EXPECTED_VERSION}" not in text
+                and f"**Version**: {EXPECTED_VERSION}" not in text
+                and f"**Version** {EXPECTED_VERSION}" not in text):
             errors.append(f"VERSION: {doc} does not declare {EXPECTED_VERSION}")
 
     if not SKILL_FILE.exists():
@@ -238,7 +239,9 @@ def check_rating_map() -> list[str]:
 
 def check_audit_versions() -> list[str]:
     errors = []
-    pattern = re.compile(r"\*\*对应引擎版本\*\*\s*:\s*" + re.escape(EXPECTED_VERSION) + r"\b")
+    pattern = re.compile(
+        r"\*\*(?:对应引擎版本|Engine Version)\*\*\s*:\s*" + re.escape(EXPECTED_VERSION) + r"\b"
+    )
     for path in ENGINE_DIR.rglob("*.md"):
         # audits/ holds frozen historical reports. Their 对应引擎版本 records the
         # engine era under review (e.g. v0.7.0-alpha/v0.5.4-alpha) on an independent
@@ -537,7 +540,7 @@ def check_agents_entry() -> list[str]:
 
 def _parse_contagion_industries(path: Path) -> list[str]:
     text = path.read_text(encoding="utf-8")
-    start = text.find("### 1.2 范式映射表")
+    start = text.find("### 1.2 Industry-to-Paradigm Mapping Table")
     if start == -1:
         return []
     end = text.find("### 1.3", start)

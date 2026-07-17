@@ -1,6 +1,6 @@
 # Systemic Warning Framework — Signal Aggregation Algorithm + Thermometer + Historical Backtests
 
-**Version**: v0.8.4-release | **Date**: 2026-07-10 | **Status**: Released
+**Version**: v0.0.1 | **Date**: 2026-07-10 | **Status**: Released
 
 ---
 
@@ -1096,7 +1096,7 @@ It is prohibited to recalculate industry scores or SRI using already-adjusted in
 | v0.8.1-release | Gate reinforcement and promotion mechanism (no change to framework/thresholds): .gitattributes mandatory LF · CI launch · promote.py promotion script |
 | v0.8.2-release | Contagion matrix connected to encoding engine; §2.3.1 Contagion Coefficient Table and §4 weight example aligned with matrix truth values (ranking unchanged) |
 | v0.8.3-release | Reliability iteration: consistency audit and gate expansion (framework includes §2.3.2/§4.1 data center consolidation note) |
-| v0.8.4-release (Current) | Outlook monitoring activation wiring (no change to framework/thresholds) |
+| v0.0.1 (Current) | Outlook monitoring activation wiring (no change to framework/thresholds) |
 | v0.9.0-beta | Add SRI time series tracking (plot SRI historical curves, identify trends and turning points) |
 | v0.9.0-beta | Introduce real-time SRI and contagion matrix escalation factor linkage (automatically adjust SRI reading when escalation factors trigger) |
 | v0.9.0-release | Add portfolio-level SRI calculation (based on actual portfolio holding weights replacing industry weights), achieving true portfolio systemic risk assessment |
@@ -1241,4 +1241,4 @@ Where:
 
 ---
 
-*This document should be used in conjunction with the Dual-Track Methodology (v0.8.4-release), Contagion Matrix (v0.8.4-release), Five-Dimensional Concentration Analysis Framework (v0.8.4-release), and Outlook Monitoring Framework. The Systemic Warning Framework is the top-level dashboard for the engine's M4 Portfolio Risk Control Layer, providing a unified systemic risk reading for dispersed industry signals.*
+*This document should be used in conjunction with the Dual-Track Methodology (v0.0.1), Contagion Matrix (v0.0.1), Five-Dimensional Concentration Analysis Framework (v0.0.1), and Outlook Monitoring Framework. The Systemic Warning Framework is the top-level dashboard for the engine's M4 Portfolio Risk Control Layer, providing a unified systemic risk reading for dispersed industry signals.*

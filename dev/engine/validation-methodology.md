@@ -1,6 +1,6 @@
 # Validation Methodology
 
-**Version**: v0.8.4-release | **Date**: 2026-07-10
+**Version**: v0.0.1 | **Date**: 2026-07-10
 **Source**: Fixed-Income Credit Analysis Skill Pack v0.2.0-v0.3.0 . Black Swan Back-Testing Cases
 **Date**: 2026-07-08
 **Nature**: Structured Archive -- extracted and organized from existing skill packs and validation cases

@@ -31,8 +31,11 @@ REQUIRED_FIELDS = [
 ]
 
 VALID_STATUS = {"active", "partial", "planned"}
-ALL_ROLES = ["M0", "M1", "M2", "M3", "M4", "M5"]
-ID_RE = re.compile(r"^WP-(M[0-5]|X)-\d{2}$")
+ALL_ROLES = [
+    "credit-selector", "portfolio-manager", "advisor", "trader",
+    "risk-officer", "individual-investor",
+]
+ID_RE = re.compile(r"^WP-(CS|PM|AD|TR|RO|II|X)-\d{2}$")
 
 # Non-file markers allowed in `templates` (must match registry §schema).
 TEMPLATE_MARKERS = ("planned", "L0-spec")
@@ -121,22 +124,28 @@ def test_t2_4_status_semantics_self_consistent():
 
 
 def test_t2_5_all_customer_roles_covered():
-    """T2.5: each customer role M0-M5 has at least one path (planned allowed)."""
+    """T2.5: each customer role has at least one path (planned allowed)."""
     roles = {p["role"] for p in PATHS}
     for role in ALL_ROLES:
         assert role in roles, f"role {role} has no registered path"
 
 
 def test_t2_6_id_unique_and_wellformed():
-    """T2.6: path ids are unique, match WP-{role}-{seq}, and align with the role field."""
+    """T2.6: path ids are unique, match WP-{prefix}-{seq}, and align with the role field."""
+    PREFIX_TO_ROLE = {
+        "CS": "credit-selector", "PM": "portfolio-manager", "AD": "advisor",
+        "TR": "trader", "RO": "risk-officer", "II": "individual-investor",
+    }
     ids = [p["id"] for p in PATHS]
     assert len(ids) == len(set(ids)), f"duplicate path ids: {ids}"
     for p in PATHS:
         pid = p["id"]
         assert ID_RE.match(pid), f"{pid}: does not match {ID_RE.pattern}"
         prefix = pid.split("-")[1]
-        if prefix.startswith("M"):
-            assert p["role"] == prefix, f"{pid}: role field {p['role']!r} != id prefix {prefix!r}"
+        if prefix in PREFIX_TO_ROLE:
+            assert p["role"] == PREFIX_TO_ROLE[prefix], (
+                f"{pid}: role field {p['role']!r} != expected {PREFIX_TO_ROLE[prefix]!r}"
+            )
         else:  # X paths are meta/specialist, not a single customer role
             assert p["role"] == "meta", f"{pid}: X path role must be 'meta', got {p['role']!r}"
 

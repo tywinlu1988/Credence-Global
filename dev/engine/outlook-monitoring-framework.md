@@ -1,6 +1,6 @@
 # Rating Outlook and Continuous Monitoring Framework
 
-**Version**: v0.8.4-release | **Date**: 2026-07-10 | **Positioning**: On top of dual-track static ratings, add forward-looking direction and continuous monitoring mechanisms
+**Version**: v0.0.1 | **Date**: 2026-07-10 | **Positioning**: On top of dual-track static ratings, add forward-looking direction and continuous monitoring mechanisms
 
 ---
 
@@ -123,7 +123,7 @@ It is not possible to precisely calculate "outlook probability" -- but the consi
 ```
 Positive Signal Count   = +1 for each positive trigger signal detected
 Negative Signal Count   = +1 for each negative trigger signal detected
-Signal Direction Weight = Pyramid layer weight of the factor (L1 > L2 > L3 > L4): L1=1.5, L2=1.2, L3=1.0, L4=0.8, External Support=1.2 (values defined at v0.8.4, satisfying L1>L2>L3>L4 order)
+Signal Direction Weight = Pyramid layer weight of the factor (L1 > L2 > L3 > L4): L1=1.5, L2=1.2, L3=1.0, L4=0.8, External Support=1.2 (values defined at v0.0.1, satisfying L1>L2>L3>L4 order)
 
 Net Direction Signal = Σ(Positive Signals × Layer Weight) - Σ(Negative Signals × Layer Weight)
 

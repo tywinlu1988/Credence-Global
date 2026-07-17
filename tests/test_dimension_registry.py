@@ -1,10 +1,10 @@
-"""Integrity tests for the dimension registry (v0.7.9).
+"""Integrity tests for the dimension registry (v0.8.4).
 
 The registry (dev/engine/dimension-registry.md) objectifies the analysis
-dimensions -- 6 paradigms (A-F) + the LGFV special category, and the 6
-stakeholder roles (M0-M5) -- as addressable yaml entries. It is a POINTER
+dimensions -- 6 paradigms (P1-P6) and the 6
+stakeholder roles -- as addressable yaml entries. It is a POINTER
 layer: definitions/weights/thresholds stay single-sourced in the referenced
-engine docs. These tests (T10.1-T10.5) validate the registry's structure,
+engine docs. These tests (T10.1-T10.6) validate the registry's structure,
 pointer traceability, paradigm->industry consistency with contagion-matrix
 section 1.2, the no-copied-thresholds rule, and CORE_DOCS coverage. They do
 not exercise any engine logic.
@@ -40,17 +40,30 @@ DIMENSION_REQUIRED_FIELDS = [
 ROLE_REQUIRED_FIELDS = ["id", "name", "definition", "used_by_paths"]
 
 EXPECTED_DIMENSION_IDS = {
-    "paradigm-A",
-    "paradigm-B",
-    "paradigm-C",
-    "paradigm-D",
-    "paradigm-E",
-    "paradigm-F",
-    "lgfv",
+    "paradigm-P1",
+    "paradigm-P2",
+    "paradigm-P3",
+    "paradigm-P4",
+    "paradigm-P5",
+    "paradigm-P6",
 }
-EXPECTED_LETTERS = {"A", "B", "C", "D", "E", "F", "特殊"}
-EXPECTED_ROLE_IDS = {"role-M0", "role-M1", "role-M2", "role-M3", "role-M4", "role-M5"}
-EXPECTED_ROLE_NAMES = {"审贷", "投资", "承销", "交易", "风控", "融资"}
+EXPECTED_LETTERS = {"P1", "P2", "P3", "P4", "P5", "P6"}
+EXPECTED_ROLE_IDS = {
+    "role-credit-selector",
+    "role-portfolio-manager",
+    "role-advisor",
+    "role-trader",
+    "role-risk-officer",
+    "role-individual-investor",
+}
+EXPECTED_ROLE_NAMES = {
+    "Credit Selector",
+    "Portfolio Manager",
+    "Advisor",
+    "Trader",
+    "Risk Officer",
+    "Individual Investor",
+}
 
 # No-copied-thresholds guard (T10.4): whitelist version tokens (v0.7.1-release)
 # and section refs (§x.y); path ids and dates carry no decimal point.
@@ -82,11 +95,11 @@ def _parse_contagion_paradigm_map(path: Path) -> dict[str, str]:
     """Adapted from consistency_check._parse_contagion_industries: extract each
     industry's MAIN paradigm letter from contagion-matrix section 1.2.
 
-    The main paradigm is the first ``范式X`` token in the 主要范式 column, or
-    ``特殊`` for the LGFV government-credit category. Returns {industry: letter}.
+    The main paradigm is the first ``P([1-6])`` token in the Primary Paradigm
+    column. Returns {industry: letter}.
     """
     text = path.read_text(encoding="utf-8")
-    start = text.find("### 1.2 范式映射表")
+    start = text.find("### 1.2 Industry-to-Paradigm Mapping Table")
     if start == -1:
         return {}
     end = text.find("### 1.3", start)
@@ -101,13 +114,11 @@ def _parse_contagion_paradigm_map(path: Path) -> dict[str, str]:
             continue
         if not cells[0].isdigit():
             continue
-        industry = cells[1]
+        industry = cells[1].replace("**", "").replace("***", "")
         main_cell = cells[2]
-        m = re.search(r"范式\s*([A-F])", main_cell)
+        m = re.search(r"\bP([1-6])\b", main_cell)
         if m:
-            letter = m.group(1)
-        elif "特殊" in main_cell:
-            letter = "特殊"
+            letter = f"P{m.group(1)}"
         else:
             continue
         mapping[industry] = letter
@@ -115,7 +126,7 @@ def _parse_contagion_paradigm_map(path: Path) -> dict[str, str]:
 
 
 def test_t10_1_declares_all_dimensions_and_roles():
-    """T10.1: registry parses and declares all 6 paradigms + LGFV + all 6 roles."""
+    """T10.1: registry parses and declares all 6 paradigms + all 6 roles."""
     dims = _load_block("dimensions")
     roles = _load_block("roles")
     assert dims, "dimensions yaml block not found or empty"
@@ -159,7 +170,7 @@ def test_t10_2_definition_pointers_resolve_and_traceable():
 
 def test_t10_3_industry_mapping_consistent_with_contagion_matrix():
     """T10.3: the registry's paradigm->industry mapping matches contagion-matrix
-    section 1.2 范式映射表 (main paradigm per industry), in both directions."""
+    section 1.2 Industry-to-Paradigm Mapping Table (main paradigm per industry), in both directions."""
     cmap = _parse_contagion_paradigm_map(CONTAGION)
     assert cmap, "contagion-matrix section 1.2 paradigm map parse yielded nothing"
 
@@ -195,12 +206,11 @@ def test_t10_4_no_copied_numeric_thresholds():
 
 
 def test_t10_5_core_docs_membership():
-    """T10.5: the 2 paradigm docs + dimension-registry are in CORE_DOCS, so
+    """T10.5: the 6-paradigm source + dimension-registry are in CORE_DOCS, so
     check_versions covers them (version-check gap closed)."""
     cc = _import_checker()
     for doc in (
-        "paradigm-brand-channel.md",
-        "paradigm-network-traffic.md",
+        "industry-framework.md",
         "dimension-registry.md",
     ):
         assert doc in cc.CORE_DOCS, f"{doc} not in CORE_DOCS"
@@ -221,17 +231,18 @@ def test_t10_6_used_by_paths_matches_work_path_registry():
     """T10.6: ``used_by_paths`` is recomputed from work-path-registry.md and must
     match -- the registry's most routing-relevant field, guarded against drift.
 
-    Aggregation rules (mirroring dimension-registry §三):
-    - roles: path ids whose ``role`` equals the role letter (M0-M5).
-    - paradigms: path ids whose ``paradigm_selection`` begins with "六范式"
-      (the collective 六范式+LGFV mapping reference), shared uniformly across all
-      7 dimensions because the source is collective rather than per-paradigm.
+    Aggregation rules (mirroring dimension-registry section 3):
+    - roles: path ids whose ``role`` equals the role id suffix (credit-selector,
+      portfolio-manager, etc.).
+    - paradigms: path ids whose ``paradigm_selection`` begins with "Six paradigms"
+      (the collective six-paradigm mapping reference), shared uniformly across all
+      6 dimensions because the source is collective rather than per-paradigm.
     """
     paths = _load_work_paths()
     assert paths, "work-path registry parse yielded nothing"
 
     for role in _load_block("roles"):
-        letter = role["id"].split("-", 1)[1]  # role-M0 -> M0
+        letter = role["id"].split("-", 1)[1]  # role-credit-selector -> credit-selector
         expected = sorted(p["id"] for p in paths if str(p.get("role")) == letter)
         assert expected, f"{role['id']}: no work paths with role {letter}"
         assert sorted(role["used_by_paths"]) == expected, (
@@ -241,9 +252,9 @@ def test_t10_6_used_by_paths_matches_work_path_registry():
     paradigm_path_ids = sorted(
         p["id"]
         for p in paths
-        if str(p.get("paradigm_selection", "")).startswith("六范式")
+        if str(p.get("paradigm_selection", "")).startswith("Six paradigms")
     )
-    assert paradigm_path_ids, "no work paths with a 六范式 paradigm_selection"
+    assert paradigm_path_ids, "no work paths with a Six paradigms paradigm_selection"
     for dim in _load_block("dimensions"):
         assert sorted(dim["used_by_paths"]) == paradigm_path_ids, (
             f"{dim['id']}.used_by_paths {sorted(dim['used_by_paths'])} != "

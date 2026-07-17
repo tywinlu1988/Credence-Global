@@ -60,10 +60,10 @@ def _section(text: str, heading: str) -> str:
 
 
 def _mapping_rows() -> list[list[str]]:
-    """Parse the 装配映射 table into data rows (list of cell lists)."""
-    section = _section(MAPPING_TEXT, "装配映射")
+    """Parse the Assembly Mapping table into data rows (list of cell lists)."""
+    section = _section(MAPPING_TEXT, "Assembly Mapping")
     lines = [ln for ln in section.splitlines() if ln.strip().startswith("|")]
-    assert len(lines) >= 3, "装配映射 table must have a header, separator, and data rows"
+    assert len(lines) >= 3, "Assembly Mapping table must have a header, separator, and data rows"
     return [
         [c.strip() for c in ln.strip().strip("|").split("|")] for ln in lines[2:]
     ]
@@ -96,7 +96,6 @@ def test_t7_1_frontmatter_structure_and_guardrail():
 
     # the assembly-layer guardrail must be explicit (report does not analyze)
     assert "does not perform analysis" in SKILL_TEXT
-    assert "不做分析" in SKILL_TEXT
 
 
 def test_t7_2_references_templates_and_tier_doc_no_thresholds():
@@ -144,7 +143,7 @@ def test_t7_4_path_template_mapping_subset_of_registry():
 def test_t7_5_contract_declares_four_stages_and_skill_dirs():
     """T7.5: pipeline-contract declares all 4 stages; each of the 4 skill dirs present."""
     contract = CONTRACT.read_text(encoding="utf-8")
-    for artifact in ("工作路径单", "分析产物", "交付单", "质检裁决"):
+    for artifact in ("Path Sheet", "Analysis Artifact", "Delivery Note", "QA Verdict"):
         assert artifact in contract, f"contract missing stage artifact {artifact!r}"
     for skill in FOUR_SKILLS:
         assert skill in contract, f"contract does not reference skill {skill!r}"

@@ -193,12 +193,12 @@ def test_check_paradigm_coverage_flags_missing_industry(tmp_path, monkeypatch):
     fake_engine = tmp_path / "engine"
     fake_engine.mkdir()
     (fake_engine / "contagion-matrix.md").write_text(
-        "### 1.2 范式映射表\n"
-        "| 序号 | 行业 | 范式归属 | 范式核心特征 | 金融属性 |\n"
+        "### 1.2 Industry-to-Paradigm Mapping Table\n"
+        "| # | Industry | Primary Paradigm | Secondary Paradigm | Financial Intensity |\n"
         "|---|---|---|---|---|\n"
-        "| 1 | 光伏/储能 | 范式A | ... | 中等 |\n"
-        "| 2 | 城投债(LGV) | 特殊 | ... | 极高 |\n"
-        "### 1.3 范式内聚类\n",
+        "| 1 | Solar/Storage | P1 | P4 | Medium |\n"
+        "| 2 | LGFV/Municipal | Special | -- | Very High |\n"
+        "### 1.3 Paradigm Clusters\n",
         encoding="utf-8",
     )
     (fake_engine / "industry-framework.md").write_text(
@@ -207,8 +207,8 @@ def test_check_paradigm_coverage_flags_missing_industry(tmp_path, monkeypatch):
     )
     monkeypatch.setattr(cc, "ENGINE_DIR", fake_engine)
     errors = cc.check_paradigm_coverage()
-    assert any("城投债(LGV)" in e for e in errors)
-    assert not any("光伏/储能" in e for e in errors)
+    assert any("LGFV/Municipal" in e for e in errors)
+    assert not any("Solar/Storage" in e for e in errors)
 
 
 def test_check_paradigm_coverage_accepts_judgmental_note(tmp_path, monkeypatch):
@@ -216,15 +216,15 @@ def test_check_paradigm_coverage_accepts_judgmental_note(tmp_path, monkeypatch):
     fake_engine = tmp_path / "engine"
     fake_engine.mkdir()
     (fake_engine / "contagion-matrix.md").write_text(
-        "### 1.2 范式映射表\n"
-        "| 序号 | 行业 | 范式归属 | 典型主体 | 金融属性 | 传染烈度 |\n"
+        "### 1.2 Industry-to-Paradigm Mapping Table\n"
+        "| # | Industry | Primary Paradigm | Typical Entity | Financial Intensity | Contagion Severity |\n"
         "|---|---|---|---|---|---|\n"
-        "| 1 | 食品饮料 | 品牌+渠道型 | B+/B/CCC | 低 | 高 |\n"
-        "### 1.3\n",
+        "| 1 | Food/Beverage | Brand+Channel | B+/B/CCC | Low | High |\n"
+        "### 1.3 Paradigm Clusters\n",
         encoding="utf-8",
     )
     (fake_engine / "industry-framework.md").write_text(
-        "## 范式边界说明\n食品饮料： judgmental assignment （品牌+渠道型范式）\n",
+        "## Paradigm Boundary Notes\nFood/Beverage: judgmental assignment (Brand+Channel paradigm)\n",
         encoding="utf-8",
     )
     monkeypatch.setattr(cc, "ENGINE_DIR", fake_engine)
@@ -407,8 +407,8 @@ def test_check_migration_matrix_structure_flags_missing_rating(tmp_path, monkeyp
     fake_engine = tmp_path / "engine"
     fake_engine.mkdir()
     (fake_engine / "outlook-monitoring-framework.md").write_text(
-        "### 5.1 中国信用债市场迁移概率参考\n"
-        "| 当前评级 | 上调概率 | 维持概率 | 下调概率 | 违约概率 | 说明 |\n"
+        "### 5.1 China Credit Bond Market Migration Probability Reference\n"
+        "| Current Rating | Upgrade Probability | Stable Probability | Downgrade Probability | Default Probability | Note |\n"
         "|---|---|---|---|---|---|\n"
         "| **AAA** | 0% | 95%+ | <5% | <0.5% | x |\n",
         encoding="utf-8",

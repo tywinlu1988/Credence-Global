@@ -1,6 +1,6 @@
 # Dual-Track Analysis Methodology
 
-**Version**: v0.8.4-release | **Date**: 2026-07-10
+**Version**: v0.0.1 | **Date**: 2026-07-10
 
 ---
 

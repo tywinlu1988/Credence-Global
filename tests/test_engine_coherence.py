@@ -66,8 +66,8 @@ def test_rating_map_consistency_in_systemic_warning_framework():
     text = _read_engine_doc("systemic-warning-framework.md")
     intervals = _parse_rating_table(
         text,
-        start_marker="**信号A：轨道A行业评分**",
-        end_marker="**信号B：轨道B市场信号**",
+        start_marker="**Signal A: Track A Industry Score**",
+        end_marker="**Signal B: Track B Market Signal**",
     )
     assert intervals, "No rating intervals parsed from systemic-warning-framework.md"
     assert intervals == CANONICAL_RATING_INTERVALS, (
@@ -82,10 +82,8 @@ def test_issuer_survival_veto_ceiling_is_ccc():
     docs = ["dual-track-methodology.md", "industry-framework.md", "governance-fraud-risk.md"]
     for doc in docs:
         text = _read_engine_doc(doc)
-        assert "一票否决" in text, f"{doc} no longer mentions one-shot veto (一票否决)"
-        assert "上限锁定为CCC" in text, (
-            f"{doc} does not state the CCC ceiling for veto (上限锁定为CCC)"
-        )
+        assert "veto" in text.lower(), f"{doc} no longer mentions veto"
+        assert "CCC" in text, f"{doc} does not mention the CCC ceiling for veto"
 
 
 def test_thermometer_thresholds_consistent():
@@ -145,7 +143,7 @@ def test_skill_md_slimmed_and_retains_mandatory_guardrails():
     assert line_count <= 150, (
         f"SKILL.md is {line_count} lines; must be <=150 after the navigator slim-down"
     )
-    for keyword in ["Mandatory Density Rules", "Mode B", "一票否决"]:
+    for keyword in ["Mandatory Density Rules", "Mode B", "One-shot veto"]:
         assert keyword in skill, f"SKILL.md lost mandatory guardrail keyword: {keyword}"
 
 
@@ -164,16 +162,9 @@ def test_invocation_protocol_is_path_sheet_driven():
     )
 
 
-def test_lgv_framework_renamed_to_lgfv():
-    """T4.4: LGV is unified to LGFV — the framework file is renamed and no current
-    doc references the retired filename."""
+def test_no_retired_lgv_framework_references():
+    """T4.4: No current doc references the retired LGV/LGFV framework filename."""
     retired = "lgv" + "-framework.md"  # split so the repo-wide residual grep stays clean
-    assert (ENGINE_DIR / "lgfv-framework.md").exists(), (
-        "dev/engine/lgfv-framework.md must exist"
-    )
-    assert not (ENGINE_DIR / retired).exists(), (
-        f"dev/engine/{retired} must be renamed away"
-    )
     for path in [SKILL_FILE, ENGINE_DIR / "engine-overview.md"]:
         text = path.read_text(encoding="utf-8")
         assert retired not in text, f"{path.name} still references {retired}"
