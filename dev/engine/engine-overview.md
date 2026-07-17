@@ -1,12 +1,12 @@
-# 固定收益信用分析引擎 — 架构总览
+# Fixed Income Credit Analysis Engine — Architecture Overview
 
 **Version**: v0.0.1 | **Date**: 2026-07-17
 
 ---
 
-## 引擎文档导航
+## Engine Documentation Navigation
 
-| 文档 | 内容 | 何时查阅 |
+| Document | Content | When to Consult |
 |---|---|---|
 | **engine-overview.md** | 架构总览 · 设计原则 · 文档导航 | 首次了解引擎 |
 | **industry-framework.md** | 十维评分 · 四种行业范式 · 七行业金字塔 · 一票否决 | 需要确定分析框架 |
@@ -43,7 +43,7 @@
 
 ---
 
-## 一、核心理念：为什么传统财务分析不够？
+## 1. Core Philosophy: Why Traditional Financial Analysis Is Not Enough?
 
 传统财务分析基于一个隐含假设——**企业的信用风险可以从其财务报表中读出来**。这一假设在以下三类行业中系统性失效：
 
@@ -55,7 +55,7 @@
 
 **核心结论：信用分析中最重的因子，永远不在资产负债表上。**
 
-### 外部评级的问题
+### Problems with External Ratings
 
 验证案例一致表明，外部信用评级系统性滞后于真实信用恶化：
 
@@ -64,7 +64,7 @@
 | 永煤控股（2020） | AAA/稳定 | BB | 17+个月 |
 | 紫光集团（2020） | AAA/稳定 | 破产重整 | 17+个月 |
 
-### 两个理论基础
+### Two Theoretical Foundations
 
 | 理论 | 含义 | 在引擎中的体现 |
 |---|---|---|
@@ -73,7 +73,7 @@
 
 ---
 
-## 二、总体架构
+## 2. Overall Architecture
 
 ```
 卷首: 系统智能层（第四层 ★新增）
@@ -108,7 +108,7 @@
   评级 + 信号 + 完备性报告
 ```
 
-### 四层架构说明
+### Four-Layer Architecture
 
 | 层级 | 名称 | 功能 | 状态 |
 |---|---|---|---|
@@ -117,7 +117,7 @@
 | **第三层** | 多利益方视角（M0-M6） | 覆盖信用审批、债券投资、承销、交易、组合风控等多种角色 | M0-M5已实现，M6规划中 |
 | **第四层** | 系统智能层（集合层）★新增 | 传染图谱+集中度仪表盘+预警温度计，跨行业/跨发行人的系统性风险感知 | 已实现（v0.7.0） |
 
-### 双轨并行结构
+### Dual-Track Parallel Structure
 
 ```
 轨道A: 基本面分析                    轨道B: 市场定价信号
@@ -136,7 +136,7 @@
 
 ---
 
-## 三、关键设计原则
+## 3. Key Design Principles
 
 | # | 原则 | 含义 |
 |---|---|---|
@@ -152,7 +152,7 @@
 
 ---
 
-## 四、数据源架构
+## 4. Data Source Architecture
 
 **硬约束：零内部数据、零非公开数据、零付费数据（POC阶段）。**
 
@@ -169,9 +169,9 @@
 
 ---
 
-## 五、评分引擎与评级映射
+## 5. Scoring Engine and Rating Mapping
 
-### 评分公式
+### Scoring Formula
 
 ```
 Composite Score = Sigma(Layer Score × Layer Weight)
@@ -180,37 +180,23 @@ Layer Score = Sigma(Indicator Score × Indicator Weight)
 Indicator Score = f(Raw Value, Threshold, Direction)
 ```
 
-### 评级映射表
+### Rating Mapping Table
 
 > 评级映射表详见 [dual-track-methodology.md](dual-track-methodology.md) §评级映射
 
 ---
 
-## 六、版本历史
+## 6. Version History
 
-| 版本 | 日期 | 变更内容 |
+| Version | Date | Changes |
 |---|---|---|
-| 0.1.0 | 2026-07-07 | 初始发布：十维评分、四层金字塔、双轨、7个行业、光伏前瞻验证 |
-| 0.2.0 | 2026-07-07 | 回溯验证方法论、永煤+紫光案例验证、半导体五层金字塔 |
-| 0.3.0 | 2026-07-08 | 马赛克引擎架构、多利益方覆盖、P0债券投资仪表盘、信号置信度/密度、完备性报告 |
-| 0.4.0 | 2026-07-08 | 评级粒度从6档扩展至12档（+/-子级）、EL预期损失整合层、中国市场PD参考校准 |
-| 0.5.4-alpha | 2026-07-10 | 一致性审计修复：术语统一、阈值对齐、版本号标准化、交叉引用补全 |
-| **0.7.0-alpha** | **2026-07-10** | **系统智能层发布：+传染矩阵、集中度框架、系统性预警框架。引擎架构升级至四层。13行业覆盖。M4组合风控完整实现。** |
-| 0.7.7-alpha | 2026-07-16 | 四段链契约落地：新增 pipeline-contract.md（四份产物 schema + 链式边机器可读），report/qa 两阶段 skill 接入四段链 |
-| 0.7.8-alpha | 2026-07-16 | 可执行编排器 + 接编码引擎：新增 src/pipeline.py（从 pipeline-contract.md 读阶段定义、复用 path_sheet.py），接线 WP-M4-03(SRI)/WP-M4-01(集中度) 两个编码引擎，新增代码↔文档阈值对账桥与链式边端点校验 |
-| 0.7.9-alpha | 2026-07-16 | 维度物件化：新增 dimension-registry.md（6范式+LGFV 与 M0-M5 角色物件化为可寻址 yaml，单源指针层不复制阈值）；接通孤儿范式文档（industry-framework §3 引用 paradigm-brand-channel/paradigm-network-traffic 独立规格）；consistency_check CORE_DOCS 补齐 5 份在盘文档 + dimension-registry，补上版本检查缺口。推迟项：work-path-registry `paradigm_selection` 引维度 ID 的反向指针未实施（源为"六范式+LGFV"集体粒度，详见 dimension-registry §三 推迟项注） |
-| 0.8.0-alpha | 2026-07-16 | 集成预发布：v0.7.6–v0.7.9 阶梯能力整合——跨 CLI 通用入口（AGENTS.md + Codex 适配）、四段链契约（pipeline-contract.md + report/qa 两阶段 skill）、可执行编排器（src/pipeline.py 接 WP-M4-01 集中度/WP-M4-03 SRI）、维度注册表（dimension-registry.md）。8 条 active 路径端到端走查归档 validation/docs/。快照 dev/ + AGENTS.md + src/。143 项测试通过 |
-| **0.8.0-release** | **2026-07-16** | **可安装 agent 包发布：新增 `scripts/build_dist.py` 把 dev 工作区（源）确定性组装为 `dist/credence/` 可安装包——skills 归位 `.claude/skills/`（Claude Code 原生 + Cursor/Gemini/OpenCode 兼容读）、engine 平铺、AGENTS.md/CLAUDE.md/GEMINI.md 三入口、按工具 INSTALL.md、.claude-plugin 清单；src/path_sheet.py 加 engine_dir/templates_dir 布局自适应。清除死链接与根目录假设（settings.local.json 绝对路径、audits/design/product/data 剔除、16 处 audits/validation 溯源指针模式化清除）。快照重定义为可安装包。150 项测试通过** |
-| **0.8.1-release** | **2026-07-17** | **门禁加固与晋升机制：.gitattributes 强制 LF + 换行符断言（CRLF 可复现性缺口封堵）；lgd §12.1 评级表对齐 18 档规范（RATING_MAP 警告清零）；pyproject/package.json 版本一致性硬校验；GitHub Actions CI（pytest + consistency_check）；promote.py 晋升脚本（版本声明单源化）+ T11.4/T11.5 测试版本无关化。162 项测试通过** |
-| **0.8.2-release** | **2026-07-17** | **WP-M4-02 传染矩阵接入编码引擎：contagion_engine 可执行实现（矩阵运行时解析保持单一事实源；超级传染者/脆弱行业/传染力系数派生；组合暴露 + 高传染链路 + §6.2 压力跳升）；contagion-matrix §3.1/§3.3 清单与 §5.5/§5.6/§2.3.1 派生值对齐矩阵数据（编码引擎先行发现）。178 项测试通过** |
-| **0.8.3-release** | **2026-07-17** | **可靠度迭代：一致性普查落地（§3.2 清单重写 18 有向/9 唯一对、数据中心权重归并说明、版本对照表补全 28 行）+ 门扩展（registry templates/quality_gates 引用校验、迁移矩阵结构校验、§3.2 漂移门）。184 项测试通过** |
-| **0.8.4-release** | **2026-07-17** | **WP-X-05 展望监控全链路：outlook_engine（§2.3 层级权重补写 L1=1.5/L2=1.2/L3=1.0/L4=0.8/外部支持=1.2，展望计分/置信度/观察名单/迁移矩阵）+ Type 18 模板 + 路径激活（partial→active，第 4 条编码引擎路径）。197 项测试通过** |
+| v0.0.1 | 2026-07-17 | Initial release: international fixed-income credit analysis engine |
 
 ---
 
-## 七、版本管理策略
+## 7. Version Management Strategy
 
-### 7.1 版本体系说明
+### 7.1 Version Numbering System
 
 引擎文档体系采用两套版本号系统：
 
@@ -219,7 +205,7 @@ Indicator Score = f(Raw Value, Threshold, Direction)
 | **引擎版本** | 核心方法论文档 | v0.8.4-release | 反映引擎方法论的整体迭代阶段，所有核心方法论文档统一标注此版本 |
 | **审查报告版本** | 审计/自评/终审文档 | v1.0, v1.1 | 独立的审查报告版本体系，在文件头标注"对应引擎版本: v0.8.0-release" |
 
-### 7.2 核心方法论文档版本对应关系
+### 7.2 Core Methodology Document Version Mapping
 
 | 文档 | 当前版本 | 说明 |
 |---|---|---|
@@ -254,7 +240,7 @@ Indicator Score = f(Raw Value, Threshold, Direction)
 
 **职责边界说明：** 原有M4组合风控框架（multi-stakeholder.md §5）承担单发行人/单组合的风控职能（集中度限额/压力测试/评级调整）。系统智能层（contagion-matrix.md/concentration-framework.md/systemic-warning-framework.md）在M4基础上增加跨发行人/跨组合的系统性风险分析——传染矩阵覆盖全市场行业对传导、集中度框架覆盖五维组合集中度、预警框架提供全市场SRI读数。两者分工明确：原有M4做单发行人风控·系统智能层做跨发行人系统性风险。
 
-### 7.3 版本管理原则
+### 7.3 Version Management Principles
 
 1. **方法论文档统一版本**：所有核心方法论文档（非审查报告类）统一标注同一引擎版本号
 2. **版本升级触发条件**：
@@ -266,7 +252,7 @@ Indicator Score = f(Raw Value, Threshold, Direction)
 
 ---
 
-## 相关内容
+## Related Content
 
 - [行业分类与分析框架](industry-framework.md) — 十维评分、行业类型、七行业金字塔规格
 - [双轨分析方法论](dual-track-methodology.md) — 轨道A+轨道B、交叉对撞、评级映射、完整推理实例

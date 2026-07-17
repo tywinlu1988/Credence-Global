@@ -1,20 +1,20 @@
-# 固收信贷智能分析引擎
+# Fixed Income Credit Intelligent Analysis Engine
 
-**项目代号**: Credence
+**Project Codename**: Credence
 **Version**: v0.0.1
-**状态**: 方法论文档阶段 · 产品设计完成 · 13行业覆盖 · 系统智能层上线 · 文档结构重整完成
+**Status**: Methodology documentation phase · Product design complete · International industry coverage · System intelligence layer online · Documentation structure reorganized
 
 ---
 
-## 项目概述
+## Project Overview
 
-面向中国固定收益市场的智能分析引擎。通过行业定制化的多层分析金字塔、双轨交叉验证框架、马赛克公开数据引擎、多利益相关者视角、非信用风险叠加层和系统智能层，为信贷审批、债券投资、市场交易和风险管理提供超越传统财务分析的信用认知供给。覆盖13大行业（12产业+城投债），具备跨行业传染图谱、五维集中度仪表盘和系统性预警温度计。
+International fixed-income credit analysis engine. Through industry-customized multi-layer analysis pyramid, dual-track cross-validation framework, mosaic public data engine, multi-stakeholder perspective, non-credit risk overlay, and system intelligence layer, it provides credit insight beyond traditional financial analysis for credit approval, bond investment, market trading, and risk management. Coverage includes international industry sectors with cross-industry contagion mapping, five-dimensional concentration dashboard, and systemic risk thermometer.
 
-**核心原则**：传统财务分析在政策驱动型、技术壁垒型和资产租约型行业中系统性失效。最重的信用因子很少出现在资产负债表上。外部信用评级平均滞后真实信用恶化17个月以上。
+**Core Principle**: Traditional financial analysis systematically fails in policy-driven, technology-moat, and asset-lease industries. The heaviest credit factors rarely appear on the balance sheet. External credit ratings lag true credit deterioration by an average of 17+ months.
 
 ---
 
-## 目录结构
+## Directory Structure
 
 ```
 ../AGENTS.md                                       ← 跨 CLI 通用入口（仓库根级 · 任何 agent CLI 从这里开始）
@@ -76,9 +76,9 @@ dev/
 
 ---
 
-## 当前进度
+## Current Progress
 
-### 系统智能层（v0.7.0 新增）
+### System Intelligence Layer
 
 | 模块 | 状态 | 核心文档 |
 |---|---|---|
@@ -87,23 +87,23 @@ dev/
 | 系统性预警 | ✅ 完成 | systemic-warning-framework.md |
 | 温度计L0卡片 | ✅ 完成 | 集成至output-layered-framework.md §3.6 |
 
-### 报告模板
+### Report Templates
 
 | 类型 | 数量 | 说明 |
 |---|---|---|
 | 报告模板 | 15种（Type 1-Type 15） | `templates/` 单一事实源（template-base.css + type1-15.html） |
 
-### 产品设计（完成）
+### Product Design (Complete)
 
 产品愿景·Magic Experience·三层输出体系·商业化模型·定价·GTM
 
-### 技术实现（未开始）
+### Technical Implementation (Not Started)
 
 方法和产品设计全部固化后启动。
 
 ---
 
-## 快速导航
+## Quick Navigation
 
 | 想了解... | 去看... |
 |---|---|
@@ -134,28 +134,12 @@ dev/
 
 ---
 
-## 版本历史
+## Version History
 
-| 版本 | 日期 | 里程碑 |
+| Version | Date | Milestone |
 |---|---|---|
-| v0.1.0 | 2026-07-02 | 行业全景调研。产品设计文档初稿。 |
-| v0.2.0 | 2026-07-07 | 双轨框架+黑天鹅回溯。永煤（双时点）+紫光验证。技能包发布。 |
-| v0.3.0 | 2026-07-08 | 马赛克引擎。多利益相关者。P0债券仪表盘。华晨三身份验证。产品商业化回顾。 |
-| v0.4.0-alpha | 2026-07-08 | 12档评级+EL整合+非信用风险叠加。城投债框架。治理/欺诈模块。5行业前瞻验证补齐。假阳性/假阴性测试。 |
-| v0.5.0-alpha | 2026-07-08 | 8行业验证全覆盖。三层输出体系。风险缓释建议。压力测试升级。引擎终审。8行业验证报告HTML。 |
-| **v0.7.0-alpha** | **2026-07-10** | **系统智能层发布：传染图谱（4份复盘+13×13矩阵+Type 13）·集中度仪表盘（五维框架+3份情景+Type 14）·系统性预警（SRI温度计+Type 15）。引擎架构升级至四层。M4组合风控完整实现。13行业全量覆盖。L0温度计卡片。15种报告模板体系。** |
-| **v0.7.1-alpha** | **2026-07-15** | **开发栈结构重整：模板单源化 `templates/`（Type 1-15 + template-base.css）、engine 26份现行+15份归档 `engine/audits/`、72份报告按15个子目录归类、design/data 归位、README 与磁盘现实严格对齐。** |
-| v0.7.1-alpha（快照重建） | 2026-07-15 | 验证产物分离：72 份测试报告与测试执行记录迁出至根级 validation/（非项目本体，永不入快照）；README/SKILL 移除验证结果表格与案例清单；engine 现行文档 25 份；v0.7.1 快照按新边界重建 |
-| **v0.7.1-release** | **2026-07-15** | **正式发布：开发栈结构重整（模板单源 templates/、engine 25份现行+audits/、design/data 归位）+ 验证产物分离（validation/ 永不入快照）。全量一致性检查与 63 项测试通过。** |
-| **v0.8.0-alpha** | **2026-07-16** | **集成预发布：跨 CLI 通用入口（AGENTS.md + Codex 适配）· 四段链契约（pipeline-contract.md + report/qa 两阶段 skill）· 可执行编排器（src/pipeline.py 接 WP-M4-01/WP-M4-03 两编码引擎）· 维度注册表（dimension-registry.md）。8 条 active 路径端到端走查归档 validation/docs/。快照 dev/ + AGENTS.md + src/。143 项测试通过。** |
-| **v0.8.0-release** | **2026-07-16** | **可安装 agent 包发布：`scripts/build_dist.py` 把 dev/ 源确定性组装为 `dist/credence/` 可安装包——skills 归位 `.claude/skills/`（Claude Code 原生 + Cursor/Gemini/OpenCode 兼容）、engine 平铺、AGENTS.md/CLAUDE.md/GEMINI.md 三入口、按工具 INSTALL.md、.claude-plugin 清单；清除死链接（settings.local.json 绝对路径、audits/design/product/data 及 16 处溯源指针）。快照重定义为可安装包。150 项测试通过。** |
-| **v0.8.1-release** | **2026-07-17** | **门禁加固与晋升机制：.gitattributes 强制 LF + 换行符断言；lgd §12.1 评级表对齐 18 档；pyproject/package.json 版本硬校验；GitHub Actions CI；promote.py 晋升脚本（声明单源化）+ 测试版本无关化。162 项测试通过。** |
-| **v0.8.2-release** | **2026-07-17** | **WP-M4-02 传染矩阵接入编码引擎（contagion_engine：运行时解析、派生系数、组合暴露、压力跳升）；contagion-matrix 清单与派生值矛盾修复。178 项测试通过。** |
-| **v0.8.3-release** | **2026-07-17** | **可靠度迭代：一致性普查落地（§3.2 重写、数据中心归并、对照表补全）+ 门扩展（registry 引用校验、迁移矩阵校验、§3.2 漂移门）。184 项测试通过。** |
-| **v0.8.4-release** | **2026-07-17** | **WP-X-05 展望监控全链路（outlook_engine + Type 18 模板 + 激活接线）。197 项测试通过。** |
-
-> **注**：v0.6.x系列为模块级预发布版本（contagion-matrix.md、concentration-framework.md、systemic-warning-framework.md 等独立发布），功能统一纳入 v0.7.0-alpha。
+| v0.0.1 | 2026-07-17 | Initial release: international fixed-income credit analysis engine |
 
 ---
 
-*最后更新: 2026-07-16*
+*Last updated: 2026-07-17*
