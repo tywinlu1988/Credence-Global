@@ -8,163 +8,167 @@
 
 | Document | Content | When to Consult |
 |---|---|---|
-| **engine-overview.md** | 架构总览 · 设计原则 · 文档导航 | 首次了解引擎 |
-| **industry-framework.md** | 十维评分 · 四种行业范式 · 七行业金字塔 · 一票否决 | 需要确定分析框架 |
-| **qualitative-analysis.md** | 信息源分级 · 政策解读 · 马赛克拼图 · 叙事拆解 | 需要定性分析指导 |
-| **quantitative-analysis.md** | 利差分析 · 波动率 · 多因子 · 压力测试 · 市场隐含信号 | 需要定量分析指导 |
-| **dual-track-methodology.md** | 轨道A+B · 交叉对撞 · 评级映射 · 完整推理实例 | 需要了解双轨整合逻辑 |
-| **mosaic-engine.md** | 信号提取 · 拼图聚合 · 完备性评估 · Mode B接口 | 需要了解数据→评估的完整链路 |
-| **multi-stakeholder.md** | M0-M5六类身份 · 多视角交叉对比 | 需要多身份并行分析 |
-| **validation-methodology.md** | 黑天鹅回溯 · 双时点验证 · 前瞻对比 | 需要验证方法论有效性 |
-| **lgd-recovery-framework.md** | LGD五级分类 · 抵押物估值 · 回收路径 · 中国市场调整 | 需要评估债项回收率 |
-| **external-support-framework.md** | 政府/集团/战投支持 · 支持能力vs意愿 · 上调规则 · 陷阱信号 | 需要评估外部支持 |
-| **outlook-monitoring-framework.md** | 评级展望 · 观察名单 · 持续监控 · 迁移矩阵 | 需要前瞻方向和监控机制 |
-| **financial-deep-dive.md** | 三表联动 · 营运资金 · FCF · 场景敏感性· 压力测试升级 | 需要财务深度分析 |
-| **governance-fraud-risk.md** | 20+欺诈信号 · 逃废债检测 · 存贷双高 · 治理评估 | 需要检测财务欺诈 |
-| **non-credit-risk-overlay.md** | 市场/操作/声誉/战略/流动性风险叠加层 | 需要非信用风险评估 |
-| [false-positive-negative-testing.md](../../validation/docs/false-positive-negative-testing.md) | 假阳性/假阴性测试方法 · 测试执行记录（存档于 validation/docs/，非项目本体） | 需要验证引擎准确性 |
-| **output-layered-framework.md** | L0信号卡+L1快照+L2深度 · 三层输出 · 工作流嵌入 | 需要产品输出规范 |
-| **contagion-matrix.md** | 13×13行业传染矩阵 · 传导强度 · 行业聚类 · 升级因子 | 需要评估跨行业传染风险 |
-| **concentration-framework.md** | 五维集中度分析 · 阈值体系 · 评级调整映射 · 压力测试 | 需要评估组合集中度风险 |
-| **systemic-warning-framework.md** | SRI信号聚合 · 四级温度计 · 历史回测 · 即时计算 | 需要系统性风险读数 |
-| **work-path-registry.md** | 工作路径注册表 · 角色×方向×深度×报告的路径定义 | 需要确认走哪条路径时查阅 |
-| **dimension-registry.md** | 维度注册表 · 6范式+LGFV 与 M0-M5 角色的可寻址索引（单源指针层） | 需要按维度路由/检索时查阅 |
-| **pipeline-contract.md** | 四段链 I/O 契约 · 四份产物 schema · 链式边（机器可读） | 需要确认阶段间传递什么产物时查阅 |
-| [pipeline.py](../../src/pipeline.py) | 四段链可执行编排器（v0.7.8）：解析阶段计划、接 WP-M4-01/-02/-03 三个编码引擎 | 需要以代码驱动四段链、对接已编码引擎时查阅 |
-| **audits/financial-analysis-audit.md** | 财务层10项标准差距审查 | 审查记录 |
-| **audits/quantitative-audit.md** | 定量模块统计严谨性审查 | 审查记录 |
-| **audits/rating-agency-benchmark-audit.md** | 评级机构方法论对标 | 审查记录 |
-| **audits/risk-management-standards-audit.md** | Basel/COSO风险管理标准对标 | 审查记录 |
-| **audits/practitioner-usability-audit.md** | 一线从业者可用性审查 | 审查记录 |
-| **audits/self-assessment-2026-07-08.md** | 引擎中期自评 | 审查记录 |
-| **audits/final-review-2026-07-08.md** | 引擎终审 | 审查记录 |
-| **audits/capability-review-2026-07-08.md** | 引擎能力终审 | 审查记录 |
+| **engine-overview.md** | Architecture overview, design principles, document navigation | First time understanding the engine |
+| **industry-framework.md** | 10-dimension scoring, 4 industry paradigms, 7-industry pyramid, veto rules | Determining the analysis framework |
+| **qualitative-analysis.md** | Information source grading, policy interpretation, mosaic assembly, narrative decomposition | Qualitative analysis guidance |
+| **quantitative-analysis.md** | Spread analysis, volatility, multi-factor models, stress testing, market-implied signals | Quantitative analysis guidance |
+| **dual-track-methodology.md** | Track A+B methodology, cross-validation, rating mapping, complete worked examples | Understanding dual-track integration logic |
+| **mosaic-engine.md** | Signal extraction, puzzle assembly, completeness assessment, Mode B interface | Understanding the data-to-assessment pipeline |
+| **multi-stakeholder.md** | M0-M5 identity types, multi-perspective cross-comparison | Multi-identity parallel analysis |
+| **validation-methodology.md** | Black swan backtesting, dual-point validation, forward-looking comparison | Validating methodology effectiveness |
+| **lgd-recovery-framework.md** | LGD 5-tier classification, collateral valuation, recovery path | Recovery rate assessment |
+| **external-support-framework.md** | Government/group/strategic investor support, support capability vs. willingness, upgrade rules, trap signals | External support assessment |
+| **outlook-monitoring-framework.md** | Rating outlook, watch list, ongoing monitoring, transition matrix | Forward-looking monitoring mechanism |
+| **financial-deep-dive.md** | Three-statement linkage, working capital, FCF, scenario sensitivity, stress testing upgrade | Financial deep dive analysis |
+| **governance-fraud-risk.md** | 20+ fraud signals, default evasion detection, high deposit & high debt, governance assessment | Financial fraud detection |
+| **non-credit-risk-overlay.md** | Market/operational/reputational/strategic/liquidity risk overlay | Non-credit risk assessment |
+| **output-layered-framework.md** | L0 signal card, L1 snapshot, L2 deep dive, three-layer output, workflow embedding | Product output specifications |
+| **contagion-matrix.md** | 13x13 industry contagion matrix, transmission intensity, industry clustering, escalation factors | Cross-industry contagion risk assessment |
+| **concentration-framework.md** | 5-dimension concentration analysis, threshold system, rating adjustment mapping, stress testing | Portfolio concentration risk assessment |
+| **systemic-warning-framework.md** | SRI signal aggregation, 4-level thermometer, historical backtesting, real-time calculation | Systemic risk readings |
+| **contagion-theory.md** | Contagion types, transmission mechanisms, escalation factors (System Intelligence Layer) | Understanding contagion theory |
+| **financial-bond-framework.md** | Financial institution bond analysis framework | Financial bond analysis |
+| **holding-company-framework.md** | Holding company credit analysis framework | Holding company credit analysis |
+| **esg-framework.md** | ESG and governance risk framework | ESG analysis |
+| **paradigm-brand-channel.md** | Brand + channel paradigm specification | Brand + channel paradigm |
+| **paradigm-network-traffic.md** | Network + traffic paradigm specification | Network + traffic paradigm |
+| **work-path-registry.md** | Work path registry, role x direction x depth x report path definitions | Confirming which path to follow |
+| **dimension-registry.md** | Dimension registry, addressable index of 7 paradigms and M0-M5 roles (single-source pointer layer) | Dimension routing and retrieval |
+| **pipeline-contract.md** | Four-stage pipeline I/O contracts, four product schemas, chain edges (machine-readable) | Pipeline stage handoff specifications |
 
 ---
 
-## 1. Core Philosophy: Why Traditional Financial Analysis Is Not Enough?
+## 1. Core Philosophy: Why Traditional Financial Analysis Is Not Enough
 
-传统财务分析基于一个隐含假设——**企业的信用风险可以从其财务报表中读出来**。这一假设在以下三类行业中系统性失效：
+Traditional financial analysis rests on an implicit assumption — **that a firm's credit risk can be read from its financial statements**. This assumption systematically fails in the following three industry types:
 
-| 行业类型 | 财务分析为何失效 | 最重因子在哪里 |
+| Industry Type | Why Financial Analysis Fails | Heaviest Factor Location |
 |---|---|---|
-| **政策驱动型**（光伏、半导体） | 政策周期决定行业总需求天花板和盈利中枢，政策急转弯可在数周内摧毁一个行业 | 产业政策/地缘政治（不在报表上） |
-| **技术壁垒型**（高端装备、生物医药、医疗器械） | 核心资产（IP/管线/注册证）不在资产负债表上；大量未盈利企业无法用PE/PB估值 | 技术路线/核心资产（不在报表上） |
-| **资产租约型**（数据中心） | 类REITs属性，核心看NOI/DSCR而非传统财务指标 | 客户租约质量（不在报表上） |
+| **Policy-Driven** (Solar, Semiconductors) | Policy cycles determine industry demand ceilings and profitability; sudden policy shifts can devastate an industry within weeks | Industrial policy / Geopolitics (not on balance sheet) |
+| **Technology-Moat** (Advanced Equipment, Biopharma, Medical Devices) | Core assets (IP, pipeline, regulatory certifications) are not on the balance sheet; many pre-revenue firms cannot be valued by PE/PB | Technology roadmap / Core assets (not on balance sheet) |
+| **Asset-Lease** (Data Centers, Infrastructure REITs) | REIT-like profile; core metrics are NOI/DSCR rather than traditional financial indicators | Customer lease quality (not on balance sheet) |
 
-**核心结论：信用分析中最重的因子，永远不在资产负债表上。**
+**Core conclusion: the heaviest credit factors are never on the balance sheet.**
 
 ### Problems with External Ratings
 
-验证案例一致表明，外部信用评级系统性滞后于真实信用恶化：
+Historical case evidence consistently shows that external credit ratings systematically lag real credit deterioration:
 
-| 案例 | 违约前评级 | 违约后评级 | 滞后窗口 |
+| Case | Pre-Default Rating | Post-Default Rating | Lag Window |
 |---|---|---|---|
-| 永煤控股（2020） | AAA/稳定 | BB | 17+个月 |
-| 紫光集团（2020） | AAA/稳定 | 破产重整 | 17+个月 |
+| Enron (2001) | BBB+/Stable | D (Default) | 18+ months |
+| Lehman Brothers (2008) | A+/Stable | D (Default) | 12+ months |
+| Wirecard (2020) | BBB/Stable | D (Default) | 17+ months |
+| Greece Sovereign (2009) | A+/Stable | SD (Selective Default) | 17+ months |
 
 ### Two Theoretical Foundations
 
-| 理论 | 含义 | 在引擎中的体现 |
+| Theory | Implication | Implementation in the Engine |
 |---|---|---|
-| **马赛克理论** | 单块公开数据碎片无意义，拼在一起构成完整画像 | 多源数据聚合 → 信号叠加 → 置信度加权 |
-| **信息完备性理论** | 数据缺口不是缺陷——它们是风险信号。"我们没有这个数据"本身就在告诉用户某个维度存在不确定性 | 每个分析结论附带数据完备性评分和缺口列表 |
+| **Mosaic Theory** | Individual public data fragments are meaningless in isolation; assembled together they form a complete picture | Multi-source data aggregation, signal stacking, confidence weighting |
+| **Information Completeness Theory** | Data gaps are not defects — they are risk signals. "We do not have this data" itself tells the user that a dimension carries uncertainty | Every analysis conclusion is accompanied by a data completeness score and a gap list |
 
 ---
 
 ## 2. Overall Architecture
 
 ```
-卷首: 系统智能层（第四层 ★新增）
+System Intelligence Layer (Layer 4 *NEW)
   ┌──────────────────────────────────────────────┐
-  │ 传染图谱 × 集中度仪表盘 × 预警温度计(SRI)  │
-  │ 跨行业传染   五维集中度    系统性风险指数   │
+  │ Contagion Map x Concentration Dashboard x    │
+  │ Early Warning Thermometer (SRI)              │
+  │ Cross-Industry   Multi-Dimension  Systemic   │
+  │ Contagion       Concentration    Risk Index  │
   └────────────────────┬─────────────────────────┘
-                       │ 聚合单发行人分析结果
+                       │ Aggregate single-issuer results
                        ▼
-输入: 行业 + 企业 + 分析日期
+Input: Industry + Entity + Analysis Date
         │
    ┌────┴────┐
-   │马赛克引擎│  ← 信号提取 + 拼图 + 完备性评估
-   │ (Mode A) │
+   │ Mosaic  │  ← Signal extraction + assembly + completeness
+   │ Engine  │
+   │ (Mode A)│
    └────┬────┘
         │
    ┌────┼──────────────────────────┐
    │    │                          │
    ▼    ▼                          ▼
-轨道A          轨道B         轨道C+:多利益方视角
-基本面分析    市场定价信号    (M0-M6,按优先级实现)
-(行业金字塔)  (四级信号)
+Track A          Track B       Track C+: Multi-Stakeholder
+Fundamental    Market Pricing  (M0-M6, implemented by priority)
+Analysis       Signals
+(Industry      (Four-tier
+Pyramid)       signals)
         │           │
         └────┬──────┘
              ▼
-     交叉对撞矩阵
-     共识 → 互相强化
-     分歧 → 最有价值的洞察
+     Cross-Validation Matrix
+     Consensus → Mutual reinforcement
+     Divergence → Most valuable insight
              │
              ▼
-      综合输出
-  评级 + 信号 + 完备性报告
+      Integrated Output
+  Rating + Signals + Completeness Report
 ```
 
 ### Four-Layer Architecture
 
-| 层级 | 名称 | 功能 | 状态 |
+| Layer | Name | Function | Status |
 |---|---|---|---|
-| **第一层** | 马赛克引擎（Mode A） | 从非结构化公开数据中提取信号、拼图、评估完备性 | 已实现（v0.3.0） |
-| **第二层** | 双轨分析（轨道A + B） | 基本面金字塔评分 + 市场定价信号交叉验证 | 已实现（v0.1.0） |
-| **第三层** | 多利益方视角（M0-M6） | 覆盖信用审批、债券投资、承销、交易、组合风控等多种角色 | M0-M5已实现，M6规划中 |
-| **第四层** | 系统智能层（集合层）★新增 | 传染图谱+集中度仪表盘+预警温度计，跨行业/跨发行人的系统性风险感知 | 已实现（v0.7.0） |
+| **Layer 1** | Mosaic Engine (Mode A) | Extract signals from unstructured public data, assemble, assess completeness | Implemented (v0.3.0) |
+| **Layer 2** | Dual-Track Analysis (Track A + B) | Fundamental pyramid scoring + market pricing signal cross-validation | Implemented (v0.1.0) |
+| **Layer 3** | Multi-Stakeholder Perspective (M0-M6) | Coverage across credit approval, bond investment, underwriting, trading, portfolio risk management roles | M0-M5 implemented, M6 planned |
+| **Layer 4** | System Intelligence Layer (Aggregation) *NEW | Contagion mapping, concentration dashboard, early warning thermometer; cross-industry and cross-issuer systemic risk perception | Implemented (v0.7.0) |
 
 ### Dual-Track Parallel Structure
 
 ```
-轨道A: 基本面分析                    轨道B: 市场定价信号
-(定性+评分)                         (量化信号)
-  L1 (最重)                          Credit Spreads
-  L2                                 Volatility
-  L3                                 Fund Flows
-  L4 (最轻)                          Rating Migration
+Track A: Fundamental Analysis          Track B: Market Pricing Signals
+(Qualitative + Scoring)                (Quantitative Signals)
+  L1 (Heaviest)                          Credit Spreads
+  L2                                     Volatility
+  L3                                     Fund Flows
+  L4 (Lightest)                          Rating Migration
         │                                │
         └────────────┬───────────────────┘
                      ▼
-            交叉对撞矩阵
-  Consensus → 互相强化
-  Divergence → 最有价值的洞察
+           Cross-Validation Matrix
+  Consensus → Mutual reinforcement
+  Divergence → Most valuable insight
 ```
 
 ---
 
 ## 3. Key Design Principles
 
-| # | 原则 | 含义 |
+| # | Principle | Meaning |
 |---|---|---|
-| 1 | **财务分析不是最重层** | 最重的因子永远是结构性/外部因子，不在报表上 |
-| 2 | **行业决定权重** | 每个行业的最重因子由十维评分（D1-D10）决定，不同行业使用不同权重模板 |
-| 3 | **逐层递进** | L1必须通过才有意义进行L2分析，不可跳跃 |
-| 4 | **L4验证层属性** | 财务层（最底层）用于验证上层判断。财务好+上层差=更危险（周期顶部或造假）；财务差+上层好=标记风险但不颠覆 |
-| 5 | **公开数据足够** | POC已在3个黑天鹅案例和3个行业中验证，公开数据足以支撑有效分析 |
-| 6 | **轨道B独立不附属** | 市场定价信号独立于基本面分析，两轨分歧产生最有价值的问题 |
-| 7 | **两轨冲突时优先轨道A** | 可审计的公开财务事实优先于外部评级 |
-| 8 | **数据缺口=风险信号** | 每个分析必须包含完备性报告，标注缺失了什么、这意味着什么风险 |
-| 9 | **识别结构性不可持续** | 框架能识别结构性不可持续的信用质量，但不能预测违约的精确时机或触发事件 |
+| 1 | **Financial Analysis is Not the Heaviest Layer** | The heaviest factors are always structural or external, not on the balance sheet |
+| 2 | **Industry Determines Weights** | Each industry's heaviest factors are determined by the 10-dimension scoring (D1-D10); different industries use different weight templates |
+| 3 | **Layer-by-Layer Progression** | L1 must pass before L2 analysis is meaningful; layers cannot be skipped |
+| 4 | **L4 as Validation Layer** | The financial layer (lowest layer) is used to validate upper-layer judgments. Strong finance + weak upper layers = more dangerous (cycle top or fraud); weak finance + strong upper layers = flagged risk but not overturned |
+| 5 | **Public Data is Sufficient** | POC validated across 3 black swan cases and 3 industries; public data provides sufficient support for effective analysis |
+| 6 | **Track B is Independent and Non-Subordinate** | Market pricing signals are independent from fundamental analysis; divergence between the two tracks generates the most valuable questions |
+| 7 | **Track A Takes Priority on Conflict** | Auditable public financial facts take priority over external ratings |
+| 8 | **Data Gaps = Risk Signals** | Every analysis must include a completeness report, noting what data is missing and what risk that implies |
+| 9 | **Identifying Structural Unsustainability** | The framework can identify structurally unsustainable credit quality but cannot predict the precise timing or trigger event of default |
 
 ---
 
 ## 4. Data Source Architecture
 
-**硬约束：零内部数据、零非公开数据、零付费数据（POC阶段）。**
+**Hard constraint: zero internal data, zero non-public data, zero paid data (POC phase).**
 
-| 数据层 | 来源 | 采集方式 |
+| Data Layer | Source | Collection Method |
 |---|---|---|
-| 宏观政策 | 政府官方网站 | WebSearch + LLM解析 |
-| 行业数据 | 行业协会、券商报告 | WebSearch |
-| 供应链价格 | 免费数据平台（PVInfoLink/TrendForce/SMM等） | WebSearch |
-| 企业信息 | 股转系统(NEEQ)、裁判文书网、被执行记录 | WebSearch |
-| 招投标 | 省级采购平台 | WebSearch |
-| 债券数据 | 交易所公告、中国货币网 | WebSearch |
+| Macro Policy | Central bank websites, government portals | WebSearch + LLM parsing |
+| Industry Data | Industry associations, international research reports | WebSearch |
+| Supply Chain Pricing | Free data platforms (SMM, TrendForce, PVInfoLink free tiers) | WebSearch |
+| Corporate Information | SEC EDGAR, stock exchange filings, Companies House | WebSearch |
+| Litigation / Regulatory | PACER, ECB registers, regulatory enforcement databases | WebSearch |
+| Bond Data | TRACE, exchange announcements, BIS debt securities statistics | WebSearch |
+| Macroeconomic | IMF data portal, FRED (Federal Reserve Economic Data) | WebSearch |
 
-**分析前必须验证4类数据可获取性**：政策数据、企业风险数据、行业数据、市场定价数据。
+**Four data availability checks must be completed before analysis:** policy data, entity risk data, industry data, and market pricing data.
 
 ---
 
@@ -173,15 +177,15 @@
 ### Scoring Formula
 
 ```
-Composite Score = Sigma(Layer Score × Layer Weight)
+Composite Score = Sigma(Layer Score x Layer Weight)
 Layer Weight = f(Industry 10-Dimension Score)
-Layer Score = Sigma(Indicator Score × Indicator Weight)
+Layer Score = Sigma(Indicator Score x Indicator Weight)
 Indicator Score = f(Raw Value, Threshold, Direction)
 ```
 
-### Rating Mapping Table
+### Rating Mapping
 
-> 评级映射表详见 [dual-track-methodology.md](dual-track-methodology.md) §评级映射
+> The rating mapping table references S&P, Moody's, and Fitch nomenclature and is detailed in [dual-track-methodology.md](dual-track-methodology.md) (Rating Mapping section).
 
 ---
 
@@ -197,65 +201,65 @@ Indicator Score = f(Raw Value, Threshold, Direction)
 
 ### 7.1 Version Numbering System
 
-引擎文档体系采用两套版本号系统：
+The engine documentation system uses two parallel version numbering schemes:
 
-| 版本体系 | 适用范围 | 示例 | 说明 |
+| Version Scheme | Scope | Example | Description |
 |---|---|---|---|
-| **引擎版本** | 核心方法论文档 | v0.8.4-release | 反映引擎方法论的整体迭代阶段，所有核心方法论文档统一标注此版本 |
-| **审查报告版本** | 审计/自评/终审文档 | v1.0, v1.1 | 独立的审查报告版本体系，在文件头标注"对应引擎版本: v0.8.0-release" |
+| **Engine Version** | Core methodology documents | v0.8.4-release | Reflects the overall iteration stage of engine methodology; all core methodology documents are uniformly labeled with this version |
+| **Review Report Version** | Audit, self-assessment, final review documents | v1.0, v1.1 | Independent versioning for review reports; document headers note "Corresponding engine version: v0.8.0-release" |
 
 ### 7.2 Core Methodology Document Version Mapping
 
-| 文档 | 当前版本 | 说明 |
+| Document | Current Version | Description |
 |---|---|---|
-| engine-overview.md | v0.8.4-release | 引擎架构总览 |
-| dual-track-methodology.md | v0.8.4-release | 双轨分析方法论 |
-| industry-framework.md | v0.8.4-release | 行业分类与分析框架 |
-| qualitative-analysis.md | v0.8.4-release | 定性分析方法论 |
-| quantitative-analysis.md | v0.8.4-release | 定量分析方法论 |
-| mosaic-engine.md | v0.8.4-release | 马赛克引擎 |
-| output-layered-framework.md | v0.8.4-release | 分层输出框架 |
-| contagion-theory.md | v0.8.4-release | 传染理论基础（系统智能层） |
-| contagion-matrix.md | v0.8.4-release | 13行业传染矩阵 |
-| concentration-framework.md | v0.8.4-release | 五维集中度分析框架 |
-| systemic-warning-framework.md | v0.8.4-release | 系统性预警框架 |
-| validation-methodology.md | v0.8.4-release | 黑天鹅回溯验证方法论 |
-| financial-bond-framework.md | v0.8.4-release | 金融债分析框架 |
-| holding-company-framework.md | v0.8.4-release | 控股公司信用分析框架 |
-| non-credit-risk-overlay.md | v0.8.4-release | 非信用风险叠加层 |
-| external-support-framework.md | v0.8.4-release | 外部支持评估框架 |
-| esg-framework.md | v0.8.4-release | ESG 与治理风险框架 |
-| governance-fraud-risk.md | v0.8.4-release | 治理/欺诈风险框架 |
-| outlook-monitoring-framework.md | v0.8.4-release | 展望与持续监控框架 |
-| lgd-recovery-framework.md | v0.8.4-release | LGD 与回收率分析框架 |
-| multi-stakeholder.md | v0.8.4-release | 多利益相关者框架 |
-| financial-deep-dive.md | v0.8.4-release | 财务深度分析框架 |
-| paradigm-brand-channel.md | v0.8.4-release | 品牌+渠道范式规格 |
-| paradigm-network-traffic.md | v0.8.4-release | 网络+流量范式规格 |
-| work-path-registry.md | v0.8.4-release | 工作路径注册表 |
-| dimension-registry.md | v0.8.4-release | 维度注册表 |
-| pipeline-contract.md | v0.8.4-release | 四段链产物契约 |
+| engine-overview.md | v0.8.4-release | Engine architecture overview |
+| dual-track-methodology.md | v0.8.4-release | Dual-track analysis methodology |
+| industry-framework.md | v0.8.4-release | Industry classification and analysis framework |
+| qualitative-analysis.md | v0.8.4-release | Qualitative analysis methodology |
+| quantitative-analysis.md | v0.8.4-release | Quantitative analysis methodology |
+| mosaic-engine.md | v0.8.4-release | Mosaic engine |
+| output-layered-framework.md | v0.8.4-release | Layered output framework |
+| contagion-theory.md | v0.8.4-release | Contagion theory foundations (System Intelligence Layer) |
+| contagion-matrix.md | v0.8.4-release | 13-industry contagion matrix |
+| concentration-framework.md | v0.8.4-release | 5-dimension concentration analysis framework |
+| systemic-warning-framework.md | v0.8.4-release | Systemic early warning framework |
+| validation-methodology.md | v0.8.4-release | Black swan backtesting validation methodology |
+| financial-bond-framework.md | v0.8.4-release | Financial bond analysis framework |
+| holding-company-framework.md | v0.8.4-release | Holding company credit analysis framework |
+| non-credit-risk-overlay.md | v0.8.4-release | Non-credit risk overlay |
+| external-support-framework.md | v0.8.4-release | External support assessment framework |
+| esg-framework.md | v0.8.4-release | ESG and governance risk framework |
+| governance-fraud-risk.md | v0.8.4-release | Governance and fraud risk framework |
+| outlook-monitoring-framework.md | v0.8.4-release | Outlook and ongoing monitoring framework |
+| lgd-recovery-framework.md | v0.8.4-release | LGD and recovery analysis framework |
+| multi-stakeholder.md | v0.8.4-release | Multi-stakeholder framework |
+| financial-deep-dive.md | v0.8.4-release | Financial deep dive analysis framework |
+| paradigm-brand-channel.md | v0.8.4-release | Brand + channel paradigm specification |
+| paradigm-network-traffic.md | v0.8.4-release | Network + traffic paradigm specification |
+| work-path-registry.md | v0.8.4-release | Work path registry |
+| dimension-registry.md | v0.8.4-release | Dimension registry |
+| pipeline-contract.md | v0.8.4-release | Four-stage pipeline product contracts |
 
-**职责边界说明：** 原有M4组合风控框架（multi-stakeholder.md §5）承担单发行人/单组合的风控职能（集中度限额/压力测试/评级调整）。系统智能层（contagion-matrix.md/concentration-framework.md/systemic-warning-framework.md）在M4基础上增加跨发行人/跨组合的系统性风险分析——传染矩阵覆盖全市场行业对传导、集中度框架覆盖五维组合集中度、预警框架提供全市场SRI读数。两者分工明确：原有M4做单发行人风控·系统智能层做跨发行人系统性风险。
+**Responsibility boundary note:** The original M4 portfolio risk control framework (multi-stakeholder.md section 5) handles single-issuer and single-portfolio risk control (concentration limits, stress testing, rating adjustments). The System Intelligence Layer (contagion-matrix.md, concentration-framework.md, systemic-warning-framework.md) adds cross-issuer and cross-portfolio systemic risk analysis on top of M4 — the contagion matrix covers full-market industry pair transmission, the concentration framework covers 5-dimension portfolio concentration, and the early warning framework provides market-wide SRI readings. The division is clear: M4 handles single-issuer risk control; the System Intelligence Layer handles cross-issuer systemic risk.
 
 ### 7.3 Version Management Principles
 
-1. **方法论文档统一版本**：所有核心方法论文档（非审查报告类）统一标注同一引擎版本号
-2. **版本升级触发条件**：
-   - 新增功能模块或行业覆盖 → 递增次版本号（如 v0.5.x）
-   - 方法论重大重构或评级体系变更 → 递增主版本号（如 v1.0.0）
-   - 一致性修复、术语统一、阈值对齐 → 递增修订号（如 v0.5.x）
-3. **审查报告独立版本**：审计/自评文档使用独立版本体系，但必须标注"对应引擎版本"
-4. **版本历史集中维护**：所有引擎版本升级记录在本节（§六）集中维护，各文档仅标注自身版本号和日期
+1. **Unified methodology document version**: All core methodology documents (non-review) uniformly carry the same engine version number
+2. **Version upgrade triggers**:
+   - New functional modules or industry coverage — increment minor version (e.g., v0.5.x)
+   - Major methodology restructuring or rating system changes — increment major version (e.g., v1.0.0)
+   - Consistency fixes, terminology unification, threshold alignment — increment patch version (e.g., v0.5.x)
+3. **Independent review report versioning**: Audit and self-assessment documents use an independent versioning system but must note "Corresponding engine version"
+4. **Centralized version history**: All engine version upgrade records are maintained centrally in this section (Section 6); individual documents only carry their own version number and date
 
 ---
 
 ## Related Content
 
-- [行业分类与分析框架](industry-framework.md) — 十维评分、行业类型、七行业金字塔规格
-- [双轨分析方法论](dual-track-methodology.md) — 轨道A+轨道B、交叉对撞、评级映射、完整推理实例
-- [马赛克引擎](mosaic-engine.md) — 信号提取、拼图、完备性评估、Mode B接口定义
-- [13行业传染矩阵](contagion-matrix.md) — 13×13行业间传染路径、传导强度、行业聚类
-- [传染理论基础](contagion-theory.md) — 传染类型、传导机制、升级因子理论
-- [五维集中度分析框架](concentration-framework.md) — 行业/区域/评级/期限/融资渠道集中度评估
-- [系统性预警框架](systemic-warning-framework.md) — SRI信号聚合算法、四级温度计、历史回测
+- [Industry Classification and Analysis Framework](industry-framework.md) — 10-dimension scoring, industry types, 7-industry pyramid specification
+- [Dual-Track Analysis Methodology](dual-track-methodology.md) — Track A + Track B, cross-validation, rating mapping, complete worked examples
+- [Mosaic Engine](mosaic-engine.md) — Signal extraction, assembly, completeness assessment, Mode B interface definition
+- [13-Industry Contagion Matrix](contagion-matrix.md) — 13x13 industry contagion pathways, transmission intensity, industry clustering
+- [Contagion Theory Foundations](contagion-theory.md) — Contagion types, transmission mechanisms, escalation factor theory
+- [5-Dimension Concentration Analysis Framework](concentration-framework.md) — Industry, region, rating, tenor, funding channel concentration assessment
+- [Systemic Early Warning Framework](systemic-warning-framework.md) — SRI signal aggregation algorithm, 4-level thermometer, historical backtesting
