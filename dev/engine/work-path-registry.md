@@ -517,4 +517,4 @@ quality_gates:
 | 5 | Type 17 融资顾问模板 | 模板 | WP-M5-01 | 融资渠道对比+时机建议报告 |
 | 6 | 展望监控模板 | 模板 | WP-X-05 | ✅ 已交付（v0.8.4，template-type18.html） |
 
-> 演进追踪：每次版本发布应更新本表状态分布（🔴→🟡→✅），并在 engine-overview.md §六 版本历史中登记。
+> Evolution tracking: each version release should update the status distribution in this table (🔴→🟡→✅) and record it in engine-overview.md §6 Version History.
