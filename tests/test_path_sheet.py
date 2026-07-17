@@ -1,8 +1,8 @@
-"""Unit tests for the work-path sheet schema + validator (v0.7.5 — 管线化基础).
+"""Unit tests for the work-path sheet schema + validator (v0.7.5 -- pipeline foundation).
 
-src/path_sheet.py is the machine-readable single source for the 《工作路径单》 emitted
+src/path_sheet.py is the machine-readable single source for the work-path sheet emitted
 by the credit-analysis-router skill. These tests (T5.1-T5.4) cover the validator's
-correctness, the planned-path 待开发 notice, the cross-reference consistency of the
+correctness, the planned-path notice, the cross-reference consistency of the
 registry's chaining-rules section, and the validator's wiring into consistency_check.
 
 T5.1/T5.2 use small synthetic registry dicts and tmp fixtures, not the real registry.
@@ -41,7 +41,7 @@ CHECKER = ROOT / "scripts" / "consistency_check.py"
 def _valid_sheet() -> dict:
     """A fully valid sheet pointing at the active path WP-M0-01."""
     return {
-        "role": "M0",
+        "role": "credit-selector",
         "object": "single-issuer",
         "depth": "L2",
         "mode": "A",
@@ -160,7 +160,7 @@ def test_t5_1_active_path_template_must_exist(tmp_path):
 def test_t5_1_non_planned_path_empty_list_rejected(tmp_path):
     """An active/partial path with an empty engine_reading_order/quality_gates is rejected.
 
-    Empty executable sequences are only allowed for planned (待开发) paths; a
+    Empty executable sequences are only allowed for planned (not yet implemented) paths; a
     non-planned path must carry a non-empty engine sequence and quality gates.
     """
     _make_template(tmp_path)
@@ -174,17 +174,17 @@ def test_t5_1_non_planned_path_empty_list_rejected(tmp_path):
 
 
 def test_t5_1_enum_meta_and_special_values_accepted(tmp_path):
-    """The meta role/object and 专项 depth are legal enum values."""
+    """The meta role/object and special depth are legal enum values."""
     registry = {
         "WP-X-01": {"id": "WP-X-01", "status": "partial", "templates": ["planned"]}
     }
     sheet = _valid_sheet()
-    sheet.update({"role": "meta", "object": "meta", "depth": "专项", "path_id": "WP-X-01"})
+    sheet.update({"role": "meta", "object": "meta", "depth": "special", "path_id": "WP-X-01"})
     assert validate_path_sheet(sheet, registry, root=tmp_path) == []
 
 
 # --------------------------------------------------------------------------
-# T5.2 — planned path yields 待开发 notice, not a template-invocation instruction
+# T5.2 -- planned path yields notice, not a template-invocation instruction
 # --------------------------------------------------------------------------
 
 def test_t5_2_planned_path_passes_validation_but_flagged(tmp_path):
@@ -193,9 +193,9 @@ def test_t5_2_planned_path_passes_validation_but_flagged(tmp_path):
     sheet = _valid_sheet()
     sheet.update(
         {
-            "role": "M2",
+            "role": "credit-selector",
             "object": "single-issuer",
-            "depth": "专项",
+            "depth": "special",
             "path_id": "WP-M2-01",
             "engine_reading_order": [],
             "quality_gates": [],
@@ -209,13 +209,13 @@ def test_t5_2_planned_path_passes_validation_but_flagged(tmp_path):
 
 
 def test_t5_2_planned_notice_is_not_an_invocation(tmp_path):
-    """The planned notice is a 待开发 notice, not a template-invocation instruction."""
+    """The planned notice flags the path as not yet implemented, not a template-invocation instruction."""
     registry = _planned_registry()
     sheet = _valid_sheet()
     sheet.update({"path_id": "WP-M2-01", "engine_reading_order": [], "quality_gates": []})
     notice = sheet_notice(sheet, registry)
     assert notice is not None
-    assert "待开发" in notice
+    assert "planned" in notice
     assert "WP-M2-01" in notice
 
     # active / unknown paths produce no notice
@@ -303,7 +303,7 @@ def test_is_template_marker():
 
 
 def test_enum_values_match_router_contract():
-    assert {r.value for r in Role} == {"M0", "M1", "M2", "M3", "M4", "M5", "meta"}
+    assert {r.value for r in Role} == {"credit-selector", "portfolio-manager", "risk-officer", "trader", "advisor", "individual-investor", "meta"}
     assert {o.value for o in Object} == {"single-issuer", "portfolio", "industry", "market", "meta"}
-    assert {d.value for d in Depth} == {"L0", "L1", "L2", "专项"}
+    assert {d.value for d in Depth} == {"L0", "L1", "L2", "special"}
     assert {m.value for m in Mode} == {"A", "B"}
