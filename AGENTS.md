@@ -1,79 +1,77 @@
-# AGENTS.md — Credence 跨 CLI 通用入口
+# AGENTS.md — Credence Cross-CLI Universal Entry
 
-**项目**：Credence（固收信贷智能分析引擎）
-**引擎版本**：v0.8.4-release
-**一句话**：方法论优先（methodology-first）的信用分析引擎；可移植单元是 `SKILL.md`。
+**Project**: Credence (Fixed-Income Credit Analysis Engine)
+**Engine Version**: v0.0.1
+**One-liner**: A methodology-first credit analysis engine; the portable unit is `SKILL.md`.
 
-> 任何 agent CLI 都从这里开始：先读你的 instructions file，再读当前任务对应的那份 `SKILL.md`。
+> Start here from any agent CLI: read your instructions file first, then the `SKILL.md` for your current task.
 
-## 这个仓库是什么
+## What This Repository Is
 
-面向中国固定收益市场的信用分析引擎，分四层（four-layer）：
+A credit analysis engine for global fixed-income markets, organized in four layers:
 
-1. **马赛克引擎（Mosaic）** — 把碎片化公开数据拼成连贯信号；数据缺口本身即风险信号。
-2. **双轨引擎（Dual-Track）** — 行业多层金字塔（基本面）与市场定价信号并行，再交叉对撞。
-3. **多利益相关者（Multi-Stakeholder）** — M0 审贷 / M1 投资 / M2 承销 / M3 交易 / M4 风控 / M5 融资多视角。
-4. **系统智能层（System-Intelligence, SRI）** — 跨行业传染、五维集中度、系统性风险指数（SRI）。
+1. **Mosaic Engine** — Assembles fragmented public data into coherent signals; data gaps are themselves risk signals.
+2. **Dual-Track Engine** — Industry multi-tier pyramids (fundamentals) and market pricing signals run in parallel, then cross-validate.
+3. **Multi-Stakeholder** — Credit Selector / Portfolio Manager / Risk Officer / Trader / Advisor / Individual Investor perspectives.
+4. **System-Intelligence Layer (SRI)** — Cross-industry contagion, five-dimension concentration, Systemic Risk Index (SRI).
 
-**阈值、权重、评级映射只存放在 `dev/engine/*.md`。** 本文件与任何 skill 都不复制这些数值；凡涉及数值判断，一律引用引擎文档 + 章节。
+**Thresholds, weights, and rating mappings live only in `dev/engine/*.md`.** This file and all skills reference engine documents by path + section; never duplicate numeric values.
 
-## 如何在你的 agent CLI 中使用
+## How to Use in Your Agent CLI
 
-skills 实体存放在 `dev/.claude/skills/`。不同 CLI 的发现机制不同，接入姿势也不同：
+Skills are stored in `dev/.claude/skills/`. Discovery mechanisms differ by CLI:
 
-| agent CLI | 如何接入 |
-|---|---|
-| **Claude Code** | 自动发现 `dev/.claude/skills/`（在 `dev/` 下工作时即被加载），无需手动配置。 |
-| **Codex** | 原生读本 `AGENTS.md`；随后手动读当前任务的 `SKILL.md` 正文（Codex 不会自动发现 `dev/.claude/skills`）。深度适配见 `docs/adapters/codex.md`。 |
-| **Cursor** | 读本 `AGENTS.md`，再手动加载当前任务的 `SKILL.md` 正文。 |
-| **Gemini** | 读本 `AGENTS.md`，再手动加载当前任务的 `SKILL.md` 正文。 |
-| **OpenCode** | 读本 `AGENTS.md`，再手动加载当前任务的 `SKILL.md` 正文。 |
+| Agent CLI | How to Access |
+|-----------|---------------|
+| **Claude Code** | Auto-discovers `dev/.claude/skills/` when working under `dev/` — no manual config needed. |
+| **Codex** | Reads this `AGENTS.md` natively; then manually load the relevant `SKILL.md` body. Deep-dive adapter: `docs/adapters/codex.md`. |
+| **Cursor** | Read this `AGENTS.md`, then manually load the relevant `SKILL.md`. |
+| **Gemini** | Read this `AGENTS.md`, then manually load the relevant `SKILL.md`. |
+| **OpenCode** | Read this `AGENTS.md`, then manually load the relevant `SKILL.md`. |
 
-统一姿势：**先读你的 instructions file，再读当前任务对应的那份 `SKILL.md`。**
+Universal posture: **read your instructions file first, then the `SKILL.md` for the task at hand.**
 
-## Skill 索引
+## Skill Index
 
-| Skill | 何时使用（Use when…） | 路径 |
-|---|---|---|
-| `credit-analysis-router` | 需求模糊或复合（"帮我看看这家公司""该做哪种分析""该从哪儿入手"），需先四问路由到工作路径 | `dev/.claude/skills/credit-analysis-router/SKILL.md` |
-| `fixed-income-credit-analysis` | 已点名的具体方法论任务或引擎路径，按路径单或核心文档集执行分析 | `dev/.claude/skills/fixed-income-credit-analysis/SKILL.md` |
-| `credit-report-builder` | 把完成的信用分析装配为交付报告（选模板 Type 1–15、映射 L0/L1/L2 层、装配仪表盘）；需上游分析产物，自身不做分析 | `dev/.claude/skills/credit-report-builder/SKILL.md` |
-| `credit-qa-verifier` | 交付前复核报告/分析（质量门、密度规则、一票否决上限、Mode B 护栏、单源合规）；四段链终态质检 | `dev/.claude/skills/credit-qa-verifier/SKILL.md` |
+| Skill | Use When… | Path |
+|-------|-----------|------|
+| `credit-analysis-router` | The request is vague or compound ("analyze this company", "what analysis should I run", "where do I start") — requires four-question routing to a work path | `dev/.claude/skills/credit-analysis-router/SKILL.md` |
+| `fixed-income-credit-analysis` | A concrete methodology task or engine path has been named — execute analysis per the path sheet or core document set | `dev/.claude/skills/fixed-income-credit-analysis/SKILL.md` |
+| `credit-report-builder` | Turn a completed credit analysis into a deliverable report — select template (Type 1–18), map to L0/L1/L2 tiers, assemble dashboard; requires upstream analysis artifact, does NOT perform analysis | `dev/.claude/skills/credit-report-builder/SKILL.md` |
+| `credit-qa-verifier` | Pre-delivery quality gate review of a report/analysis — signal-density rules, one-shot-veto ceiling, Mode B guardrails, single-source compliance; terminal QA in the four-stage chain | `dev/.claude/skills/credit-qa-verifier/SKILL.md` |
 
-> 四段管线对应四份 skill 已全部交付（见下「四段管线」）。
+## Four-Stage Pipeline
 
-## 四段管线
+The engine decomposes each credit analysis into a four-stage chained contract, with `path_id` as the join key across stages:
 
-引擎把一次信用分析拆成四段链式契约，`path_id` 是贯穿各段的 join key：
+| Stage | Responsibility | Skill | Status |
+|-------|---------------|-------|--------|
+| ① intake | Four-question routing, produces a **Work Path Sheet** | `credit-analysis-router` | ✅ Delivered |
+| ② analysis | Execute analysis per path sheet `engine_reading_order` | `fixed-income-credit-analysis` | ✅ Delivered |
+| ③ report | Assemble completed analysis into a deliverable report | `credit-report-builder` | ✅ Delivered |
+| ④ qa | Pre-delivery quality gate verification | `credit-qa-verifier` | ✅ Delivered |
 
-| 阶段 | 职责 | 承载 skill | 状态 |
-|---|---|---|---|
-| ① intake | 四问路由，产出《工作路径单》 | `credit-analysis-router` | ✅ 已交付 |
-| ② analysis | 按路径单 `engine_reading_order` 执行分析 | `fixed-income-credit-analysis` | ✅ 已交付 |
-| ③ report | 把完成的分析装配为交付报告 | `credit-report-builder` | ✅ 已交付 |
-| ④ qa | 交付前质量门复核 | `credit-qa-verifier` | ✅ 已交付 |
+The single source of truth for the four artifacts (path sheet / analysis artifact / delivery sheet / qa verdict) and their chaining edges is `dev/engine/pipeline-contract.md`.
 
-四段产物（工作路径单 / 分析产物 / 交付单 / 质检裁决）的字段形状与链式边的单一事实源为 `dev/engine/pipeline-contract.md`。
+**Executable Orchestrator**: `src/pipeline.py` drives the four-stage chain in code. It reads stage definitions from `pipeline-contract.md` (never hardcodes stage names), and calls coded engines only for wired paths — **WP-RO-03 → SRI (`src/sri_calculator.py`), WP-RO-01 → Five-Dimension Concentration (`src/concentration_scorer.py`), WP-RO-02 → Contagion Matrix (`src/contagion_engine.py`), WP-X-05 → Outlook Monitoring (`src/outlook_engine.py`)**. All other paths/stages remain LLM-orchestrated per engine docs.
 
-**可执行编排器（v0.7.8）**：`src/pipeline.py` 现以代码驱动上述四段链。它从 `pipeline-contract.md` 读取阶段定义（不硬编码阶段名/边），复用 `src/path_sheet.py` 校验路径单，并仅对已接线路径调用编码引擎——**WP-M4-03 → SRI（`src/sri_calculator.py`）、WP-M4-01 → 五维集中度（`src/concentration_scorer.py`）**；其余路径/阶段仍由 LLM 按引擎文档编排。引擎文档为规范源，scorer 为其可执行实现，二者由 `tests/test_engine_doc_parity.py` 对账。
+## Single Source of Truth Rule
 
-## 单一事实源规则
+**Never duplicate thresholds, weights, SRI tiers, rating mappings, or tier time budgets.** Every numeric judgment references `dev/engine/<doc>.md §section`; if the engine document does not define it, output `engine_undefined` — never invent values.
 
-**绝不复制阈值、权重、SRI 档位、评级映射或分层时间预算。** 任何数值判断都引用 `dev/engine/<doc>.md §节`；引擎文档未定义就输出 `引擎未定义`，不得编造数值。
+## Routing Baseline (Work Path Registry)
 
-## 路由基线（工作路径注册表）
+`dev/engine/work-path-registry.md` is the single source of truth for routing: **16 work paths (8 active / 6 partial / 2 planned)**. The router maps vague requests to concrete work paths using this registry; when a planned path is recommended, it MUST honestly state "under development" and offer an alternative active path.
 
-`dev/engine/work-path-registry.md` 是路由单一事实源：**16 条工作路径（8 条 active / 6 条 partial / 2 条 planned）**。router 据此把模糊需求路由到具体工作路径；推荐到 planned 路径时须如实告知"待开发"并给出可替代的 active 路径。
+## Validation Commands
 
-## 验证命令
-
-改动后两道门必须保持绿：
+After changes, both gates must stay green:
 
 ```
 python -m pytest tests/ -q
 python scripts/consistency_check.py
 ```
 
-## 平台中立说明
+## Platform-Neutral Note
 
-本文件与各 skill 统一称"你的 instructions file"——每个 agent CLI 的项目级指令文件名各不相同，本仓库不假定任何特定产品文件名。引用字面路径 `dev/.claude/skills` 是允许的：那是一个路径，不是一条行为指令。
+This file and all skills uniformly refer to "your instructions file" — each agent CLI has its own project-level instruction filename, and this repository assumes no specific product filename. The literal path `dev/.claude/skills` is permitted: it is a path, not a behavioral directive.
