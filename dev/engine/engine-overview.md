@@ -232,6 +232,23 @@ Indicator Score = f(Raw Value, Threshold, Direction)
 | contagion-matrix.md | v0.8.2-release | 13行业传染矩阵 |
 | concentration-framework.md | v0.8.2-release | 五维集中度分析框架 |
 | systemic-warning-framework.md | v0.8.2-release | 系统性预警框架 |
+| validation-methodology.md | v0.8.2-release | 黑天鹅回溯验证方法论 |
+| financial-bond-framework.md | v0.8.2-release | 金融债分析框架 |
+| holding-company-framework.md | v0.8.2-release | 控股公司信用分析框架 |
+| non-credit-risk-overlay.md | v0.8.2-release | 非信用风险叠加层 |
+| external-support-framework.md | v0.8.2-release | 外部支持评估框架 |
+| esg-framework.md | v0.8.2-release | ESG 与治理风险框架 |
+| governance-fraud-risk.md | v0.8.2-release | 治理/欺诈风险框架 |
+| outlook-monitoring-framework.md | v0.8.2-release | 展望与持续监控框架 |
+| lgd-recovery-framework.md | v0.8.2-release | LGD 与回收率分析框架 |
+| lgfv-framework.md | v0.8.2-release | 城投债分析框架 |
+| multi-stakeholder.md | v0.8.2-release | 多利益相关者框架 |
+| financial-deep-dive.md | v0.8.2-release | 财务深度分析框架 |
+| paradigm-brand-channel.md | v0.8.2-release | 品牌+渠道范式规格 |
+| paradigm-network-traffic.md | v0.8.2-release | 网络+流量范式规格 |
+| work-path-registry.md | v0.8.2-release | 工作路径注册表 |
+| dimension-registry.md | v0.8.2-release | 维度注册表 |
+| pipeline-contract.md | v0.8.2-release | 四段链产物契约 |
 
 **职责边界说明：** 原有M4组合风控框架（multi-stakeholder.md §5）承担单发行人/单组合的风控职能（集中度限额/压力测试/评级调整）。系统智能层（contagion-matrix.md/concentration-framework.md/systemic-warning-framework.md）在M4基础上增加跨发行人/跨组合的系统性风险分析——传染矩阵覆盖全市场行业对传导、集中度框架覆盖五维组合集中度、预警框架提供全市场SRI读数。两者分工明确：原有M4做单发行人风控·系统智能层做跨发行人系统性风险。
 
