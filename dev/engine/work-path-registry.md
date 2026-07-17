@@ -462,7 +462,7 @@ engine_sequence:
   - dev/engine/outlook-monitoring-framework.md
 paradigm_selection: n/a（展望与监控为跨范式机制）
 templates:
-  - planned
+  - dev/templates/template-type18.html
 outputs: [评级展望, 观察名单]
 quality_gates:
   - "评级展望 (dev/engine/outlook-monitoring-framework.md §二)"

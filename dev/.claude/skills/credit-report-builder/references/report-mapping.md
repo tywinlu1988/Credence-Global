@@ -23,7 +23,7 @@
 | WP-X-02 | 多身份并行评估 | L2 | L2 深度报告 | template-type4 |
 | WP-X-03 | 行业分析框架建设 | 专项 | 专项（模板定义） | template-type7 |
 | WP-X-04 | ESG/治理风险扫描 | 专项 | 专项（模板定义） | template-type10 |
-| WP-X-05 | 展望与持续监控 | 专项 | 专项（模板定义） | planned |
+| WP-X-05 | 展望与持续监控 | 专项 | 专项（模板定义） | template-type18 |
 
 ## 分层指针（单一事实源）
 
