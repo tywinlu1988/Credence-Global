@@ -1,343 +1,429 @@
-# 行业分类与分析框架
+# Industry Classification & Analysis Framework
 
-**版本**: v0.8.4-release | **日期**: 2026-07-10
-
----
-
-## 一、行业准入筛选（C1-C4）
-
-在将某个行业纳入分析覆盖范围之前，必须通过以下四项条件评估：
-
-| 条件 | 含义 | 是否为硬性门槛 |
-|---|---|---|
-| **C1 交易体量** | 该行业有足够的信贷规模 + 债券/股票发行量 | 是 |
-| **C2 分析壁垒** | "光看财务报表无法理解该行业的信用风险" | 是 |
-| **C3 从业者痛点** | 专业从业者正在积极寻求该行业分析能力 | 否 |
-| **C4 数据可信度** | 该行业的公开数据在根本上可靠 | **是 — 硬性门槛** |
+**Version**: v0.8.4-release | **Date**: 2026-07-17 | **Status**: Internationalized (Phase 2)
 
 ---
 
-## 二、十维行业评分体系（D1-D10）
+## 1 Ten-Dimension Scoring (D1-D10)
 
-每一维度评分范围为1-5分，用于量化描述行业的结构性特征。
+Each dimension is scored on a 1-5 scale to quantify the structural characteristics of an industry. 1 = lowest / least significant; 5 = highest / most significant.
 
-| 编号 | 维度 | 定义 | 评分1-5 |
-|---|---|---|---|
-| D1 | 市场容量 | 当前国内市场总量（非预测值） | 1=极小 / 5=极大 |
-| D2 | 增量空间 | 未来3-5年增长的确定性 | 1=零增长或负增长 / 5=高确定性高增长 |
-| D3 | 政策支持力度 | 国家层面政策支持的明确性和持续性 | 1=无政策支持 / 5=国家级战略支持 |
-| D4 | 政策波动性 | 政策变化的频率和急转弯风险 | 1=极稳定 / 5=频繁剧烈变化 |
-| D5 | 资本可持续性 | 资金来源的多样性和持续性 | 1=融资渠道枯竭 / 5=多元化充足融资 |
-| D6 | 民生关联度 | 与社会稳定和基本福利的直接关联 | 1=无直接关联 / 5=核心民生领域 |
-| D7 | 外部依赖度 | 对外国技术、设备、材料、市场的依赖程度 | 1=完全自主 / 5=极高依赖 |
-| D8 | 供应链权力集中度 | 价值链中的议价能力分布 | 1=高度分散 / 5=单极垄断 |
-| D9 | 产业生命周期 | 产业所处的发展阶段 | 1=衰退期 / 5=导入或高速成长期 |
-| D10 | 周期波动性 | 对宏观/库存/价格周期的敏感性 | 1=极低周期敏感 / 5=极强周期波动 |
-
----
-
-## 三、四种行业类型与权重映射
-
-### 3.1 类型判定条件
-
-| 行业类型 | 触发条件 | 核心逻辑 |
-|---|---|---|
-| **政策驱动型** | D3>=4, D4>=3 | 外部政策周期决定行业总需求和企业盈利中枢 |
-| **技术壁垒型** | D7>=3, D9>=3 | 技术/资产/注册证的不可替代性构成护城河 |
-| **存量博弈型** | D2<=3, D10>=3 | 行业总量不再扩张，零和博弈中胜者生存 |
-| **资产租约型** | D5>=4, D8>=3 | 资产的现金流产出能力决定信用质量 |
-
-#### 范式冲突时的优先级规则
-
-当一个行业同时满足多个范式触发条件时，按以下顺序确定其主要范式：
-
-1. 生存位势/利润要塞（Consolidation）优先于其他范式；
-2. geopolitics-technology 混合行业中，以地缘政治为 L1 权重的行业归为 Policy-Driven，但标注 Tech-Barrier 次要属性；
-3. 资产租约型（Asset-Lease）与网络+流量型（Network+Traffic）冲突时，若核心资产为物理租约则 Asset-Lease 优先，若核心资产为流量/用户则 Network+Traffic 优先；
-4. 品牌+渠道型（Brand+Channel）与网络+流量型冲突时，以收入是否主要依赖品牌溢价 vs 流量变现区分。
-
-> **优先级规则补充**：虽然 `存量博弈型` 触发条件为 `D2≤3 且 D10≥3`，但当行业的核心风险驱动是品牌溢价、网络流量或渠道现金流时，优先按品牌+渠道型或网络+流量型归类。`存量博弈型` 优先仅适用于行业核心逻辑为产能出清、利润要塞争夺或生存位势竞争的场景。
-
-> **范式文档分布**：本节以内联方式给出 **政策驱动型 / 技术壁垒型 / 存量博弈型 / 资产租约型** 四种范式的判定条件与金字塔权重（§四）。**范式E（品牌+渠道型）** 与 **范式F（网络+流量型）** 各有独立深度规格文档——[品牌+渠道型分析范式](paradigm-brand-channel.md) 与 [网络+流量型分析范式](paradigm-network-traffic.md)，含完整四层金字塔权重、一票否决体系与验证案例；其适用行业（食品饮料/纺织服装 → 范式E，交通运输/商贸零售/传媒互联网 → 范式F）的判定见 §6.2 与 §七。六个范式 + LGFV 特殊类别的可寻址索引见 [维度注册表](dimension-registry.md)。
-
-### 3.2 标准金字塔权重模板
-
-| 行业类型 | L1（最重） | L2 | L3 | L4（最轻） |
-|---|---|---|---|---|
-| **政策驱动型** | 35% 政策/宏观 | 30% 技术 | 20% 供应链 | 15% 财务 |
-| **技术壁垒型** | 20% 政策 | 35% 技术/IP/注册 | 25% 运营 | 20% 财务 |
-| **存量博弈型** | 25% 生存位势 | 20% 技术 | 30% 利润要塞 | 25% 财务 |
-| **资产租约型** | 15% 政策 | 20% 技术 | 35% 客户/租约 | 30% 财务 |
-
-### 3.3 特殊结构说明
-
-| 行业 | 特殊结构 | 说明 |
-|---|---|---|
-| **半导体** | 5层金字塔 | L1地缘政治30-35%, L2技术25-30%, L3市场15-20%, L4政策/资本10-15%, L5财务5-10% |
-| **新能源车** | 双轨制 | OEM生存模型与供应链利润要塞模型使用完全不同的两套框架 |
-| **生物医药** | 双轨制 | Biotech（未盈利）与Pharma（已商业化）的财务层分别分析 |
-
-### 3.4 范式边界说明
-
-| 边界 | 判断依据 |
-|---|---|
-| 政策驱动型 vs 技术壁垒型 | 当政策支持足够明确且政策波动性高时（D3>=4, D4>=3）走政策驱动型；当技术外部依赖度高但政策支持较弱时（D7>=3）走技术壁垒型 |
-| 半导体特殊性 | 主要范式为政策驱动型（地缘政治为 L1 权重），同时标注技术壁垒型次要属性；按冲突优先级规则，geopolitics-technology 混合行业归入政策驱动型 |
-| 生物医药双重属性 | 主要范式为技术壁垒型（管线/IP 为核心），同时具备政策驱动型次要属性（NMPA/NRDL/集采政策敏感） |
-| 行业类型漂移 | 行业类型不是一成不变的（如光伏正在从政策驱动型向存量博弈型漂移），需建立季度性行业类型重检机制 |
+| D# | Dimension | Key Question | Scoring Guide |
+|----|-----------|-------------|---------------|
+| D1 | Industry Lifecycle & Cyclicality | Where is the industry in its cycle? | 1=Declining / 5=Nascent or high-growth |
+| D2 | Competitive Intensity (Porter's 5 Forces) | How fierce is competition? | 1=Fragmented / 5=Monopsony or hyper-competitive |
+| D3 | Regulatory & Policy Risk | What regulatory frameworks govern this industry? | 1=Stable, light-touch / 5=Frequent, disruptive changes |
+| D4 | Technology Disruption Risk | How exposed is the industry to tech disruption? | 1=Minimal disruption risk / 5=Existential tech threat |
+| D5 | Capital Intensity & Financing Dependency | How much capital does this industry consume? | 1=Low CapEx, self-funding / 5=Massive, continuous CapEx |
+| D6 | Customer Concentration & Bargaining Power | Who holds pricing power? | 1=Dispersed customers / 5=Single or oligopsony customer |
+| D7 | Supply Chain Vulnerability | How resilient is the supply chain? | 1=Fully autonomous / 5=Critical external dependencies |
+| D8 | Geographic & Sovereign Exposure | Which jurisdictions matter? | 1=Domestic only / 5=Multi-jurisdictional, sanction-sensitive |
+| D9 | ESG & Climate Transition Risk | How exposed to ESG/transition risks? | 1=Negligible / 5=Core to business model |
+| D10 | Barriers to Entry / Moat Durability | How defensible is the moat? | 1=Commoditized / 5=Unassailable moat |
 
 ---
 
-## 四、七行业金字塔规格
+## 2 Six International Paradigms (P1-P6)
 
-### 4.1 光伏/储能（政策驱动型 — 4层标准）
+Every industry covered by the engine is assigned one of six analysis paradigms. Each paradigm defines:
+- **GICS mapping**: indicative sector/industry group coverage
+- **Ten-dimension weight template**: which D1-D10 carry the most weight
+- **Four-layer pyramid** (L1-L4): layer weights and key indicators
+- **Paradigm-specific veto triggers**: one-shot knockout conditions
 
-| 层 | 权重 | 关键指标 | 一票否决 |
-|---|---|---|---|
-| L1 政策/宏观 | 35% | 政策方向与技路对齐度、补贴退坡节奏、出口退税风险、弃光/并网政策 | 核心产品被政策明确限制或淘汰 |
-| L2 技术 | 30% | 技术路线正确性、效率差 vs 领先者、专利组合、央企集采入围、产能利用率 | PERC产能 > 70% |
-| L3 供应链 | 20% | 垂直整合程度、多晶硅长协覆盖、海外产能、客户集中度、价格敏感系数 | 单一客户 > 50% 且该客户自身有风险 |
-| L4 财务 | 15% | 毛利率趋势、负债率、现金/短债比、经营性现金流方向、融资能力、**营运资金效率（DSO/DIO/DPO/CCC，数据来源：年报附注）**、**债务到期排程（未来12/24/36个月到期分布，数据来源：年报"一年内到期非流动负债+短期借款+应付债券按到期日"附注）** | 经营性现金流连续3年以上为负 且 现金跑道 < 6个月 |
+### 2.1 P1 Cyclical
 
-**已验证：** 隆基（7.00/A）vs 一道新能（1.50/CCC）— 5.5分区分度（评级修订 v0.4.0：12档映射）
+**GICS Mapping**: Energy (GICS 10), Materials (GICS 15), Capital Goods (2010), Chemicals (1510), Shipping (GICS sub-industry 203050), Commodity-focused sub-industries.
 
-**行业特殊说明——营运资金效率：**
-- **DSO阈值：** >90天为关注，>180天为危险。组件销售通常账期30-60天。
-- **DIO阈值（高敏感度）：** **DIO>60天需触发存货跌价压力测试**（组件价格每周下跌，存货贬值速度快）。>120天为高度关注。
-- **DPO阈值：** <30天为弱议价力，>90天为强但也可能反映拖欠供应商。
-- **CCC阈值：** >150天为关注。
-- **债务到期排程分级：** 🟢未来12个月到期<总债务30%；🟡30-50%；🟠50-70%；🔴>70%或单月集中到期>20%。
+**Key Signals**: Commodity prices, capacity utilization rates, freight rates, inventory cycles, PMI indicators.
 
----
+**Ten-Dimension Weight Template** (heaviest first):
+- D10 (Cyclicality) > D7 (Supply Chain) > D2 (Competitive Intensity) > D1 (Lifecycle) > D5 (Capital Intensity)
 
-### 4.2 半导体/集成电路（政策驱动型 — 5层金字塔）
+| Layer | Weight | Focus | Key Indicators | Veto Trigger |
+|-------|--------|-------|----------------|--------------|
+| L1 Market Cycle Position | 35% | Commodity price trend, capacity utilization, inventory-to-sales ratio, order backlog | Commodity price collapse > 40% from cycle peak with no recovery in sight |
+| L2 Cost & Supply Chain | 25% | Input cost structure, supply chain concentration, freight cost exposure, energy cost sensitivity | Critical input supply permanently disrupted (e.g., mine closure, refinery outage) |
+| L3 Competitive Positioning | 20% | Cost curve position (decile rank), market share trend, product differentiation, vertical integration | Negative unit economics at mid-cycle prices |
+| L4 Financial Resilience | 20% | Debt/EBITDA through cycle, interest coverage at trough, liquidity runway, dividend/capex flexibility | Debt/EBITDA > 6x at mid-cycle + no committed financing |
 
-| 层 | 权重 | 关键指标 | 一票否决 |
-|---|---|---|---|
-| L1 地缘政治 | 30-35% | 实体清单/SDN风险、设备供应链安全（ASML/AMAT/Lam依赖）、EDA授权、代工依赖、IP授权限制 | 被列入实体清单或SDN清单 |
-| L2 技术 | 25-30% | 制程定位、路线图可信度（流片成功率）、IP组合质量、研发转化效率、人才储备、技术颠覆抗性（Chiplet/RISC-V/硅光） | — |
-| L3 市场位势 | 15-20% | 市占率趋势、终端客户质量、设计中标管道、ASP/毛利率趋势、替代威胁 | — |
-| L4 政策/资本 | 10-15% | 大基金投资情况、地方政府配套质量、科创板/IPO可行性、补贴持续性、标准制定参与 | — |
-| L5 财务 | 5-10% | 现金跑道、融资节奏、应收质量、商誉/总资产、关联交易、控股股东质押比、**营运资金效率（DSO/DIO/DPO/CCC，数据来源：年报附注）**、**债务到期排程（未来12/24/36个月到期分布，数据来源：年报附注）** | 商誉/总资产 >20% 且 利息覆盖 < 2x |
+**Paradigm-Specific Veto Triggers**:
+- **V-CYC-1**: Commodity price collapse > 40% from cycle peak with no recovery path
+- **V-CYC-2**: Debt/EBITDA > 8x at mid-cycle prices (terminal over-leverage)
+- **V-CYC-3**: Critical input supply permanently severed (sanctions, mine depletion, force majeure)
 
-**已验证：** 紫光集团回溯 — L5+L4在T-17个月全部红色信号
+### 2.2 P2 Defensive
 
-**行业特殊说明——营运资金效率：**
-- **DSO需分客户看：** 若大客户为华为/中兴等受制裁企业，DSO可能因付款通道受限而异常拉长，需单独计算受制裁客户群体的应收账款周转天数。正常IC设计公司DSO通常在30-60天。
-- **DIO：** 代工厂（Foundry）DIO天然高（晶圆制造周期长），>90天可能正常；Fabless设计公司DIO应<60天。
-- **债务到期排程分级：** 🟢<30%；🟡30-50%；🟠50-70%；🔴>70%或单月集中到期>20%。
+**GICS Mapping**: Consumer Staples (GICS 30), Healthcare Equipment & Supplies (3510), Select Utilities (GICS 5510 with regulated tariffs), Food & Beverage (3020), Household & Personal Products (3030).
 
-**特殊规则：** M&A驱动型企业L5权重应提升至15-20%（商誉调整后负债率是关键指标）
+**Key Signals**: Brand moat depth, pricing power track record, channel density, repeat purchase rate, gross margin stability.
 
----
+**Ten-Dimension Weight Template** (heaviest first):
+- D10 (Barriers to Entry) > D6 (Customer Bargaining) > D1 (Lifecycle) > D4 (Tech Risk) > D2 (Competitive Intensity)
 
-### 4.3 高端装备/机床（技术壁垒型 — 4层+五大会计陷阱）
+| Layer | Weight | Focus | Key Indicators | Veto Trigger |
+|-------|--------|-------|----------------|--------------|
+| L1 Brand & Pricing Power | 35% | Gross margin level and stability, pricing authority (annual price change vs. volume change), market share trend, brand equity score | Core brand/product permanently impaired by safety/quality scandal |
+| L2 Channel & Distribution | 25% | Channel breadth (outlet count, geographic penetration), distribution network health, inventory turnover, customer retention | Channel collapse > 30% dealer loss in a single year |
+| L3 Product Portfolio | 20% | Category lifecycle stage, product diversification, SKU productivity, innovation pipeline, single-product concentration | Single product > 70% revenue + category in structural decline |
+| L4 Financial Quality | 20% | Operating cash flow / net income, net debt/EBITDA, ROIC, working capital efficiency (DSO/DIO/DPO/CCC), debt maturity profile | Operating cash flow negative for 3 consecutive years + cash runway < 6 months |
 
-| 层 | 权重 | 关键指标 | 一票否决 |
-|---|---|---|---|
-| L1 政策 | 20% | 进口替代政策覆盖、首台套保险/目录纳入、研发加计扣除资格 | — |
-| L2 技术自主化 | 35% | 核心部件自给率（数控系统/伺服/主轴）、精度金字塔位势、研发转化效率、技术储备深度、维保服务能力 | 数控系统+主轴+伺服全部外采且无国内替代 |
-| L3 运营 | 25% | 订单可见度（在手覆盖月数）、客户结构健康度、交付/收款周期、产能利用率 | — |
-| L4 财务 | 20% | 调整后毛利率（扣R&D资本化）、真实现金流覆盖、真实杠杆、应收/存货质量、**营运资金效率（DSO/DIO/DPO/CCC，数据来源：年报附注）**、**债务到期排程（未来12/24/36个月到期分布，数据来源：年报附注）** | 必须先做五大会计陷阱修正再分析 |
+**Paradigm-Specific Veto Triggers**:
+- **V-DEF-1**: Major safety/quality scandal leading to national recall or regulatory action (brand value destruction)
+- **V-DEF-2**: Single product > 70% revenue + category terminal decline (structural product death)
+- **V-DEF-3**: Distributor network collapse (> 30% loss in one year)
 
-**五大会计陷阱（行业特有）：**
-1. 收入确认时点扭曲（Q4集中度 > 40%）
-2. R&D资本化操纵（资本化率 > 40%）
-3. 存货可变现性（定制WIP可能零残值）
-4. 质保金/尾款隐藏坏账
-5. 关联交易定价操纵
+### 2.3 P3 Growth
 
-**行业特殊说明——营运资金效率：**
-- **DSO天然长：** 高端装备验收周期长（6-12个月常见），DSO>180天可能正常，但**>365天是严重信号**。需区分合同约定付款节点 vs 实际回款进度。
-- **DIO/DPO关系关键：** 如果在制品/WIP堆积但应付账款在缩减 = 客户可能取消订单，需立即检查在手订单变化和合同履约进度。
-- **CCC阈值：** >200天为关注（行业特性导致CCC天然长于一般制造业）。
-- **债务到期排程分级：** 🟢<30%；🟡30-50%；🟠50-70%；🔴>70%或单月集中到期>20%。
+**GICS Mapping**: Semiconductors & Semiconductor Equipment (4530), Software (4510), Biotechnology (3520), Clean Energy Technology (renewable energy equipment, hydrogen, battery tech), Health Care Technology (351030), Electronic Components (4520).
 
----
+**Key Signals**: Technology roadmap credibility, IP portfolio strength, R&D conversion efficiency, financing runway, product pipeline.
 
-### 4.4 生物医药/创新药（技术壁垒型 — 双轨制）
+**Ten-Dimension Weight Template** (heaviest first):
+- D4 (Technology Disruption) > D5 (Capital Intensity) > D2 (Competitive Intensity) > D1 (Lifecycle) > D9 (ESG)
 
-| 层 | 权重（Biotech / Pharma） | 关键指标 | 一票否决 |
-|---|---|---|---|
-| L1 政策 | 15% / 15% | NMPA/FDA审批节奏、NRDL/集采风险、临床试验政策变化 | — |
-| L2 管线/技术 | 25% / 15% | 管线阶段分布、FIC vs me-too差异化、临床试验设计质量、靶点验证度、竞争格局、创始人/科学家团队质量 | 关键临床试验失败 |
-| L3 BD/商业化 | 20% / 25% | BD合作质量与条款、对外授权验证、商业化能力、市场准入 | — |
-| L4 财务 | 20% / 15%（现金流版） | 现金跑道（月）、烧钱率趋势、BD首付款/里程碑收入、CDMO合同质量、GMP合规、**营运资金效率（DSO/DIO/DPO/CCC，数据来源：年报附注）**、**债务到期排程（未来12/24/36个月到期分布，数据来源：年报附注）** | 现金跑道 < 6个月 |
-| L5 外部支持 | 10% / — | 投资者质量、国家级/省级项目参与、科创板上市状态、创始人网络 | — |
+| Layer | Weight | Focus | Key Indicators | Veto Trigger |
+|-------|--------|-------|----------------|--------------|
+| L1 Technology & IP | 30% | Technology roadmap credibility, IP portfolio quality (patent strength, grant rate, citation), R&D efficiency, talent concentration, product moat | Key technology pathway becomes obsolete (technical death) |
+| L2 Market Position & Pipeline | 25% | Pipeline stage distribution (Phase I/II/III, design wins, product backlog), TAM penetration, competitive differentiation, customer adoption | Critical clinical trial / regulatory filing fails |
+| L3 Commercialization & Operations | 20% | Path to profitability, unit economics, revenue growth quality, partnership/licensing quality, supply chain (for hardware) | Cash runway < 6 months + no committed financing |
+| L4 Financial Resilience | 25% | Cash burn rate, financing runway, access to capital markets, quality of investors, revenue visibility (backlog, recurring) | No financing path beyond current cash runway |
 
-**关键区分：** Biotech（未盈利，依赖融资）和 Pharma（已商业化）需使用完全不同的财务分析框架。
+**Paradigm-Specific Veto Triggers**:
+- **V-GRW-1**: Key clinical trial failure / regulatory rejection (product death)
+- **V-GRW-2**: Core technology pathway rendered obsolete by competing standard/paradigm
+- **V-GRW-3**: Cash runway < 6 months with no committed follow-on financing (liquidity death)
 
-**行业特殊说明——营运资金效率：**
-- **Biotech侧重现金跑道：** 未盈利Biotech的DSO（BD首付款时间点依赖）/DPO参考价值有限，核心关注现金跑道和烧钱率。
-- **Pharma需正常关注：** 已商业化药企的DSO（医院/经销商回款）应<90天，DIO（药品库存）应<60天。CCC>120天为关注。
-- **债务到期排程分级：** 🟢<30%；🟡30-50%；🟠50-70%；🔴>70%或单月集中到期>20%。
+### 2.4 P4 Regulated Utility
 
----
+**GICS Mapping**: Electric Utilities (5510), Gas Utilities (5520), Multi-Utilities (5530), Water Utilities (5540), Toll Roads, Airports, Regulated Rail Networks, Regulated Pipelines.
 
-### 4.5 医疗器械（技术壁垒型）
+**Key Signals**: Regulatory framework quality (independent regulator, tariff formula, allowed ROE), capex plan clarity, rate case outcomes, regulatory asset base (RAB) growth.
 
-| 层 | 权重 | 关键指标 | 一票否决 |
-|---|---|---|---|
-| L1 政策 | 15% | 国产替代政策、集采扩围、县级医院升级政策 | — |
-| L2 注册证/产品 | 22% | 三类注册证数量/结构/年限、注册管道、技术指标 vs 进口、核心部件自给率 | 三类注册证到期且无法续期 |
-| L3 渠道/商业化 | 25% | 三甲医院覆盖率、Top100医院渗透、经销商网络质量、中标率、"设备+耗材"模式占比 | — |
-| L4 财务 | 20% | 收入质量（设备 vs 耗材 vs 服务）、医院应收账龄、渠道库存积压、毛利率稳定性、**营运资金效率（DSO/DIO/DPO/CCC，数据来源：年报附注）**、**债务到期排程（未来12/24/36个月到期分布，数据来源：年报附注）** | — |
-| L5 外部支持 | 8% | 国产替代目录纳入、产业资本支持、医院集团采购关系 | — |
+**Ten-Dimension Weight Template** (heaviest first):
+- D3 (Regulatory Risk) > D5 (Capital Intensity) > D9 (ESG/Climate) > D1 (Lifecycle) > D10 (Moats)
 
-**行业特殊说明——营运资金效率：**
-- **DSO关注医院客户：** 公立医院客户回款周期长（6-12个月常见），需区分直销 vs 经销模式的应收账款账龄。经销模式下DSO应<90天，直销医院DSO可能>180天。
-- **DIO关注渠道库存：** 设备经销商通常压货，DIO>120天需关注渠道库存积压风险。
-- **债务到期排程分级：** 🟢<30%；🟡30-50%；🟠50-70%；🔴>70%或单月集中到期>20%。
+| Layer | Weight | Focus | Key Indicators | Veto Trigger |
+|-------|--------|-------|----------------|--------------|
+| L1 Regulatory Framework | 35% | Regulatory independence, tariff formula clarity, allowed ROE stability, cost pass-through mechanism, rate case track record | Regulatory license revoked or tariff methodology fundamentally restructured to disallow cost recovery |
+| L2 Asset Quality & Capex | 25% | Asset age and condition, RAB growth trajectory, capex plan credibility (regulatory vs. actual), maintenance capex ratio, technology modernization | Asset failure causing prolonged service disruption (safety/regulatory death) |
+| L3 Revenue Stability | 20% | Demand volume stability (GDP-linked, weather normalization), tariff escalation history, customer mix (regulated vs. unregulated), off-take agreements | Structural demand decline > 15% p.a. with no tariff adjustment mechanism |
+| L4 Financial Structure | 20% | Gearing level, interest coverage (FFO/interest), DSCR, debt maturity profile (average tenor), refinancing risk, credit rating headroom | Gearing > 75% + interest coverage < 1.5x + no equity injection plan |
 
----
+**Paradigm-Specific Veto Triggers**:
+- **V-REG-1**: License revoked or not renewed by regulator
+- **V-REG-2**: Fundamental tariff methodology change that disallows cost recovery (regulatory expropriation)
+- **V-REG-3**: Catastrophic asset failure (nuclear incident, dam breach, pipeline explosion) leading to nationalization
 
-### 4.6 新能源汽车（存量博弈型 — 双轨制）
+### 2.5 P5 Financial
 
-**新能源汽车分析必须使用分离框架：OEM和供应链公司使用不同的金字塔。**
+**GICS Mapping**: Banks (GICS 4010), Diversified Financials (4020), Insurance (4030), Asset Managers & Custody Banks, REITs (GICS 6010), Mortgage Finance, Consumer Finance.
 
-#### OEM轨道（生存概率模型）
+**Key Signals**: Capital adequacy (CET1, Solvency II ratio), asset quality (NPL ratio, provisioning coverage), liquidity coverage (LCR, NSFR), net interest margin trend, ROE.
 
-| 层 | 权重 | 关键指标 |
-|---|---|---|
-| L1 生存位势 | 25% | 月销量与趋势、五因子生存概率模型（销量30% + 产能利用20% + 现金25% + 品牌15% + 技术迭代10%） |
-| L2 技术 | 20% | 智能驾驶能力、动力总成效率、整车架构、OTA能力 |
-| L3 运营 | 20% | 产能利用率、单车经济（单车毛/净利润）、库存消化率 |
-| L4 财务 | 15% | 净现金烧钱率、现金跑道（月）、毛利率趋势、隐性负债（经销商返利、质保计提）、**营运资金效率（DSO/DIO/DPO/CCC，数据来源：年报附注）**、**债务到期排程（未来12/24/36个月到期分布，数据来源：年报附注）** |
-| L5 政策/出口 | 10% | 补贴依赖度、双积分风险、海外市场进展、关税/认证壁垒 |
+**Ten-Dimension Weight Template** (heaviest first):
+- D3 (Regulatory Risk) > D2 (Competitive Intensity) > D9 (ESG/Climate) > D5 (Capital Intensity) > D10 (Moats)
 
-#### 供应链轨道（利润要塞模型）
+| Layer | Weight | Focus | Key Indicators | Veto Trigger |
+|-------|--------|-------|----------------|--------------|
+| L1 Capital Adequacy & Asset Quality | 35% | CET1 ratio (banks), Solvency ratio (insurance), NPL ratio, provisioning coverage, asset concentration, loan-to-value distribution | CET1 < regulatory minimum (Pillar 1 + buffers) or NPL ratio > 10% without adequate provisioning |
+| L2 Funding & Liquidity | 25% | LCR, NSFR, deposit funding ratio, wholesale funding dependence, debt maturity profile, access to central bank facilities | Deposit run > 10% in one quarter or wholesale funding access severed |
+| L3 Earnings Capacity | 20% | Net interest margin trend, fee income diversification, cost/income ratio, ROE vs. cost of equity, earnings volatility through cycle | ROE < cost of equity for 3 consecutive years with no turnaround plan |
+| L4 Risk Management & Governance | 20% | Risk governance framework, underwriting standards track record, credit risk concentration, market risk VaR, operational risk incidents | Major fraud, sanction violation, or AML breach leading to regulatory enforcement |
 
-| 层 | 权重 | 关键指标 |
-|---|---|---|
-| L1 利润要塞 | 30% | 毛利率稳定性、脱钩率（板块毛利变化/整车ASP变化）、ROIC、认证壁垒（IATF16949 + 客户提名） |
-| L2 技术 | 20% | 技术路线抗性、客户切换成本、生产良率、自动化水平 |
-| L3 客户质量 | 22% | 多维度绑定评分（客户质量40% + 供货份额25% + 合同期限20% + 替换成本15%） |
-| L4 财务 | 17% | 利润稳定性系数、调整后应收周转、降价弹性测试、**营运资金效率（DSO/DIO/DPO/CCC，数据来源：年报附注）**、**债务到期排程（未来12/24/36个月到期分布，数据来源：年报附注）** |
-| L5 政策/出口 | 8% | 海外产能、关税风险、CBAM/碳关税影响 |
+**Paradigm-Specific Veto Triggers**:
+- **V-FIN-1**: Capital ratio falls below regulatory minimum (Pillar 1 + conservation buffer)
+- **V-FIN-2**: Deposit run or wholesale funding freeze
+- **V-FIN-3**: Regulatory enforcement action for capital adequacy or AML/sanctions violations that restricts operations
 
-**行业特殊说明——营运资金效率（OEM）：**
-- **DSO关注补贴/积分收入：** 新能源车销售含补贴和碳积分收入，需区分应收中来自整车销售 vs 补贴/积分的部分。补贴退坡可能导致DSO被动拉长。
-- **DIO关注库存消化：** 新能源车迭代快，库存超60天面临降价风险。需关注"库存/月销量"倍数。
-- **债务到期排程分级：** 🟢<30%；🟡30-50%；🟠50-70%；🔴>70%或单月集中到期>20%。
+### 2.6 P6 Sovereign-Linked
 
-**行业特殊说明——营运资金效率（供应链）：**
-- **DSO受主机厂占款影响：** 零部件供应商DSO通常受主机厂（OEM）付款周期挤压，>120天为关注。需区分不同主机厂的付款信用。
-- **CCC：** 供应链企业CCC通常高于整车厂（被占款），>180天为关注。
-- **债务到期排程分级：** 🟢<30%；🟡30-50%；🟠50-70%；🔴>70%或单月集中到期>20%。
+**GICS Mapping**: Sovereigns (national governments), Sub-Sovereigns (provinces, states, municipalities), Government-Sponsored Enterprises (GSEs), Development Finance Institutions (DFIs), Supranational Organizations, Public Sector Entities.
+
+**Key Signals**: Fiscal space (debt/GDP, fiscal deficit/GDP, interest/revenue), external balances (current account, FX reserves, external debt), institutional strength (World Bank governance indicators, rule of law), political stability.
+
+**Ten-Dimension Weight Template** (heaviest first):
+- D8 (Geographic/Sovereign Exposure) > D3 (Regulatory/Policy Risk) > D5 (Capital Intensity) > D9 (ESG) > D1 (Lifecycle)
+
+| Layer | Weight | Focus | Key Indicators | Veto Trigger |
+|-------|--------|-------|----------------|--------------|
+| L1 Fiscal & Debt Sustainability | 35% | Debt/GDP, fiscal deficit/GDP, interest expense/revenue, primary balance, contingent liabilities (PPP, SOEs) | Debt/GDP > 100% with persistent primary deficit + no credible adjustment path |
+| L2 External Position & Monetary Flexibility | 25% | Current account balance/GDP, FX reserves (months of imports), external debt/GDP, exchange rate regime flexibility, reserve currency access | External debt > 200% of FX reserves + no IMF/IFI program in place |
+| L3 Institutional & Governance Strength | 20% | Rule of law (WGI), government effectiveness, regulatory quality, control of corruption, political stability, debt repayment history | Sovereign default or restructuring within past 10 years without policy reform |
+| L4 Contingent Liability & SOE Risk | 20% | SOE sector size (SOE assets/GDP), SOE financial health (debt/EBITDA, subsidy dependence), PPP guarantee exposure, sub-sovereign debt risk | SOE sector requiring fiscal transfer > 2% of GDP annually with no restructuring |
+
+**Paradigm-Specific Veto Triggers**:
+- **V-SOV-1**: Sovereign default, restructuring, or coercive exchange (redenomination)
+- **V-SOV-2**: International sanctions restricting access to global capital markets (e.g., SDN listing)
+- **V-SOV-3**: Hyperinflation > 50% per month or currency collapse > 40% in one quarter
+- **V-SOV-4**: Sovereign credit rating downgraded to default (SD/RD) by at least one major agency
 
 ---
 
-### 4.7 数据中心/算力基础设施（资产租约型）
+## 3 Paradigm Determination Logic
 
-| 层 | 权重 | 关键指标 | 一票否决 |
-|---|---|---|---|
-| L1 政策 | 15% | 新基建政策、东数西算节点定位、能耗指标审批 | — |
-| L2 技术 | 20% | PUE能效、GPU/芯片供应链（美出口管制风险）、冷却技术、可再生能源比例 | — |
-| L3 客户/租约质量 | 35% | 租户质量（运营商/互联网/AI初创）、租约期限与剩余年限、续约概率、上架率趋势、区位优势（一线 vs 西部节点）、供电可靠性 | 核心客户租约到期且确认不续约 |
-| L4 财务 | 30% | 资产收益率/Cap Rate、DSCR、债务期限与资产寿命匹配、维护性资本开支 vs 收入、REIT化可行性、**营运资金效率（DSO/DIO/DPO/CCC，CCC天然为负，转正=经营问题，数据来源：年报附注）**、**债务到期排程（未来12/24/36个月到期分布，数据来源：年报附注）** | — |
+### 3.1 GICS Industry-to-Paradigm Mapping
 
-**行业特殊说明——营运资金效率：**
-- **CCC天然为负：** 数据中心采用预收租金模式，CCC通常为负值。CCC转正=预收款减少或应收款激增，需关注客户续约率和上架率变化。
-- **DSO：** 通常<30天（预收模式），DSO上升=客户付款条件恶化或新增客户信用较差。
-- **债务到期排程分级：** 🟢<30%；🟡30-50%；🟠50-70%；🔴>70%或单月集中到期>20%。
+| GICS Sector | GICS Industry Group | Primary Paradigm | Secondary Attribute | Determination Rationale |
+|-------------|---------------------|------------------|-------------------|------------------------|
+| 10 Energy | 1010 Energy | P1 Cyclical | — | Commodity-driven, freight/price cycle dependent |
+| 15 Materials | 1510 Materials | P1 Cyclical | — | Commodity price cycle primary risk driver |
+| 2010 Capital Goods | 201010 Aerospace & Defense, 201020 Building Products, 201030 Construction & Engineering, 201040 Electrical Equipment, 201050 Industrial Conglomerates, 201060 Machinery, 201070 Trading Companies & Distributors | P1 Cyclical | P2 Defensive (select sub-industries) | Demand tied to business investment cycle; some sub-industries have brand/aftermarket moats |
+| 15 Chemicals | 151010 Chemicals | P1 Cyclical | — | Commodity or specialty chemical price cycles |
+| 20 Transportation | 2030 Transportation (select: Shipping 203050) | P1 Cyclical | — | Freight rate cycle, capacity utilization |
+| 30 Consumer Staples | 3010 Retailing (Food & Staples), 3020 Food & Beverage, 3030 Household & Personal Products | P2 Defensive | — | Inelastic demand, brand moat, pricing power |
+| 35 Healthcare | 3510 Healthcare Equipment & Supplies | P2 Defensive / P3 Growth | — | MedTech=Defensive; Biotech=Growth; Pharma=mixed |
+| 55 Utilities | 5510 Electric, 5520 Gas, 5530 Multi, 5540 Water | P4 Regulated Utility | P2 Defensive (vertically integrated IPP) | Regulated tariff, license-based |
+| 45 Information Technology | 4510 Software & Services, 4520 Technology Hardware & Equipment, 4530 Semiconductors | P3 Growth | P1 Cyclical (hardware, memory) | Technology-driven revenue growth, IP core |
+| 35 Healthcare | 3520 Biotechnology, 352010 Pharmaceuticals | P3 Growth | P2 Defensive (Pharma) | Pipeline-dependent, patent cliff, R&D heavy |
+| 40 Financials | 4010 Banks, 4020 Diversified Financials, 4030 Insurance | P5 Financial | — | Capital adequacy and asset quality core |
+| 60 Real Estate | 6010 REITs, 6020 Real Estate Management | P5 Financial | — | Cap rate, LTV, rent roll |
+| — | Sovereigns, Sub-Sovereigns, GSEs, DFIs | P6 Sovereign-Linked | — | Fiscal capacity, institutional strength |
+| Infrastructure | Toll Roads, Airports, Regulated Networks | P4 Regulated Utility | P1 Cyclical (traffic-dependent) | Concession/regulatory framework core |
+| 2030 Transportation | Transport Infrastructure (Rail, Ports, Airports) | P4 Regulated Utility | P1 Cyclical | Regulated access pricing, traffic cycle |
 
-> **营运资金效率阈值详细规格**：各行业DSO/DIO/DPO/CCC差异阈值及计算说明，详见[财务深度分析报告](financial-deep-dive.md) §B.3 七行业差异化阈值汇总表。
+### 3.2 Paradigm Determination Decision Tree
 
----
+```
+Step 1: Is the obligor a sovereign, sub-sovereign, GSE, or DFI?
+  YES → P6 Sovereign-Linked
+  NO  → Step 2
 
-## 五、一票否决条件汇总
+Step 2: Is the obligor a regulated utility (electric/gas/water, toll road, airport, regulated pipeline)?
+  YES → P4 Regulated Utility
+  NO  → Step 3
 
-所有行业的一票否决具有三个共同特征：
+Step 3: Is the obligor a financial institution (bank, insurance, asset manager, REIT)?
+  YES → P5 Financial
+  NO  → Step 4
 
-1. **都是生存性风险，而非绩效性风险** — 针对的不是"业绩不好"，而是"这家企业可能不存在了"
-2. **具有不可逆性或极难逆转性** — 技术路线淘汰、临床失败、注册证到期均不可逆
-3. **触发后综合评级上限锁定为CCC** — 财务分析已无意义
+Step 4: Does the obligor operate in a structurally growing industry driven by technology/IP?
+  (e.g., Semiconductors, Software, Biotech, Clean Energy Tech)
+  YES → P3 Growth
+  NO  → Step 5
 
-| 行业 | 一票否决条件 | 本质风险类型 |
-|---|---|---|
-| 光伏 | PERC产能 >70%（技术路线被淘汰） | 技术性死亡 |
-| 半导体 | 被列入实体清单/SDN清单 | 政策性死亡 |
-| 高端装备 | 数控系统+主轴+伺服全部外采且无国内替代 | 供应链性死亡 |
-| 生物医药 | 核心管线III期临床试验失败 | 产品性死亡 |
-| 医疗器械 | 三类注册证到期且无法续期 | 准入门槛性死亡 |
-| 新能源车 | 月销量 < 1万台 + 现金跑道 < 12个月 | 现金流性死亡 |
-| 数据中心 | 核心客户租约到期且确认不续约 | 收入性死亡 |
+Step 5: Is demand for the obligor's product/service relatively inelastic to economic cycles?
+  (e.g., Consumer Staples, Healthcare Equipment, Select Utilities)
+  YES → P2 Defensive
+  NO  → Step 6
 
----
+Step 6: Is the obligor's revenue primarily driven by commodity prices, freight rates, or capacity utilization?
+  (e.g., Energy, Materials, Chemicals, Capital Goods, Shipping)
+  YES → P1 Cyclical
+  NO  → Re-evaluate industry classification or mark as "Special Structure" per Section 3.4
+```
 
-## 六、十维评分汇总表
+### 3.3 Paradigm Conflict Resolution
 
-> 注：本表覆盖 13 个传染矩阵行业；新能源汽车按双轨制拆分为 OEM 与供应链两列，以便精确对应金字塔权重。
+When an industry triggers conditions for multiple paradigms, the following priority rules apply:
 
-| 维度 | 光伏/储能 | 半导体 | 高端装备 | 生物医药 | 医疗器械 | 新能源车-OEM | 新能源车-供应链 | 数据中心 | 食品饮料 | 纺织服装 | 交通运输 | 商贸零售 | 传媒/互联网 | 城投债 / LGFV |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| D1 市场容量 | 5 | 5 | 4 | 4 | 4 | 5 | 4 | 4 | 5 | 4 | 5 | 5 | 5 | 5 |
-| D2 增量空间 | 3 | 5 | 4 | 4 | 4 | 2 | 3 | 5 | 2 | 2 | 2 | 2 | 3 | 1 |
-| D3 政策支持力度 | 5 | 5 | 4 | 4 | 3 | 3 | 3 | 4 | 2 | 2 | 4 | 2 | 2 | 4 |
-| D4 政策波动性 | 4 | 3 | 2 | 3 | 2 | 3 | 3 | 3 | 1 | 2 | 2 | 2 | 4 | 4 |
-| D5 资本可持续性 | 3 | 4 | 3 | 4 | 3 | 3 | 3 | 4 | 4 | 3 | 4 | 3 | 4 | 3 |
-| D6 民生关联度 | 3 | 4 | 3 | 5 | 5 | 3 | 2 | 3 | 5 | 3 | 4 | 3 | 3 | 4 |
-| D7 外部依赖度 | 3 | 5 | 4 | 3 | 3 | 2 | 3 | 4 | 1 | 3 | 2 | 1 | 2 | 1 |
-| D8 供应链权力集中度 | 2 | 3 | 3 | 3 | 2 | 3 | 4 | 4 | 2 | 2 | 4 | 3 | 4 | 3 |
-| D9 产业生命周期 | 3 | 4 | 3 | 4 | 4 | 3 | 3 | 4 | 2 | 2 | 3 | 3 | 4 | 2 |
-| D10 周期波动性 | 4 | 3 | 3 | 3 | 2 | 4 | 3 | 2 | 1 | 3 | 4 | 3 | 3 | 3 |
+1. **P6 Sovereign-Linked** > all others (sovereign credit path is disjoint)
+2. **P5 Financial** > all others (financial institutions require dedicated capital adequacy framework)
+3. **P4 Regulated Utility** > P1/P2/P3 (license-based revenue stream dominates)
+4. **P3 Growth** > P1/P2 when technology/IP is the primary value driver (e.g., Biotech > Defensive)
+5. **P1 Cyclical** and **P2 Defensive** conflict: resolve by demand elasticity; if demand drop > 20% in a recession, default to P1 Cyclical
 
-### 6.2 新增行业 D1–D10 评分与范式触发
+### 3.4 Special Structure Notes
 
-| 维度 | D1 | D2 | D3 | D4 | D5 | D6 | D7 | D8 | D9 | D10 | 触发范式 |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| 食品饮料 | 5 | 2 | 2 | 1 | 4 | 5 | 1 | 2 | 2 | 1 | 品牌+渠道型 |
-| 纺织服装 | 4 | 2 | 2 | 2 | 3 | 3 | 3 | 2 | 2 | 3 | 品牌+渠道型 |
-| 交通运输 | 5 | 2 | 4 | 2 | 4 | 4 | 2 | 4 | 3 | 4 | 网络+流量型 |
-| 商贸零售 | 5 | 2 | 2 | 2 | 3 | 3 | 1 | 3 | 3 | 3 | 网络+流量型 |
-| 传媒/互联网 | 5 | 3 | 2 | 4 | 4 | 3 | 2 | 4 | 4 | 3 | 网络+流量型 |
-| 城投债 / LGFV | 5 | 1 | 4 | 4 | 3 | 4 | 1 | 3 | 2 | 3 | 特殊：政府信用绑定型 |
-
-**评分说明：**
-- **食品饮料**：D1/D6 高反映必选消费大市场与民生属性；D2/D9/D10 低反映成熟低波动；D5=4 体现现金流稳健；D7/D8 低反映对外依赖与上游议价力弱。核心驱动为品牌溢价与渠道覆盖，归入品牌+渠道型。
-- **纺织服装**：D1 较大但 D2 低、D10=3 反映可选消费周期；D7=3 反映出口与原料对外依赖；品牌与代工双模式并存，消费降级敏感，归入品牌+渠道型。
-- **交通运输**：D1/D8/D10 高反映基础设施垄断与强周期；D5/D6 高体现融资可得性与民生基础。虽然 D5=4、D8=4 也触及资产租约型条件，但核心资产价值取决于流量/运量，按冲突优先级规则归入网络+流量型。
-- **商贸零售**：D1 大、D8=3 反映平台/渠道集中、D10=3 反映消费周期。收入主要依赖客流/渠道周转而非品牌溢价，归入网络+流量型。
-- **传媒/互联网**：D1/D8/D9 高反映平台规模与成长阶段；D4=4 反映监管波动；D5=4 反映融资可得性。核心壁垒为流量与网络效应，归入网络+流量型。
-- **城投债 / LGFV**：D1 大市场（债券存量）、D3/D4 高反映政策与化债周期、D6 高体现基础设施民生属性。LGFV 并非普通行业，不强制归入六范式，单列特殊类别。
-
-**非存量博弈型归类说明（4 个例外）**：
-- **交通运输**：虽然 `D2=2≤3` 且 `D10=4≥3` 形式上触发 `存量博弈型`，但核心风险驱动是网络/流量（线路经营权、客货运流量），而非产能出清或利润要塞争夺，按优先级规则归入网络+流量型。
-- **纺织服装**：虽然 `D2=2≤3` 且 `D10=3≥3` 形式上触发 `存量博弈型`，但核心风险驱动是品牌+渠道（品牌价值、零售渠道控制力），而非 consolidation，归入品牌+渠道型。
-- **商贸零售**：虽然 `D2=2≤3` 且 `D10=3≥3` 形式上触发 `存量博弈型`，但核心风险驱动是网络+流量（客流量、平台 GMV、全渠道流量），而非 consolidation，归入网络+流量型。
-- **传媒/互联网**：虽然 `D2=3≤3` 且 `D10=3≥3` 形式上触发 `存量博弈型`，但核心风险驱动是网络+流量（用户基数、流量变现、内容生态），而非 consolidation，归入网络+流量型。
+| Industry | Special Structure | Notes |
+|----------|-----------------|-------|
+| **Pharmaceuticals (Large Cap)** | Dual-track (P2+P3) | P3 for pipeline assessment, P2 for defensive cash flows from marketed drugs |
+| **Semiconductors** | Layered (P3 + P1 overlay) | P3 (technology roadmap) primary; P1 (cyclical demand from memory/commodity chips) secondary overlay |
+| **Clean Energy** | Dual-track (P3 + P4) | Technology development → P3; infrastructure/project finance → P4 |
+| **Airports / Ports** | Hybrid (P4 + P1) | Regulatory framework primary (P4); traffic/volume cycle secondary (P1) |
+| **Multi-line Insurers** | Mixed (P5 + P2) | Life insurance → P5; P&C with defensive characteristics → P2 overlay |
+| **Large Cap Oil & Gas** | P1 primary + P9 overlay | Commodity cycle dominates (P1); ESG transition risk overlay (P4/D9 weights elevated) |
 
 ---
 
-## 七、各行业类型判定结果
+## 4 Industry Pyramids
 
-| 行业 | 主要范式 | 次要属性 | 判定依据 |
-|---|---|---|---|
-| 光伏/储能 | 政策驱动型 | — | D3=5 >=4, D4=4 >=3 |
-| 半导体/集成电路 | 政策驱动型 | 技术壁垒型 | D3=5 >=4, D4=3 >=3, D7=5；按优先级规则，地缘政治为 L1 权重 → 政策驱动型 |
-| 高端装备/机床 | 技术壁垒型 | — | D7=4 >=3, D9=3 >=3 |
-| 生物医药/创新药 | 技术壁垒型 | 政策驱动型 | D7=3 >=3, D9=4 >=3；NMPA/NRDL/集采政策敏感 |
-| 医疗器械 | 技术壁垒型 | — | D7=3 >=3, D9=4 >=3 |
-| 新能源汽车-OEM | 存量博弈型 | — | D2=2 <=3, D10=4 >=3 |
-| 新能源汽车-供应链 | 利润要塞 / 技术壁垒型 | — | D7=3 >=3，框架使用利润要塞模型 |
-| 数据中心/算力基建 | 资产租约型 | 网络+流量型（云/电信混合场景） | D5=4 >=4, D8=4 >=3；IDC/托管为物理租约，云/电信为流量核心 |
-| 食品饮料 | 品牌+渠道型 | — | D5=4, D1=5, D6=5；收入依赖品牌溢价与渠道覆盖 |
-| 纺织服装 | 品牌+渠道型 | — | D2=2, D10=3；品牌+代工双模式，消费降级敏感 |
-| 交通运输 | 网络+流量型 | — | D1=5, D8=4, D10=4；核心资产价值取决于流量/运量，按优先级规则优先于资产租约型 |
-| 商贸零售 | 网络+流量型 | — | D1=5, D8=3, D10=3；收入依赖客流/渠道周转而非品牌溢价 |
-| 传媒/互联网 | 网络+流量型 | — | D1=5, D8=4, D4=4；平台效应与流量变现为核心 |
-| 城投债 / LGFV（地方政府融资平台，local government financing vehicle） | 特殊：政府信用绑定型 | — | 不强制归入六范式；信用绑定地方政府财政 |
+### 4.1 Four-Layer Pyramid Architecture
 
-**非存量博弈型归类说明（4 个例外）**：
-- **交通运输**：虽然 `D2=2≤3` 且 `D10=4≥3` 形式上触发 `存量博弈型`，但核心风险驱动是网络/流量（线路经营权、客货运流量），不是利润要塞/产能出清竞争，归入网络+流量型。
-- **纺织服装**：虽然 `D2=2≤3` 且 `D10=3≥3` 形式上触发 `存量博弈型`，但核心风险驱动是品牌+渠道（品牌价值、零售渠道控制力），不是 consolidation，归入品牌+渠道型。
-- **商贸零售**：虽然 `D2=2≤3` 且 `D10=3≥3` 形式上触发 `存量博弈型`，但核心风险驱动是网络+流量（客流量、平台 GMV、全渠道流量），不是 consolidation，归入网络+流量型。
-- **传媒/互联网**：虽然 `D2=3≤3` 且 `D10=3≥3` 形式上触发 `存量博弈型`，但核心风险驱动是网络+流量（用户基数、流量变现、内容生态），不是 consolidation，归入网络+流量型。
+Each paradigm uses a weighted pyramid with four layers. The weight distribution governs how strongly each layer contributes to the final credit score.
+
+| Paradigm | L1 (Heaviest) | L2 | L3 | L4 (Lightest) |
+|----------|---------------|-----|-----|----------------|
+| **P1 Cyclical** | 35% Market Cycle Position | 25% Cost & Supply Chain | 20% Competitive Positioning | 20% Financial Resilience |
+| **P2 Defensive** | 35% Brand & Pricing Power | 25% Channel & Distribution | 20% Product Portfolio | 20% Financial Quality |
+| **P3 Growth** | 30% Technology & IP | 25% Market Position & Pipeline | 20% Commercialization & Operations | 25% Financial Resilience |
+| **P4 Regulated Utility** | 35% Regulatory Framework | 25% Asset Quality & Capex | 20% Revenue Stability | 20% Financial Structure |
+| **P5 Financial** | 35% Capital Adequacy & Asset Quality | 25% Funding & Liquidity | 20% Earnings Capacity | 20% Risk Management & Governance |
+| **P6 Sovereign-Linked** | 35% Fiscal & Debt Sustainability | 25% External Position & Monetary Flexibility | 20% Institutional & Governance Strength | 20% Contingent Liability & SOE Risk |
+
+### 4.2 Key Dimension Weights per Paradigm
+
+| Paradigm | D1 | D2 | D3 | D4 | D5 | D6 | D7 | D8 | D9 | D10 |
+|----------|----|----|----|----|----|----|----|----|----|-----|
+| **P1 Cyclical** | 15% | 10% | 5% | 5% | 15% | 5% | 15% | 10% | 5% | 15% |
+| **P2 Defensive** | 10% | 5% | 5% | 10% | 5% | 15% | 5% | 5% | 10% | 30% |
+| **P3 Growth** | 15% | 10% | 5% | 25% | 15% | 5% | 5% | 5% | 10% | 5% |
+| **P4 Regulated Utility** | 10% | 5% | 30% | 5% | 15% | 5% | 5% | 5% | 15% | 5% |
+| **P5 Financial** | 5% | 15% | 25% | 5% | 15% | 5% | 5% | 10% | 10% | 5% |
+| **P6 Sovereign-Linked** | 10% | 5% | 20% | 5% | 15% | 5% | 5% | 20% | 10% | 5% |
+
+### 4.3 Weight Adjustment Rules
+
+| Adjustment Condition | Adjustment | Applicable Paradigm(s) | Scenario |
+|---------------------|------------|------------------------|----------|
+| Commodity price volatility > 40% YoY | L4 Financial up to 25%, L1 down to 30% | P1 Cyclical | Extreme cycle amplitude |
+| Regulatory framework change imminent | L1 Regulatory up to 40%, L3 down to 15% | P4 Regulated Utility | Rate case uncertainty |
+| Pre-revenue / pre-profit stage | L4 Financial up to 30%, L1 down to 25% | P3 Growth | Early-stage biotech or pre-revenue tech |
+| Deposit-funded > 70% liabilities | L2 Liquidity weight up to 30% | P5 Financial | Retail-heavy bank |
+| External debt in foreign currency > 50% | L2 External up to 30%, L1 down to 30% | P6 Sovereign-Linked | Hard-currency debt reliance |
+| Brand revenue > 40% of sales | L1 Brand up to 40%, L3 down to 15% | P2 Defensive | Luxury goods, premium brands |
+| Single regulator / unscheduled rate review | P4: add 5% regulatory layer | P4 Regulated Utility | Non-independent regulator risk |
+
+### 4.4 Five-Layer Special Structures
+
+A small number of industries require five-layer pyramids due to structural complexity.
+
+**Semiconductors (P3 Growth + P1 Cyclical overlay)**
+
+| Layer | Weight | Focus | Key Indicators |
+|-------|--------|-------|----------------|
+| L1 Geopolitical / Trade | 25% | Export control risk (EAR/ITAR), entity list/SDN exposure, equipment supply chain security, IP licensing restrictions, foundry dependence | Entity list / SDN listing |
+| L2 Technology & Roadmap | 25% | Process node position (nm), roadmap credibility (tape-out success rate), IP portfolio quality, R&D conversion efficiency, talent depth, design win pipeline | — |
+| L3 Market Position | 20% | Market share trend, end-customer quality, design win pipeline, ASP/gross margin trend, substitution threat | — |
+| L4 Capital & Financing | 15% | Access to capital markets, government support/grants, capex intensity, cash runway, R&D tax credits | — |
+| L5 Financial | 15% | Cash runway, working capital efficiency, AR quality, goodwill/assets ratio, related-party exposure, debt maturity profile | Goodwill/assets > 20% + interest coverage < 2x |
 
 ---
 
-## 相关内容
+## 5 Veto Mechanism
 
-- [引擎架构总览](engine-overview.md) — 核心理念、总体架构、设计原则
-- [双轨分析方法论](dual-track-methodology.md) — 轨道A+轨道B评分逻辑、交叉对撞、评级映射
-- [马赛克引擎](mosaic-engine.md) — 信号提取、拼图、完备性评估
+### 5.1 Core Principles
+
+Every veto across all paradigms shares three common characteristics:
+
+1. **Survival risks, not performance risks** — The concern is not "underperformance" but "the entity may cease to exist"
+2. **Irreversible or near-irreversible** — Technology obsolescence, regulatory license revocation, clinical trial failure, and default are all effectively irreversible
+3. **Rating ceiling of CCC upon trigger** — Financial analysis becomes moot; recovery assessment begins
+
+### 5.2 Paradigm Veto Summary Table
+
+| Paradigm | Veto Code | Condition | Risk Type | Waivable? |
+|----------|-----------|-----------|-----------|-----------|
+| **P1 Cyclical** | V-CYC-1 | Commodity price collapse > 40% from cycle peak + no recovery path | Market death | No |
+| | V-CYC-2 | Debt/EBITDA > 8x at mid-cycle prices | Leverage death | Analyst Committee |
+| | V-CYC-3 | Critical input supply permanently severed | Supply chain death | No |
+| **P2 Defensive** | V-DEF-1 | Major safety/quality scandal (national recall, regulatory action) | Brand death | No |
+| | V-DEF-2 | Single product > 70% revenue + category structural decline | Product death | Analyst Committee |
+| | V-DEF-3 | Distributor network collapse (> 30% loss in one year) | Channel death | Analyst Committee |
+| **P3 Growth** | V-GRW-1 | Key clinical trial / regulatory filing failure | Product death | No |
+| | V-GRW-2 | Core technology pathway rendered obsolete | Technological death | No |
+| | V-GRW-3 | Cash runway < 6 months + no committed financing | Liquidity death | No |
+| **P4 Regulated Utility** | V-REG-1 | License revoked or not renewed | Regulatory death | No |
+| | V-REG-2 | Fundamental tariff restructuring disallowing cost recovery | Economic expropriation | No |
+| | V-REG-3 | Catastrophic asset failure (nuclear, dam, pipeline) | Operational death | No |
+| **P5 Financial** | V-FIN-1 | Capital ratio below regulatory minimum (Pillar 1 + buffers) | Capital death | No |
+| | V-FIN-2 | Deposit run > 10% in one quarter or wholesale funding freeze | Liquidity death | No |
+| | V-FIN-3 | Major regulatory enforcement action restricting operations | Regulatory death | Analyst Committee |
+| **P6 Sovereign-Linked** | V-SOV-1 | Sovereign default, restructuring, or coercive exchange | Credit death | No |
+| | V-SOV-2 | International sanctions restricting capital market access | Sanctions death | No |
+| | V-SOV-3 | Hyperinflation (> 50%/month) or currency collapse (> 40%/quarter) | Monetary death | No |
+| | V-SOV-4 | Sovereign downgraded to default (SD/RD) by major agency | Rating death | No |
+
+### 5.3 Veto Trigger Process Flow
+
+```
+Veto condition triggered
+    |
+    v
+Rating ceiling automatically locked at CCC
+    |
+    v
+Analyst Committee convenes within 48 hours
+    |--- Confirms trigger: Maintain CCC or below, initiate exit/recovery process
+    |--- Grants waiver (waivable conditions only): Document rationale, ceiling raised to B-
+    |
+    v
+Notify relevant stakeholders (creditors, bondholders, regulators)
+    |
+    v
+Add to credit event monitoring list, monthly update required
+```
+
+### 5.4 Veto Waiver Criteria
+
+Only explicitly marked "Analyst Committee" conditions in Section 5.2 are eligible for waiver. The committee must document:
+
+1. The specific mitigating factor (e.g., pending equity injection, government support commitment, binding offtake agreement)
+2. The expected timeline for resolution (maximum 12 months)
+3. A downside scenario and contingency plan if the resolution fails
+4. The rationale for raising the rating ceiling to B- (not higher)
+
+### 5.5 Cross-Paradigm Veto Interactions
+
+When a dual-track industry (Section 3.4) triggers a veto in one track but not the other:
+
+- **Both tracks must be vetoed** for the combined rating to be locked at CCC
+- If only one track triggers a veto, the rating ceiling is capped at B (not CCC)
+- Exception: P6 Sovereign-Linked vetoes always override all other paradigm vetoes (Sovereign ceiling applies)
+
+---
+
+## Appendix A: D1-D10 Score Definitions by Paradigm
+
+Each paradigm interprets the ten dimensions differently:
+
+| Dimension | P1 Cyclical | P2 Defensive | P3 Growth | P4 Regulated Utility | P5 Financial | P6 Sovereign-Linked |
+|-----------|-------------|--------------|-----------|---------------------|--------------|---------------------|
+| D1 Lifecycle | Commodity super-cycle position | Category maturity (growth/stable/decline) | Technology S-curve stage | Infrastructure age & demand saturation | Sector penetration (banked vs. unbanked) | Demographic & development stage |
+| D2 Competitive Intensity | Global capacity share concentration | Brand/concentration ratios (HHI) | Patent landscape concentration | Concession exclusivity | Market structure (oligopoly vs. fragmented) | Multipolar vs. unipolar system |
+| D3 Regulatory Risk | Trade policy, tariffs, export controls | Food safety, labeling, advertising | Clinical trial regulation, data privacy, FDA/EMA | Tariff methodology, license terms | Basel/Solvency, capital requirements | Sovereign credit framework |
+| D4 Technology Disruption | Automation, substitution threat | E-commerce disruption, DTC | Competing technology standards | Grid modernization, smart grid, renewables | Fintech, digital banking disruption | Digital currency, CBDC |
+| D5 Capital Intensity | Sustaining + maintenance capex | Low/working capital only | R&D intensity, prototyping capex | Network RAB growth, grid replacement | Regulatory capital, CET1 | Debt servicing capacity, access to capital |
+| D6 Customer Bargaining Power | Offtake concentration (single buyer) | Consumer repeat purchase | Early adopter concentration | Captive customer base (no alternative) | Depositor vs. borrower power | IFI/concessional lender leverage |
+| D7 Supply Chain Vulnerability | Input concentration, shipping route risk | Agricultural input, packaging | Equipment/chemical supply (semicon, bioprocess) | Fuel supply (gas/coal for power) | Wholesale funding concentration | Import dependency, trade route block |
+| D8 Geographic Exposure | Jurisdictional production/refining mix | Domestic vs. international revenue | Cross-border IP enforcement | Service territory exclusivity | Cross-border lending exposure | Sanctions, FX regime, reserve currency |
+| D9 ESG / Climate | Carbon intensity, methane, water | Packaging waste, scope 3 emissions | E-waste, energy intensity of compute | Coal phase-out, renewable mandate, CBAM | Climate loan exposure, green finance | Paris alignment, climate vulnerability |
+| D10 Barriers to Entry | Resource access, scale, cost curve | Brand equity, distribution density | IP, patents, regulatory exclusivity | Natural monopoly, license exclusivity | Charter value, regulatory license | Sovereignty, hard currency status |
+
+---
+
+## Appendix B: Ten-Dimension Score Summary Matrix
+
+> Representative scores for illustrative credit-covered industries (mapped to international paradigms).
+
+| Dimension | Semiconductors | Software | Pharmaceuticals | Banking | Electric Utilities | Electric Vehicles | Sovereign (IG) | Sovereign (HY) |
+|-----------|---------------|----------|-----------------|---------|-------------------|-------------------|----------------|-----------------|
+| D1 Lifecycle | 4 | 5 | 4 | 4 | 4 | 3 | 4 | 3 |
+| D2 Competitive Intensity | 3 | 3 | 3 | 3 | 2 | 4 | 2 | 3 |
+| D3 Regulatory Risk | 5 | 2 | 4 | 5 | 4 | 3 | 4 | 4 |
+| D4 Technology Disruption | 4 | 4 | 3 | 3 | 3 | 5 | 1 | 2 |
+| D5 Capital Intensity | 5 | 2 | 4 | 4 | 5 | 4 | 3 | 4 |
+| D6 Customer Bargaining Power | 3 | 2 | 3 | 2 | 2 | 4 | 2 | 2 |
+| D7 Supply Chain Vulnerability | 5 | 1 | 3 | 2 | 3 | 3 | 3 | 4 |
+| D8 Geographic Exposure | 4 | 3 | 3 | 3 | 2 | 4 | 5 | 4 |
+| D9 ESG / Climate | 3 | 2 | 2 | 3 | 5 | 3 | 3 | 3 |
+| D10 Barriers to Entry | 4 | 3 | 4 | 3 | 5 | 2 | 4 | 3 |
+| **Paradigm** | **P3 Growth** | **P3 Growth** | **P3/P2** | **P5 Financial** | **P4 Regulated** | **P1 Cyclical** | **P6 Sovereign** | **P6 Sovereign** |
+
+---
+
+## Appendix C: Comparison with Legacy (v0.7) Paradigm Mapping
+
+| Legacy Paradigm (v0.7, Chinese) | International Paradigm (v0.8, English) | Key Differences |
+|--------------------------------|----------------------------------------|-----------------|
+| Policy-Driven | Mapped to P4 Regulated Utility + P6 Sovereign-Linked | Geographic relevance split: regulated infrastructure vs. sovereign credit |
+| Technology-Barrier | Mapped to P3 Growth | Broadened from China-specific tech dependency to global tech/IP analysis |
+| Consolidation / Zero-Sum | Absorbed into P1 Cyclical + P2 Defensive | Sector-specific: cyclical saturation -> P1; brand consolidation -> P2 |
+| Asset-Lease | Distributed into P4 (concession/regulated assets) + P5 (REITs) | Physical lease assets -> P4; financial lease/reit -> P5 |
+| Brand+Channel | Absorbed into P2 Defensive | Broader defensive framework with L1 brand and L2 channel layers |
+| Network+Traffic | Distributed into P4 (regulated infrastructure) + P1 (cyclical transport) | Regulated network -> P4; cyclical volume -> P1 |
+
+---
+
+## Related Content
+
+- [Engine Architecture Overview](engine-overview.md) -- Core philosophy, architecture, design principles
+- [Dual-Track Methodology](dual-track-methodology.md) -- Track A + Track B scoring logic, cross-collision, rating mapping
+- [Mosaic Engine](mosaic-engine.md) -- Signal extraction, puzzle assembly, completeness assessment
+- [Dimension Registry](dimension-registry.md) -- Machine-readable index of paradigms and stakeholder roles
+- [Brand & Channel Paradigm](paradigm-brand-channel.md) -- Legacy P2/Defensive application for consumer industries
+- [Network & Traffic Paradigm](paradigm-network-traffic.md) -- Legacy application for transport and platform industries
+
+---
+
+*This document replaces the v0.7 Chinese industry-framework.md. The six-international-paradigm architecture aligns the engine with GICS-based global standards while preserving all veto and pyramid analysis capabilities.*
