@@ -1,520 +1,520 @@
-# 工作路径注册表
+# Work Path Registry
 
-**版本**: v0.8.4-release | **日期**: 2026-07-15
+**Version**: v0.8.4-release | **Date**: 2026-07-18
 
-本注册表是 v0.8.0 skill 架构重构（需求理解 → 路径路由 → 引擎调用 → 报告交付全程可控）的设计基线。它把"客户角色（M0-M5）× 调查方向 × 深度档 × 结论报告"的全部 16 条工作路径显式化、机器可读化，作为后续 Intake Router（v0.7.3）路由与执行层 skill 拆分（v0.7.4）的单一事实源。
+This registry is the design baseline for the v0.8.0 skill architecture refactoring (requirement understanding -> path routing -> engine invocation -> report delivery, all fully controllable). It makes all 16 work paths explicit and machine-readable, serving as the single source of truth for the Intake Router (v0.7.3) routing and execution-layer skill decomposition (v0.7.4).
 
-**单一事实源原则**：本表只登记路径的"走哪几条引擎文档、用哪几个模板、过哪几道质量门"，不复制任何阈值/权重/规则正文——规则正文永远以 `engine_sequence` 指向的引擎文档为准。
+**Single Source of Truth Principle**: This registry only records "which engine documents a path uses, which templates it employs, and which quality gates it must pass." It does NOT copy any thresholds, weights, or rule text -- the rule text always resides in the engine documents referenced by `engine_sequence`.
 
-## 目录
+## Table of Contents
 
-1. [路径状态定义](#路径状态定义)
-2. [全量路径总览](#全量路径总览)
-3. [路径 schema 定义](#路径-schema-定义)
-4. [路径明细](#路径明细)
-5. [链式规则（L0→L1→L2 升级与监控触发）](#链式规则l0l1l2-升级与监控触发)
-6. [附录：待开发缺口清单](#附录待开发缺口清单)
+1. [Path Status Definitions](#1-path-status-definitions)
+2. [Full Path Overview](#2-full-path-overview)
+3. [Path Schema Definition](#3-path-schema-definition)
+4. [Path Details](#4-path-details)
+5. [Chaining Rules (L0->L1->L2 Escalation and Monitoring Triggers)](#5-chaining-rules-l0-l1-l2-escalation-and-monitoring-triggers)
+6. [Appendix: Development Backlog](#6-appendix-development-backlog)
 
-## 一、路径状态定义
+## 1. Path Status Definitions
 
-| 状态 | 标记 | 定义 |
+| Status | Marker | Definition |
 |---|---|---|
-| **active** | ✅ | 已实现：engine 文档 + 模板 + 走通案例齐全，可端到端交付 |
-| **partial** | 🟡 | 部分实现：组件（engine 或模板）存在，但未串成显式路径（缺入口协议或质量门） |
-| **planned** | 🔴 | 待开发：引擎/范式/模板缺失，仅角色需求已定义 |
+| **active** | ✅ | Fully implemented: engine documents + templates + proven use cases available, end-to-end deliverable |
+| **partial** | 🟡 | Partially implemented: components (engine or template) exist but not yet assembled into an explicit path (missing entry protocol or quality gates) |
+| **planned** | 🔴 | To be developed: engine/paradigm/template missing, only role requirements defined |
 
-## 二、全量路径总览
+## 2. Full Path Overview
 
-| ID | 路径名 | 角色 | 调查方向 | 深度 | 模板 | 状态 |
+| ID | Path Name | Role | Investigation Direction | Depth | Template | Status |
 |---|---|---|---|---|---|---|
-| WP-M0-01 | 信贷审批单标的评级 | M0 | 行业金字塔→马赛克→双轨→评级 | L2 | Type 1 + Type 6 | ✅ active |
-| WP-M0-02 | 审贷专项附加包（LGD+外部支持） | M0 | lgd-recovery + external-support | 专项 | Type 8 + Type 9 | 🟡 partial |
-| WP-M1-01 | 债券投资仪表盘 | M1 | M1 四维（相对价值/条款/流动性/事件） | L2 | Type 5 | ✅ active |
-| WP-M1-02 | 双标的前瞻对比 | M1 | 双轨对比+区分度分析 | L2 | Type 2 | 🟡 partial |
-| WP-M2-01 | 承销可行性评估 | M2 | 发行窗口+投资人匹配+可比定价 | 专项 | 🔴 无 | 🔴 planned |
-| WP-M3-01 | 交易盯市信号卡 | M3 | L0 信号+SRI 温度计联动 | L0 | L0 规范 | 🟡 partial |
-| WP-M4-01 | 组合集中度评估 | M4 | 五维集中度 | 专项 | Type 14 | ✅ active |
-| WP-M4-02 | 跨行业传染分析 | M4 | 传染矩阵+传染理论 | 专项 | Type 13 | ✅ active |
-| WP-M4-03 | 系统性风险读数 | M4 | SRI+温度计 | 专项 | Type 15 | ✅ active |
-| WP-M4-04 | 组合压力测试 | M4 | 压力情景+财务深潜压力节 | 专项 | Type 11 | 🟡 partial |
-| WP-M5-01 | 企业融资顾问 | M5 | 融资渠道对比+时机 | 专项 | 🔴 无 | 🔴 planned |
-| WP-X-01 | 黑天鹅回溯验证 | 元（验证） | validation-methodology | 专项 | Type 3 | ✅ active |
-| WP-X-02 | 多身份并行评估 | 元（对比） | M0/M1/M4 并行+交叉矩阵 | L2 | Type 4 | ✅ active |
-| WP-X-03 | 行业分析框架建设 | 元（建设） | 新行业金字塔+D1-D10 | 专项 | Type 7 | ✅ active |
-| WP-X-04 | ESG/治理风险扫描 | 专项 | esg + governance-fraud | 专项 | Type 10 | 🟡 partial |
-| WP-X-05 | 展望与持续监控 | 专项 | outlook-monitoring+迁移矩阵 | 专项 | Type 18 | ✅ active |
+| WP-CS-01 | Credit Selector Single-Issuer Rating | credit-selector | Industry Pyramid -> Mosaic -> Dual Track -> Rating | L2 | Type 1 + Type 6 | ✅ active |
+| WP-CS-02 | Credit Selector Add-On (LGD+External Support) | credit-selector | lgd-recovery + external-support | special | Type 8 + Type 9 | 🟡 partial |
+| WP-PM-01 | Portfolio Manager Investment Dashboard | portfolio-manager | PM Four-Dimension (Relative Value/Covenants/Liquidity/Events) | L2 | Type 5 | ✅ active |
+| WP-PM-02 | PM Comparative Analysis | portfolio-manager | Dual-Track Comparison + Differentiation Analysis | L2 | Type 2 | 🟡 partial |
+| WP-AD-01 | Advisor Origination Assessment | advisor | Issuance Window + Investor Matching + Comps Pricing | special | none | 🔴 planned |
+| WP-TR-01 | Trader Market Watch Signal Card | trader | L0 Signals + SRI Thermometer Linkage | L0 | L0 Spec | 🟡 partial |
+| WP-RO-01 | Risk Officer Concentration Assessment | risk-officer | Five-Dimension Concentration | special | Type 14 | ✅ active |
+| WP-RO-02 | Risk Officer Cross-Industry Contagion | risk-officer | Contagion Matrix + Contagion Theory | special | Type 13 | ✅ active |
+| WP-RO-03 | Risk Officer Systemic Risk Reading | risk-officer | SRI + Thermometer | special | Type 15 | ✅ active |
+| WP-RO-04 | Risk Officer Portfolio Stress Test | risk-officer | Stress Scenario + Financial Deep Dive Stress Section | special | Type 11 | 🟡 partial |
+| WP-II-01 | Individual Investor Decision Support | individual-investor | Financing Channel Comparison + Timing | special | none | 🔴 planned |
+| WP-X-01 | Black Swan Backtest Validation | meta | validation-methodology | special | Type 3 | ✅ active |
+| WP-X-02 | Multi-Role Parallel Assessment | meta | M0/M1/M4 Parallel + Cross Matrix | L2 | Type 4 | ✅ active |
+| WP-X-03 | Industry Framework Builder | meta | New Industry Pyramid + D1-D10 | special | Type 7 | ✅ active |
+| WP-X-04 | ESG/Governance Risk Scan | meta | esg + governance-fraud | special | Type 10 | 🟡 partial |
+| WP-X-05 | Outlook & Continuous Monitoring | meta | outlook-monitoring + migration matrix | special | Type 18 | ✅ active |
 
-> 状态分布：✅ active 8 条 · 🟡 partial 6 条 · 🔴 planned 2 条。待开发缺口见 [附录](#附录待开发缺口清单)。
+> Status distribution: ✅ active 8 paths / 🟡 partial 6 paths / 🔴 planned 2 paths. See [Appendix](#6-appendix-development-backlog) for the development backlog.
 
-## 三、路径 schema 定义
+## 3. Path Schema Definition
 
-每条路径在 [路径明细](#路径明细) 中以 ```yaml 围栏块注册，字段如下：
+Each path is registered as a ```yaml block in [Path Details](#4-path-details) with the following fields:
 
-| 字段 | 类型 | 必填 | 说明 |
+| Field | Type | Required | Description |
 |---|---|---|---|
-| `id` | string | 是 | 路径唯一标识，格式 `WP-(M[0-5]\|X)-\d{2}`（M0-M5 为客户角色，X 为元/专项路径） |
-| `name` | string | 是 | 路径中文名 |
-| `status` | enum | 是 | `active` \| `partial` \| `planned`（见 [路径状态定义](#路径状态定义)） |
-| `role` | enum | 是 | `M0` \| `M1` \| `M2` \| `M3` \| `M4` \| `M5` \| `meta`（meta 用于验证/对比/建设/专项等跨角色路径） |
-| `trigger` | map | 是 | 触发条件（router 匹配用），含两个子字段：`user_intent`（用户意图关键词数组）与 `object`（分析对象） |
-| `trigger.user_intent` | string[] | 是 | 用户意图关键词，router 据此匹配自然语言需求 |
-| `trigger.object` | enum | 是 | `single-issuer` \| `portfolio` \| `industry` \| `market` \| `meta` |
-| `depth` | enum | 是 | `L0` \| `L1` \| `L2` \| `专项`（输出深度档，对应 output-layered-framework 三层 + 专项） |
-| `engine_sequence` | string[] | 是 | 引擎文档调用序列（相对仓库根路径，单一事实源，不复制内容）。planned 路径可为空数组 `[]` |
-| `paradigm_selection` | string | 是 | 行业范式选择说明（六范式+LGFV 按行业映射表；不适用时填 `n/a` 及原因） |
-| `templates` | string[] | 是 | 报告模板（相对仓库根路径）或下列允许的标记值之一 |
-| `outputs` | string[] | 是 | 该路径的交付物清单 |
-| `quality_gates` | string[] | 是 | 质量门，格式 `规则名 (文档路径 §节)`；planned 路径可为空数组 `[]` |
+| `id` | string | yes | Unique path identifier, format `WP-(CS\|PM\|AD\|TR\|RO\|II\|X)-\d{2}` (CS=credit-selector, PM=portfolio-manager, AD=advisor, TR=trader, RO=risk-officer, II=individual-investor, X=meta/special-purpose paths) |
+| `name` | string | yes | Path name in English |
+| `status` | enum | yes | `active` \| `partial` \| `planned` (see [Path Status Definitions](#1-path-status-definitions)) |
+| `role` | enum | yes | `credit-selector` \| `portfolio-manager` \| `advisor` \| `trader` \| `risk-officer` \| `individual-investor` \| `meta` |
+| `trigger` | map | yes | Trigger conditions (for router matching), with two sub-fields: `user_intent` (user intent keyword array) and `object` (analysis object) |
+| `trigger.user_intent` | string[] | yes | User intent keywords for router natural language matching |
+| `trigger.object` | enum | yes | `single-issuer` \| `portfolio` \| `industry` \| `market` \| `meta` |
+| `depth` | enum | yes | `L0` \| `L1` \| `L2` \| `special` (output depth tier, corresponding to the output-layered-framework three tiers + special) |
+| `engine_sequence` | string[] | yes | Engine document call sequence (relative repository root paths; single source of truth, content not duplicated). May be empty `[]` for planned paths |
+| `paradigm_selection` | string | yes | Paradigm selection note (six paradigms mapped by industry mapping table; use `n/a` with reason when not applicable) |
+| `templates` | string[] | yes | Report templates (relative repository root paths) or one of the allowed token values below |
+| `outputs` | string[] | yes | Deliverable list for this path |
+| `quality_gates` | string[] | yes | Quality gates, format `rule-name (doc-path §section)`; may be empty `[]` for planned paths |
 
-**`templates` 允许的非文件标记值**（除真实模板文件路径外，仅允许以下两种标记，用于登记尚未落地的模板）：
+**Allowed non-file token values for `templates`** (other than actual template file paths, only the following two tokens are permitted for templates not yet implemented):
 
-| 标记 | 含义 | 示例 |
+| Token | Meaning | Example |
 |---|---|---|
-| `planned` | 模板待开发（无文件），配合 planned/partial 状态使用 | `planned` |
-| `L0-spec: <规范文档> §节` | 无独立模板文件，规范定义于所引引擎文档 | `L0-spec: dev/engine/output-layered-framework.md §3` |
+| `planned` | Template to be developed (no file), used with planned/partial status | `planned` |
+| `L0-spec: <spec-doc> §section` | No standalone template file; specification defined in the referenced engine document | `L0-spec: dev/engine/output-layered-framework.md §3` |
 
-**`quality_gates` 溯源约定**：`规则名`（` (` 之前的部分）必须是所引 `engine_sequence` 任一文档中真实存在的关键字，可由 grep 溯源（测试 T2.7 强制校验 active 路径）。`§节` 为人工阅读定位用的章节号，不参与机器校验。
+**`quality_gates` traceability convention**: The `rule-name` (the part before `(`) must be a keyword that actually exists in one of the referenced `engine_sequence` documents and can be traced by grep (test T2.7 enforces this for active paths). The `§section` is for human-reading navigation and is not machine-validated.
 
-## 四、路径明细
+## 4. Path Details
 
-### WP-M0-01 信贷审批单标的评级（✅ active）
+### WP-CS-01 Credit Selector Single-Issuer Rating (✅ active)
 
-最核心路径：银行客户经理/信审对单一发行人做信贷审批评级。沿"行业金字塔定性评分 → 马赛克引擎信号提取与完备性评估 → 双轨交叉对撞 → 评级映射"全链路走通，交付评级+信号与数据完备性报告。已有永煤、紫光、华晨等走通案例。
+The core path: A bank relationship manager / credit selector performs credit approval ratings on a single issuer. It follows the full chain of "Industry Pyramid qualitative scoring -> Mosaic Engine signal extraction and completeness assessment -> Dual-Track cross-validation -> Rating mapping," delivering a rating + signal and data completeness report. Proven with Yongmei, Ziguang, Brilliance Auto, and other cases.
 
 ```yaml
-id: WP-M0-01
-name: 信贷审批单标的评级
+id: WP-CS-01
+name: Credit Selector Single-Issuer Rating
 status: active
-role: M0
+role: credit-selector
 trigger:
-  user_intent: [能不能贷, 授信额度, 审贷, 放贷, 信用评级]
+  user_intent: [credit approval, credit limit, lending decision, loan approval, credit rating]
   object: single-issuer
 depth: L2
 engine_sequence:
   - dev/engine/industry-framework.md
   - dev/engine/mosaic-engine.md
   - dev/engine/dual-track-methodology.md
-paradigm_selection: 六范式+LGFV（按行业映射表）
+paradigm_selection: Six paradigms (per industry mapping table)
 templates:
   - dev/templates/template-type1.html
   - dev/templates/template-type6.html
-outputs: [评级+信号, 完备性报告]
+outputs: [rating + signals, completeness report]
 quality_gates:
-  - "信号密度 (dev/engine/mosaic-engine.md §4.3)"
-  - "一票否决 (dev/engine/industry-framework.md §五)"
-  - "交叉对撞 (dev/engine/dual-track-methodology.md §四)"
+  - "Signal Density (dev/engine/mosaic-engine.md §4.3)"
+  - "Veto (dev/engine/industry-framework.md §5)"
+  - "Cross-Validation (dev/engine/dual-track-methodology.md §4)"
 ```
 
-### WP-M0-02 审贷专项附加包（LGD+外部支持）（🟡 partial）
+### WP-CS-02 Credit Selector Add-On (LGD+External Support) (🟡 partial)
 
-审贷的专项加深包：在 WP-M0-01 主体评级之上，追加违约损失率（LGD）与外部支持两个专项模块，用于债项评级、增信评估与支持上调判断。两个引擎文档齐备，但尚未串成带入口协议与质量门的显式附加路径。
+A specialized add-on package for credit selection: on top of the WP-CS-01 main rating, it adds Loss Given Default (LGD) and External Support modules for facility-level rating, credit enhancement assessment, and support uplift determination. Both engine documents are complete, but they have not yet been assembled into an explicit add-on path with entry protocol and quality gates.
 
 ```yaml
-id: WP-M0-02
-name: 审贷专项附加包（LGD+外部支持）
+id: WP-CS-02
+name: Credit Selector Add-On (LGD+External Support)
 status: partial
-role: M0
+role: credit-selector
 trigger:
-  user_intent: [违约损失率, LGD, 回收率, 外部支持, 政府支持, 增信]
+  user_intent: [loss given default, LGD, recovery rate, external support, government support, credit enhancement]
   object: single-issuer
-depth: 专项
+depth: special
 engine_sequence:
   - dev/engine/lgd-recovery-framework.md
   - dev/engine/external-support-framework.md
-paradigm_selection: n/a（专项附加模块，在主体评级之上叠加，不重新选择范式）
+paradigm_selection: n/a (Special add-on module layered on main rating; no paradigm re-selection)
 templates:
   - dev/templates/template-type8.html
   - dev/templates/template-type9.html
-outputs: [LGD等级+回收率, 外部支持调整建议]
+outputs: [LGD tier + recovery rate, external support adjustment recommendation]
 quality_gates:
-  - "LGD五级分类 (dev/engine/lgd-recovery-framework.md §二)"
-  - "支持能力 (dev/engine/external-support-framework.md §三)"
+  - "LGD Five-Tier Classification (dev/engine/lgd-recovery-framework.md §2)"
+  - "Support Capacity (dev/engine/external-support-framework.md §3)"
 ```
 
-### WP-M1-01 债券投资仪表盘（✅ active）
+### WP-PM-01 Portfolio Manager Investment Dashboard (✅ active)
 
-债券投资者对单只券的投资决策：M1 四维框架（相对价值/条款保护/流动性/事件日历）加权评分，输出投资建议。已在隆基 vs 一道等案例中走通，配 Type 5 仪表盘模板。
+A bond investor's single-instrument investment decision framework: the PM four-dimension framework (Relative Value / Covenant Protection / Liquidity / Event Calendar) weighted scoring, producing investment recommendations. Proven in Longi vs. Yidao and other cases, paired with the Type 5 dashboard template.
 
 ```yaml
-id: WP-M1-01
-name: 债券投资仪表盘
+id: WP-PM-01
+name: Portfolio Manager Investment Dashboard
 status: active
-role: M1
+role: portfolio-manager
 trigger:
-  user_intent: [这只券怎么样, 便不便宜, 相对价值, 值不值得买, 投资仪表盘]
+  user_intent: [bond analysis, relative value, investment dashboard, buy decision, fair pricing]
   object: single-issuer
 depth: L2
 engine_sequence:
   - dev/engine/multi-stakeholder.md
-paradigm_selection: n/a（M1 四维框架按券种评估，不按行业范式）
+paradigm_selection: n/a (PM four-dimension framework evaluates by instrument type, not by industry paradigm)
 templates:
   - dev/templates/template-type5.html
-outputs: [四维评分, 投资建议]
+outputs: [four-dimension score, investment recommendation]
 quality_gates:
-  - "四维 (dev/engine/multi-stakeholder.md §二)"
-  - "相对价值 (dev/engine/multi-stakeholder.md §2.2)"
+  - "Four-Dimension (dev/engine/multi-stakeholder.md §2)"
+  - "Relative Value (dev/engine/multi-stakeholder.md §2.2)"
 ```
 
-### WP-M1-02 双标的前瞻对比（🟡 partial）
+### WP-PM-02 PM Comparative Analysis (🟡 partial)
 
-投资视角的双标的横向对比：用双轨方法论对两个发行人做前瞻对比与区分度分析，回答"买哪只"。双轨与验证方法论（前瞻对比/区分度）均已就位，但作为独立投资路径尚未显式化。
+An investment-perspective horizontal comparison of two bonds: uses the dual-track methodology for forward-looking comparison and differentiation analysis between two issuers, answering "which one to buy." Both dual-track and validation methodology (forward comparison / differentiation) are in place, but the path has not yet been formalized as an independent investment path.
 
 ```yaml
-id: WP-M1-02
-name: 双标的前瞻对比
+id: WP-PM-02
+name: PM Comparative Analysis
 status: partial
-role: M1
+role: portfolio-manager
 trigger:
-  user_intent: [两只券对比, 哪个更好, 前瞻对比, 区分度, 二选一]
+  user_intent: [bond comparison, which is better, forward comparison, differentiation, choose between]
   object: single-issuer
 depth: L2
 engine_sequence:
   - dev/engine/dual-track-methodology.md
   - dev/engine/validation-methodology.md
-paradigm_selection: 六范式+LGFV（两标的各自按行业映射表确定范式）
+paradigm_selection: Six paradigms (each target determined per industry mapping table)
 templates:
   - dev/templates/template-type2.html
-outputs: [对比评分, 区分度结论]
+outputs: [comparison score, differentiation conclusion]
 quality_gates:
-  - "前瞻对比 (dev/engine/validation-methodology.md §四)"
-  - "区分度 (dev/engine/validation-methodology.md §4.2)"
+  - "Forward Comparison (dev/engine/validation-methodology.md §4)"
+  - "Differentiation (dev/engine/validation-methodology.md §4.2)"
 ```
 
-### WP-M2-01 承销可行性评估（🔴 planned）
+### WP-AD-01 Advisor Origination Assessment (🔴 planned)
 
-承销商视角：评估某发行人债券的承销可行性——发行窗口判断、投资人匹配、可比券定价。**引擎缺失**：M2 承销框架 engine 文档与 Type 16 承销报告模板均待开发，见 [附录](#附录待开发缺口清单)。
+Underwriter perspective: assesses the feasibility of underwriting a bond issuance -- issuance window judgment, investor matching, and comparable pricing. **Engine missing**: The M2/Advisor framework engine document and Type 16 origination report template are both to be developed. See [Appendix](#6-appendix-development-backlog).
 
 ```yaml
-id: WP-M2-01
-name: 承销可行性评估
+id: WP-AD-01
+name: Advisor Origination Assessment
 status: planned
-role: M2
+role: advisor
 trigger:
-  user_intent: [能不能承销, 发行窗口, 可比定价, 投资人匹配, 簿记]
+  user_intent: [underwriting feasibility, issuance window, comparable pricing, investor matching, bookbuilding]
   object: single-issuer
-depth: 专项
+depth: special
 engine_sequence: []
-paradigm_selection: 待定（M2 承销框架待开发后确定）
+paradigm_selection: TBD (To be determined after advisor framework development)
 templates:
   - planned
-outputs: [承销可行性结论, 定价区间]
+outputs: [underwriting feasibility conclusion, pricing range]
 quality_gates: []
 ```
 
-### WP-M3-01 交易盯市信号卡（🟡 partial）
+### WP-TR-01 Trader Market Watch Signal Card (🟡 partial)
 
-交易员视角的轻量盯市：L0 信号卡（5 秒速览：评级+展望+今日关键信号）联动 SRI 系统性预警温度计。L0 规范与温度计引擎齐备，但 L0 信号卡无独立模板文件（规范定义于 output-layered-framework §3），且 M3 交易框架仍待补全。
+A lightweight market-watch tool from the trader perspective: L0 signal card (5-second summary: rating + outlook + key signals of the day) linked with the SRI systemic warning thermometer. The L0 specification and thermometer engine are complete, but the L0 signal card has no standalone template file (the specification is defined in output-layered-framework §3), and the M3/Trader trading framework still needs to be completed.
 
 ```yaml
-id: WP-M3-01
-name: 交易盯市信号卡
+id: WP-TR-01
+name: Trader Market Watch Signal Card
 status: partial
-role: M3
+role: trader
 trigger:
-  user_intent: [盯市, 交易信号, 今日异动, 信号卡, 盘中预警]
+  user_intent: [market watch, trading signal, daily alert, signal card, intraday warning]
   object: single-issuer
 depth: L0
 engine_sequence:
   - dev/engine/output-layered-framework.md
   - dev/engine/systemic-warning-framework.md
-paradigm_selection: n/a（L0 信号层跨范式，直接读取单标的评级+系统温度计）
+paradigm_selection: n/a (L0 signal layer is cross-paradigm; directly reads single-issuer rating + system thermometer)
 templates:
   - "L0-spec: dev/engine/output-layered-framework.md §3"
-outputs: [L0信号卡, 温度计读数]
+outputs: [L0 signal card, thermometer reading]
 quality_gates:
-  - "L0 信号卡 (dev/engine/output-layered-framework.md §三)"
-  - "温度计 (dev/engine/systemic-warning-framework.md §三)"
+  - "L0 Signal Card (dev/engine/output-layered-framework.md §3)"
+  - "Thermometer (dev/engine/systemic-warning-framework.md §3)"
 ```
 
-### WP-M4-01 组合集中度评估（✅ active）
+### WP-RO-01 Risk Officer Concentration Assessment (✅ active)
 
-组合风控视角：对债券组合做五维集中度（行业/区域/评级/期限/融资渠道）评估，输出集中度评分与调整建议。concentration-framework 完整实现，配 Type 14 模板。
+Portfolio risk control perspective: evaluates a bond portfolio across five concentration dimensions (industry/region/rating/tenor/funding channel), producing a concentration score and adjustment recommendations. The concentration-framework is fully implemented, paired with the Type 14 template.
 
 ```yaml
-id: WP-M4-01
-name: 组合集中度评估
+id: WP-RO-01
+name: Risk Officer Concentration Assessment
 status: active
-role: M4
+role: risk-officer
 trigger:
-  user_intent: [组合集中度, 行业占比, 区域集中, 集中度风险, 组合分散]
+  user_intent: [portfolio concentration, industry exposure, regional concentration, concentration risk, portfolio diversification]
   object: portfolio
-depth: 专项
+depth: special
 engine_sequence:
   - dev/engine/concentration-framework.md
-paradigm_selection: n/a（组合维度跨范式聚合，按持仓行业分布映射）
+paradigm_selection: n/a (Portfolio dimension cross-paradigm aggregation, mapped by holdings industry distribution)
 templates:
   - dev/templates/template-type14.html
-outputs: [五维集中度评分, 集中度调整建议]
+outputs: [five-dimension concentration score, concentration adjustment recommendations]
 quality_gates:
-  - "五维集中度 (dev/engine/concentration-framework.md §一)"
-  - "阈值体系 (dev/engine/concentration-framework.md §2.2)"
+  - "Five-Dimension Concentration (dev/engine/concentration-framework.md §1)"
+  - "Threshold System (dev/engine/concentration-framework.md §2.2)"
 ```
 
-### WP-M4-02 跨行业传染分析（✅ active）
+### WP-RO-02 Risk Officer Cross-Industry Contagion (✅ active)
 
-组合风控视角：用 13×13 传染矩阵 + 传染理论分析组合内跨行业传导风险，识别高传染链路与升级因子，输出传染路径图谱与调整建议。配 Type 13 模板。
+Portfolio risk control perspective: uses a 13x13 contagion matrix + contagion theory to analyze cross-industry transmission risk within a portfolio, identifying high-contagion chains and escalation factors, producing a contagion path map and adjustment recommendations. Paired with the Type 13 template.
 
 ```yaml
-id: WP-M4-02
-name: 跨行业传染分析
+id: WP-RO-02
+name: Risk Officer Cross-Industry Contagion
 status: active
-role: M4
+role: risk-officer
 trigger:
-  user_intent: [传染, 连带风险, 行业传导, 传染矩阵, 风险蔓延]
+  user_intent: [contagion, spillover risk, industry transmission, contagion matrix, risk spread]
   object: portfolio
-depth: 专项
+depth: special
 engine_sequence:
   - dev/engine/contagion-matrix.md
   - dev/engine/contagion-theory.md
-paradigm_selection: n/a（传染矩阵跨范式，按行业对传导）
+paradigm_selection: n/a (Contagion matrix is cross-paradigm; transmitted by industry pairs)
 templates:
   - dev/templates/template-type13.html
-outputs: [传染路径图谱, 传染调整建议]
+outputs: [contagion path map, contagion adjustment recommendations]
 quality_gates:
-  - "传染矩阵 (dev/engine/contagion-matrix.md §二)"
-  - "升级因子 (dev/engine/contagion-matrix.md §6.1)"
-  - "传导路径 (dev/engine/contagion-theory.md §三)"
+  - "Contagion Matrix (dev/engine/contagion-matrix.md §2)"
+  - "Escalation Factor (dev/engine/contagion-matrix.md §6.1)"
+  - "Transmission Path (dev/engine/contagion-theory.md §3)"
 ```
 
-### WP-M4-03 系统性风险读数（✅ active）
+### WP-RO-03 Risk Officer Systemic Risk Reading (✅ active)
 
-组合/全市场视角：聚合多源信号计算 SRI（系统性风险指数），给出四级温度计读数。systemic-warning-framework 完整实现（含历史回测），配 Type 15 模板。
+Portfolio / full-market perspective: aggregates multi-source signals to calculate the SRI (Systemic Risk Index), producing a four-tier thermometer reading. The systemic-warning-framework is fully implemented (including historical backtesting), paired with the Type 15 template.
 
 ```yaml
-id: WP-M4-03
-name: 系统性风险读数
+id: WP-RO-03
+name: Risk Officer Systemic Risk Reading
 status: active
-role: M4
+role: risk-officer
 trigger:
-  user_intent: [系统性风险, SRI, 温度计, 市场风险, 大盘风险]
+  user_intent: [systemic risk, SRI, thermometer, market risk, broad market risk]
   object: market
-depth: 专项
+depth: special
 engine_sequence:
   - dev/engine/systemic-warning-framework.md
-paradigm_selection: n/a（系统性聚合，跨范式）
+paradigm_selection: n/a (Systemic aggregation, cross-paradigm)
 templates:
   - dev/templates/template-type15.html
-outputs: [SRI读数, 温度计等级]
+outputs: [SRI reading, thermometer tier]
 quality_gates:
-  - "信号聚合 (dev/engine/systemic-warning-framework.md §二)"
-  - "温度计四级 (dev/engine/systemic-warning-framework.md §三)"
+  - "Signal Aggregation (dev/engine/systemic-warning-framework.md §2)"
+  - "Four-Tier Thermometer (dev/engine/systemic-warning-framework.md §3)"
 ```
 
-### WP-M4-04 组合压力测试（🟡 partial）
+### WP-RO-04 Risk Officer Portfolio Stress Test (🟡 partial)
 
-组合风控视角：对组合施加压力情景（五维阈值跳升 + 财务深潜压力节），评估极端情景下的损失。concentration-framework 压力节与 financial-deep-dive 场景敏感性矩阵齐备，但尚未串成显式压力测试路径。
+Portfolio risk control perspective: applies stress scenarios (five-dimension threshold jumps + financial deep dive stress section) to a portfolio, evaluating losses under extreme conditions. The concentration-framework stress section and financial-deep-dive scenario sensitivity matrix are complete, but not yet assembled into an explicit stress test path.
 
 ```yaml
-id: WP-M4-04
-name: 组合压力测试
+id: WP-RO-04
+name: Risk Officer Portfolio Stress Test
 status: partial
-role: M4
+role: risk-officer
 trigger:
-  user_intent: [压力测试, 极端情景, 组合压力, 敏感性, 压力情景]
+  user_intent: [stress test, extreme scenario, portfolio stress, sensitivity, stress scenario]
   object: portfolio
-depth: 专项
+depth: special
 engine_sequence:
   - dev/engine/concentration-framework.md
   - dev/engine/financial-deep-dive.md
-paradigm_selection: n/a（压力情景跨范式）
+paradigm_selection: n/a (Stress scenarios are cross-paradigm)
 templates:
   - dev/templates/template-type11.html
-outputs: [压力情景损失, 阈值跳升结果]
+outputs: [stress scenario loss, threshold jump results]
 quality_gates:
-  - "压力测试 (dev/engine/concentration-framework.md §九)"
-  - "场景敏感性 (dev/engine/financial-deep-dive.md §E)"
+  - "Stress Test (dev/engine/concentration-framework.md §9)"
+  - "Scenario Sensitivity (dev/engine/financial-deep-dive.md §E)"
 ```
 
-### WP-M5-01 企业融资顾问（🔴 planned）
+### WP-II-01 Individual Investor Decision Support (🔴 planned)
 
-企业（发行人）视角的反向应用：对比融资渠道（发债/贷款/非标）、判断融资时机与成本。**引擎缺失**：M5 融资顾问框架 engine 文档与 Type 17 融资顾问模板均待开发，见 [附录](#附录待开发缺口清单)。
+Enterprise (issuer) perspective reverse application: compares financing channels (bond/loan/non-standard), judges financing timing and cost. **Engine missing**: The individual investor framework engine document and Type 17 advisory template are both to be developed. See [Appendix](#6-appendix-development-backlog).
 
 ```yaml
-id: WP-M5-01
-name: 企业融资顾问
+id: WP-II-01
+name: Individual Investor Decision Support
 status: planned
-role: M5
+role: individual-investor
 trigger:
-  user_intent: [融资渠道, 发债还是贷款, 融资时机, 融资成本, 怎么融资]
+  user_intent: [financing channels, bond vs loan, financing timing, financing cost, how to finance]
   object: single-issuer
-depth: 专项
+depth: special
 engine_sequence: []
-paradigm_selection: 待定（M5 融资顾问框架待开发后确定）
+paradigm_selection: TBD (To be determined after individual investor framework development)
 templates:
   - planned
-outputs: [融资渠道对比, 时机建议]
+outputs: [financing channel comparison, timing recommendation]
 quality_gates: []
 ```
 
-### WP-X-01 黑天鹅回溯验证（✅ active）
+### WP-X-01 Black Swan Backtest Validation (✅ active)
 
-元路径（验证）：用历史违约/黑天鹅事件做双时点回溯验证，检验框架能否在违约前给出预警信号，输出验证结论与框架改进建议。validation-methodology 完整实现（永煤/紫光等），配 Type 3 模板。
+Meta-path (validation): uses historical default / black swan events for dual-timeline backtest validation, verifying whether the framework would have issued warning signals before the default, producing validation conclusions and framework improvement recommendations. The validation-methodology is fully implemented (Yongmei/Ziguang cases), paired with the Type 3 template.
 
 ```yaml
 id: WP-X-01
-name: 黑天鹅回溯验证
+name: Black Swan Backtest Validation
 status: active
 role: meta
 trigger:
-  user_intent: [回溯验证, 历史违约, 黑天鹅, 框架有效性, 事后检验]
+  user_intent: [backtest validation, historical default, black swan, framework effectiveness, ex-post testing]
   object: meta
-depth: 专项
+depth: special
 engine_sequence:
   - dev/engine/validation-methodology.md
-paradigm_selection: n/a（验证方法论，复用被验证路径的范式选择）
+paradigm_selection: n/a (Validation methodology reuses the paradigm selection of the path under validation)
 templates:
   - dev/templates/template-type3.html
-outputs: [验证结论, 框架改进建议]
+outputs: [validation conclusion, framework improvement recommendations]
 quality_gates:
-  - "黑天鹅回溯 (dev/engine/validation-methodology.md §一)"
-  - "双时点 (dev/engine/validation-methodology.md §三)"
+  - "Black Swan Backtest (dev/engine/validation-methodology.md §1)"
+  - "Dual-Timeline (dev/engine/validation-methodology.md §3)"
 ```
 
-### WP-X-02 多身份并行评估（✅ active）
+### WP-X-02 Multi-Role Parallel Assessment (✅ active)
 
-元路径（对比）：对单一发行人以 M0/M1/M4 等多身份并行评估，构建交叉对比矩阵，处理共识与分歧。multi-stakeholder §3-4 定义标准流程（华晨案例验证），配 Type 4 模板。
+Meta-path (comparison): performs parallel assessment of a single issuer from multiple role perspectives (credit-selector/portfolio-manager/risk-officer), building a cross-comparison matrix to identify consensus and divergence. Multi-stakeholder §3-4 defines the standard workflow (proven in the Brilliance Auto case), paired with the Type 4 template.
 
 ```yaml
 id: WP-X-02
-name: 多身份并行评估
+name: Multi-Role Parallel Assessment
 status: active
 role: meta
 trigger:
-  user_intent: [多角度, 多身份, 并行评估, 交叉对比, 多方视角]
+  user_intent: [multi-perspective, multi-role, parallel assessment, cross-comparison, multi-stakeholder]
   object: single-issuer
 depth: L2
 engine_sequence:
   - dev/engine/multi-stakeholder.md
-paradigm_selection: 六范式+LGFV（按被评估标的行业映射表确定范式）
+paradigm_selection: Six paradigms (determined by the target's industry mapping table)
 templates:
   - dev/templates/template-type4.html
-outputs: [多身份评分矩阵, 共识/分歧报告]
+outputs: [multi-role score matrix, consensus/divergence report]
 quality_gates:
-  - "多身份并行 (dev/engine/multi-stakeholder.md §四)"
-  - "交叉对比矩阵 (dev/engine/multi-stakeholder.md §3.2)"
+  - "Multi-Role Parallel (dev/engine/multi-stakeholder.md §4)"
+  - "Cross-Comparison Matrix (dev/engine/multi-stakeholder.md §3.2)"
 ```
 
-### WP-X-03 行业分析框架建设（✅ active）
+### WP-X-03 Industry Framework Builder (✅ active)
 
-元路径（建设）：为新行业搭建分析框架——十维评分（D1-D10）定权重、确定范式归属、建行业金字塔。industry-framework 完整实现（七行业金字塔规格 + 一票否决），配 Type 7 模板。
+Meta-path (construction): builds an analysis framework for new industries -- ten-dimension scoring (D1-D10) with weight assignment, paradigm classification, and industry pyramid construction. The industry-framework is fully implemented (seven-industry pyramid specifications + veto), paired with the Type 7 template.
 
 ```yaml
 id: WP-X-03
-name: 行业分析框架建设
+name: Industry Framework Builder
 status: active
 role: meta
 trigger:
-  user_intent: [新行业, 建框架, 行业金字塔, 十维评分, 行业分析]
+  user_intent: [new industry, framework building, industry pyramid, ten-dimension scoring, industry analysis]
   object: industry
-depth: 专项
+depth: special
 engine_sequence:
   - dev/engine/industry-framework.md
-paradigm_selection: 六范式+LGFV（建设时确定新行业的范式归属）
+paradigm_selection: Six paradigms (paradigm assignment determined during framework construction)
 templates:
   - dev/templates/template-type7.html
-outputs: [行业金字塔, D1-D10评分]
+outputs: [industry pyramid, D1-D10 scores]
 quality_gates:
-  - "十维 (dev/engine/industry-framework.md §二)"
-  - "金字塔 (dev/engine/industry-framework.md §四)"
-  - "一票否决 (dev/engine/industry-framework.md §五)"
+  - "Ten-Dimension (dev/engine/industry-framework.md §2)"
+  - "Pyramid (dev/engine/industry-framework.md §4)"
+  - "Veto (dev/engine/industry-framework.md §5)"
 ```
 
-### WP-X-04 ESG/治理风险扫描（🟡 partial）
+### WP-X-04 ESG/Governance Risk Scan (🟡 partial)
 
-专项路径：对发行人做 ESG（环境/社会/治理）与财务欺诈/治理风险扫描，输出 ESG 叠加调整与治理红旗清单。esg-framework 与 governance-fraud-risk 齐备，但尚未串成显式专项路径。
+Specialized path: scans an issuer for ESG (Environmental/Social/Governance) and financial fraud / governance risk, producing ESG overlay adjustments and governance red-flag lists. The esg-framework and governance-fraud-risk are complete, but not yet assembled into an explicit specialized path.
 
 ```yaml
 id: WP-X-04
-name: ESG/治理风险扫描
+name: ESG/Governance Risk Scan
 status: partial
 role: meta
 trigger:
-  user_intent: [ESG, 治理风险, 财务造假, 欺诈, 逃废债]
+  user_intent: [ESG, governance risk, financial fraud, fraud, debt evasion]
   object: single-issuer
-depth: 专项
+depth: special
 engine_sequence:
   - dev/engine/esg-framework.md
   - dev/engine/governance-fraud-risk.md
-paradigm_selection: n/a（ESG/治理为跨范式叠加层）
+paradigm_selection: n/a (ESG/governance is a cross-paradigm overlay layer)
 templates:
   - dev/templates/template-type10.html
-outputs: [ESG风险扫描, 治理红旗清单]
+outputs: [ESG risk scan, governance red-flag list]
 quality_gates:
-  - "ESG (dev/engine/esg-framework.md §一)"
-  - "财务欺诈 (dev/engine/governance-fraud-risk.md §一)"
-  - "逃废债 (dev/engine/governance-fraud-risk.md §四)"
+  - "ESG (dev/engine/esg-framework.md §1)"
+  - "Financial Fraud (dev/engine/governance-fraud-risk.md §1)"
+  - "Debt Evasion (dev/engine/governance-fraud-risk.md §4)"
 ```
 
-### WP-X-05 展望与持续监控（✅ active）
+### WP-X-05 Outlook & Continuous Monitoring (✅ active)
 
-专项路径：在评级之上给出 12-24 个月评级展望、维护 90 天观察名单、触发持续监控（含评级迁移矩阵）。outlook-monitoring-framework + Type 18 模板 + outlook_engine 编码引擎完整实现（v0.8.4 激活）。
+Specialized path: provides a 12-24 month rating outlook, maintains a 90-day watchlist, and triggers continuous monitoring (including rating migration matrix). The outlook-monitoring-framework + Type 18 template + outlook_engine coding engine are fully implemented (activated in v0.8.4).
 
 ```yaml
 id: WP-X-05
-name: 展望与持续监控
+name: Outlook & Continuous Monitoring
 status: active
 role: meta
 trigger:
-  user_intent: [评级展望, 持续监控, 观察名单, 迁移矩阵, 评级行动]
+  user_intent: [rating outlook, continuous monitoring, watchlist, migration matrix, rating action]
   object: single-issuer
-depth: 专项
+depth: special
 engine_sequence:
   - dev/engine/outlook-monitoring-framework.md
-paradigm_selection: n/a（展望与监控为跨范式机制）
+paradigm_selection: n/a (Outlook and monitoring are cross-paradigm mechanisms)
 templates:
   - dev/templates/template-type18.html
-outputs: [评级展望, 观察名单]
+outputs: [rating outlook, watchlist]
 quality_gates:
-  - "评级展望 (dev/engine/outlook-monitoring-framework.md §二)"
-  - "观察名单 (dev/engine/outlook-monitoring-framework.md §三)"
-  - "迁移矩阵 (dev/engine/outlook-monitoring-framework.md §五)"
+  - "Rating Outlook (dev/engine/outlook-monitoring-framework.md §2)"
+  - "Watchlist (dev/engine/outlook-monitoring-framework.md §3)"
+  - "Migration Matrix (dev/engine/outlook-monitoring-framework.md §5)"
 ```
 
-## 五、链式规则（L0→L1→L2 升级与监控触发）
+## 5. Chaining Rules (L0->L1->L2 Escalation and Monitoring Triggers)
 
-本节登记路径之间的**升级触发**（浅层产出在何种信号下升级为更深一层路径）与**监控触发**（组合风控路径在何种事件下重跑）。本节只定义"何时切换/重跑路径"，不定义任何一层本身的语义与数值——单一事实源如下，本节不复制其中任何数值、亦不新增任何数值阈值（唯一的触发量"≥2 子级"沿用 §四 评级对比中既有的子级口径）：
+This section registers **escalation triggers** (when a shallow output should escalate to a deeper path) and **monitoring triggers** (when a portfolio risk control path should re-run). This section only defines "when to switch/re-run a path," not the semantics or values of any tier itself. The single sources of truth are as follows -- this section does NOT copy any values or add any new thresholds from them:
 
-- L0/L1/L2 三层输出的定义、消费时间与信息密度，以 [output-layered-framework](output-layered-framework.md) §二（三层输出体系总览）为单一事实源；
-- L0 信号卡与红色优先级信号的语义，以 [output-layered-framework](output-layered-framework.md) §三（L0 信号卡）为单一事实源；
-- 评级对比与"子级"分歧的语义，以 [output-layered-framework](output-layered-framework.md) §四（L1 快照·评级对比）为单一事实源；
-- 信号优先级的数值过滤门槛，以 [output-layered-framework](output-layered-framework.md) §六（信息优先级排序）为单一事实源；
-- SRI 温度计四级档位的数值区间，以 [systemic-warning-framework](systemic-warning-framework.md) §三（温度计四级体系）为单一事实源。
+- Definition, consumption time, and information density of L0/L1/L2 outputs: [output-layered-framework](output-layered-framework.md) §2 (three-tier output system overview) is the single source of truth;
+- L0 signal card semantics and red priority signals: [output-layered-framework](output-layered-framework.md) §3 (L0 signal card) is the single source of truth;
+- Rating comparison and "notch" divergence semantics: [output-layered-framework](output-layered-framework.md) §4 (L1 Snapshot - Rating Comparison) is the single source of truth;
+- Signal priority numerical filter thresholds: [output-layered-framework](output-layered-framework.md) §6 (Information Priority Sorting) is the single source of truth;
+- SRI thermometer four-tier numerical ranges: [systemic-warning-framework](systemic-warning-framework.md) §3 (Four-Tier Thermometer) is the single source of truth.
 
-### 升级触发（深度上调）
+### Escalation Triggers (Depth Upgrade)
 
-| 升级 | 触发条件 | 目标路径（示例） | 依据（单一事实源） |
+| Escalation | Trigger Condition | Target Path (Example) | Source (Single Source of Truth) |
 |---|---|---|---|
-| **L0 → L1** | L0 信号卡浮现**红色（高优先级）信号** | WP-M3-01 → WP-M1-01 | output-layered-framework §三、§四 |
-| **L1 → L2** | L1 快照内部评级与外部评级相差 **≥2 子级** | WP-M1-01 → WP-M0-01 | output-layered-framework §四 |
+| **L0 -> L1** | L0 signal card shows **red (high-priority) signal** | WP-TR-01 -> WP-PM-01 | output-layered-framework §3, §4 |
+| **L1 -> L2** | L1 snapshot internal rating differs from external rating by **>=2 notches** | WP-PM-01 -> WP-CS-01 | output-layered-framework §4 |
 
-- **L0 → L1 升级**：L0 信号卡只回答"这只券今天需要我关注吗"（§三）。一旦出现红色优先级信号，即存在需重点关注的事项，应升级为 L1 快照，用四维雷达图与关键异常列表定位风险点。
-- **L1 → L2 升级**：当 L1 快照的评级对比显示内部评级与外部评级相差 ≥2 子级时，说明引擎判断与市场/评级机构存在值得深挖的分歧，应升级为 L2 深度报告，以金字塔逐层分析与双轨对撞支撑授信/投资决策。（≥2 为保守上沿：§四 将 ≤2 子级标为"基本一致/互相验证"，此处取保守触发以尽早深挖；升级触发是"何时投入更深分析"的工作流判断，与 §四 的展示标签是两条不同坐标，语义裁决仍以 §四 为准。）
+- **L0 -> L1 escalation**: The L0 signal card only answers "Does this bond require my attention today?" (§3). Once a red priority signal appears, there is a matter requiring focused attention, and escalation to an L1 snapshot is warranted, using the four-dimension radar chart and key anomaly list to locate risk points.
+- **L1 -> L2 escalation**: When the L1 snapshot rating comparison shows an internal rating differing from the external rating by >=2 notches, there is a divergence between the engine's judgment and the market/rating agency that merits deep investigation. Escalation to an L2 deep-dive report is warranted, using pyramid layered analysis and dual-track cross-validation to support the credit/investment decision. (>=2 is the conservative upper bound: §4 marks <=2 notches as "substantially consistent / cross-validated"; here the conservative trigger is used to deep-dive early. The escalation trigger is a workflow judgment about "when to invest deeper analysis," a different coordinate from the §4 display label; semantic authority rests with §4.)
 
-### 监控触发（重跑条件）
+### Monitoring Triggers (Re-run Conditions)
 
-组合风控（M4）路径不是一次性产出，而在下列事件下重跑。温度计档位本身不新增阈值，直接引用 [systemic-warning-framework](systemic-warning-framework.md) §三 的四级定义与行动建议。
+Risk officer (RO) portfolio paths are not one-time outputs; they re-run under the following events. Thermometer tier semantics do not add new thresholds here; they directly reference the four-tier definitions and action recommendations in [systemic-warning-framework](systemic-warning-framework.md) §3.
 
-| 触发源 | 触发事件 | 重跑路径 | 依据（单一事实源） |
+| Trigger Source | Trigger Event | Re-run Paths | Source (Single Source of Truth) |
 |---|---|---|---|
-| **月度 SRI 读数** | 每月对组合读取一次系统性风险温度计，档位上升时 | WP-M4-03 → 联动 WP-M4-01 / WP-M4-02 | systemic-warning-framework §三 |
-| **迁移矩阵展望变化** | 持续监控命中触发条件（进入观察名单/展望调整），或迁移矩阵显示展望变化 | WP-X-05 → 联动相关 M4 组合路径复查 | outlook-monitoring-framework §四、§五 |
+| **Monthly SRI Reading** | Monthly systemic risk thermometer reading; when tier rises | WP-RO-03 -> triggers WP-RO-01 / WP-RO-02 | systemic-warning-framework §3 |
+| **Migration Matrix Outlook Change** | Continuous monitoring hits trigger condition (enters watchlist/outlook adjustment), or migration matrix shows outlook change | WP-X-05 -> triggers related RO portfolio paths for review | outlook-monitoring-framework §4, §5 |
 
-- **月度 SRI 读数**：每月读取一次系统性风险温度计（WP-M4-03）。当温度计档位上升时，按 systemic-warning-framework §三 对应档位的行动建议，对组合内高传染/高集中行业重跑 WP-M4-01（集中度）与 WP-M4-02（传染）。档位区间与行动建议以该文档 §三 为准。
-- **迁移矩阵展望变化**：当 [outlook-monitoring-framework](outlook-monitoring-framework.md) §四 的持续监控触发机制命中（如进入观察名单、展望调整），或 §五 迁移矩阵显示评级展望发生变化时，重跑 WP-X-05 并联动相关组合路径复查。
+- **Monthly SRI Reading**: Read the systemic risk thermometer monthly (WP-RO-03). When the thermometer tier rises, follow the action recommendations for the corresponding tier in systemic-warning-framework §3, re-running WP-RO-01 (concentration) and WP-RO-02 (contagion) for high-contagion/high-concentration industries in the portfolio. Tier ranges and action recommendations are governed by that document's §3.
+- **Migration Matrix Outlook Change**: When the continuous monitoring trigger mechanism in [outlook-monitoring-framework](outlook-monitoring-framework.md) §4 is hit (e.g., entry into watchlist, outlook adjustment), or when the §5 migration matrix shows a rating outlook change, re-run WP-X-05 and trigger associated portfolio path reviews.
 
-> **单一事实源声明**：本节引用的层级语义、信号门槛与温度计档位，一律以上述三份引擎文档的对应章节为最终裁决。本节如出现与之不一致之处，以引擎文档为准。
+> **Single Source of Truth Declaration**: The tier semantics, signal thresholds, and thermometer ranges referenced in this section are ultimately governed by the corresponding sections of the three engine documents cited above. If any inconsistency arises between this section and those engine documents, the engine documents prevail.
 
-## 六、附录：待开发缺口清单
+## 6. Appendix: Development Backlog
 
-下列 🔴 缺口是后续版本（v0.7.3+）的开发清单，每条标注缺失组件与受影响路径：
+The following 🔴 gaps are the development backlog for upcoming versions. Each entry marks the missing component and the affected path:
 
-| # | 缺口 | 缺失组件类型 | 受影响路径 | 备注 |
+| # | Gap | Missing Component Type | Affected Path | Notes |
 |---|---|---|---|---|
-| 1 | M2 承销框架 engine 文档 | engine | WP-M2-01 | 发行窗口+投资人匹配+可比定价方法论 |
-| 2 | M5 融资顾问框架 engine 文档 | engine | WP-M5-01 | 融资渠道对比+时机判断方法论 |
-| 3 | M3 交易框架补全 | engine | WP-M3-01 | 交易盯市专用引擎（当前仅 L0 规范+温度计，partial） |
-| 4 | Type 16 承销报告模板 | 模板 | WP-M2-01 | 承销可行性结论+定价区间报告 |
-| 5 | Type 17 融资顾问模板 | 模板 | WP-M5-01 | 融资渠道对比+时机建议报告 |
-| 6 | 展望监控模板 | 模板 | WP-X-05 | ✅ 已交付（v0.8.4，template-type18.html） |
+| 1 | Advisor (formerly M2) framework engine document | engine | WP-AD-01 | Issuance window + investor matching + comps pricing methodology |
+| 2 | Individual Investor (formerly M5) framework engine document | engine | WP-II-01 | Financing channel comparison + timing methodology |
+| 3 | Trader (formerly M3) framework completion | engine | WP-TR-01 | Trader-specific engine (currently only L0 spec + thermometer, partial) |
+| 4 | Type 16 origination report template | template | WP-AD-01 | Origination feasibility conclusion + pricing range report |
+| 5 | Type 17 individual investor advisory template | template | WP-II-01 | Financing channel comparison + timing recommendation report |
+| 6 | Outlook monitoring template | template | WP-X-05 | ✅ Delivered (v0.8.4, template-type18.html) |
 
-> Evolution tracking: each version release should update the status distribution in this table (🔴→🟡→✅) and record it in engine-overview.md §6 Version History.
+> Evolution tracking: each version release should update the status distribution in this table (🔴->🟡->✅) and record it in engine-overview.md §6 Version History.
