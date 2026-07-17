@@ -1,997 +1,998 @@
-# 分层输出框架 — 产品设计规范
+# Layered Output Framework — Product Design Specification
 
-**版本**: v0.8.4-release | **日期**: 2026-07-10
-**状态**: 产品设计文档（非代码实现）
-**设计依据**: 从业者可用性审计（P0级输出模式改革）
+**Version**: v0.8.4-release | **Date**: 2026-07-10
+**Status**: Product design document (not code implementation)
+**Design Basis**: Practitioner Usability Audit (P0-level output model reform)
 
 ---
 
-## 一、设计背景与问题陈述
+## 1. Design Background and Problem Statement
 
-### 1.1 从业者审计的核心批评
+### 1.1 Core Criticisms from the Practitioner Audit
 
-当前引擎在方法论层面展现了不错的学术功底，但从一名基金经理的日常使用角度看，距离"可嵌入工作流"仍有较大距离。核心矛盾在于：
+The current engine demonstrates solid academic rigor on the methodology level, but from the perspective of a fund manager's daily usage, it is still far from being "embeddable into a workflow." The core contradictions are:
 
-| 引擎现状 | 从业者需求 | 冲突本质 |
+| Engine Current State | Practitioner Need | Nature of Conflict |
 |---|---|---|
-| 只有"深度报告"一种输出模式 | 需要5秒扫一眼、30秒初步判断、需要时再深挖 | 输出粒度不可调 |
-| 输出顺序是L1→L4（分析者逻辑） | 思维路径是"价格/评级→条款→行业→财务"（决策者逻辑） | 信息组织方式不匹配认知流程 |
-| 一次输出50-80个信息点 | 用户不会看完，需要"哪些可以忽略"的指引 | 没有优先级过滤 |
-| 假设用户会主动来查、完整阅读 | 70%持仓日常无需关注，只有10%需要深入 | 工作流嵌入度为零 |
+| Only one output mode: "deep report" | Need 5-second glance, 30-second preliminary judgment, deep dive when needed | Output granularity is not adjustable |
+| Output order is L1->L4 (analyst logic) | Thought path is "price/rating -> terms -> industry -> financials" (decision-maker logic) | Information organization does not match cognitive flow |
+| Outputs 50-80 information points at once | Users will not read everything; need guidance on "what can be ignored" | No priority filtering |
+| Assumes users will proactively query and read thoroughly | 70% of positions require no daily attention; only 10% need deep analysis | Zero workflow embedment |
 
-### 1.2 设计目标
+### 1.2 Design Goals
 
-1. **时间可伸缩**：同一个分析引擎输出三种粒度的产品，从5秒到5分钟适配不同场景
-2. **决策者导向**：输出顺序从"评级+信号"开始，而非从"宏观环境"开始
-3. **信息优先级可计算**：不是所有信号都同等重要——给出可落地的排序规则
-4. **工作流可嵌入**：支持"晨间推送-盘中查询-盘后深度-周度扫描"四种场景
+1. **Time-scalable**: The same analysis engine outputs three granularity levels, from 5 seconds to 5 minutes, adapting to different scenarios
+2. **Decision-maker oriented**: Output order starts from "rating + signals" rather than from "macro environment"
+3. **Information priority computable**: Not all signals are equally important -- provide implementable ranking rules
+4. **Workflow embeddable**: Support four scenarios: "morning push - intraday query - post-market deep dive - weekly scan"
 
 ---
 
-## 二、三层输出体系总览
+## 2. Three-Layer Output System Overview
 
-### 2.1 三层定义
+### 2.1 Three-Layer Definitions
 
-| 层级 | 名称 | 目标用户 | 消费时间 | 核心内容 | 触发方式 |
+| Layer | Name | Target User | Consumption Time | Core Content | Trigger Method |
 |---|---|---|---|---|---|
-| **L0 信号卡** | 5秒速览 | 基金经理/交易员 | 3-5秒 | 评级+展望+今日关键信号（最多3条）+数据完备性指示灯 | 晨间自动推送/盘中浮层/持仓预警 |
-| **L1 快照** | 30秒诊断 | 信评研究员/投资经理 | 20-40秒 | 四维雷达图+关键异常列表+评级对比+同行业排名 | 点击信号卡展开/按需查询 |
-| **L2 深度** | 完整报告 | 深度研究者/授信审批 | 2-5分钟 | 金字塔逐层分析+马赛克拼图+双轨对撞+完备性报告 | 点击快照中任意维度展开/主动生成 |
+| **L0 Signal Card** | 5-second Quick View | Fund Manager/Trader | 3-5 seconds | Rating + Outlook + Today's key signals (max 3) + Data completeness indicator light | Morning auto-push/intraday overlay/position alert |
+| **L1 Snapshot** | 30-second Diagnosis | Credit Analyst/Investment Manager | 20-40 seconds | Four-dimension radar chart + Key anomaly list + Rating comparison + Industry ranking | Click signal card to expand/on-demand query |
+| **L2 Deep** | Full Report | Deep Researcher/Credit Approval | 2-5 minutes | Pyramid layer-by-layer analysis + Mosaic collage + Dual-track collision + Completeness report | Click any dimension in snapshot to expand/on-demand generation |
 
-### 2.2 三层之间的导航关系
-
-```
-用户视角：
-
-  晨间推送列表
-       │
-   ┌────┴────┐
-   │  L0信号卡 │  ← 5秒判断：这只券需要我关注吗？
-   │ [展开]   │
-   └────┬────┘
-        │ 点击"展开"或"查看快照"
-        ▼
-   ┌──────────┐
-   │ L1快照   │  ← 30秒判断：风险点在哪？市场怎么看？
-   │ [展开维度]│
-   └────┬─────┘
-        │ 点击任意维度（如"基本面"板块）
-        ▼
-   ┌──────────┐
-   │ L2深度   │  ← 2-5分钟：完整分析，支持授信决策
-   └──────────┘
-```
-
-**关键设计约束**：从L0到L2的每次展开必须保持上下文连续——用户展开某维度快照时，L2默认定位到该维度，而非从头开始。
-
-### 2.3 三层的引擎数据共享
-
-三个层级共享同一个分析引擎的输出，只是呈现方式和信息密度不同：
+### 2.2 Navigation Relationships Between Layers
 
 ```
-马赛克引擎 + 双轨对撞
-        │
-   ┌────┴──────────────────────────────┐
-   │        分析结果池                   │
-   │  ├── 综合评级 + 展望              │
-   │  ├── 各维度评分（0-10）          │
-   │  ├── 全部信号的优先级排序列表     │
-   │  ├── 外部评级 vs 内部评级         │
-   │  ├── 四维评分（利差/基本面/条款/流动性）│
-   │  ├── 同行业排名                   │
-   │  ├── 关键风险点（一票否决/接近阈值）│
-   │  └── 完备性报告（信号密度+缺口清单）│
-   └────┬──────────────────────────────┘
-        │
-   ┌────┴────┐
-   │ L0渲染器 │  ← 取TOP3信号 + 综合评级 + 完备性灯号
-   └────┬────┘
-   ┌────┴────┐
-   │ L1渲染器 │  ← 取四维评分 + 异常列表 + 对比数据
-   └────┬────┘
-   ┌────┴────┐
-   │ L2渲染器 │  ← 取全部分析结果
-   └─────────┘
+User Perspective:
+
+  Morning Push List
+       |
+   ----+----
+   | L0 Signal Card |  <- 5-second judgment: Does this bond need my attention?
+   | [Expand]       |
+   +----+----
+        | Click "Expand" or "View Snapshot"
+        v
+   +----------+
+   | L1 Snapshot |  <- 30-second judgment: Where are the risks? What does the market think?
+   | [Expand Dim]|
+   +----+-----+
+        | Click any dimension (e.g., "Fundamentals" panel)
+        v
+   +----------+
+   | L2 Deep  |  <- 2-5 minutes: Full analysis, supports credit approval decisions
+   +----------+
 ```
 
-**实现约束**：L0必须在引擎输出完综合评级和信号排序后即可渲染，无需等待L2完整报告生成完毕。
+**Key Design Constraint**: Each expansion from L0 to L2 must maintain context continuity -- when a user expands a dimension from the snapshot, L2 defaults to navigating to that dimension, not starting from the beginning.
+
+### 2.3 Engine Data Sharing Across Layers
+
+All three layers share the same analysis engine output, differing only in presentation format and information density:
+
+```
+Mosaic Engine + Dual-Track Collision
+        |
+   +----+------------------------------+
+   |       Analysis Results Pool       |
+   |  +-- Composite Rating + Outlook | |
+   |  +-- Dimension Scores (0-10)    | |
+   |  +-- Full Signal Priority List  | |
+   |  +-- External vs Internal Rating| |
+   |  +-- Four-dimension Scores (Spread/Fundamentals/Covenants/Liquidity) |
+   |  +-- Industry Rankings          | |
+   |  +-- Key Risk Points (veto/near threshold) |
+   |  +-- Completeness Report (signal density + gap list) |
+   +----+------------------------------+
+        |
+   +----+----+
+   | L0 Renderer |  <- Take TOP3 signals + composite rating + completeness light
+   +----+----+
+   +----+----+
+   | L1 Renderer |  <- Take four-dimension scores + anomaly list + comparison data
+   +----+----+
+   +----+----+
+   | L2 Renderer |  <- Take all analysis results
+   +---------+
+```
+
+**Implementation Constraint**: L0 must be renderable as soon as the engine finishes outputting the composite rating and signal ranking, without waiting for the L2 full report to be generated.
 
 ---
 
-## 三、L0 信号卡设计规范
+## 3. L0 Signal Card Design Specification
 
-### 3.1 设计哲学
+### 3.1 Design Philosophy
 
-L0的核心不是"提供信息"，而是**回答一个问题**："这只券今天需要我关注吗？"
+The core of L0 is not "providing information" but **answering one question**: "Does this bond need my attention today?"
 
-如果不需要，信号卡应该让用户零认知负担地滑过。如果需要，信号卡要给出"为什么需要关注"的足够理由，促使点击展开。
+If not, the signal card should let the user scroll past with zero cognitive load. If yes, the signal card must provide sufficient reason for "why attention is needed," prompting a click to expand.
 
-### 3.2 版面布局
+### 3.2 Layout
 
-信号卡全部内容须在一屏内可见，无需滚动（高度不超过手机屏幕一屏或桌面端卡片标准高度）。
-
-```
-┌─────────────────────────────────────────────────────┐
-│ 隆基绿能 (601012)        内部评级: BB+  展望: 负面   │
-│                                                        │
-│ 今日信号 (优先级排序)                                   │
-│  🔴 高 | 隆22转债转股溢价率74%，已触发回售保护条款   │
-│  🟡 中 | 北向资金近3月减持24%，持仓占比降至2.1%     │
-│                                                        │
-│ 数据: ████████░░ 82%  ·  行业排名: 光伏转债 3/5      │
-│                                                        │
-│ [查看30秒诊断]  [展开完整报告]  [标记已读]              │
-└─────────────────────────────────────────────────────┘
-```
+All content on the signal card must be visible in one screen without scrolling (height not exceeding one phone screen or a desktop-standard card height).
 
 ```
-┌─────────────────────────────────────────────────────┐
-│ 某城投 (XXXXXX)           内部评级: AA-  展望: 稳定   │
-│                                                        │
-│ 今日信号                                               │
-│  ℹ️ 无新触发信号 — 信用质量稳定，常规监控即可         │
-│                                                        │
-│ 数据: ██████░░░░ 62%⚠️  ·  行业排名: 城投省/市 1/15   │
-│                                                        │
-│ [查看30秒诊断]  [展开完整报告]                          │
-└─────────────────────────────────────────────────────┘
++-------------------------------------------------------+
+| LONGi Green Energy (601012)  Internal Rating: BB+  Outlook: Negative |
+|                                                          |
+| Today's Signals (Priority Sorted)                        |
+|  [R] High | LONGi 22 convertible bond premium ratio 74%, put option triggered |
+|  [Y] Medium | Northbound capital reduced 24% over 3 months, position ratio down to 2.1% |
+|                                                          |
+| Data: [##########] 82%  .  Industry Rank: PV convertible bonds 3/5 |
+|                                                          |
+| [View 30-sec Diagnosis]  [Expand Full Report]  [Mark as Read] |
++-------------------------------------------------------+
 ```
 
-### 3.3 元素规范
+```
++-------------------------------------------------------+
+| An LGFV (XXXXXX)          Internal Rating: AA-  Outlook: Stable |
+|                                                          |
+| Today's Signals                                           |
+|  [i] No new trigger signals -- credit quality stable, routine monitoring sufficient |
+|                                                          |
+| Data: [######] 62%[W]  .  Industry Rank: LGFV Province/City 1/15 |
+|                                                          |
+| [View 30-sec Diagnosis]  [Expand Full Report]            |
++-------------------------------------------------------+
+```
 
-| 元素 | 内容 | 规则 |
+### 3.3 Element Specifications
+
+| Element | Content | Rules |
 |---|---|---|
-| **标题行** | 企业简称 + 证券代码 | 字体加粗，字号最大 |
-| **评级行** | 内部评级 + 展望 + 外部评级（如有显著差异） | 评级用颜色标识（AAA绿→D红），展望用箭头 |
-| **信号区** | 最多3条优先级>30分的信号 | 每条信号: 严重度图标 + 一句话（≤25字）+ 关键数字 |
-| **数据完备性** | 信号密度百分比 + 文字等级标签 | 百分比+进度条，>80%=充分/50-80%=中等/20-50%=不足/<20%=严重缺乏 |
-| **行业排名** | 行业+排名/总数 | 仅在有行业比较数据时显示 |
-| **操作区** | 展开按钮 | "查看30秒诊断"+"展开完整报告"，或"标记已读" |
+| **Title Row** | Company abbreviation + Stock code | Bold font, largest font size |
+| **Rating Row** | Internal rating + Outlook + External rating (if significant difference) | Rating color-coded (AAA green -> D red), outlook with arrow |
+| **Signal Area** | Max 3 signals with priority >30 | Each signal: severity icon + one-line description (<=25 chars) + key figure |
+| **Data Completeness** | Signal density percentage + text grade label | Percentage + progress bar, >80% = sufficient / 50-80% = moderate / 20-50% = insufficient / <20% = severely lacking |
+| **Industry Ranking** | Industry + rank/total | Only shown when industry comparison data is available |
+| **Action Area** | Expand buttons | "View 30-sec Diagnosis" + "Expand Full Report," or "Mark as Read" |
 
-### 3.4 无信号/零异常状态
+### 3.4 No Signal / Zero Anomaly State
 
-当一只券没有任何优先级>30分的信号时，L0信号卡降级为"静默卡"：
+When a bond has no signals with priority >30, the L0 signal card degrades into a "silent card":
 
-- 不推送（除非用户主动将该券加入"强制关注列表"）
-- 但在持仓列表中仍可见，状态显示为"正常/无新信号"
-- 评级和展望照常显示
-- 信号区替换为一条灰色信息："无新触发信号 — 信用质量稳定，常规监控即可"
+- Not pushed (unless the user has actively added the bond to a "mandatory watch list")
+- Still visible in the position list, status shows "Normal / No New Signals"
+- Rating and outlook displayed as usual
+- Signal area replaced with one gray message: "No new trigger signals -- credit quality stable, routine monitoring sufficient"
 
-**设计原则**：引擎90%的时间应该告诉用户"无事发生"，"有事"才是有信息量的状态。
+**Design Principle**: 90% of the time, the engine should tell the user "nothing is happening"; "something happening" is the informative state.
 
-### 3.5 L0对引擎的要求
+### 3.5 L0 Requirements from the Engine
 
-L0必须在以下数据就绪后即可渲染，不等待完整分析：
+L0 must be renderable once the following data is ready, without waiting for a complete analysis:
 
-| 数据项 | 来源 | 可用时机 |
+| Data Item | Source | Availability Timing |
 |---|---|---|
-| 内部评级 + 展望 | 双轨对撞综合输出 | 引擎计算完成 |
-| TOP3信号 | 信号池按优先级排序后取前3 | 信号提取+优先级排序完成 |
-| 数据完备性百分比 | 完备性评估层 | 信号密度计算完成 |
-| 行业排名 | 同行业可比分析 | 引擎计算完成 |
+| Internal rating + Outlook | Dual-track collision composite output | Engine calculation complete |
+| TOP3 signals | Signal pool sorted by priority, take top 3 | Signal extraction + priority sorting complete |
+| Data completeness percentage | Completeness assessment layer | Signal density calculation complete |
+| Industry ranking | Comparable industry analysis | Engine calculation complete |
 
-**异步渲染时序建议**：
+**Asynchronous Rendering Timing Recommendation**:
 
 ```
-T+0s: 发起马赛克引擎分析
-T+1s: 评级+展望就绪 → 具备渲染L0底部框架条件
-T+3s: 信号提取+优先级排序完成 → TOP3信号就绪
-T+5s: 完备性评估+行业排名就绪 → L0完整可渲染
-T+30s: L1快照数据全部就绪（四维评分+异常列表）
-T+120s: L2完整报告就绪
+T+0s: Initiate mosaic engine analysis
+T+1s: Rating + outlook ready -> conditions met to render L0 base framework
+T+3s: Signal extraction + priority sorting complete -> TOP3 signals ready
+T+5s: Completeness assessment + industry ranking ready -> L0 fully renderable
+T+30s: L1 snapshot data fully ready (four-dimension scores + anomaly list)
+T+120s: L2 full report ready
 ```
 
-L0 → L1 → L2是渐进就绪的。用户可以在L0看到后5秒内决定是否继续等待L1。
+L0 -> L1 -> L2 become ready progressively. Users can decide within 5 seconds after seeing L0 whether to wait for L1.
 
-### 3.6 系统性预警温度计卡片（v0.7.0新增）
+### 3.6 Systemic Risk Thermometer Card (New in v0.7.0)
 
-当系统智能层的温度计(SRI)变色时，L0信号卡列表顶部插入一张**聚合温度计卡片**，向所有持仓用户推送系统性风险等级的变动。该卡片不针对单只券，而是反映组合层面的系统性风险水平。
+When the system intelligence layer's thermometer (SRI) changes color, an **aggregate thermometer card** is inserted at the top of the L0 signal card list, pushing systemic risk level changes to all position-holding users. This card is not specific to any single bond but reflects portfolio-level systemic risk.
 
-#### 3.6.1 温度计卡片的触发规则
+#### 3.6.1 Thermometer Card Trigger Rules
 
-温度计卡片仅在**温度计等级发生变化**时推送，状态不变时不重复推送：
+The thermometer card is pushed only when the **thermometer level changes**; it is not repeated when the status remains unchanged:
 
-| 温度变化 | 触发场景 | 插入位置 | 推送策略 |
+| Temperature Change | Trigger Scenario | Insertion Position | Push Strategy |
 |---|---|---|---|
-| 🟢→🟡 正常→关注 | 红色行业占比从<20%升至20-30% | L0列表顶部 | 对所有用户推送 |
-| 🟡→🟠 关注→警惕 | 红色行业占比从20-30%升至30-50%，或高传染行业触发预警 | L0列表顶部，红色边框 | 对所有用户推送+高亮 |
-| 🟠→🔴 警惕→危险 | 红色行业占比>50%，或多个高传染行业同时触发 | L0列表顶部，深红闪烁边框 | 对全部用户强提醒 |
-| 🟡→🟢 关注→正常 | 系统性风险回落 | L0列表顶部（灰色） | 仅推送一次"风险解除" |
-| 🔴/🟠→🟡/🟢 危险回落 | 系统性风险解除 | L0列表顶部（绿色） | 仅推送一次"警报解除" |
+| [G]->[Y] Normal->Watch | Red industry share rises from <20% to 20-30% | Top of L0 list | Push to all users |
+| [Y]->[O] Watch->Caution | Red industry share rises from 20-30% to 30-50%, or high-contagion industry triggers alert | Top of L0 list, red border | Push to all users + highlight |
+| [O]->[R] Caution->Danger | Red industry share >50%, or multiple high-contagion industries trigger simultaneously | Top of L0 list, deep red flashing border | Force alert for all users |
+| [Y]->[G] Watch->Normal | Systemic risk retreats | Top of L0 list (gray) | Push "risk lifted" once only |
+| [R]/[O]->[Y]/[G] Danger retreats | Systemic risk resolved | Top of L0 list (green) | Push "alert lifted" once only |
 
-**频率控制**：同一温度等级单日最多推送1次温度计卡片，避免重复干扰。
+**Frequency Control**: The same temperature level may push at most 1 thermometer card per day to avoid repetitive interference.
 
-#### 3.6.2 🟡 关注级卡片（示例）
-
-```
-┌─────────────────────────────────────────────────────┐
-│  🟡 系统性风险关注            SRI: 0.56               │
-│                                                        │
-│  红色行业: 2/13 (15.4%)  ·  高传染行业1个处于黄色     │
-│  触发行业: 房地产(红)  ·  汽车(黄)                    │
-│                                                        │
-│  传染风险: 房地产→银行→建筑(传导强度4+)  ·  建      │
-│  议：检查持仓中对上述行业的敞口，关注传导链下游       │
-│                                                        │
-│  [查看系统性警报 ➔]  [查看传染矩阵]                    │
-└─────────────────────────────────────────────────────┘
-```
-
-#### 3.6.3 🟠 警惕级卡片（示例）
+#### 3.6.2 [Y] Watch Level Card (Example)
 
 ```
-┌─────────────────────────────────────────────────────┐
-│  🟠 系统性风险警惕            SRI: 1.15               │
-│  ⚠️ 红色行业占比超过30%，高传染行业出现严重信号       │
-│─────────────────────────────────────────────────────│
-│  红色行业: 5/13 (38.5%)                              │
-│  红色清单: 房地产·光伏·汽车·零售·传媒               │
-│  高传染触发: 光伏(传染力4)·汽车(传染力3)             │
-│                                                        │
-│  预计波及2个关联行业 → 组合减值压力评估：中等         │
-│  → 建议：启动组合压力测试，降低高风险行业敞口         │
-│                                                        │
-│  [查看系统性警报]  [查看传染矩阵]  [运行压力测试]      │
-└─────────────────────────────────────────────────────┘
++-------------------------------------------------------+
+|  [Y] Systemic Risk Watch         SRI: 0.56              |
+|                                                          |
+|  Red Industries: 2/13 (15.4%)  .  High-contagion industries: 1 at yellow |
+|  Triggered Industries: Real Estate (Red)  .  Automotive (Yellow) |
+|                                                          |
+|  Contagion Risk: Real Estate -> Banking -> Construction (transmission intensity 4+) |
+|  Recommendation: Check portfolio exposure to above industries, monitor downstream of contagion chain |
+|                                                          |
+|  [View Systemic Alert >]  [View Contagion Matrix]        |
++-------------------------------------------------------+
 ```
 
-#### 3.6.4 🔴 危险级卡片（示例）
+#### 3.6.3 [O] Caution Level Card (Example)
 
 ```
-┌─────────────────────────────────────────────────────┐
-│  🔴 系统性风险警报            SRI: 1.83               │
-│  ⚠️ 红色行业占比超过50%，高传染行业已全部触发       │
-│─────────────────────────────────────────────────────│
-│  红色行业: 7/13 (53.8%)                              │
-│  红色清单: 房地产·光伏·半导体·汽车·零售·传媒·食饮 │
-│  高传染触发: 房地产(传染力5)·半导体(传染力4)        │
-│                                                        │
-│  已有4个行业集中触发传染→预计波及3个关联行业         │
-│  → 组合减值压力评估：中高                               │
-│  → 建议：启动组合压力测试，降低高风险行业敞口         │
-│                                                        │
-│  [查看系统性警报]  [查看传染矩阵]  [运行压力测试]      │
-└─────────────────────────────────────────────────────┘
++-------------------------------------------------------+
+|  [O] Systemic Risk Caution         SRI: 1.15              |
+|  [W] Red industry share exceeds 30%, high-contagion industries showing severe signals |
+|-------------------------------------------------------|
+|  Red Industries: 5/13 (38.5%)                            |
+|  Red List: Real Estate . PV . Automotive . Retail . Media |
+|  High-Contagion Triggered: PV (contagion 4) . Automotive (contagion 3) |
+|                                                          |
+|  Expected to affect 2 related industries -> Portfolio impairment stress: Medium |
+|  -> Recommendation: Run portfolio stress test, reduce high-risk industry exposure |
+|                                                          |
+|  [View Systemic Alert]  [View Contagion Matrix]  [Run Stress Test] |
++-------------------------------------------------------+
 ```
 
-#### 3.6.5 🟢 风险解除卡片（示例）
+#### 3.6.4 [R] Danger Level Card (Example)
 
 ```
-┌─────────────────────────────────────────────────────┐
-│  🟢 系统性风险解除              SRI: 0.22              │
-│                                                        │
-│  红色行业: 0/13 (0%)  ·  温度计已从🔴回落至🟢      │
-│  持续时间: 14天 ·  上一次🔴级: 2026-06-26            │
-│                                                        │
-│  回落驱动力: 房地产行业政策边际放松，市场情绪修复    │
-│  → 建议：维持常规监控频率，关注是否出现反复           │
-└─────────────────────────────────────────────────────┘
++-------------------------------------------------------+
+|  [R] Systemic Risk Alert            SRI: 1.83              |
+|  [W] Red industry share exceeds 50%, all high-contagion industries triggered |
+|-------------------------------------------------------|
+|  Red Industries: 7/13 (53.8%)                            |
+|  Red List: Real Estate . PV . Semiconductor . Automotive . Retail . Media . F&B |
+|  High-Contagion Triggered: Real Estate (contagion 5) . Semiconductor (contagion 4) |
+|                                                          |
+|  4 industries have triggered concentrated contagion -> Expected to affect 3 related industries |
+|  -> Portfolio impairment stress: Medium-High             |
+|  -> Recommendation: Run portfolio stress test, reduce high-risk industry exposure |
+|                                                          |
+|  [View Systemic Alert]  [View Contagion Matrix]  [Run Stress Test] |
++-------------------------------------------------------+
 ```
 
-#### 3.6.6 温度计卡片的操作区映射
+#### 3.6.5 [G] Risk Lifted Card (Example)
 
-| 操作按钮 | 目标视图 | 说明 |
+```
++-------------------------------------------------------+
+|  [G] Systemic Risk Lifted            SRI: 0.22             |
+|                                                          |
+|  Red Industries: 0/13 (0%)  .  Thermometer has retreated from [R] to [G] |
+|  Duration: 14 days  .  Last [R] level: 2026-06-26       |
+|                                                          |
+|  Retreat Driver: Real estate industry policy marginal easing, market sentiment repair |
+|  -> Recommendation: Maintain routine monitoring frequency, watch for potential rebounds |
++-------------------------------------------------------+
+```
+
+#### 3.6.6 Thermometer Card Action Area Mapping
+
+| Action Button | Target View | Description |
 |---|---|---|
-| [查看系统性警报] | Type 15报告 | 跳转至当前时点的系统性风险警报完整报告 |
-| [查看传染矩阵] | 传染矩阵高亮视图 | 打开13×13传染矩阵，高亮当前红色行业所在行列 |
-| [运行压力测试] | M4压力测试模块 | 基于当前温度计读数，运行组合级压力测试（S3场景） |
+| [View Systemic Alert] | Type 15 Report | Navigate to the current systemic risk alert full report |
+| [View Contagion Matrix] | Contagion Matrix Highlight View | Open the 13x13 contagion matrix, highlighting rows and columns of current red industries |
+| [Run Stress Test] | M4 Stress Test Module | Based on current thermometer reading, run portfolio-level stress test (S3 scenario) |
 
-#### 3.6.7 温度计卡片与个股L0信号卡的联动
+#### 3.6.7 Thermometer Card and Individual Bond L0 Signal Card Linkage
 
-温度计卡片的存在会**升级**个股L0信号卡的信号优先级：
+The presence of the thermometer card **upgrades** the signal priority of individual bond L0 signal cards:
 
-- 当温度计为🟠(警惕)或🔴(危险)时，所有受影响行业的个股L0信号卡自动获得+10的优先级加分
-- 被升级的信号卡在L0列表中排在温度计卡片之后、其他个股卡片之前
-- 温度计卡片消失后（正常状态），个股信号卡恢复原始优先级
+- When the thermometer is [O] (Caution) or [R] (Danger), all individual bond L0 signal cards in affected industries automatically receive a +10 priority boost
+- Upgraded signal cards in the L0 list appear after the thermometer card and before other individual bond cards
+- After the thermometer card disappears (normal state), individual bond signal cards revert to their original priority
 
-**设计原则**：系统智能层的温度计不是替代个股分析，而是为个股分析提供**系统性背景音**——让用户在做个股决策时知道"现在整个市场处于什么状态"。
+**Design Principle**: The system intelligence layer's thermometer is not a substitute for individual bond analysis, but provides **systemic background context** for individual bond decisions -- letting users know "what state the entire market is in" when making individual bond decisions.
 
 ---
 
-## 四、L1 快照设计规范
+## 4. L1 Snapshot Design Specification
 
-### 4.1 设计哲学
+### 4.1 Design Philosophy
 
-L1的核心是回答四个问题：
-1. **这只券整体怎么样？**（四维雷达图——一眼看清强项和弱项）
-2. **哪里有问题？**（关键异常标注——红色/黄色信号列表）
-3. **市场怎么看？**（外部评级vs内部评级对比）
-4. **同行业什么位置？**（排名——贵了还是便宜了）
+L1's core is to answer four questions:
+1. **How is this bond overall?** (Four-dimension radar chart -- see strengths and weaknesses at a glance)
+2. **Where are the problems?** (Key anomaly annotations -- red/yellow signal list)
+3. **What does the market think?** (External rating vs internal rating comparison)
+4. **Where does it rank in the industry?** (Ranking -- expensive or cheap?)
 
-### 4.2 四维雷达图
+### 4.2 Four-Dimension Radar Chart
 
-#### 4.2.1 四个维度定义
+#### 4.2.1 Four Dimension Definitions
 
-| 维度 | 名称 | 内容 | 数据来源 | 标准化方法 |
+| Dimension | Name | Content | Data Source | Standardization Method |
 |---|---|---|---|---|
-| **利差维度** | 市场定价吸引力 | YTM、信用利差、利差历史分位、利差趋势（走阔/收窄） | 轨道B市场定价信号 | 同行业利差分位映射为0-10分：0分=最贵（利差最低），10分=最便宜（利差最高） |
-| **基本面维度** | 信用质量底层 | 轨道A金字塔综合评分，综合考虑L1-L4 | 轨道A基本面评分 | 轨道A综合评分直接映射：0-10分 |
-| **条款维度** | 投资者保护水平 | 回售保护、交叉违约、担保、担保物、期限结构 | 债券募集说明书（M1.2条款分析） | 条款清单评分：每个有利条款+1.5分，每个不利条款-1.5分，基准5分 |
-| **流动性维度** | 交易变现能力 | 日均成交量、换手率、Bid-Ask spread（如有）、可质押性 | 轨道B流动性信号 + M1.3流动性评估 | 成交量分位+换手率分位+质押折算率综合评分：0-10分 |
+| **Spread Dimension** | Market pricing attractiveness | YTM, credit spread, spread historical percentile, spread trend (widening/narrowing) | Track B market pricing signals | Map same-industry spread percentile to 0-10: 0=most expensive (lowest spread), 10=cheapest (highest spread) |
+| **Fundamentals Dimension** | Credit quality foundation | Track A pyramid composite score, considering L1-L4 comprehensively | Track A fundamentals rating | Track A composite score mapped directly: 0-10 |
+| **Covenants Dimension** | Investor protection level | Put protection, cross-default, guarantee, collateral, maturity structure | Bond prospectus (M1.2 covenant analysis) | Covenant checklist scoring: +1.5 per favorable covenant, -1.5 per unfavorable covenant, baseline 5 |
+| **Liquidity Dimension** | Trading liquidity | Average daily turnover, turnover rate, bid-ask spread (if available), pledgeability | Track B liquidity signals + M1.3 liquidity assessment | Volume percentile + turnover rate percentile + pledge discount rate composite score: 0-10 |
 
-#### 4.2.2 雷达图呈现模板
+#### 4.2.2 Radar Chart Presentation Template
 
 ```
-                    利差
-                    ▲
-                  10│
-                   │
-                   │     · 基本面
-         流动性 ◄──┼──►
-                   │
-                   │
-                   │
-                   ▼
-                   条款
+                    Spread
+                     [A]
+                    10|
+                      |
+                      |     .  Fundamentals
+         Liquidity [--+-->
+                      |
+                      |
+                      |
+                      [V]
+                    Covenants
 
-实际示例（文字描述，UI中为图形）：
+Actual Example (text description, graphical in UI):
 
-                 利差 8
-                /    \
-               /      \
-              /        \
-     流动性 3 ◄────────► 基本面 6
-              \        /
-               \      /
-                \    /
-                 条款 7
+                 Spread 8
+               /          \
+              /            \
+             /              \
+     Liquidity 3 [-----------> Fundamentals 6
+             \              /
+              \            /
+               \          /
+                Covenants 7
 
-评分标签：
-  利差 8/10    🟢 同行业中偏便宜，利差分位78%
-  基本面 6/10  🟡 中等偏上，综合评分6.2
-  条款 7/10    🟢 有回售保护+交叉违约条款
-  流动性 3/10  🔴 日均成交不足500万，换手率低
+Score Labels:
+  Spread 8/10    [G] On the cheaper side within the industry, spread percentile 78%
+  Fundamentals 6/10  [Y] Upper-medium, composite score 6.2
+  Covenants 7/10    [G] Has put protection + cross-default clauses
+  Liquidity 3/10  [R] Average daily turnover below 5 million, low turnover rate
 ```
 
-#### 4.2.3 雷达图解读指引
+#### 4.2.3 Radar Chart Interpretation Guide
 
-四维雷达图呈现的是**四个独立维度的评分**，它们的方向不完全一致是正常的。常见的模式及其含义：
+The four-dimension radar chart presents **scores on four independent dimensions**; it is normal for their directions to not be fully aligned. Common patterns and their meanings:
 
-| 雷达图模式 | 典型特征 | 含义 | 行动建议 |
+| Radar Chart Pattern | Typical Characteristics | Meaning | Action Recommendation |
 |---|---|---|---|
-| **四维均衡** | 四个评分都在6-8之间 | 信用质量稳定，市场定价合理 | 维持现有仓位 |
-| **利差高+基本面低** | 利差8+, 基本面3-4 | 市场已经提前反映基本面恶化（分歧B） | 警惕，不要被高利差诱惑 |
-| **利差高+基本面高** | 利差7+, 基本面7+ | 难得的高性价比机会 | 可以考虑增持 |
-| **利差低+基本面高** | 利差2-3, 基本面7+ | 优质但偏贵，可能被高估 | 等待回调 |
-| **流动性极低** | 流动性0-2 | 交易成本高，变现困难 | 控制仓位，预留流动性缓冲 |
+| **Four-Dimension Balanced** | All four scores between 6-8 | Credit quality stable, market pricing reasonable | Maintain existing positions |
+| **High Spread + Low Fundamentals** | Spread 8+, Fundamentals 3-4 | Market has already priced in fundamental deterioration in advance (Divergence B) | Be cautious, do not be tempted by high spread |
+| **High Spread + High Fundamentals** | Spread 7+, Fundamentals 7+ | Rare high-value opportunity | Consider increasing position |
+| **Low Spread + High Fundamentals** | Spread 2-3, Fundamentals 7+ | High quality but expensive, potentially overvalued | Wait for pullback |
+| **Extremely Low Liquidity** | Liquidity 0-2 | High trading cost, difficult to exit | Control position size, reserve liquidity buffer |
 
-### 4.3 关键异常标注
+### 4.3 Key Anomaly Annotations
 
-异常标注区列出当前全部优先级>15分的信号（不受3条限制），按严重度分组。
+The anomaly annotation area lists all current signals with priority >15 (not limited to 3), grouped by severity.
 
 ```
---- 关键异常信号 ---
+--- Key Anomaly Signals ---
 
-🔴 红色（高优先级，需24小时内关注）
-  1. 隆22转债转股溢价率74%,已触发回售条款保护价
-     → 建议关注：若正股继续下跌，可能触发回售，影响负债结构
-  2. 2026Q1营收同比-48%,连续第二个季度下滑超30%
-     → 核心关注：营收下滑是否触发现金流枯竭阈值
+[R] Red (High Priority, Needs Attention Within 24 Hours)
+  1. LONGi 22 convertible bond premium ratio 74%, has triggered put provision protection price
+     -> Recommendation: if underlying stock continues to decline, may trigger put option, affecting liability structure
+  2. 2026Q1 revenue -48% YoY, second consecutive quarter decline >30%
+     -> Key concern: whether revenue decline triggers cash flow exhaustion threshold
 
-🟡 黄色（中优先级，需持续跟踪）
-  3. 北向资金近3月减持24%,持仓占比从2.8%降至2.1%
-     → 情绪信号，不直接改变基本面判断
-  4. 短融发行利率从2.02%回升至2.15%,拐点信号
-     → 关注下一期发行利率是否继续走高
+[Y] Yellow (Medium Priority, Needs Continuous Tracking)
+  3. Northbound capital reduced 24% over 3 months, position ratio from 2.8% to 2.1%
+     -> Sentiment signal, does not directly change fundamental judgment
+  4. Short-term commercial paper issuance rate recovered from 2.02% to 2.15%, inflection point signal
+     -> Monitor whether next issuance rate continues to rise
 
-ℹ️ 灰色（已纳入监控，暂不行动）
-  5. 应收账款周转天数从45天升至62天
-     → 已标注为持续观察项，不单独触发预警
+[i] Gray (Already in Monitoring, No Action for Now)
+  5. Accounts receivable turnover days from 45 days to 62 days
+     -> Already marked as continuous observation item, not triggering alert individually
 ```
 
-**每条异常信号的标准结构**：
+**Standard Structure for Each Anomaly Signal**:
 
 ```yaml
 signal_card:
   severity: "red" | "yellow" | "gray"
-  title: "一句话描述（≤25字）"
-  detail: "关键数据支撑（≤40字）"
-  action: "对用户的意义或建议行动（≤30字）"
+  title: "One-line description (<=25 chars)"
+  detail: "Key data support (<=40 chars)"
+  action: "Meaning or suggested action for the user (<=30 chars)"
 ```
 
-### 4.4 评级对比
+### 4.4 Rating Comparison
 
-展示外部评级与引擎内部评级的对比，帮助用户快速判断"市场/评级机构怎么看" vs "引擎怎么看"。
+Display a comparison between external ratings and the engine's internal rating, helping users quickly assess "what does the market/rating agency think" vs "what does the engine think."
 
 ```
-评级对比:
+Rating Comparison:
 
-  外部 (中诚信)        内部 (引擎)
-   ┌──────┐            ┌──────┐
-   │ AAA  │            │ BB+  │
-   └──────┘            └──────┘
-   展望: 稳定           展望: 负面
-      │                   │
-      └────────┬──────────┘
-               ▼
-         分歧等级: 严重 (偏离度8/10)
-         解读: 外部评级尚未反映2026年预亏和回售风险,
-               引擎判断与永煤/紫光案例的评级滞后模式一致
+  External (China Chengxin)    Internal (Engine)
+   +------+                    +------+
+   | AAA  |                    | BB+  |
+   +------+                    +------+
+   Outlook: Stable             Outlook: Negative
+       |                         |
+       +----------- +------------+
+                   v
+             Divergence Level: Severe (deviation 8/10)
+             Interpretation: External rating has not yet reflected 2026 projected losses and put risk;
+                             Engine judgment is consistent with the rating lag pattern of Yongmei/Ziguang cases
 ```
 
-评级对比的偏离度分级：
+Rating comparison divergence grading:
 
-| 偏离度 | 差距 | 含义 | 展示样式 |
+| Divergence | Gap | Meaning | Display Style |
 |---|---|---|---|
-| 0-2级 | 内部与外部相差≤2个子级 | 基本一致，互相验证 | 绿色"一" |
-| 3-4级 | 相差3-4个子级 | 中度分歧，需要关注 | 黄色"↑"/"↓" |
-| 5+级 | 相差≥5个子级 | 严重分歧，参考永煤/紫光滞后模式 | 红色"↑↑"/"↓↓" |
+| 0-2 notches | Internal and external differ by <=2 notches | Basically consistent, mutual verification | Green "=" |
+| 3-4 notches | Differ by 3-4 notches | Moderate divergence, needs attention | Yellow "U"/"D" |
+| 5+ notches | Differ by >=5 notches | Severe divergence, refer to Yongmei/Ziguang lag pattern | Red "UU"/"DD" |
 
-### 4.5 同行业排名
+### 4.5 Same-Industry Ranking
 
-在可比标的中排序，满足基金经理"对比视角"的核心需求。
+Ranking among comparable targets, satisfying the fund manager's core need for a "comparative perspective."
 
 ```
-同行业排名: 光伏行业可转债 (5只)
+Same-Industry Ranking: PV Industry Convertible Bonds (5 bonds)
 
-  排名  标的         内部评级   利差(bp)  趋势
-  1    通22转债       AAA       258       ← 偏贵
-  2    隆22转债       BB+       335       ←合理偏贵
-  3    天23转债       AA-       312       ★ 推荐关注
-  4    晶能转债       A         421       ← 风险溢价高
-  5    合其他转债     B+        480       ←底部特征
+  Rank  Target        Internal Rating  Spread(bp)  Trend
+  1    Tongwei 22 CB    AAA             258         <- Expensive
+  2    LONGi 22 CB      BB+             335         <- Reasonably expensive
+  3    Tianhe 23 CB     AA-             312         [S] Recommended
+  4    Jingneng CB      A               421         <- High risk premium
+  5    Hehe CB          B+              480         <- Bottom characteristics
 
-  隆基绿能在光伏可转债中排名第3/5
-  → 排名偏低的核心原因: 基本面恶化(预亏) + 回售风险
-  → 但BC技术领先和央企集采优势未被利差充分反映
+  LONGi Green Energy ranks 3/5 among PV convertible bonds
+  -> Core reason for low ranking: fundamental deterioration (expected loss) + put risk
+  -> But BC technology leadership and central enterprise procurement advantages are not fully reflected in spreads
 ```
 
-排名说明规则：
-- 排名基线可以是"同行业同品种"或"同评级同品种"
-- 排名依据默认使用"综合性价比"（利差+基本面+条款+流动性的加权综合）
-- 用户可切换排序依据（按利差/按评级/按流动性）
-- 排名展示中标注"值得关注"的标的（★标注）——规则为：利差分位>60%且基本面评分>5分
+Ranking rules:
+- Ranking baseline can be "same industry, same product type" or "same rating, same product type"
+- Ranking basis defaults to "comprehensive value" (weighted composite of spread + fundamentals + covenants + liquidity)
+- User can switch sorting basis (by spread / by rating / by liquidity)
+- Targets worth noting are marked with [S] -- rule: spread percentile >60% and fundamentals score >5
 
 ---
 
-## 五、L2 深度报告设计规范
+## 5. L2 Deep Report Design Specification
 
-### 5.1 设计哲学
+### 5.1 Design Philosophy
 
-L2不是重新发明一套东西——它复用当前引擎的完整输出（马赛克报告+双轨评分+多身份对比+完备性报告），但做了三件事：
+L2 does not reinvent the wheel -- it reuses the current engine's full output (Mosaic report + Dual-track scores + Multi-identity comparison + Completeness report), but does three things:
 
-1. **重新排序**：从"决策者视角"组织输出结构，而非"分析者视角"
-2. **增加缺口**：每屏标注"这个板块中，哪些数据是缺失的、这意味着什么"
-3. **增加导航**：用户可以从L1雷达图的任意维度"钻入"L2的对应板块
+1. **Re-sort**: Organize output structure from a "decision-maker perspective" rather than an "analyst perspective"
+2. **Add gaps**: Annotate in each panel "which data is missing in this area and what that means"
+3. **Add navigation**: Users can "drill into" any dimension of the L1 radar chart to the corresponding panel in L2
 
-### 5.2 输出顺序：决策者视角的四屏结构
+### 5.2 Output Order: Decision-Maker Perspective Four-Panel Structure
 
-#### 第一屏：评级+信号+排名（5秒扫读）
-
-```
-===== 隆基绿能 (601012) 完整信用分析 =====
-分析日期: 2026-07-08 | 行业: 光伏(政策驱动型) | 耗时: ~3分钟
-
-┌────────────────────────────────────────────────────────┐
-│ 综合评级: BB+                展望: 负面               │
-│ 外部评级: AAA/稳定           偏离度: 严重(8/10)      │
-│ 一票否决: 未触发                                          │
-├────────────────────────────────────────────────────────┤
-│ 核心结论 (2句):                                           │
-│ 隆基绿能BC技术领先优势仍在，但2026年预亏90-100亿       │
-│ 叠加隆22转债回售风险，信用质量短期承压。               │
-│ 核心关注2026Q3财报能否止血。                             │
-├────────────────────────────────────────────────────────┤
-│ 关键信号 (TOP5):                                         │
-│ 🔴 隆22转债转股溢价率74%,回售级已触发                 │
-│ 🟡 北向资金近3月减持24%                               │
-│ 🟡 短融发行利率拐点(2.02%→2.15%)                     │
-│ 🟡 应收账款周转天数从45天升至62天                       │
-│ 🟢 BC电池量产效率24.8%,领先行业均值2%                   │
-├────────────────────────────────────────────────────────┤
-│ 行业排名: 光伏可转债 3/5   |  数据完备性: 82% 中高置信度│
-└────────────────────────────────────────────────────────┘
-```
-
-#### 第二屏：市场定价+条款+流动性（30秒判断）
+#### Panel 1: Rating + Signals + Ranking (5-second Scan)
 
 ```
-===== 第二屏: 市场定价与交易条件 =====
+===== LONGi Green Energy (601012) Full Credit Analysis =====
+Analysis Date: 2026-07-08 | Industry: PV (Policy-Driven) | Duration: ~3 minutes
 
-【利差分析】
-  当前YTM: 2.15% | 利差: 335bp vs 同评级中位数312bp
-  利差历史分位: 78% (偏高区间)
-  利差趋势(3个月): 走阔42bp 
-   ╰── 利差在走阔，但幅度小于行业均值(66bp)，相对抗跌
-  
-【交叉对撞: 利差 vs 基本面】
-  轨道A(基本面): 6.2分/10 → 中等偏上
-  轨道B(利差): 4分/10 → 异常/关注
-  交叉状态: 分歧A (A好+B差)
-  解读: 市场存在额外担忧(全行业亏损)，利差走阔有一定基本面支撑
-  建议: 分歧在下行保护，维持但不加仓
-
-【条款分析】                  ╔══════════════╗
-  ✓ 回售保护(转股溢价率74%)     ║ 条款综合评分:  ║
-  ✓ 交叉违约条款                ║    7/10      ║
-  ✓ 担保: 无                   ╚══════════════╝
-  ✗ 无担保物
-  ✗ 无偿债基金
-
-【流动性分析】
-  日均成交额: 1248万 (行业均值: 3500万)
-  换手率: 1.2% (偏低)
-  可质押性: 是 (标准券折算率0.58)
-  Bid-Ask: 不披露(中国信用债市场惯例)
-  流动性综合评分: 3/10 ⚠️
++-------------------------------------------------------+
+| Composite Rating: BB+            Outlook: Negative      |
+| External Rating: AAA/Stable      Divergence: Severe (8/10) |
+| Veto: Not triggered                                        |
++-------------------------------------------------------+
+| Core Conclusion (2 sentences):                              |
+| LONGi Green Energy's BC technology leadership remains,      |
+| but 2026 projected loss of 9-10 billion combined with       |
+| LONGi 22 CB put risk means credit quality is under         |
+| short-term pressure. Focus on 2026Q3 financial report.      |
++-------------------------------------------------------+
+| Key Signals (TOP5):                                         |
+| [R] LONGi 22 CB premium ratio 74%, put protection triggered |
+| [Y] Northbound capital reduced 24% over 3 months             |
+| [Y] Short-term CP issuance rate inflection (2.02%->2.15%) |
+| [Y] AR turnover days from 45 to 62 days                      |
+| [G] BC cell production efficiency 24.8%, 2% above industry avg |
++-------------------------------------------------------+
+| Industry Rank: PV convertible bonds 3/5 | Data Completeness: 82% Medium-High Confidence |
++-------------------------------------------------------+
 ```
 
-#### 第三屏：行业和基本面深度（2分钟，长期配置决策）
+#### Panel 2: Market Pricing + Covenants + Liquidity (30-second judgment)
 
 ```
-===== 第三屏: 行业与基本面深度 =====
+===== Panel 2: Market Pricing and Trading Conditions =====
 
-【L1 政策/宏观 评分: 8/10】
-  - BC技术受国家级政策支持(2026年能源局发文)
-  - 央企集采入选50.3GW (2026年59GW总量中占85%)
-  - 风险: 分布式光伏补贴退坡压力
-  数据完备性: 85% ✅
+[Spread Analysis]
+  Current YTM: 2.15% | Spread: 335bp vs same-rating median 312bp
+  Spread Historical Percentile: 78% (elevated range)
+  Spread Trend (3 months): Widened 42bp
+   +-- Spread is widening, but magnitude is less than industry average (66bp), relatively resilient
 
-【L2 技术/竞争 评分: 8/10】
-  - BC电池量产效率24.8%,领先TOPCon约1.3%
-  - 专利510件,行业第2
-  - ⚠️ 良率数据不公开,无法精确量化成本优势
-  数据完备性: 72% ⚠️ (缺良率数据)
+[Cross-Collision: Spread vs Fundamentals]
+  Track A (Fundamentals): 6.2/10 -> Upper-medium
+  Track B (Spread): 4/10 -> Anomaly/Attention
+  Cross Status: Divergence A (A good + B bad)
+  Interpretation: Market has additional concerns (industry-wide losses), spread widening has some fundamental support
+  Recommendation: Divergence is on the downside protection; maintain but do not add
 
-【L3 供应链/运营 评分: 7/10】
-  - 多元化客户分布,前5客户占比32%
-  - 垂直整合(硅片→电池→组件)降低供应链风险
-  - 风险: 硅料价格波动对库存的影响
-  数据完备性: 68% ⚠️
+[Covenants Analysis]                  +============+
+  v Put protection (premium ratio 74%)     | Covenant Score: |
+  v Cross-default clause                |   7/10       |
+  v Guarantee: None                     +============+
+  x No collateral
+  x No sinking fund
 
-【L4 财务/偿债 评分: 6/10】
-  - 现金储备526亿,短期债务312亿,现金短债比1.69x
-  - 2026H1预亏90-100亿(硅料价格暴跌+存货减值)
-  - FCF/利息: 1.2x (2025年报,2026H1估算可能转为负)
-  - FCF/收入: -2.1% (2026H1估算,低于0%阈值)
-  - ⚠️ FCF/利息持续>2年低于2x,触发"庞氏融资嫌疑"观察
-  数据完备性: 89% ✅
+[Liquidity Analysis]
+  Average daily turnover: 12.48M (industry average: 35M)
+  Turnover rate: 1.2% (low)
+  Pledgeable: Yes (standard bond conversion rate 0.58)
+  Bid-Ask: Not disclosed (China credit bond market convention)
+  Liquidity Composite Score: 3/10 [W]
 ```
 
-#### 第四屏：数据完备性和风险提示（置信度评估）
+#### Panel 3: Industry and Fundamentals Deep Dive (2 minutes, long-term allocation decision)
 
 ```
-===== 第四屏: 置信度与风险提示 =====
+===== Panel 3: Industry and Fundamentals Deep Dive =====
 
-【数据完备性概览】
-  ┌─────────────────────────────────────┐
-  │ L1 政策/宏观    ████████░░ 82%      │
-  │ L2 技术/竞争    ██████░░░░ 72% ⚠️   │
-  │ L3 供应链/运营  ██████░░░░ 68% ⚠️   │
-  │ L4 财务/偿债    █████████░ 89%      │
-  │ 市场定价(轨B)   ████░░░░░░ 35% ⚠️   │
-  │ 条款分析        ████████░░ 80%      │
-  │ 流动性          ████░░░░░░ 45% ⚠️   │
-  └─────────────────────────────────────┘
+[L1 Policy/Macro Score: 8/10]
+  - BC technology supported by national policy (2026 NEA document)
+  - Central enterprise centralized procurement selected 50.3GW (85% of 2026 total 59GW)
+  - Risk: Distributed PV subsidy phase-out pressure
+  Data Completeness: 85% [OK]
 
-【核心数据缺口及影响】
-  ❌ 良率数据缺失 → 精确成本竞争力判断不可用
-     → 替代方案: 央企集采中标价作为间接指标
-     → 影响: L2评分置信区间±1.5
+[L2 Technology/Competition Score: 8/10]
+  - BC cell production efficiency 24.8%, leading TOPCon by approx. 1.3%
+  - Patents: 510, 2nd in industry
+  - [W] Yield rate data not public, cannot precisely quantify cost advantage
+  Data Completeness: 72% [W] (Yield rate data missing)
 
-  ❌ 母公司独立财务数据不可获取
-     → 影响: 无法精确评估母公司层面短期偿债能力
-     → 替代方案: 合并报表+上市公司公告推算
+[L3 Supply Chain/Operations Score: 7/10]
+  - Diversified customer distribution, top 5 customers 32%
+  - Vertical integration (wafer -> cell -> module) reduces supply chain risk
+  - Risk: Silicon material price volatility impact on inventory
+  Data Completeness: 68% [W]
 
-【竞争性假设】
-  当前判断: 隆基BB+,短期信用质量承压
-  → 如果错了,最可能的原因是:
-     1. 2026Q3行业周期反转,硅料价格回升带动盈利恢复(向上风险)
-     2. 回售条款被稀释或展期,短期负债压力可控(向上风险)
-     3. 亏损持续超预期,现金储备消耗加速(向下风险)
-
-【行动指引】
-  🔵 可以做什么:
-     - 维持仓位,不加仓
-     - 关注2026Q3财报(2026年10月)
-     - 跟踪隆22转债转股溢价率变化
-     - 下一期短融发行利率是否继续走高
-
-  🔵 不需要做什么:
-     - 不需要恐慌性减仓(短期偿债能力仍在)
-     - 不需要额外的信用分析(数据完备性中高,缺口不影响核心判断)
+[L4 Financial/Debt Service Score: 6/10]
+  - Cash reserves 52.6B, short-term debt 31.2B, cash/short-term debt ratio 1.69x
+  - 2026H1 projected loss 9-10B (silicon material price collapse + inventory impairment)
+  - FCF/Interest: 1.2x (2025 annual report, 2026H1 estimated to possibly turn negative)
+  - FCF/Revenue: -2.1% (2026H1 estimate, below 0% threshold)
+  - [W] FCF/Interest continuously below 2x for >2 years, triggering "Ponzi financing suspicion" observation
+  Data Completeness: 89% [OK]
 ```
 
-### 5.3 导航规则
-
-用户从L1快照点击"基本面"维度时，L2深度报告应**直接定位到第三屏**（行业和基本面深度），而不是从头开始。
+#### Panel 4: Data Completeness and Risk Warnings (Confidence Assessment)
 
 ```
-导航映射表:
+===== Panel 4: Confidence and Risk Warnings =====
 
-  L1维度点击        →   L2目标位置
-  利差维度         →   第二屏（市场定价与交易条件）
-  基本面维度       →   第三屏（行业和基本面深度）
-  条款维度         →   第二屏-条款分析
-  流动性维度       →   第二屏-流动性分析
-  评级对比区域     →   第四屏-置信度与风险提示
-  异常信号列表     →   第一屏-关键信号
+[Data Completeness Overview]
+  +---------------------------------------+
+  | L1 Policy/Macro      [########] 82%  |
+  | L2 Technology/Compet [######] 72% [W] |
+  | L3 Supply Chain/Ops  [######] 68% [W] |
+  | L4 Financial/Debt    [#########] 89%   |
+  | Market Pricing (Tr B) [####] 35% [W]  |
+  | Covenant Analysis     [########] 80%  |
+  | Liquidity             [####] 45% [W]  |
+  +---------------------------------------+
+
+[Core Data Gaps and Impact]
+  [X] Yield rate data missing -> Precise cost competitiveness assessment unavailable
+     -> Alternative: Central enterprise procurement winning bid pricing as indirect indicator
+     -> Impact: L2 score confidence interval +/- 1.5
+
+  [X] Parent company standalone financial data unobtainable
+     -> Impact: Cannot precisely assess parent-level short-term debt servicing ability
+     -> Alternative: Consolidated statements + listed company announcements for estimation
+
+[Competing Hypotheses]
+  Current Judgment: LONGi BB+, short-term credit quality under pressure
+  -> If wrong, the most likely reasons are:
+     1. 2026Q3 industry cycle reversal, silicon material price recovery driving profit recovery (upside risk)
+     2. Put provisions diluted or extended, short-term debt pressure controllable (upside risk)
+     3. Losses continue beyond expectations, cash reserve consumption accelerating (downside risk)
+
+[Action Guide]
+  [B] What you can do:
+     - Maintain positions, do not add
+     - Watch 2026Q3 financial report (October 2026)
+     - Track LONGi 22 CB premium ratio changes
+     - Monitor whether next short-term CP issuance rate continues to rise
+
+  [B] What you do not need to do:
+     - No need for panic selling (short-term debt servicing ability still intact)
+     - No need for additional credit analysis (data completeness medium-high, gaps do not affect core judgment)
+```
+
+### 5.3 Navigation Rules
+
+When a user clicks the "Fundamentals" dimension from L1 snapshot, the L2 deep report should **navigate directly to Panel 3** (Industry and Fundamentals Deep Dive), not start from the beginning.
+
+```
+Navigation Mapping Table:
+
+  L1 Dimension Click          ->   L2 Target Position
+  Spread Dimension           ->   Panel 2 (Market Pricing and Trading Conditions)
+  Fundamentals Dimension     ->   Panel 3 (Industry and Fundamentals Deep Dive)
+  Covenants Dimension        ->   Panel 2 - Covenant Analysis
+  Liquidity Dimension        ->   Panel 2 - Liquidity Analysis
+  Rating Comparison Area     ->   Panel 4 - Confidence and Risk Warnings
+  Anomaly Signal List        ->   Panel 1 - Key Signals
 ```
 
 ---
 
-## 六、信息优先级排序规则
+## 6. Information Priority Sorting Rules
 
-### 6.1 核心公式
+### 6.1 Core Formula
 
 ```
-信号优先级评分 = 紧急性评分(1-5) × 重要性评分(1-5) × 置信度评分(1-5)
+Signal Priority Score = Urgency Score (1-5) x Importance Score (1-5) x Confidence Score (1-5)
 
-分值范围: 1-125
+Score Range: 1-125
 ```
 
-### 6.2 三分量定义
+### 6.2 Three-Component Definitions
 
-#### 紧急性评分（是否需要24小时内关注）
+#### Urgency Score (Needs attention within 24 hours?)
 
-| 分值 | 判定条件 | 示例 |
+| Score | Criterion | Example |
 |---|---|---|
-| 5 | 触发一票否决条件，或违约风险在30天内 | 回售触发、利息逾期、评级断崖降级 |
-| 4 | 核心偿债指标在1-3个月内可能恶化至危险阈值 | 短融利率持续走高、现金储备骤降 |
-| 3 | 信号表明中期（3-6个月）趋势发生方向性变化 | 营收连续两季下滑、北向资金持续减持 |
-| 2 | 边缘性变化，6-12个月尺度有意义但不紧迫 | 周转天数缓慢恶化、行业利差整体走阔 |
-| 1 | 长期趋势性变化，12个月以上尺度 | 技术路线迭代、人口结构变化 |
+| 5 | Veto condition triggered, or default risk within 30 days | Put triggered, interest overdue, rating cliff downgrade |
+| 4 | Core debt service metrics may deteriorate to dangerous threshold within 1-3 months | Short-term CP rate continuously rising, cash reserves suddenly declining |
+| 3 | Signal indicates directional change in medium-term (3-6 months) trend | Revenue declining for two consecutive quarters, northbound capital continuously reducing |
+| 2 | Marginal change, meaningful at 6-12 month scale but not urgent | Turnover days slowly deteriorating, industry spread overall widening |
+| 1 | Long-term trend change, >12 month scale | Technology roadmap iteration, demographic structure change |
 
-#### 重要性评分（对信用质量的影响幅度）
+#### Importance Score (Impact magnitude on credit quality)
 
-| 分值 | 判定条件 | 示例 |
+| Score | Criterion | Example |
 |---|---|---|
-| 5 | 直接影响偿债能力或违约概率 | 现金枯竭、FCF持续为负、回售触发 |
-| 4 | 重大影响信用质量，但不直接致命 | 营收下降50%+、核心资产被转移 |
-| 3 | 中等程度影响，改变趋势判断 | 利差走阔50bp+、评级展望下调 |
-| 2 | 轻微影响，但需要纳入综合判断 | 行业整体利差走阔、股东减持 |
-| 1 | 影响甚微或间接相关 | 管理层变动（非核心）、媒体负面报道 |
+| 5 | Directly affects debt servicing ability or default probability | Cash depletion, FCF persistently negative, put triggered |
+| 4 | Material impact on credit quality, but not directly fatal | Revenue decline 50%+, core assets transferred |
+| 3 | Moderate impact, changes trend judgment | Spread widening 50bp+, rating outlook downgraded |
+| 2 | Minor impact, but needs inclusion in comprehensive judgment | Industry overall spread widening, shareholder reduction |
+| 1 | Negligible or indirectly related impact | Management change (non-core), negative media coverage |
 
-#### 置信度评分（信号背后数据的可靠程度）
+#### Confidence Score (Reliability of data behind the signal)
 
-| 分值 | 判定条件 | 示例 |
+| Score | Criterion | Example |
 |---|---|---|
-| 5 | 多源交叉验证，数据直出 | 交易所公告的回售触发公告、年报营收数据 |
-| 4 | 单源可靠数据，来源可信 | Wind/Choice终端数据、证监会披露 |
-| 3 | 衍生推断，但逻辑链完整 | 利差拐点=市场重新定价风险（有2个以上独立利差数据点） |
-| 2 | 单源弱信号，或逻辑链有断点 | 一篇新闻报道提及、分析师估算 |
-| 1 | 猜测/传闻，无法验证 | 市场传闻、无来源的社交媒体讨论 |
+| 5 | Multi-source cross-verification, data direct source | Exchange announcement of put trigger, annual report revenue data |
+| 4 | Single-source reliable data, source trustworthy | Wind/Choice terminal data, CSRC disclosure |
+| 3 | Derived inference, but logical chain complete | Spread inflection point = market repricing risk (2+ independent spread data points) |
+| 2 | Single-source weak signal, or logical chain has gaps | A news report mentioning, analyst estimate |
+| 1 | Speculation/rumor, cannot be verified | Market rumor, unsourced social media discussion |
 
-### 6.3 阈值与过滤规则
+### 6.3 Thresholds and Filtering Rules
 
 ```
-优先级评分 > 30:   进入L0信号卡（每只券最多3条，按分从高取）
-优先级评分 > 15:   进入L1快照-关键异常列表
-优先级评分 ≤ 15:   进入L2深度报告-全部信号列表（不进入L0/L1）
+Priority Score > 30:    Enter L0 Signal Card (max 3 per bond, highest scores selected)
+Priority Score > 15:    Enter L1 Snapshot - Key Anomaly List
+Priority Score <= 15:   Enter L2 Deep Report - Full Signal List (does not enter L0/L1)
 ```
 
-### 6.4 评分计算实例
+### 6.4 Score Calculation Examples
 
-| 信号 | 紧急性 | 重要性 | 置信度 | 总分 | 进入层级 |
+| Signal | Urgency | Importance | Confidence | Total | Entry Layer |
 |---|---|---|---|---|---|
-| 隆22转债回售触发 | 5 | 5 | 5 | 125 | L0 ✅ |
-| 短融发行利率拐点(2.02%→2.15%) | 3 | 4 | 4 | 48 | L0 ✅ |
-| 北向资金近3月减持24% | 3 | 3 | 4 | 36 | L0 ✅ |
-| 应收账款周转天数从45天升至62天 | 2 | 3 | 3 | 18 | L1 ✅ |
-| 行业整体利差走阔 | 2 | 2 | 4 | 16 | L1 ✅ |
-| 管理层非核心岗位变动 | 1 | 1 | 2 | 2 | L2 only |
+| LONGi 22 CB put triggered | 5 | 5 | 5 | 125 | L0 [OK] |
+| Short-term CP issuance rate inflection (2.02%->2.15%) | 3 | 4 | 4 | 48 | L0 [OK] |
+| Northbound capital reduced 24% over 3 months | 3 | 3 | 4 | 36 | L0 [OK] |
+| AR turnover days from 45 to 62 days | 2 | 3 | 3 | 18 | L1 [OK] |
+| Industry overall spread widening | 2 | 2 | 4 | 16 | L1 [OK] |
+| Management non-core role change | 1 | 1 | 2 | 2 | L2 only |
 
-### 6.5 特殊规则
+### 6.5 Special Rules
 
-1. **一票否决信号**：任何触发一票否决条件的信号，自动获得优先级 > 100，直接进入L0并红标
-2. **虚假信号抑制**：同一维度在同一天出现3条以上方向相反的信号 → 该维度所有信号置信度自动降1级（矛盾信号降低可靠性）
-3. **时间衰减**：超过30天的旧信号，紧急性自动降1分（30-60天）或2分（60天以上）。但每月至少更新一次持仓信号的优先级评分。
-4. **用户调权**：允许用户在设置中将特定类型信号（如"北向资金流向"）的整体紧急性×0.5（降低噪音），或将"回售触发"的紧急性固定为5（不可覆盖）
+1. **Veto Signal**: Any signal triggering a veto condition automatically receives priority > 100, directly enters L0 with red marking
+2. **False Signal Suppression**: If 3+ signals in the same dimension on the same day point in opposite directions -> all signals in that dimension automatically have confidence reduced by 1 level (contradictory signals reduce reliability)
+3. **Time Decay**: Signals older than 30 days automatically have urgency reduced by 1 point (30-60 days) or 2 points (60+ days). But signal priority scores for positions are updated at least once per month.
+4. **User Weight Adjustment**: Allow users to set a specific signal type (e.g., "northbound capital flows") to have overall urgency x0.5 (reduce noise), or fix "put triggered" urgency at 5 (cannot be overridden)
 
 ---
 
-## 七、工作流嵌入设计
+## 7. Workflow Embedding Design
 
-### 7.1 四种场景的定义
+### 7.1 Four Scenario Definitions
 
-| 场景 | 时间窗口 | 用户状态 | 引擎模式 | 输出规格 |
+| Scenario | Time Window | User State | Engine Mode | Output Specification |
 |---|---|---|---|---|
-| **晨间推送** | 开盘前（8:00-9:00） | 快扫模式，5-10秒/条 | 主动推送 | 全部持仓券的L0信号卡汇总（仅推送有红色/黄色信号的券） |
-| **盘中查询** | 交易时段（9:30-15:00） | 中断驱动，即时响应 | 被动查询 | L1快照（默认输出） |
-| **盘后深度** | 收市后（15:00-17:00） | 深度模式，30-60分钟/只券 | 被动查询 | L2完整报告 |
-| **周度扫描** | 每周一（全天） | 扫描模式，关注变化 | 主动推送 | 关注列表的L1快照更新（仅展示变化部分） |
+| **Morning Push** | Before market open (8:00-9:00) | Quick scan mode, 5-10 sec/item | Active push | Aggregate L0 signal cards for all positions (only push bonds with red/yellow signals) |
+| **Intraday Query** | Trading hours (9:30-15:00) | Interruption-driven, instant response | Passive query | L1 snapshot (default output) |
+| **Post-Market Deep Dive** | After close (15:00-17:00) | Deep mode, 30-60 min/bond | Passive query | L2 full report |
+| **Weekly Scan** | Every Monday (full day) | Scan mode, focusing on changes | Active push | L1 snapshot update for watch list (only show changed portions) |
 
-### 7.2 场景一：晨间推送
+### 7.2 Scenario 1: Morning Push
 
-#### 7.2.1 触发机制
+#### 7.2.1 Trigger Mechanism
 
-- 每日开盘前自动运行（默认8:00，允许用户在设置中调整至7:00-9:00之间）
-- 仅对有持仓的券进行分析（非关注列表中的券不做每日刷新，节省计算资源）
-- 只推送有红色/黄色信号的券——无信号的券不推送，但在"全部持仓"页面仍可查看
+- Runs automatically before market open each day (default 8:00, user can adjust between 7:00-9:00 in settings)
+- Only analyzes bonds held in the portfolio (bonds not on the watch list are not refreshed daily, saving computing resources)
+- Only pushes bonds with red/yellow signals -- bonds without signals are not pushed but remain visible on the "All Positions" page
 
-#### 7.2.2 输出格式
+#### 7.2.2 Output Format
 
-晨间推送以**聚合视图**呈现，而非逐只券的独立报告：
-
-```
-===== 晨间信用快照 | 2026-07-08 | 8:00 =====
-
-组合规模: 200亿 | 持仓券数: 52只
-今日信号状态: 红色3只 | 黄色7只 | 正常42只
-
-── 红色预警（24小时内需关注）──
-
-1. 隆基绿能 (601012) | 评级: BB+/负面 | 隆22转债回售触发
-   → 仓位占比: 2.3% | 建议: 评估是否减仓或与发行人沟通
-   
-2. 通威股份 (600438) | 评级: B/负面 | 短融发行利率持续走高
-   → 仓位占比: 1.5% | 建议: 关注下一期短融发行情况
-
-── 黄色关注（本周内关注）──
-
-3. 某城投 (XXXXXX) | 评级: AA-/稳定 | 区域一般预算收入下滑8%
-   → 仓位占比: 4.1% | 建议: 关注区域化债进展
-
-...后续黄色条目...
-
-── 操作摘要 ──
-今日建议操作: 1项
-  隆基绿能——评估是否与发行人沟通回售安排
-本周建议关注: 3项
-  通威短融、某城投区域财政、天合转债利差变化
-```
-
-#### 7.2.3 输出内容的组织原则
-
-- **聚合优先**：50只券的晨间快报必须在一页视图中展示（桌面端无需滚动，手机端可滚动但信号卡高度压缩）
-- **变化优先**：只展示有变化的券——"无变化"就是好的变化
-- **仓位感知**：如果高风险的券在组合中仓位极低（如<0.5%），降低其展示优先级
-- **行动导向**：每条信号卡都要有"建议行动"，没有行动建议的信号不推送
-
-#### 7.2.4 仓位加权调整规则
-
-晨间推送时，信号的展示优先级考虑持仓权重：
+Morning push is presented as an **aggregate view**, not individual reports per bond:
 
 ```
-晨间展示优先级 = 信号优先级评分 × (1 + 持仓占比权重因子)
+===== Morning Credit Snapshot | 2026-07-08 | 8:00 =====
 
-持仓占比权重因子:
-  仓位 > 5%:  +0.5
-  仓位 2-5%:  +0.2
-  仓位 0.5-2%:  0
-  仓位 < 0.5%:  -0.3（低于阈值，即使有信号展示优先级也降低）
+Portfolio Size: 20B | Bonds Held: 52
+Today's Signal Status: Red 3 | Yellow 7 | Normal 42
+
+-- Red Alert (Needs Attention Within 24 Hours) --
+
+1. LONGi Green Energy (601012) | Rating: BB+/Negative | LONGi 22 CB put triggered
+   -> Position Weight: 2.3% | Recommendation: Assess whether to reduce or communicate with issuer
+
+2. Tongwei (600438) | Rating: B/Negative | Short-term CP issuance rate continuously rising
+   -> Position Weight: 1.5% | Recommendation: Watch next short-term CP issuance
+
+-- Yellow Watch (Needs Attention This Week) --
+
+3. An LGFV (XXXXXX) | Rating: AA-/Stable | Regional general budget revenue declined 8%
+   -> Position Weight: 4.1% | Recommendation: Monitor regional debt resolution progress
+
+...subsequent yellow entries...
+
+-- Action Summary --
+Recommended actions today: 1 item
+  LONGi Green Energy -- Assess whether to communicate with issuer regarding put arrangements
+Recommended attention this week: 3 items
+  Tongwei short-term CP, An LGFV regional finance, Tianhe CB spread change
 ```
 
-### 7.3 场景二：盘中查询
+#### 7.2.3 Output Content Organization Principles
 
-#### 7.3.1 触发时机
+- **Aggregation First**: Morning brief for 50 bonds must be displayed in one page view (desktop no scroll needed, mobile scrollable but signal card height compressed)
+- **Changes First**: Only show bonds that have changed -- "no change" is good news
+- **Position-Aware**: If a high-risk bond has a very low position weight (e.g., <0.5%), reduce its display priority
+- **Action-Oriented**: Each signal card must have a "recommended action"; signals without an action recommendation are not pushed
 
-- 用户在交易时段主动输入某只券的代码/名称
-- 系统检测到某只持仓券的价格/利差异常波动（幅度>2个标准差）
-- 用户在组合仪表盘点击某只券
+#### 7.2.4 Position-Weighted Adjustment Rules
 
-#### 7.3.2 输出格式
-
-默认输出L1快照。用户可以选择"只看变化"模式（对比上一次完整分析）：
-
-```
-===== 隆基绿能 (601012) | 盘中快照 | 10:32 =====
-
-评级: BB+/负面 | 外部评级: AAA/稳定
-
-[四维雷达图 - 同7.3.2]
-
-相比上次分析(2026-07-07 16:00)的变化:
-  🟡 利差从331bp走阔至335bp (+4bp) → 趋势持续但幅度小
-  🟢 无新基本面信号 → 不变
-  ℹ️ 无新闻/公告 → 不变
-
-关键异常:
-  🔴 隆22转债转股溢价率74% ✓ (持续,不变)
-  🟡 北向资金继续减持(今日-0.3%) → 趋势在延续
-```
-
-变化检测的规则：
-- 利差变化>10bp标记为黄色，>30bp标记为红色
-- 新出现的外部评级事件标记为红色
-- 出现新的重大公告（财报、预亏、资产重组）标记为红色
-
-### 7.4 场景三：盘后深度
-
-#### 7.4.1 触发时机
-
-- 用户主动申请完整分析
-- 用户从L1快照点击任意维度展开
-- 授信审批/入库决策要求
-
-#### 7.4.2 输出格式
-
-L2完整报告（见第五章）。包含时间戳和缓存策略：
-
-- 同一只券的L2分析结果缓存24小时
-- 24小时内重新请求时，优先返回缓存结果并标注"分析时间：2026-07-07 16:00"
-- 用户可强制刷新（点击"重新分析"）
-- 如果24小时内有外部评级事件/财报发布/重大公告，缓存自动失效
-
-### 7.5 场景四：周度扫描
-
-#### 7.5.1 触发时机
-
-- 每周一上午9:00自动运行
-- 可配置为"仅关注列表"或"全部持仓"
-
-#### 7.5.2 输出格式
-
-周度扫描展示的是**变化摘要**，而非完整分析：
+During morning push, signal display priority considers position weight:
 
 ```
-===== 周度信用扫描 | 第28周 (2026-07-06 ~ 2026-07-10) =====
+Morning Display Priority = Signal Priority Score x (1 + Position Weight Factor)
 
-覆盖范围: 关注列表30只券 | 持仓列表52只券
-
-── 本周新触发信号 ──
-  隆基绿能: 新🟡信号1条（短融利率拐点）
-  某城投: 新🟡信号1条（一般预算收入下滑）
-  其余: 无新触发
-
-── 已有信号变化 ──
-  通威股份: 🟠短融利率进一步走高(2.15%→2.22%) → 紧急性升级
-  天合光能: 🟢应收账款周转率改善(62天→55天) → 边际改善
-
-── 评级迁移 ──
-  本周评级调整: 无
-  本月评级调整: 1次 (通威: BB→B-)
-
-── 下周关注事项 ──
-  2026-07-10: 隆基绿能召开投资者交流会
-  2026-07-15: 城投季报披露截止
+Position Weight Factor:
+  Position > 5%:   +0.5
+  Position 2-5%:   +0.2
+  Position 0.5-2%: 0
+  Position < 0.5%: -0.3 (below threshold, display priority reduced even if signal exists)
 ```
 
-周度扫描的增量检测规则：
-- 与上周快照对比，列出"新增/升级/降级/消失"的信号
-- 评级迁移记录（上月内评级变化）
-- 未来7-14天的已知事件日历
+### 7.3 Scenario 2: Intraday Query
 
-### 7.6 工作流嵌入的配置项（用户可设置）
+#### 7.3.1 Trigger Timing
 
-| 配置项 | 默认值 | 可选值 | 影响范围 |
+- User actively enters a bond code/name during trading hours
+- System detects abnormal price/spread fluctuation in a held bond (magnitude >2 standard deviations)
+- User clicks a bond on the portfolio dashboard
+
+#### 7.3.2 Output Format
+
+Default output is L1 snapshot. User can select "Changes Only" mode (compared to the last complete analysis):
+
+```
+===== LONGi Green Energy (601012) | Intraday Snapshot | 10:32 =====
+
+Rating: BB+/Negative | External: AAA/Stable
+
+[Four-Dimension Radar Chart - same as 7.3.2]
+
+Changes since last analysis (2026-07-07 16:00):
+  [Y] Spread from 331bp to 335bp (+4bp) -> Trend continues but magnitude small
+  [G] No new fundamental signals -> Unchanged
+  [i] No news/announcements -> Unchanged
+
+Key Anomalies:
+  [R] LONGi 22 CB premium ratio 74% [v] (continuing, unchanged)
+  [Y] Northbound capital continues reducing (-0.3% today) -> Trend continuing
+```
+
+Change detection rules:
+- Spread change >10bp marked yellow, >30bp marked red
+- New external rating event marked red
+- New material announcement (financial report, expected loss, asset restructuring) marked red
+
+### 7.4 Scenario 3: Post-Market Deep Dive
+
+#### 7.4.1 Trigger Timing
+
+- User actively requests full analysis
+- User clicks any dimension in L1 snapshot to expand
+- Credit approval/inclusion decision required
+
+#### 7.4.2 Output Format
+
+L2 full report (see Section 5). Includes timestamp and caching policy:
+
+- L2 analysis results for the same bond cached for 24 hours
+- When re-requested within 24 hours, return cached results first with annotation "Analysis time: 2026-07-07 16:00"
+- User can force refresh (click "Reanalyze")
+- If external rating events/financial reports/material announcements occur within 24 hours, cache automatically invalidated
+
+### 7.5 Scenario 4: Weekly Scan
+
+#### 7.5.1 Trigger Timing
+
+- Runs automatically at 9:00 AM every Monday
+- Configurable as "watch list only" or "all positions"
+
+#### 7.5.2 Output Format
+
+Weekly scan displays a **change summary**, not a full analysis:
+
+```
+===== Weekly Credit Scan | Week 28 (2026-07-06 ~ 2026-07-10) =====
+
+Coverage: Watch list 30 bonds | Position list 52 bonds
+
+-- New Signals Triggered This Week --
+  LONGi Green Energy: 1 new [Y] signal (short-term CP rate inflection)
+  An LGFV: 1 new [Y] signal (general budget revenue decline)
+  Others: No new triggers
+
+-- Existing Signal Changes --
+  Tongwei: [O] Short-term CP rate further rising (2.15%->2.22%) -> Urgency upgraded
+  Trina Solar: [G] AR turnover improved (62 days->55 days) -> Marginal improvement
+
+-- Rating Migration --
+  Rating changes this week: None
+  Rating changes this month: 1 (Tongwei: BB -> B-)
+
+-- Items to Watch Next Week --
+  2026-07-10: LONGi Green Energy investor conference
+  2026-07-15: LGFV quarterly report disclosure deadline
+```
+
+Weekly scan incremental detection rules:
+- Compare with last week's snapshot, list "new/upgraded/downgraded/disappeared" signals
+- Rating migration records (rating changes within the past month)
+- Known event calendar for the next 7-14 days
+
+### 7.6 Workflow Embedding Configuration Items (User-Settable)
+
+| Configuration Item | Default Value | Optional Values | Scope |
 |---|---|---|---|
-| 晨间推送时间 | 8:00 | 7:00-9:00 | 场景一 |
-| 晨间推送范围 | 全部持仓 | 全部持仓/仅关注列表 | 场景一 |
-| 盘中自动监测 | 开启 | 开启/关闭 | 场景二（价格异常触发） |
-| 盘中价格异动阈值 | 2个标准差 | 1-3个标准差 | 场景二 |
-| 晨间推送最低信号优先级 | 30 | 15-50 | 场景一（L0阈值） |
-| 关注列表上限 | 30只 | 10-100只 | 场景一/四 |
-| 周度扫描日 | 周一 | 周一到周五 | 场景四 |
+| Morning Push Time | 8:00 | 7:00-9:00 | Scenario 1 |
+| Morning Push Scope | All positions | All positions / Watch list only | Scenario 1 |
+| Intraday Auto Monitor | On | On / Off | Scenario 2 (price anomaly trigger) |
+| Intraday Price Anomaly Threshold | 2 standard deviations | 1-3 standard deviations | Scenario 2 |
+| Morning Push Minimum Signal Priority | 30 | 15-50 | Scenario 1 (L0 threshold) |
+| Watch List Upper Limit | 30 bonds | 10-100 bonds | Scenario 1/4 |
+| Weekly Scan Day | Monday | Monday to Friday | Scenario 4 |
 
 ---
 
-## 八、与现有框架的衔接
+## 8. Integration with the Existing Framework
 
-### 8.1 与马赛克引擎的衔接
+### 8.1 Integration with the Mosaic Engine
 
-L0/L1/L2均使用马赛克引擎的输出作为底层数据源。如下图所示：
-
-```
-马赛克引擎输出:
-  信号池（全部信号的列表，含优先级评分）
-  维度评分（各维度0-10分）
-  完备性报告（信号密度+缺口清单）
-        │
-        ├── L0过滤器: 取优先级>30的信号，取前3条
-        ├── L1聚合器: 取四维评分+优先级>15的信号
-        └── L2完整输出: 全部内容
-```
-
-### 8.2 与双轨分析的衔接
-
-- L0信号卡中出现的市场定价信号必须标注其来自轨道B
-- L1快照的利差维度直接对应轨道B的市场定价评分
-- L1快照的基本面维度直接对应轨道A的综合评分
-- L2深度报告的双轨对撞结果只在第三屏出现（不是信息被省略了，而是信息被后置了）
-
-### 8.3 与多利益方框架的衔接
-
-L2深度报告提供身份切换能力：
+L0/L1/L2 all use the Mosaic engine's output as the underlying data source. As shown below:
 
 ```
-[当前视角: 债券投资者 M1] [切换至: 信用审批 M0] [切换至: 承销商 M2]
-
-切换视角后:
-  评级不变
-  信号列表不变（视角切换不影响事实）
-  但每条信号的"行动建议"会根据身份变化
-  例: 回售触发 → M1建议"减仓", M0建议"与发行人沟通追加担保"
+Mosaic Engine Output:
+  Signal Pool (list of all signals, with priority scores)
+  Dimension Scores (0-10 for each dimension)
+  Completeness Report (signal density + gap list)
+       |
+       +-- L0 Filter: Take signals with priority >30, take top 3
+       +-- L1 Aggregator: Take four-dimension scores + signals with priority >15
+       +-- L2 Full Output: All content
 ```
 
-L0和L1不提供身份切换（信息量和行为建议在不同身份下的差异在30秒快照中无法充分呈现）。
+### 8.2 Integration with Dual-Track Analysis
 
-### 8.4 与完备性评估层的衔接
+- Market pricing signals appearing in L0 signal cards must be labeled as coming from Track B
+- L1 snapshot spread dimension directly corresponds to Track B market pricing score
+- L1 snapshot fundamentals dimension directly corresponds to Track A composite score
+- L2 deep report dual-track collision results appear only in Panel 3 (information is not omitted, but post-poned)
 
-完备性评估的数据在三个层级中有不同的呈现方式：
+### 8.3 Integration with Multi-Stakeholder Framework
 
-| 层级 | 完备性呈现方式 | 示例 |
+L2 deep report provides identity switching capability:
+
+```
+[Current Perspective: Bond Investor M1] [Switch to: Credit Approval M0] [Switch to: Underwriter M2]
+
+After switching perspectives:
+  Rating unchanged
+  Signal list unchanged (perspective switching does not affect facts)
+  But the "action recommendation" for each signal changes according to the identity
+  Example: Put triggered -> M1 recommends "reduce position", M0 recommends "communicate with issuer for additional collateral"
+```
+
+L0 and L1 do not provide identity switching (the differences in information volume and action recommendations across identities cannot be fully presented in a 30-second snapshot).
+
+### 8.4 Integration with the Completeness Assessment Layer
+
+Completeness assessment data is presented in different ways across the three layers:
+
+| Layer | Completeness Presentation | Example |
 |---|---|---|
-| L0 | 一个颜色+百分比的信号灯 | "数据: ████████░░ 82%" |
-| L1 | 百分比+文字等级标签 | "数据完备性: 82% 中高置信度" |
-| L2 | 完整信号密度条形图+缺口清单+影响评估 | 见5.2第四屏 |
+| L0 | A color + percentage indicator light | "Data: [########] 82%" |
+| L1 | Percentage + text grade label | "Data Completeness: 82% Medium-High Confidence" |
+| L2 | Full signal density bar chart + gap list + impact assessment | See Section 5.2 Panel 4 |
 
-**核心设计原则**：L0/L1用户不需要看到"信号密度35%意味着什么"——引擎应该替用户做这个判断，只在需要时才把缺口细节暴露给用户。
+**Core Design Principle**: L0/L1 users do not need to see "what signal density 35% means" -- the engine should make this judgment for the user and only expose gap details when needed.
 
 ---
 
-## 九、特殊状态处理
+## 9. Special State Handling
 
-### 9.1 首次分析（无历史对比）
+### 9.1 First Analysis (No Historical Comparison)
 
-用户第一次查询某只券时，没有历史数据可对比。此时：
+When a user queries a bond for the first time, there is no historical data to compare against:
 
-- L0信号卡：正常显示，但在信号区标注"首次分析，暂无可比历史"
-- L1快照：雷达图正常显示，但变化检测区显示"首次分析，下次更新可显示变化"
-- L2深度报告：完整显示，无变化标注
+- L0 Signal Card: Display normally, but annotate in the signal area "First analysis, no comparable history available"
+- L1 Snapshot: Radar chart displays normally, but the change detection area shows "First analysis, changes will be available on next update"
+- L2 Deep Report: Full display, no change annotations
 
-### 9.2 数据严重不足（信号密度<20%）
+### 9.2 Severely Insufficient Data (Signal Density <20%)
 
-当某只券的整体信号密度低于20%时：
+When a bond's overall signal density is below 20%:
 
-- L0信号卡：在数据完备性指示灯处显示红色，并标注"数据不足，评级置信度低"
-- L0信号卡：在信号区显示"数据不足以生成可靠信号"，不展示信号条目
-- L1快照：仅显示雷达图（用虚线标注低置信度），不显示异常列表和评级对比
-- L2深度报告：正常生成，但每屏顶部标注"数据严重不足"的警告条
+- L0 Signal Card: Data completeness indicator light shows red, annotated "Insufficient data, low rating confidence"
+- L0 Signal Card: Signal area shows "Insufficient data to generate reliable signals," no signal items displayed
+- L1 Snapshot: Only radar chart displayed (with dashed lines indicating low confidence), no anomaly list or rating comparison
+- L2 Deep Report: Generated normally, but each panel has a warning bar at the top annotated "Severely insufficient data"
 
-### 9.3 一票否决触发
+### 9.3 Veto Triggered
 
-当一票否决被触发时：
+When a veto is triggered:
 
-- L0信号卡：评级显示为CCC（上限），红色背景边框，信号区顶部显示"一票否决已触发"
-- L1快照：四维雷达图的基本面维度自动标为0，异常列表第一项显示一票否决原因
-- L2深度报告：第三屏基本面深度中展示触发一票否决的具体维度和理由
+- L0 Signal Card: Rating displayed as CCC (upper limit), red background border, signal area top shows "Veto triggered"
+- L1 Snapshot: Fundamentals dimension of the four-dimension radar chart automatically set to 0, first item in anomaly list shows veto reason
+- L2 Deep Report: Panel 3 fundamentals deep dive shows the specific dimension and reason for the veto trigger
 
-### 9.4 非上市/无市场数据
+### 9.4 Non-Listed / No Market Data
 
-对于非上市企业、无可交易债券的标的：
+For non-listed companies or targets without tradeable bonds:
 
-- L0信号卡：评级正常显示，但利差维度标记为"无市场数据"，数据完备性自动降低
-- L1快照：四维雷达图中利差维度和流动性维度显示为灰色（表示不可用）
-- L1快照：排名区域显示"无市场数据，无法参与同行业排名"
-- L1快照：评级对比仅显示外部评级（如存在）
-- L2深度报告：第二屏（市场定价）标注"无市场数据"，但其他各屏正常
+- L0 Signal Card: Rating displayed normally, but spread dimension marked as "No market data," data completeness automatically reduced
+- L1 Snapshot: Spread and liquidity dimensions in the four-dimension radar chart shown in gray (indicating unavailable)
+- L1 Snapshot: Ranking area shows "No market data, cannot participate in same-industry ranking"
+- L1 Snapshot: Rating comparison shows only external rating (if available)
+- L2 Deep Report: Panel 2 (Market Pricing) annotated "No market data," but other panels display normally
 
 ---
 
-## 十、附录
+## 10. Appendices
 
-### 10.1 术语对照
+### 10.1 Terminology Glossary
 
-| 术语 | 同义词/曾用名 | 定义 |
+| Term | Synonyms/Former Names | Definition |
 |---|---|---|
-| L0 信号卡 | 速览卡/晨间卡片 | 5秒可消化的极简信用信号呈现 |
-| L1 快照 | 快速诊断/30秒评估 | 包含四维雷达图的快速信用判断 |
-| L2 深度 | 完整报告/深度报告 | 当前引擎的完整分析输出 |
-| 信号优先级 | 信号重要度 | 紧急性×重要性×置信度的综合评分 |
-| 数据完备性灯号 | 信号密度指示 | 绿色/黄色/红色的数据充分性指示 |
-| 四维雷达图 | 四维评分 | 利差/基本面/条款/流动性四个维度的标准化评分 |
-| 晨间推送 | 开盘前简报 | 每日自动推送的持仓信号汇总 |
-| 周度扫描 | 周报 | 每周一次的关注列表变化摘要 |
+| L0 Signal Card | Quick View Card / Morning Card | Minimal credit signal presentation digestible in 5 seconds |
+| L1 Snapshot | Quick Diagnosis / 30-second Assessment | Rapid credit assessment including four-dimension radar chart |
+| L2 Deep | Full Report / Deep Report | Current engine's complete analysis output |
+| Signal Priority | Signal Importance | Composite score of urgency x importance x confidence |
+| Data Completeness Light | Signal Density Indicator | Green/yellow/red data adequacy indicator |
+| Four-Dimension Radar Chart | Four-Dimension Score | Standardized scores for spread/fundamentals/covenants/liquidity |
+| Morning Push | Pre-Market Briefing | Daily auto-push position signal summary |
+| Weekly Scan | Weekly Report | Weekly watch list change summary |
 
-### 10.2 与从业者审计建议的对应关系
+### 10.2 Correspondence with Practitioner Audit Recommendations
 
-| 审计问题 | 本框架解决方案 | 涉及章节 |
+| Audit Issue | This Framework's Solution | Relevant Sections |
 |---|---|---|
-| "只有深度报告一种模式" | 三层输出体系: L0/L1/L2 | 第二、三、四、五章 |
-| "输出顺序是分析者逻辑不是决策者逻辑" | 决策者视角四屏结构: 评级→定价→基本面→置信度 | 第五章5.2 |
-| "信息过载，50-80个信息点" | 优先级排序公式 + 三层过滤 | 第六章 |
-| "没有晨间推送" | 工作流场景一: 晨间推送 | 第七章7.2 |
-| "没有持仓聚合仪表盘" | 晨间推送聚合视图 + 信号状态计数 | 第七章7.2 |
-| "没有与可比标的对比视图" | L1快照同行业排名模块 | 第四章4.5 |
-| "行动建议不明确" | 每条信号附带行动建议 | 第四、五、七章 |
-| "信号密度百分比没用" | 替换为"可信/部分可信/缺口大"和行动指引 | 第三、四章 |
-| "没有快速诊断模式" | L1快照 + 盘中查询场景 | 第四章、第七章7.3 |
+| "Only one output mode: deep report" | Three-layer output system: L0/L1/L2 | Sections 2, 3, 4, 5 |
+| "Output order is analyst logic, not decision-maker logic" | Decision-maker perspective four-panel structure: rating -> pricing -> fundamentals -> confidence | Section 5.2 |
+| "Information overload, 50-80 information points" | Priority sorting formula + three-layer filtering | Section 6 |
+| "No morning push" | Workflow scenario 1: Morning push | Section 7.2 |
+| "No position aggregate dashboard" | Morning push aggregate view + signal status count | Section 7.2 |
+| "No comparison with comparable targets" | L1 snapshot same-industry ranking module | Section 4.5 |
+| "Action recommendations not clear" | Each signal comes with an action recommendation | Sections 4, 5, 7 |
+| "Signal density percentage is useless" | Replaced with "Reliable/Partially reliable/Large gaps" and action guidance | Sections 3, 4 |
+| "No quick diagnosis mode" | L1 snapshot + intraday query scenario | Section 4, Section 7.3 |
 
-### 10.3 与引擎现有原则的兼容性
+### 10.3 Compatibility with Existing Engine Principles
 
-| 现有原则 | 在本框架中的体现 |
+| Existing Principle | Manifestation in This Framework |
 |---|---|
-| 财务分析不是最重层 | L2第三屏才展示财务深度，第一屏只问"要不要关注" |
-| 行业决定权重 | 四维雷达图的维度权重由行业类型决定 |
-| 逐层递进（L1通过才有意义进L2） | L0→L1→L2的渐进展开与此一致 |
-| 数据缺口=风险信号 | 完备性指示灯在每个层级都可见 |
-| 两轨冲突时优先轨道A | 评级对比中直接展示分歧并给出解读 |
+| Financial analysis is not the heaviest layer | L2 Panel 3 displays financial depth; Panel 1 only asks "should I care" |
+| Industry determines weights | Four-dimension radar chart dimension weights determined by industry type |
+| Layer-by-layer progression (L1 must be meaningful before progressing to L2) | L0->L1->L2 progressive expansion is consistent with this |
+| Data gap = risk signal | Completeness indicator light visible at every layer |
+| When two tracks conflict, prioritize Track A | Rating comparison directly displays divergence and gives interpretation |
 
-### 10.4 未来扩展方向
+### 10.4 Future Expansion Directions
 
-1. **L0信号卡的可配置化**：允许用户自定义"哪些类型的信号我要看，哪些我可以忽略"
-2. **L1快照的批量对比模式**：选中2-5只券，批量显示其四维雷达图叠加重叠（现有多身份框架的横向扩展）
-3. **L2深度报告的导出格式**：支持导出为PDF/Word格式，直接用于授信报告底稿
-4. **L2报告版本管理**：同一只券的多次分析结果可追溯对比
-5. **晨间推送的语音版**：API接口开放后，可对接语音播报——"早上好，今天组合有3只红色预警、7只黄色关注..."（此功能依赖TTS/NLP输出，不在当前引擎设计范围内）
+1. **L0 Signal Card Configurability**: Allow users to customize "which types of signals I want to see, which I can ignore"
+2. **L1 Snapshot Batch Comparison Mode**: Select 2-5 bonds, batch display their four-dimension radar charts with overlapping comparison (horizontal expansion of the existing multi-identity framework)
+3. **L2 Deep Report Export Format**: Support PDF/Word export, directly usable as credit report base material
+4. **L2 Report Version Management**: Traceable comparison of multiple analysis results for the same bond
+5. **Morning Push Voice Version**: Once the API interface is open, can integrate voice broadcast -- "Good morning, today the portfolio has 3 red alerts, 7 yellow watches..." (this feature depends on TTS/NLP output, not within the current engine design scope)
