@@ -1,1045 +1,908 @@
-# 传染理论基础 — 信用风险传导路径与行业暴露图谱
+# Contagion Theory -- Credit Risk Transmission Pathways and Sector Exposure Framework
 
-**版本**: v0.8.4-release | **日期**: 2026-07-10
-
----
-
-## 目录
-
-1. [绪论：为什么需要传染理论](#一绪论为什么需要传染理论)
-2. [四种传染类型](#二四种传染类型)
-3. [七条标准传导路径模板](#三七条标准传导路径模板)
-4. [现有6种范式传染暴露映射](#四现有6种范式传染暴露映射)
-5. [传染强度升级因子](#五传染强度升级因子)
-6. [实操应用指引](#六实操应用指引)
+**Version:** v0.8.4-release | **Date:** 2026-07-10
 
 ---
 
-## 一、绪论：为什么需要传染理论
+## Table of Contents
 
-### 1.1 背景
+1. [Introduction: Why Contagion Theory](#1-introduction-why-contagion-theory)
+2. [Four Contagion Types](#2-four-contagion-types)
+3. [Seven Standard Transmission Pathways](#3-seven-standard-transmission-pathways)
+4. [Paradigm Contagion Exposure Mapping (P1-P6)](#4-paradigm-contagion-exposure-mapping-p1-p6)
+5. [Contagion Intensity Escalation Factors](#5-contagion-intensity-escalation-factors)
+6. [Practical Application Guide](#6-practical-application-guide)
 
-传统信用分析以**发行主体孤立评估**为默认假设——分析师通过财务报表、行业地位、公司治理等因素独立判断每一家企业的信用风险。这一假设在绝大多数日常场景中有效，但在**信用事件集中爆发期**系统性失效。
+---
 
-中国市场近年的违约案例表明，信用风险从来不是独立事件：
+## 1. Introduction: Why Contagion Theory
 
-| 案例 | 表面违约原因 | 传染路径 | 受影响范围 |
+### 1.1 Background
+
+Traditional credit analysis assumes **issuer-level standalone assessment** -- analysts evaluate each entity's credit quality independently through financial statements, industry position, governance, and other firm-specific factors. This assumption holds in normal market conditions but fails systematically during **periods of concentrated credit events**.
+
+History demonstrates that credit risk is never an independent event:
+
+| Event | Apparent Default Cause | Contagion Path | Affected Scope |
 |---|---|---|---|
-| 永煤控股（2020） | 自身经营恶化 | 区域国企信用共振 | 河南省全部国企融资成本上升200-500bp，波及山西/河北国企债 |
-| 华晨集团（2020） | 自身经营恶化 | 担保圈+同实际控制人 | 辽宁省国企信用体系整体重估 |
-| 紫光集团（2020） | 过度扩张+债务集中到期 | 同行业+同融资渠道 | 半导体行业利差走阔，科技类信用债遭抛售 |
-| 恒大集团（2021） | 流动性危机 | 同行业+同融资渠道+供应链 | 全地产行业美元债暴跌，建筑商/供应商大面积违约 |
-| 苏宁易购（2021） | 流动性危机 | 同实际控制人+信用链 | 张近东关联企业连锁资金紧张 |
+| Lehman Brothers (2008) | Subprime MBS losses | Counterparty chain + confidence collapse | Global financial system freeze, interbank lending halt |
+| Greece sovereign downgrade (2010) | Fiscal deficit under-reporting | Sovereign-bank nexus + regional resonance | GIIPS sovereign spreads jumped 300-800bp, Eurozone crisis |
+| Petrobras (2014-2015) | Corruption + oil price crash | Supply chain + sector concentration | Brazilian upstream suppliers, oil & gas sector-wide re-pricing |
+| Vale dam collapse (2019) | Operational disaster | Financial linkage + sector concentration | Global mining sector liability re-pricing, iron ore price shock |
+| Wirecard (2020) | Fraud exposure | Financial linkage + confidence collapse | German fintech sector freeze, auditor liability cascade |
+| Evergrande (2021) | Liquidity crisis | Supply chain + sector concentration | Global high-yield property selloff, construction material suppliers |
+| Credit Suisse (2023) | Repeated scandals + deposit run | Liquidity squeeze + confidence collapse | Global bank AT1 bond wipeout, regional bank contagion (US) |
+| SVB / Signature Bank (2023) | Duration mismatch + deposit run | Liquidity squeeze + common creditor | US regional banking crisis, sector-wide deposit flight |
 
-**核心结论：在信用事件集中爆发期，唯一比"谁将违约"更重要的问题是"违约会传染给谁"。**
+**Core thesis: In periods of concentrated credit events, the question "who else will be affected" is more important than "who will default first."**
 
-### 1.2 传染理论在引擎中的位置
+### 1.2 Role of Contagion Theory in the Engine
 
-传染理论不是替代现有基本面分析，而是在基本面分析之上增加一个**系统性风险叠加层**：
+Contagion theory does not replace fundamental analysis -- it adds a **systemic risk overlay layer** on top of fundamental assessment:
 
 ```
-现有引擎输出（个体评估）
-        │
-   ┌────┴────┐
-   │传染分析层│  ← 本文件定义的理论基础
-   └────┬────┘
-        │
-   ┌────┴────┐
-   │传染矩阵  │  ← 每条路径 x 每个企业的暴露评分
-   └────┬────┘
-        ▼
-  风险传导报告
-  "如果X违约，谁最可能受波及？"
+Existing Engine Output (Standalone Assessment)
+            |
+       +----+----+
+       |Contagion |  <- This document defines the theoretical foundation
+       |Analysis  |
+       +----+----+
+            |
+       +----+----+
+       |Contagion |  <- Each pathway x each entity's exposure score
+       |Matrix   |
+       +----+----+
+            |
+            v
+   Contagion Risk Report
+   "If X defaults, who is most likely to be affected?"
 ```
 
-### 1.3 关键术语定义
+### 1.3 Key Terminology
 
-| 术语 | 定义 |
+| Term | Definition |
 |---|---|
-| **传染源** | 首次发生信用事件（违约/评级下调/财务造假暴露）的主体 |
-| **传染受体** | 因与传染源存在直接或间接关联而受波及的主体 |
-| **传导路径** | 传染从源到受体的具体连接渠道 |
-| **衰减距离** | 传染沿某一路径传递后影响显著减弱的临界步数 |
-| **升级因子** | 使基础传导强度非线性放大的市场/监管/杠杆条件 |
-| **暴露评分** | 特定受体在特定路径上受到传染的预期程度（1-5级） |
+| **Contagion Source** | The entity that first experiences a credit event (default / downgrade / fraud exposure) |
+| **Contagion Receptor** | An entity affected due to direct or indirect linkage to the source |
+| **Transmission Pathway** | The specific channel through which contagion travels from source to receptor |
+| **Decay Distance** | The number of steps along a pathway after which the impact materially diminishes |
+| **Escalation Factor** | Market, regulatory, or leverage conditions that amplify transmission intensity non-linearly |
+| **Exposure Score** | The expected degree of contagion impact on a specific receptor via a specific pathway (scale 1-5) |
 
 ---
 
-## 二、四种传染类型
+## 2. Four Contagion Types
 
-### 2.1 类型总览
+### 2.1 Type Overview
 
-| 类型 | 定义 | 触发条件 | 传导速度 | 历史振幅 | 衰减距离 | 可预测性 |
+| Type | Definition | Trigger | Transmission Speed | Historical Amplitude | Decay Distance | Predictability |
 |---|---|---|---|---|---|---|
-| **信用链传染** | 通过上下游应收账款/担保链/资金归集传导 | 核心企业违约或信用评级下调 | 中等（1-3个月通过财报和付款行为暴露） | 高（直接债权损失） | 1-2层（直接交易对手→交易对手的交易对手） | 中高（供应链关系可提前映射） |
-| **区域共振** | 同一地方政府信用背书·区域内互保·区域融资环境恶化 | 区域内首个国企违约或政府支持态度转变 | 快（数天-数周·金融市场反应迅速） | 极高（永煤→河南/山西/河北国企债全线抛售） | 同省→邻省→同区域板块 | 中（政府支持意愿难以预判） |
-| **流动性挤兑** | 同一融资渠道/债券品种/投资者群体的集体撤离 | 某发行人违约→投资者赎回→基金被迫抛售同类型资产 | 极快（日内-数天） | 高（估值冲击+流动性枯竭） | 同类型资产→相近类型→全市场 | 低（取决于市场情绪和杠杆水平） |
-| **信心崩塌** | 市场叙事驱动的非理性传染·"下一个是谁"恐慌 | 超预期违约（AAA国企/龙头民企）打破刚兑信仰 | 极快（数小时-数天） | 极高（无差别抛售） | 无明确边界·可波及无关行业 | 极低 |
+| **Credit Chain (C)** | Transmission through upstream/downstream receivables, guarantees, and cash pooling | Core enterprise default or downgrade | Moderate (1-3 months via financial statements and payment behavior) | High (direct creditor losses) | 1-2 layers (direct counterparty, counterparty's counterparty) | Medium-High (supply chain relationships can be mapped in advance) |
+| **Regional Resonance (R)** | Shared sovereign / regional credit backing, intra-region mutual guarantees, deterioration of regional funding conditions | First regional SOE default or shift in government support stance | Fast (days-weeks, rapid financial market reaction) | Very High (GIIPS sovereign spread widening 300-800bp) | Same jurisdiction, adjacent region, same economic bloc | Medium (government support willingness hard to predict) |
+| **Liquidity Squeeze (L)** | Collective withdrawal from same funding channel, bond type, or investor base | Issuer default, investor redemption, forced fund selling of similar assets | Very Fast (intraday-days) | High (valuation shock + liquidity dry-up) | Same asset class, similar class, whole market | Low (depends on market sentiment and leverage levels) |
+| **Confidence Collapse (S)** | Narrative-driven irrational contagion -- "who is next" panic | Unexpected default breaking implicit guarantee beliefs | Very Fast (hours-days) | Very High (indiscriminate selling) | No clear boundary, can affect unrelated sectors | Extremely Low |
 
-### 2.2 信用链传染
+### 2.2 Credit Chain Contagion
 
-**定义：** 信用风险通过实体经济活动中的**债权债务关系**、**担保关系**和**资金往来**沿供应链或资本链逐级传递。
+**Definition:** Credit risk propagates through **debtor-creditor relationships**, **guarantee arrangements**, and **operational cash flows** along supply chains or capital structures.
 
-**触发条件：**
-- 核心企业违约或信用评级下调
-- 核心企业出现大规模应付账款逾期
-- 核心企业向供应商提出债务重组（折扣还款、债转股）
-- 担保方代偿能力不足触发连环代偿
+**Triggers:**
+- Core enterprise default or credit rating downgrade
+- Large-scale accounts payable delinquency by core enterprise
+- Debt restructuring by core enterprise (discount repayment, debt-for-equity swaps)
+- Guarantor insufficient to cover, triggering chain-compensation
 
-**传导速度：中等（1-3个月）：**
-- 第一阶段（1-2周）：消息面冲击，供应商股价下跌，估值承压
-- 第二阶段（1-2个月）：供应商应收账款确认无法收回，坏账计提
-- 第三阶段（2-3个月）：供应商自身流动性紧张，触发交叉违约条款
+**Transmission Speed: Moderate (1-3 months):**
+- Phase 1 (1-2 weeks): News-driven shock -- supplier share price decline, valuation pressure
+- Phase 2 (1-2 months): Supplier confirms receivables as unrecoverable, impairment recognized
+- Phase 3 (2-3 months): Supplier's own liquidity tightens, cross-default clauses triggered
 
-**历史振幅：高**
-- 典型案例：华晨集团违约（2020）→ 数十家供应商应收账款无法收回，多家小型供应商申请破产
-- 典型案例：恒大违约（2021）→ 最大供应商（金螳螂/三棵树/亚士创能等）应收账款坏账30-80亿不等
+**Historical Amplitude: High**
+- Lehman Brothers (2008): Money market fund "breaking the buck" (Reserve Primary Fund) triggered chain reaction across commercial paper market; counterparty losses cascaded through AIG, Bear Stearns
+- Wirecard (2020): Partner banks and acquirers (NatWest, BNP Paribas, Citibank) faced contingent liability exposure from the fraud; softPOS/Fintech credit chain temporarily froze
+- Evergrande (2021): Over 1,000 suppliers across construction materials, interior finishing, and home appliances faced bad debts at peak exposure
 
-**衰减距离：1-2层**
+**Decay Distance: 1-2 layers**
 
-| 层次 | 受影响程度 | 说明 |
+| Layer | Impact Level | Description |
 |---|---|---|
-| 第一层（直接交易对手） | 严重（应收账款直接损失） | 直接向违约企业供货/提供服务的供应商 |
-| 第二层（交易对手的交易对手） | 中等（间接业务量减少） | 向第一层供应商供货的企业，因第一层流动性紧张而受波及 |
-| 第三层及以上 | 有限（通过间接渠道） | 影响已大幅衰减 |
+| Layer 1 (Direct Counterparty) | Severe (direct receivable loss) | Entities supplying goods/services directly to the defaulted enterprise |
+| Layer 2 (Counterparty's Counterparty) | Moderate (indirect business volume reduction) | Entities supplying Layer 1, affected by its liquidity tightening |
+| Layer 3+ | Limited (through indirect channels) | Impact largely attenuated |
 
-**可预测性：中高**
-- 供应链关系可以通过贸易数据、招投标信息、上市公司前五大客户/供应商披露进行提前映射
-- 应收账款账龄和集中度分析可以识别最脆弱的受体
+**Predictability: Medium-High**
+- Supply chain relationships can be pre-mapped through trade data, public filings, customer/supplier concentration disclosures
+- Receivable aging analysis and concentration analysis identify most vulnerable receptors
 
-### 2.3 区域共振
+### 2.3 Regional Resonance
 
-**定义：** 同一区域内的企业因共享地方政府信用背书、区域互保网络和融资环境而出现信用风险同步上升的现象。
+**Definition:** Entities within the same jurisdiction experience synchronous credit risk elevation due to shared government credit backing, intra-region mutual guarantee networks, and common funding conditions.
 
-**触发条件：**
-- 区域内首个国企违约或信用评级下调
-- 地方政府支持态度转变（从"刚性兑付"转向"让市场解决"）
-- 区域财政/经济数据恶化（GDP增速、财政收入、土地出让金）
-- 区域内互保网络中的核心节点违约
+**Triggers:**
+- First regional sovereign/SOE default or rating downgrade
+- Shift in government support stance (from "guaranteed bailout" toward "market discipline")
+- Regional fiscal / economic data deterioration (GDP growth, fiscal revenue, land sales)
+- Core node default in regional mutual guarantee network
 
-**传导速度：快（数天-数周）：**
-- 第一阶段（数小时-1天）：违约债暴跌，同区域国企债利差跳升
-- 第二阶段（数天-1周）：区域整体融资环境恶化（一级市场发行取消/利率飙升）
-- 第三阶段（1-4周）：区域内弱资质主体信用评级下调
+**Transmission Speed: Fast (days-weeks):**
+- Phase 1 (hours-1 day): Defaulted bond price crash, same-region credit spreads jump
+- Phase 2 (days-1 week): Regional funding environment deteriorates (primary market issuance cancelled / rates surge)
+- Phase 3 (1-4 weeks): Weak entities in region face rating downgrades
 
-**历史振幅：极高**
+**Historical Amplitude: Very High**
 
-| 案例 | 传染源 | 波及范围 | 振幅 |
+| Event | Source | Scope | Amplitude |
 |---|---|---|---|
-| 永煤控股（2020.11） | 河南省煤化工国企 | 河南省全部存续国企债（河南投资集团/河南交投/中原高速等）下跌5-15元 | 河南国企债利差从100bp升至400-600bp |
-| 永煤连锁反应 | 河南→山西 | 山西煤炭企业（晋煤/潞安/阳煤等）债券遭无差别抛售 | 山西煤企利差从200bp升至600-800bp |
-| 永煤连锁反应 | 河南→河北 | 河钢/冀中能源等河北国企受波及 | 利差跳升150-300bp |
+| Greece downgrade (2010) | Greece sovereign | GIIPS (Portugal, Ireland, Italy, Spain) sovereign spreads | Greek 10Y spread from 400bp to >1,200bp; Ireland/Portugal spreads >600bp |
+| Spain caja crisis (2011-2012) | Regional savings banks (cajas) | Spanish autonomous community debt re-pricing | Regional government bond yields differential opened 200-400bp vs central govt |
+| Italian banking crisis (2016) | Monte dei Paschi, Veneto banks | Italian regional bank sector | All Italian bank CDS surged; regional cooperation banks sector-wide funding freeze |
+| Credit Suisse collapse (2023) | CS AT1 wipeout | Global bank AT1 notes | AT1 market repriced 100-200bp across all European banks |
 
-**衰减距离：同省→邻省→同区域板块**
+**Decay Distance: Same jurisdiction -> Adjacent region -> Same economic bloc**
 
-| 层次 | 受影响程度 | 说明 |
+| Layer | Impact Level | Description |
 |---|---|---|
-| 第一层（同省国企） | 极严重 | 直接受地方政府信用重估影响 |
-| 第二层（邻省同类型国企） | 严重 | 如河南违约→山西煤企被抛售 |
-| 第三层（同区域板块-如中部地区国企） | 中等 | 市场对经济结构类似的区域进行类比 |
-| 第四层（全国同评级国企） | 有限 | 仅在极度恐慌时波及 |
+| Layer 1 (Same jurisdiction) | Extreme | Direct re-assessment of government credit support |
+| Layer 2 (Adjacent/similar region) | Severe | e.g., Greece crisis -> Ireland/Portugal bond selloff |
+| Layer 3 (Same economic bloc) | Moderate | Market analogizes to regions with similar economic structure |
+| Layer 4 (Global same-type entities) | Limited | Only affects during extreme panic |
 
-**可预测性：中**
-- 政府支持意愿可以从历史救助记录、官员表态、区域财政健康度三个维度进行预判，但精确时点难以把握
-- 区域互保网络可以通过工商登记信息交叉持股进行映射
+**Predictability: Medium**
+- Government support willingness can be assessed through: historical bailout record, official policy statements, regional fiscal health
+- Regional mutual guarantee networks can be mapped through corporate registry information and cross-shareholding disclosures
 
-### 2.4 流动性挤兑
+### 2.4 Liquidity Squeeze
 
-**定义：** 当某发行人或某类资产违约后，投资者因赎回压力或风控限制被迫大规模抛售同类型资产，导致该类资产价格暴跌、流动性枯竭的**自我实现式**传染。
+**Definition:** When an issuer or asset class defaults, investors facing redemption pressure or risk-control limits are forced to mass-sell similar assets, causing a **self-fulfilling** price crash and liquidity dry-up.
 
-**触发条件：**
-- 某发行人违约→持有该债券的基金/理财产品遭遇赎回
-- 基金为应对赎回被迫抛售持仓中的同类型（同行业/同评级/同融资渠道）其他资产
-- 抛售引起该类资产价格下跌→更多基金触发风控线→追加抛售
+**Triggers:**
+- Issuer default -> funds / wealth management products holding the bond face redemptions
+- Funds forced to sell similar-type assets (same sector/rating/funding channel) from portfolios
+- Selling causes price declines -> more funds hit stop-loss -> forced additional selling
 
-**传导速度：极快（日内-数天）：**
+**Transmission Speed: Very Fast (intraday-days):**
 
-| 阶段 | 时间 | 现象 |
+| Phase | Time | Phenomenon |
 |---|---|---|
-| 第一阶段 | T+0至T+1 | 传染源违约，相关基金净值下跌，大额赎回申请 |
-| 第二阶段 | T+1至T+3 | 基金被迫抛售同类资产，估值冲击扩散 |
-| 第三阶段 | T+3至T+10 | 流动性枯竭，该类资产一、二级市场冻结 |
-| 第四阶段 | T+10至T+30 | 高杠杆投资者爆仓，抛售蔓延到非同类资产 |
+| Phase 1 | T+0 to T+1 | Source defaults, related fund NAV drops, large redemption requests |
+| Phase 2 | T+1 to T+3 | Funds forced to sell similar assets, valuation shock spreads |
+| Phase 3 | T+3 to T+10 | Liquidity dry-up, primary and secondary markets freeze for the asset class |
+| Phase 4 | T+10 to T+30 | High-leverage investors margin-called, selling spills to unrelated assets |
 
-**历史振幅：高**
+**Historical Amplitude: High**
 
-| 案例 | 触发事件 | 流动性挤兑过程 | 冲击范围 |
+| Event | Trigger | Liquidity Squeeze Process | Impact |
 |---|---|---|---|
-| 包商银行被接管（2019.05） | 中小银行信用重估 | 机构投资者对中小银行存单/同业存单一刀切规避 | 中小银行同业存单利差跳升100-200bp，部分银行存单发行冻结 |
-| 永煤违约（2020.11） | AAA国企违约 | 信用债基金遭遇大规模赎回→被迫抛售信用债→信用债整体利差走阔 | 信用债市场整体利差跳升50-100bp，一级市场取消发行潮 |
-| 恒大违约（2021） | 地产美元债暴跌 | 地产基金赎回→地产债抛售→地产股下跌→保险/信托产品违约 | 全地产行业美元债暴跌30-70%，地产股板块下跌50%+ |
+| GFC 2008 (Lehman) | Investment bank default | Prime brokerage assets frozen -> hedge funds redemption -> forced asset fire sale across all asset classes | Credit markets froze for 6+ months; interbank lending virtually halted; money market funds experienced "breaking the buck" |
+| COVID crash (Mar 2020) | Pandemic-driven panic | Corporate bond ETFs liquidated -> forced selling of IG and HY bonds -> Treasury selloff (dash for cash) | IG credit spreads jumped from 100bp to 400bp; HY from 400bp to 1,100bp; Fed forced to intervene in corporate bond market for first time |
+| Gilt crisis (UK, Sep 2022) | Fiscal event (mini-budget) | LDI (Liability-Driven Investment) funds hit margin calls -> forced gilt selling -> gilt yields surged 100bp in days | UK pension funds near systemic failure; BoE forced into emergency gilt purchase |
+| US regional banking crisis (Mar 2023) | SVB failure | Uninsured deposit run -> sector-wide deposit flight -> forced asset sales of HTM bond portfolios | SVB, Signature, First Republic collapsed; regional bank CDS spreads surged 200-400bp |
 
-**衰减距离：同类型资产→相近类型→全市场**
+**Decay Distance: Same asset class -> Similar class -> Whole market**
 
-| 层次 | 受影响程度 | 说明 |
+| Layer | Impact Level | Description |
 |---|---|---|
-| 第一层（同类型资产） | 极严重 | 如永煤违约→全部信用债被抛售；恒大违约→全部地产债被抛售 |
-| 第二层（相近类型资产） | 中等-严重 | 如信用债崩盘→银行永续债/二级资本债受波及 |
-| 第三层（全市场） | 有限-中等 | 仅在极端的流动性冲击下波及利率债等高流动性资产 |
+| Layer 1 (Same asset class) | Extreme | e.g., SVB failure -> all regional bank stocks/bonds sold off indiscriminately |
+| Layer 2 (Similar asset class) | Moderate-Severe | e.g., IG credit selloff spills into HY; bank stress spills into insurance CDS |
+| Layer 3 (Whole market) | Limited-Moderate | Only during extreme liquidity shocks affecting even safe-haven assets |
 
-**可预测性：低**
-- 取决于市场情绪和杠杆水平——同一个事件在一个高杠杆、极度悲观的市场中可能引爆恐慌，在低杠杆、乐观市场中影响有限
-- 可以通过测算信用债基金集中度、基金持有同类型资产比例来预判流动性挤兑的潜在强度
+**Predictability: Low**
+- Depends on market sentiment and leverage -- same event in high-leverage/pessimistic market can trigger panic, while in low-leverage/optimistic market impact is limited
+- Potential squeeze intensity can be estimated through fund concentration metrics, fund holding overlap ratios, and market leverage indicators
 
-### 2.5 信心崩塌
+### 2.5 Confidence Collapse
 
-**定义：** 并非基于实际经济关联，而是**市场叙事驱动的非理性传染**。当超预期的信用事件打破市场对某一类主体的"刚兑信仰"后，投资者进入"下一个是谁"的恐慌模式，无差别抛售所有可能受影响的主体。
+**Definition:** Narrative-driven irrational contagion not based on real economic linkages. When an unexpected credit event breaks the market's "implicit guarantee" belief in a certain entity class, investors enter "who is next" panic mode and indiscriminately sell all potentially affected entities.
 
-**触发条件：**
-- **AAA国企违约**（如永煤，打破"国企刚兑"信仰）
-- **头部民企违约**（如恒大、海航，打破"大而不倒"信仰）
-- **系统性重要金融机构违约/被接管**（如包商银行，打破"银行刚兑"信仰）
-- **监管层明确表态"不救助"**（打破隐性担保预期）
+**Triggers:**
+- **"Too big to fail" entity default** (Lehman 2008, breaking investment bank guarantee belief)
+- **Systemically important financial institution failure** (Credit Suisse 2023, breaking "systemic bank protection" belief)
+- **Sovereign default in developed economy** (Greece 2012, breaking Eurozone sovereign safety belief)
+- **Regulatory "no bailout" stance** (breaking implicit guarantee expectations)
 
-**传导速度：极快（数小时-数天）**
-- T+0：违约消息传出，相关主体债券暴跌50-80%（如永煤违约当日债券从90元跌至15元）
-- T+1至T+2：无差别抛售扩展至同区域/同行业/同评级一切主体
-- T+3至T+7：流动性危机向一级市场传导，新债发行取消
+**Transmission Speed: Very Fast (hours-days)**
+- T+0: Default news breaks, relevant entity bonds fall 50-80% (e.g., Lehman CDS spreads jumped from 150bp to >600bp intraday)
+- T+1 to T+2: Indiscriminate selling extends to all entities in same region/sector/rating category
+- T+3 to T+7: Liquidity crisis propagates to primary market, new issue cancellations surge
 
-**历史振幅：极高**
-- 永煤违约（2020.11）：河南国企债无差别暴跌，AAA国企信仰被打破后全部国企债被重新定价
-- 包商银行被接管（2019.05）：全体中小银行存单遭抛售，市场用"一刀切"方式规避风险
+**Historical Amplitude: Very High**
+- Lehman collapse (Sep 2008): Global financial system froze; interbank lending stopped; AIG required $182bn bailout; money market funds "broke the buck"
+- Credit Suisse AT1 wipeout (Mar 2023): $17bn of AT1 bonds written to zero, breaking the AT1 "high coupon for slightly more risk" narrative; all European bank AT1s repriced 100-200bp
+- Greece sovereign restructuring (2012): Largest ever sovereign debt restructuring ($200bn+); broke Eurozone "no sovereign default" assumption; contagion spread to Italy/Spain/Portugal
 
-**衰减距离：无明确边界**
-- 信心崩塌与信用链传染、区域共振不同——它没有基于经济关系或地理位置的衰减机制
-- 理论上可以波及任何被市场"标签化"的主体（"下一个是谁"）
+**Decay Distance: No clear boundary**
+- Unlike credit chain or regional resonance, confidence collapse has no decay mechanism based on economic relationships or geography
+- Theoretically can affect any entity that the market "labels" as belonging to the same category
 
-**可预测性：极低**
-- 信心崩塌本质上是一起**叙事驱动的行为金融事件**，无法用传统信用分析框架预测
-- 可以通过市场情绪指标（信用利差、CDS价格、VIX）和媒体叙事追踪监测其演化，但无法提前预判触发时点和传导边界
+**Predictability: Extremely Low**
+- Confidence collapse is a **narrative-driven behavioral finance event** that cannot be predicted with traditional credit analysis frameworks
+- Evolution can be tracked through market sentiment indicators (credit spreads, CDS prices, VIX) and media narrative analysis, but trigger timing and boundary cannot be pre-determined
 
-### 2.6 四种传染类型对比矩阵
+### 2.6 Four Contagion Types Comparison Matrix
 
-| 对比维度 | 信用链传染 | 区域共振 | 流动性挤兑 | 信心崩塌 |
+| Dimension | Credit Chain (C) | Regional Resonance (R) | Liquidity Squeeze (L) | Confidence Collapse (S) |
 |---|---|---|---|---|
-| **驱动机制** | 实体经济的现金流关联 | 地方政府信用绑定 | 金融体系的杠杆-强制平仓链 | 市场叙事和群体心理 |
-| **衰减机制** | 商业关系链长度 | 地理距离+行政层级 | 资产类别替代弹性 | 无明确衰减机制 |
-| **触发可预测性** | 中高（可提前映射供应链） | 中（可预判脆弱区域） | 低（需市场情绪配合） | 极低（黑天鹅性质） |
-| **传导可追踪性** | 高（可通过付款数据追踪） | 中（可通过利差变化追踪） | 低（速度极快难以追踪） | 中（可通过媒体叙事追踪） |
-| **避险策略** | 检查前5大客户/供应商集中度 | 检查区域敞口和互保网络 | 检查基金持有同类型资产集中度 | 检查市场整体情绪和杠杆率 |
-| **过去5年中国市场触发频率** | 高频（每年数起企业间传染） | 中频（1-2年起区域级事件） | 中频（每年数个流动性冲击） | 低频（每年0-1起系统性冲击） |
+| **Driving Mechanism** | Real economy cash flow linkages | Government credit binding | Leverage -> forced liquidation chain | Market narrative and herd psychology |
+| **Decay Mechanism** | Length of commercial relationship chain | Geographic distance + administrative tier | Asset class substitution elasticity | No defined decay mechanism |
+| **Trigger Predictability** | Medium-High (supply chain mappable) | Medium (fragile regions identifiable) | Low (requires market sentiment) | Extremely Low (black swan) |
+| **Transmission Traceability** | High (traceable via payment data) | Medium (traceable via spread changes) | Low (too fast to trace) | Medium (traceable via media narrative) |
+| **Risk Mitigation** | Check top 5 customer/supplier concentration | Check regional exposure and mutual guarantee network | Check fund overlap in same asset class | Check overall market sentiment and leverage |
+| **Trigger Frequency** | High (multiple inter-enterprise events per year) | Medium (1-2 regional-level events per year) | Medium (several liquidity shocks per year) | Low (0-1 systemic shock per year) |
 
 ---
 
-## 三、七条标准传导路径模板
+## 3. Seven Standard Transmission Pathways
 
-### 路径1：供应商-客户链
+### Pathway 1: Supply Chain
 
-**传导机制：**
-核心企业违约→应付账款无法支付→上游供应商应收账款成为坏账→供应商流动性紧张→供应商裁员/减产→供应商的上游（二级供应商）业务量减少
+**Transmission Mechanism:**
+Core enterprise default -> accounts payable unpaid -> upstream supplier receivables become bad debts -> supplier liquidity tightens -> supplier reduces output/workforce -> second-tier supplier business volume declines
 
 ```
-核心企业（传染源）
-    │ 应付账款违约
-    ▼
-一级供应商（直接损失应收账款）
-    │ 应收账款恶化→自身流动性紧张
-    ▼
-二级供应商（间接损失——订单减少）
-    │
-    ▼
-三级供应商（有限影响）
+Core Enterprise (Source)
+    | Accounts payable default
+    v
+Tier-1 Supplier (direct receivable loss)
+    | Receivables deteriorate -> own liquidity tightens
+    v
+Tier-2 Supplier (indirect -- order reduction)
+    |
+    v
+Tier-3 Supplier (limited impact)
 ```
 
-**主要传染类型：** 信用链传染
+**Primary Contagion Type:** Credit Chain (C)
 
-**历史案例：**
+**Historical Cases:**
 
-| 时间 | 案例 | 传染路径 | 损失程度 |
+| Year | Event | Transmission Path | Loss Magnitude |
 |---|---|---|---|
-| 2019 | 方正集团违约 | 方正→数十家供应商（含上市公司方正科技） | 供应商应收账款损失数十亿 |
-| 2020 | 华晨集团违约 | 华晨→零部件供应商（如华晨中国=关联方） | 近百家上游供应商受影响 |
-| 2021 | 恒大违约 | 恒大→金螳螂/三棵树/亚士创能/索菲亚/老板电器等数十家供应商 | 金螳螂计提坏账82亿；三棵树计提坏账超10亿；亚士创能计提超5亿 |
-| 2022 | 融创违约 | 融创→供应商（建筑商/装修公司） | 部分小型建筑商直接破产 |
-| 2023 | 碧桂园流动性紧张 | 碧桂园→庞大供应商体系 | 大量建筑商和材料供应商面临坏账风险 |
+| 2008 | Lehman collapse | Lehman -> hedge funds (prime brokerage assets frozen) -> fund-of-funds chain | Global hedge fund redemptions >$100bn; several funds liquidated |
+| 2014-2015 | Petrobras corruption crisis | Petrobras -> upstream oilfield service providers (Sete Brasil, OSX, etc.) | Brazilian oil & gas supplier sector collapse; OSX bankruptcy; Sete Brasil bankruptcy |
+| 2020 | Wirecard fraud | Wirecard -> acquiring banks (NatWest, BNP Paribas) -> merchant chain | Partner banks faced joint liability; German fintech ecosystem funding freeze |
+| 2021 | Evergrande liquidity | Evergrande -> construction materials suppliers -> residential project subcontractors | Tier-1 suppliers booked large bad debts; regional construction SMEs bankrupt |
+| 2022-2023 | European energy crisis | Energy utility default -> upstream gas/electricity supplier chain hedging collapse | Fortum, Uniper, and others needed state bailouts; energy derivative CCP margin calls |
 
-**识别方法（可提前映射的公开数据）：**
-- **上市公司前5大客户/供应商披露**：识别客户集中度>30%的企业（危险阈值）
-- **应收账款账龄分析**：应收账款集中于单一客户、账龄超过1年——该客户实际已经违约但财务处理上尚未确认
-- **预付账款异动**：如果供应商大量为某一客户预付备货款，说明对客户过于依赖
-- **贸易数据**：海关/工商的贸易流数据可以映射供应链网络
-- **招投标信息**：中长期合同关系可通过招投标公告识别
-- **行业调研报告**：行业协会定期发布的供应链依赖度报告
-- **票据贴现信息**：商票贴现利率变化可提前反映核心企业信用恶化
+**Identification Methods (Public Data for Pre-Mapping):**
+- **Concentration Disclosures**: Listed company top-5 customer/supplier ratio; >30% concentration is a warning threshold
+- **Receivable Aging Analysis**: Concentrated aging >12 months suggests counterparty may already be in distress but impairment not yet recognized
+- **Prepayment Anomalies**: Large prepayments to secure supply from a single customer indicate over-dependence
+- **Trade Flow Data**: Cross-border trade statistics, customs data for mapping global supply chains
+- **Contract Award Data**: Long-term supply agreements tracked through public procurement and contract disclosures
+- **Sector Reports**: Industry association publications on supply chain concentration
+- **Commercial Paper Discount Rates**: Rising discount rates on trade acceptances signal core enterprise credit deterioration
 
-**在6种范式中的危险程度排序（1=最危险，6=最不危险）：**
+**Paradigm-Level Risk Ranking (1=Highest, 6=Lowest):**
 
-| 范式 | 危险程度 | 原因 |
+| Paradigm | Risk Level | Rationale |
 |---|---|---|
-| 技术壁垒型 | 1 | 高度专业化供应链，客户黏性极强，替代困难，一旦核心客户违约损失几乎不可转嫁 |
-| 品牌+渠道型 | 2 | 代工厂/ODM依赖品牌方订单，品牌方违约直接导致代工厂产能闲置 |
-| 资产租约型 | 3 | 数据中心依赖大客户租约，客户违约直接冲击NOI和DSCR |
-| 存量博弈型 | 4 | 上游/下游被挤压，但供应链权力分散，单一客户违约影响有限 |
-| 网络+流量型 | 5 | 平台型企业对单个供应商的依赖度低，传染影响有限 |
-| 政策驱动型 | 6 | 采购端往往分散（光伏组件销售给多家电站），单一客户违约影响有限 |
+| P2 (Technology Moat) | 1 | Highly specialized supply chains; strong customer stickiness; hard to replace; losses almost un-recoverable |
+| P5 (Brand + Channel) | 2 | OEM/ODM dependent on brand orders; brand default directly idles factory capacity |
+| P4 (Asset Lease) | 3 | Data centers depend on large tenant leases; tenant default hits NOI and DSCR directly |
+| P3 (Zero-Sum Game) | 4 | Cyclical sectors with dispersed supply chains; single customer default has limited impact |
+| P6 (Network + Traffic) | 5 | Platform enterprises have low individual supplier dependence; limited contagion |
+| P1 (Policy-Driven) | 6 | Procurement often diversified (e.g., solar modules sold to multiple utilities); single counterparty risk limited |
 
 ---
 
-### 路径2：担保圈
+### Pathway 2: Financial Linkage
 
-**传导机制：**
-A违约→银行为保全资产追索担保人B代偿→B被迫代偿→B自身流动性紧张→B违约→追索C→连环效应
+**Transmission Mechanism:**
+A defaults -> banks call on guarantor B for compensation -> B forced to cover -> B's own liquidity tightens -> B defaults, pursuing C -> chain effect
 
 ```
-A（借款企业→违约）
-    │ A违约→银行追索担保人B
-    ▼
-B（担保人→被迫代偿→流动性紧张）
-    │ B自身也违约（或被追索后违约）→追索C
-    ▼
-C（担保人→被迫代偿→违约可能性飙升）
-    │
-    ▼
-D ...（连环代偿链持续，形成"担保圈"）
+A (Borrower -> Defaults)
+    | A defaults -> bank pursues guarantor B
+    v
+B (Guarantor -> forced compensation -> liquidity tightens)
+    | B also defaults (or defaults after pursuit) -> pursues C
+    v
+C (Guarantor -> forced compensation -> default probability surges)
+    |
+    v
+D ... (chain compensation continues, forming inter-entity liability network)
 ```
 
-**变体——互保链：**
+**Variation -- Mutual Guarantee Circuit:**
 ```
-A──担保──B──担保──C──担保──D──担保──A（环形）
-任一节点违约→代偿压力沿链条传播→最终全员违约
+A --guarantee-- B --guarantee-- C --guarantee-- D --guarantee-- A (circular)
+Any node default -> compensation pressure propagates along the chain -> ultimately all default
 ```
 
-**主要传染类型：** 信用链传染（为主） + 区域共振（如区域内互保网络）
+**Primary Contagion Type:** Credit Chain (C) + Regional Resonance (R) (e.g., regional guarantee networks)
 
-**历史案例：**
+**Historical Cases:**
 
-| 时间 | 案例 | 担保圈结构 | 后果 |
+| Year | Event | Guarantee Network Structure | Consequence |
 |---|---|---|---|
-| 2013-2015 | 中债信用增进-山东互保链 | 山东多家民企（海龙/博润/万福等）形成环形互保网络 | 互保链断裂->10+家企业连锁违约->山东区域性民企融资冻结 |
-| 2018-2019 | 山东民企担保圈 | 东营系（大海/胜通/金茂等）互保网络 | 逐一违约，区域内民企融资能力归零 |
-| 2019 | 方正系担保链 | 北大方正→方正科技→方正证券→北大资源（关联担保复杂） | 集团重整导致旗下多家子公司同时违约 |
-| 2020-2021 | 海航系担保链 | 海航集团为体系内数百家子公司提供担保 | 集团重整后子公司失去担保支撑，连锁违约 |
-| 2021 | 华夏幸福担保圈 | 华夏幸福为旗下多个区域公司提供连带担保 | 各区域项目公司同时进入债务重组 |
+| 2008 | AIG bailout | AIG wrote CDS on RMBS/CMBS for multiple counterparties | $182bn federal rescue; cascade of counterparty losses in global banking system |
+| 2011-2012 | European sovereign-bank "doom loop" | Eurozone banks held large sovereign debt; sovereign default risk -> bank capitalization risk | Ireland, Spain, Cyprus banking crises; EU banking union creation |
+| 2016 | Italian banking crisis | Italian regional banks (Monte dei Paschi, Popolari) cross-held sovereign bonds + local loans | 17bn EUR state bailout of Monte dei Paschi; Veneto banks resolution cost 5bn EUR |
+| 2020 | COVID cross-border guarantee chains | Airlines cross-guarantee and alliance liability sharing | Lufthansa, Air France-KLM required state recapitalization; airline mutual guarantee networks strained |
+| 2023 | SVB / Signature Bank deposit contagion | Regional banks share uninsured deposit base + HTM bond portfolios | Second-largest US bank failure; Fed launch of BTFP (Bank Term Funding Program) |
 
-**识别方法（可提前映射的公开数据）：**
-- **上市公司对外担保公告**：A股上市公司必须披露对外担保金额和担保对象
-- **担保比例过高**：担保金额/净资产>50%为关注，>100%为危险
-- **非关联方大额担保**：为不受控制的企业提供大额担保=事实上的对外信用输出
-- **环形担保（A→B→C→A）**：通过交叉持股和担保信息拼图识别
-- **区域担保网络图谱**：将同一个区域内的担保关系连接成图谱，识别核心节点
-- **民间借贷信息**：非上市民企的互保关系难以完全公开，但可通过法律文书和行业传闻补充
+**Identification Methods (Public Data for Pre-Mapping):**
+- **Guarantee Disclosures**: Listed companies must disclose off-balance sheet guarantees (amount and counterparty)
+- **High Guarantee Ratio**: Guarantee / Net Assets >50% is "watch", >100% is "danger"
+- **Large Non-Related Party Guarantees**: Significant guarantees to uncontrolled entities = external credit exposure
+- **Circular Guarantee Networks (A -> B -> C -> A)**: Identified through cross-shareholding and guarantee disclosures
+- **Sector Guarantee Mapping**: Network analysis of guarantee relationships within the same industry/region
+- **Derivative Counterparty Exposure**: Notional CDS exposure, cross-border swap lines, derivative central clearing membership
 
-**在6种范式中的危险程度排序：**
+**Paradigm-Level Risk Ranking:**
 
-| 范式 | 危险程度 | 原因 |
+| Paradigm | Risk Level | Rationale |
 |---|---|---|
-| 存量博弈型 | 1 | 产能过剩行业企业为争夺生存资源大量互保 |
-| 技术壁垒型 | 2 | 部分未盈利企业通过互保方式获取融资 |
-| 政策驱动型 | 3 | 企业间互保较为普遍但程度低于存量博弈型 |
-| 网络+流量型 | 4 | 重资产企业之间相互担保融资（如物流/港口企业互保） |
-| 品牌+渠道型 | 5 | 轻资产企业互保需求较低 |
-| 资产租约型 | 6 | 资产抵押贷款为主，互保需求最低 |
+| P1 (Policy-Driven) | 1 | Banks/sovereigns with high cross-exposure; circular guarantee risk among regulated entities |
+| P3 (Zero-Sum Game) | 2 | Overcapacity sectors (auto, metals) use mutual guarantees to obtain rolling financing |
+| P6 (Network + Traffic) | 3 | Commercial services with cross-corporate guarantee structures |
+| P2 (Technology Moat) | 4 | Some pre-revenue biotech firms use guarantee facilities; less common |
+| P5 (Brand + Channel) | 5 | Light-asset consumer companies have low guarantee needs |
+| P4 (Asset Lease) | 6 | Asset-backed financing (project finance, ABS) is collateral-based; mutual guarantee is minimal |
 
 ---
 
-### 路径3：同区域国企
+### Pathway 3: Regional / Sector Concentration
 
-**传导机制：**
-区域首个国企违约→市场重新评估该区域地方政府支持意愿和能力→同一区域的其他存续国企被无差别抛售→区域整体融资环境恶化（一级市场发行冻结、续贷困难）→区域内其他弱资质国企跟随违约
+**Transmission Mechanism:**
+First default in a region -> market re-assesses regional government support willingness and capacity -> all other entities in that region sold off indiscriminately -> regional funding environment deteriorates (primary market freeze, refinancing difficulties) -> weak entities in region follow into default
 
 ```
-区域内首个国企违约（传染源——如永煤）
-    │ 市场质疑:地方政府会救吗？
-    ▼
-同省其他存续国企债遭抛售（利差跳升200-600bp）
-    │ 融资环境急剧恶化（银行收紧授信、一级市场取消发行）
-    ▼
-区域内弱资质国企资金链紧张（再融资困难）
-    │
-    ▼
-高危国企跟随违约
-    │ 扩散至邻省同类型国企
-    ▼
-全国范围同类型国企被重新定价
+First regional/SOE default (Source)
+    | Market questions: will the government backstop?
+    v
+All other region-based bonds sold off (spreads widen 200-600bp)
+    | Funding environment deteriorates (banks tighten credit, primary cancellation)
+    v
+Weak entities in region face liquidity strain (refinancing difficulty)
+    |
+    v
+High-risk entities follow into default
+    | Contagion extends to similar economies
+    v
+Pan-region same-type entities re-priced
 ```
 
-**主要传染类型：** 区域共振 + 信心崩塌
+**Primary Contagion Type:** Regional Resonance (R) + Confidence Collapse (S)
 
-**历史案例：**
+**Historical Cases:**
 
-| 时间 | 案例 | 传染路径 | 后果 |
+| Year | Event | Transmission Path | Consequence |
 |---|---|---|---|
-| 2020.11 | 永煤违约→河南国企债 →山西国企债→河北国企债 | 河南→山西→河北同类型国企债被无差别抛售 | 河南国企融资成本上升200-500bp；山西煤企债券利差从200bp升至600bp+；冀中能源等河北国企利差跳升 |
-| 2019 | 沈阳华晨违约→辽宁省国企信用重估 | 沈阳市→辽宁省国企央企 | 辽宁省国企融资环境整体恶化 |
-| 2018 | 天津物产违约→天津市国企信用重估 | 天津物产→天津泰达/天津城投等天津市国企 | 天津市整体融资成本持续上升 |
-| 2008 | 山东海龙违约→山东纺织/化工民企信用重估 | 山东海龙→山东省弱资质民企 | 山东省民企融资环境整体恶化 |
+| 2010-2012 | Greece crisis -> GIIPS | Greece -> Ireland, Portugal, Italy, Spain sovereign spreads | Contagion spread 200-800bp across Eurozone periphery; Ireland/Portugal required bailouts |
+| 2011 | Spanish caja crisis | CCM (Caja Castilla-La Mancha) -> all regional savings banks | Spanish autonomous community bond re-pricing; regional bank sector restructuring (from 45 to 15 entities) |
+| 2016 | Italian banking crisis | Monte dei Paschi di Siena -> Italian regional banks | 17bn EUR state bailout; Veneto Banca and Popolare di Vicenza resolution; sector-wide NPE disposal |
+| 2023 | US regional banking crisis | SVB (California) -> Signature (NY) -> First Republic (SF) -> all regional banks | KBW Regional Banking Index fell 30%+; deposit flight from smaller banks to money center banks |
+| 2023 | Credit Suisse bail-in | Swiss systemic bank failure -> European bank sector | AT1 bond structure re-priced globally; Swiss regulator credibility questioned |
 
-**识别方法（可提前映射的公开数据）：**
-- **省级财政数据**：GDP增速、财政收入增速、负债率、土地出让金收入——判断地方政府救市能力
-- **区域国企存续债规模**：区域内所有存续国企债券余额——判断违约后的融资缺口
-- **历史救助记录**：地方政府过去对违约国企的处理方式（刚性兑付、市场化违约、打折兑付）
-- **官员表态**：区域主管官员对国企债务的态度（"确保兑付"vs"让市场解决"）
-- **区域互保网络**：区域内企业之间的担保关系图谱
-- **同类型国企利差监测**：第一个国企违约后，密切监测同省其他国企债的二级市场价格变化
+**Identification Methods (Public Data for Pre-Mapping):**
+- **Sovereign Fiscal Data**: GDP growth, fiscal revenue trend, debt/GDP ratio, primary surplus -- assess government backstop capacity
+- **Regional Debt Outstanding**: Total outstanding bonds of regionally-linked entities -- estimate funding gap post-default
+- **Historical Bailout Record**: Government treatment of past defaults (full guarantee, market resolution, haircut)
+- **Policy Stance**: Official statements regarding support for systemically important entities
+- **Inter-Region Guarantee Networks**: Cross-regional guarantee relationship mapping
+- **CDS Spread Monitoring**: After first default, closely monitor CDS changes for peer entities
 
-**在6种范式中的危险程度排序：**
+**Paradigm-Level Risk Ranking:**
 
-| 范式 | 危险程度 | 原因 |
+| Paradigm | Risk Level | Rationale |
 |---|---|---|
-| 政策驱动型 | 1 | 国企密集型行业（煤炭/钢铁/化工等政策驱动型行业），区域共振效应最强 |
-| 技术壁垒型 | 2 | 部分高端装备/生物医药有国企背景，但区域绑定程度低于资源型行业 |
-| 网络+流量型 | 3 | 交通运输（铁路/公路/航空）多属国企，区域信用共振影响显著 |
-| 资产租约型 | 4 | 数据中心运营商中一定国企比重，但关联度有限 |
-| 存量博弈型 | 5 | 新能源车以民企为主，区域共振不显著 |
-| 品牌+渠道型 | 6 | 食品饮料/纺织服装以民企为主，区域共振影响最弱 |
+| P1 (Policy-Driven) | 1 | Sovereigns, utilities, regulated financials are the core of regional concentration risk |
+| P2 (Technology Moat) | 2 | Biotech/tech clusters (Bay Area, Boston, Cambridge) can create regional concentration despite technology differentiation |
+| P4 (Asset Lease) | 3 | Telcos and utilities have region-specific infrastructure but moderate regional credit binding |
+| P6 (Network + Traffic) | 4 | Transportation and retail have regional clusters but limited government credit linkage |
+| P3 (Zero-Sum Game) | 5 | Automobile manufacturing is globalized; regional concentration less pronounced |
+| P5 (Brand + Channel) | 6 | Consumer brand companies are dispersed; regional resonance not significant |
 
 ---
 
-### 路径4：同评级
+### Pathway 4: Common Creditor
 
-**传导机制：**
-某高评级主体违约→市场重新评估该信用评级的真实含义→持有同评级债券的投资机构被迫平仓→同评级其他主体被市场"统一打折"
+**Transmission Mechanism:**
+A high-credit entity (or a group of entities sharing a common creditor) defaults -> the creditor (bank, insurance company, asset manager) faces unexpected losses -> the creditor de-leverages by reducing exposure to other borrowers in the same sector/category -> those borrowers face credit tightening -> follow-on defaults
 
 ```
-AAA国企违约（永煤——打破AAA国企刚兑信仰）
-    │ 市场重新定价:AAA≠刚兑
-    ▼
-全部AAA国企债遭抛售（尤其是弱资质AAA，如高负债率国企）
-    │ 外部评级被市场降级（"实质性降级"）
-    ▼
-AAA信用债整体利差走阔50-100bp
-    │ 一级市场：AAA国企新发债券利率跳升
-    ▼
-AA+/AA评级债券也被间接波及（评级体系信心动摇）
+Entity A defaults (borrower from Bank X)
+    | Bank X takes unexpected loss on A
+    v
+Bank X reduces risk appetite -> reduces lending to all similarly-rated borrowers
+    (especially those with high correlation to A)
+    | Credit supply contraction
+    v
+Entity B, C, D (similar profile to A) face refinancing difficulty
+    |
+    v
+Weak entities among B, C, D default -> further losses at Bank X
 ```
 
-**主要传染类型：** 信心崩塌（为主） + 流动性挤兑
+**Primary Contagion Type:** Liquidity Squeeze (L) + Credit Chain (C)
 
-**历史案例：**
+**Historical Cases:**
 
-| 时间 | 案例 | 传染路径 | 冲击程度 |
+| Year | Event | Creditor Channel | Contagion Scope |
 |---|---|---|---|
-| 2020.11 | 永煤违约（AAA） | AAA国企刚兑信仰被打破→全部AAA国企债利差跳升→信用债一、二级市场冻结 | 3A国企债利差从100bp升至300-500bp，持续4-6个月才逐步恢复 |
-| 2018 | 春和/丹东港（AA+） | 民企违约→同评级民企债遭抛售 | 民企信用债整体利差走阔 |
-| 2015 | 天威集团（AA+） | 央企子公司违约→债券市场对央企刚兑信仰动摇 | 央企类信用债利差走阔但幅度有限 |
+| 2008 | Lehman default -> money market fund freeze | Reserve Primary Fund "broke the buck" -> all money funds faced redemptions | Commercial paper market (CP) completely froze; non-financial CP outstanding fell 50% in weeks |
+| 2011-2012 | European bank sovereign exposure | Banks holding GIIPS sovereign bonds -> losses -> reduced lending to all borrowers | SME lending in Southern Europe contracted 20-30%; creditless recovery |
+| 2020 COVID | Energy sector bank concentration | Banks with large energy sector loan books -> Energy defaults -> reduced lending across all sectors | Oil & gas loan portfolio losses; bank energy sector exposure reduction |
+| 2023 | US regional bank deposit concentration | Concentrated uninsured deposits at SVB/Signature/First Republic -> run on all banks with similar deposit profiles | Regional bank stock decline 30-50%; deposit outflows from all smaller banks |
 
-**识别方法（可提前映射的公开数据）：**
-- **评级虚高识别**：外部评级集中在AAA/AA+的企业中，通过财务指标判断哪些实际信用水平远低于评级
-- **同评级发行人分布**：同一评级的全部存续信用债余额——判断违约后的潜在抛售规模
-- **金融机构持仓集中度**：基金/理财持仓的单一评级债券占比——判断流动性挤兑风险
-- **历史违约率数据**：各评级的历史累计违约率——判断该评级的实际信用质量
-- **评级下调时间差**：外部评级从AAA调降至投机级的平均时滞——评级本身滞后于市场判断
-
-**在6种范式中的危险程度排序：**
-
-| 范式 | 危险程度 | 原因 |
-|---|---|---|
-| 政策驱动型 | 1 | 国企密集+同评级债券存量大，一旦违约冲击最严重 |
-| 存量博弈型 | 2 | 新能源车企业中低评级为主，但同评级冲击对弱资质企业影响大 |
-| 网络+流量型 | 3 | 交通运输/商贸零售有大量同评级债券流通 |
-| 技术壁垒型 | 4 | 生物医药/高端装备债较多，但同评级冲击风险可控 |
-| 品牌+渠道型 | 5 | 食品饮料债存量相对较少 |
-| 资产租约型 | 6 | 债券存量小，同评级冲击影响有限 |
+**Identification Methods:**
+- **Bank Loan Exposure Concentration**: Which banks have largest exposure to which industries/regions
+- **Syndicated Loan Participation**: Lender group composition for large borrowers
+- **Common Asset Manager Holdings**: Fund overlap analysis across portfolios
+- **Insurance Company Bond Portfolios**: Common holdings in insurance general account portfolios
+- **Derivative Counterparty Networks**: CDS netting and counterparty concentration analysis
 
 ---
 
-### 路径5：同行业
+### Pathway 5: Index Inclusion
 
-**传导机制：**
-某一行业的核心企业违约→市场重新评估全行业信用风险→同行业其他企业的债券利差同时走阔→弱资质同行企业的再融资能力显著恶化
+**Transmission Mechanism:**
+A default (or significant credit deterioration) of an Index constituent -> the index experiences tracking error / rebalancing pressure -> asset managers tracking the index are forced to adjust their portfolios -> selling pressure propagates to other Index constituents, especially those with similar characteristics
 
 ```
-行业某核心企业违约（传染源）
-    │ 市场重新评估行业风险
-    ▼
-同行业所有企业的信用利差整体走阔
-    │ 原因:1)行业需求逻辑被质疑 2)金融机构压缩行业敞口
-    ▼
-同行业弱资质企业融资能力下降→再融资困难→跟随违约
-    │
-    ▼
-同行业强资质企业虽不违约但融资成本上升
+Constituent A in Index X defaults
+    | Index weight is redistributed; passive funds must rebalance
+    v
+All remaining Index constituents experience rebalancing flows
+    (positive for some, negative on relative weight)
+    | Active managers preemptively short similar constituents
+    v
+Weak constituents of same Index face disproportionate selling
+    |
+    v
+Index-level credit spread widens; new entrants to Index face tighter conditions
 ```
 
-**主要传染类型：** 信心崩塌 + 流动性挤兑
+**Primary Contagion Type:** Liquidity Squeeze (L) + Confidence Collapse (S)
 
-**历史案例：**
+**Historical Cases:**
 
-| 时间 | 案例 | 传染路径 | 冲击范围 |
+| Year | Event | Index Channel | Contagion Scope |
 |---|---|---|---|
-| 2020 | 方正集团（IT/教育行业） | 同行业其他科技类国企信用利差走阔 | 信息技术行业整体利差走阔30-50bp |
-| 2021 | 恒大违约→全地产行业美元债崩盘 | 恒大违约→投资者抛售所有地产美元债→地产行业整体美元融资冻结 | 地产美元债暴跌30-70%，全行业融资成本从8%升至15%+ |
-| 2022 | 融创/阳光城/正荣等多家地产企业违约 | 行业共振效应加速——一家违约引发市场对另一家的担忧 | 地产行业信用债市场持续冻结超过12个月 |
-| 2020 | 海航违约→航空/旅游行业 | 海航危机→航空/旅游行业资产重估 | 行业利差整体走阔 |
-| 2023 | 中植系暴雷→信托行业 | 中植系违约→信托行业整体信用重估 | 信托行业管理资产规模持续收缩 |
+| 2008 | Lehman removed from S&P 500 | S&P 500 index rebalancing; passive funds sold all Lehman positions | Active speculators shorted similar investment banks; Bear Stearns and Merrill Lynch were acquired under pressure |
+| 2018 | FTSE Russell / MSCI EM bond index changes | Argentina, Turkey bonds downgraded -> removed from EM bond indices | $10bn+ in passive outflow from affected countries; spreads widened across EM index peer group |
+| 2020 | Oil price crash -> IG to HY "fallen angels" | ExxonMobil, Occidental, Ford downgraded from IG to HY -> forced selling by IG-only mandates | Fallen angel wave: $200bn+ bonds downgraded; HY market spread surged 600bp |
+| 2022 | Russia sanctions -> index exclusion | MSCI, FTSE Russell removed Russia from all indices | $5bn passive outflows; Russia bond/equity market effectively locked; EM fund liquidity crisis |
+| 2023 | Credit Suisse AT1 wipeout -> index reconstitution | AT1 bond indices excluded CS AT1 -> passive AT1 fund forced selling | All AT1 bond indices rebalanced; remaining AT1 bonds absorbed disproportionate selling |
 
-**识别方法（可提前映射的公开数据）：**
-- **行业信用利差走势**：同行业各企业的信用利差同步走阔→行业共振风险上升
-- **行业基本面恶化指标**：行业总需求下降、产能过剩、价格战→同行业企业连锁违约风险上升
-- **金融机构行业敞口数据**：银行/基金/信托在特定行业的集中度——判断机构压缩行业敞口的潜在冲击
-- **行业评级迁移矩阵**：过去5年同行业评级下调的时间分布——判断行业风险是否趋同
-- **可比公司分析**：违约企业与同行业其他企业在规模/杠杆/盈利能力上的对比
-
-**在6种范式中的危险程度排序：**
-
-| 范式 | 危险程度 | 原因 |
-|---|---|---|
-| 政策驱动型 | 1 | 行业政策周期同步，政策转向→全行业同时承压，违约共振最严重 |
-| 存量博弈型 | 1 | 零和博弈行业（新能源车），一家违约→市场份额重新分配→其他企业被迫跟进价格战→全行业利润恶化 |
-| 技术壁垒型 | 3 | 高端装备/生物医药/器械的技术路线差异大，单一企业违约不易牵动全行业 |
-| 品牌+渠道型 | 4 | 食品安全事件可引发全行业信任危机（如三聚氰胺），但日常经营层面关联有限 |
-| 资产租约型 | 5 | 数据中心行业竞争相对稳定，同行业传染不显著 |
-| 网络+流量型 | 6 | 交通运输/网络平台企业的竞争优势差异大，单一违约不易冲击全行业 |
+**Identification Methods:**
+- **Index Membership Analysis**: Which indices each entity belongs to; index weight percentage
+- **Passive Asset Tracking Estimates**: Total AUM tracking each index; implied forced flow amount
+- **Index Rebalancing Calendar**: Scheduled rebalancing dates; unscheduled rebalancing triggers
+- **Fallen Angel Risk**: IG bonds at risk of downgrade to HY; estimated forced selling volume
+- **Index Inclusion Criteria**: Size, liquidity, rating requirements for membership
 
 ---
 
-### 路径6：同融资渠道
+### Pathway 6: Rating Cliff Effects
 
-**传导机制：**
-同一融资渠道（如地产债、信托融资、民企短融）上出现违约→投资者对该融资渠道失去信心→从该渠道撤离资金→依靠该渠道维持融资的其他企业借新还旧断裂→连锁违约
+**Transmission Mechanism:**
+A rating downgrade (especially multi-notch) of a major entity -> market re-assesses the rating agency's criteria for that sector -> other entities in the same sector are re-rated by the market -> rating triggers (investment-grade mandates, collateral thresholds, regulatory constraints) force selling
 
 ```
-某主体通过特定融资渠道违约（如某地产企业美元债违约）
-    │ 投资者重新评估该融资渠道的风险
-    ▼
-同融资通道的其他主体面临:1)新债发行冻结 2)到期无法续借
-    │ 借新还旧模式断裂
-    ▼
-同融资通道的其他弱资质主体资金链断裂→跟随违约
-    │ 违约加剧→通道彻底冻结
-    ▼
-通道中原本资质尚可的企业也受影响
+AAA/AA entity downgraded (multi-notch downgrade)
+    | Market reassesses: are other similarly-rated entities at risk?
+    v
+Market anticipates further downgrades in the same sector
+    | Trading desks preemptively reduce exposure to comparable entities
+    v
+Rating agency reviews others under same sector/criteria
+    | Additional downgrades follow (the "rating cascade")
+    v
+Investment mandates triggered -> forced selling by IG-only / buy-rated-only fund mandates
 ```
 
-**主要传染类型：** 流动性挤兑
+**Primary Contagion Type:** Confidence Collapse (S) + Liquidity Squeeze (L)
 
-**历史案例：**
+**Historical Cases:**
 
-| 时间 | 案例 | 融资渠道 | 传染范围 |
+| Year | Event | Rating Cliff Cascade | Impact |
 |---|---|---|---|
-| 2018 | 民企违约潮→民企短融/超短融冻结 | 银行间市场民企短融 | 民企短融发行量骤降60%+，大量民企转而寻求其他融资渠道 |
-| 2019 | 包商银行被接管→中小银行同业存单冻结 | 同业存单 | 中小银行存单利差跳升100-200bp，部分银行存单发行中断 |
-| 2021 | 恒大违约→境内地产债、美元债、地产信托全线冻结 | 地产债+地产信托+地产ABS | 地产行业三个主要融资渠道同时冻结，行业信用危机全面爆发 |
-| 2021 | 某房企ABS违约→供应链ABS市场冻结 | 供应链ABS | 全市场供应链ABS发行量在违约后3个月内下降70%+ |
-| 2022 | 地产违约→地产基金赎回→REITs和CMBS市场 | 不动产类资管产品 | 不动产基金和REITs遭遇巨量赎回 |
-| 2023 | 中植系暴雷→信托行业资金募集困难 | 信托融资 | 信托行业新增规模持续下降，部分信托公司资金链紧张 |
+| 2001-2002 | Enron/WorldCom accounting scandals | Both were IG -> default/CCC within weeks | S&P, Moody's methodology changed; corporate governance rating created; market trust in ratings permanently damaged |
+| 2008 | Monoline insurer downgrades | MBIA, Ambac downgraded from AAA -> below IG | All municipal bonds wrapped by monolines immediately re-priced; muni market disruption |
+| 2010 | Greek sovereign downgrade cascade | Greek debt downgraded A- (Jan 2010) -> CCC (Dec 2010) -> SD (2012) | Multiple-notch downgrades triggered CDS settlements; ECB collateral haircuts; Greek bonds became ineligible for ECB operations |
+| 2020 | Fallen angel wave (Oil & Gas) | ExxonMobil, Chevron, Occidental, Ford -> multi-notch downgrades | $200bn+ bonds forced out of IG indices; HY market absorbed 40% more supply than normal |
+| 2023 | Credit Suisse AT1 write-down to zero | CS AT1 rated IG -> zero recovery in days | Moody's downgraded CS subordinated debt 4 notches; AT1 rating methodology under review across all European banks |
 
-**识别方法（可提前映射的公开数据）：**
-- **企业融资结构分析**：分渠道拆解企业的资金来源——判断企业对各融资渠道的依赖程度
-- **渠道市场情绪指标**：各融资渠道的利差/发行成功率趋势——判断渠道是否"紧张"
-- **渠道集中度分析**：同一融资渠道下有多少企业正在依赖该渠道进行到期续借
-- **到期分布分析**：同一融资渠道下未来3/6/12个月的到期量集中程度——判断"到期墙"风险
-- **渠道政策变化**：监管层对该融资渠道的态度变化（如收紧信托/压缩通道业务）
-
-**在6种范式中的危险程度排序：**
-
-| 范式 | 危险程度 | 原因 |
-|---|---|---|
-| 资产租约型 | 1 | 大面积依赖REITs/ABS融资；该融资渠道一旦冻结，借新还旧模式直接断裂 |
-| 政策驱动型 | 2 | 光伏/半导体企业依赖政策性和市场融资，融资环境偏紧时首当其冲 |
-| 存量博弈型 | 3 | 新能源车企业融资需求大，对股权和债券融资渠道高度敏感 |
-| 网络+流量型 | 4 | 交通运输（尤其是航空公司）依赖大量信用债融资，融资条件变化极为敏感 |
-| 技术壁垒型 | 5 | 生物医药利用资本市场融资，但融资渠道多样化程度较高 |
-| 品牌+渠道型 | 6 | 食品饮料/纺织服装现金流较稳定，对单一融资渠道依赖度低 |
+**Identification Methods:**
+- **Rating Headroom Analysis**: Distance to downgrade threshold for each notch (e.g., S&P: how many notches from BBB-)
+- **Watch/Negative Outlook Count**: Ratio of negative outlooks to total rated universe in a sector
+- **Methodology Change Risk**: When rating agencies revise criteria for a sector, watch for cascade
+- **Cross-Agency Correlation**: When Moody's/S&P/Fitch all converge in their review, follow-on downgrades cluster
+- **Investment Mandate Triggers**: Regulatory and contractual rating thresholds (IG vs HY, eligible collateral status)
 
 ---
 
-### 路径7：同实际控制人
+### Pathway 7: Sovereign-Bank Nexus
 
-**传导机制：**
-实际控制人/母公司违约→控制人/母公司持有的其他子公司股权被冻结/处置→各子公司的融资能力受限制→各子公司信用质量同步恶化
+**Transmission Mechanism:**
+Sovereign credit deterioration -> banks holding sovereign bonds incur mark-to-market losses -> bank capitalization weakens -> banks reduce lending to the real economy -> economic contraction -> further sovereign fiscal deterioration (the "doom loop")
+
+Conversely: Bank default -> government bailout costs -> sovereign debt/GDP rises -> sovereign credit downgrade -> further bank losses
 
 ```
-母公司 / 实际控制人违约（传染源）
-    │ 核心资产被冻结/查封
-    ▼
-子公司A       子公司B       子公司C
-（上市公司）   （非上市公司）  （上市公司）
-    │            │            │
-    ▼            ▼            ▼
-股权被冻结    资金被归集    交叉违约触发
-→融资受限     →流动性紧张   →加速到期
-→再融资困难   →经营受冲击   →债务危机
-→信用恶化     →信用恶化     →信用恶化
+Sovereign downgrade / credit event
+    | Banks holding sovereign bonds -> MtM losses
+    v
+Bank capitalization deteriorates -> lending capacity constrained
+    | Credit supply contraction to real economy
+    v
+Economic growth slows -> fiscal revenue declines
+    | Social / bailout spending increases
+    v
+Fiscal deficit widens -> sovereign debt/GDP rises
+    | Further sovereign downgrade risk -> loop continues
 ```
 
-**主要传染类型：** 信用链传染 + 流动性挤兑
+**Primary Contagion Type:** Regional Resonance (R) + Liquidity Squeeze (L) + Confidence Collapse (S)
 
-**历史案例：**
+**Historical Cases:**
 
-| 时间 | 案例 | 实际控制人 | 受影响子公司 |
+| Year | Event | Sovereign-Bank Loop | Impact |
 |---|---|---|---|
-| 2019 | 方正集团违约→旗下上市公司集体受波及 | 北大资产经营公司 | 方正科技、方正证券、北大资源、中国高科等集体进入重整或信用恶化 |
-| 2020 | 华晨集团违约→华晨中国/金杯汽车 | 辽宁省国资委（华晨集团） | 华晨中国、金杯汽车、申华控股等被牵连 |
-| 2020 | 海航集团违约→旗下数百家子公司 | 海航集团（海南省国资委穿透后） | 海航控股、海航基础、渤海租赁等全部上市公司被深度牵连 |
-| 2021 | 苏宁易购→张近东关联企业 | 张近东 | 苏宁易购、苏宁置业、江苏苏宁银行等整体被波及 |
-| 2021 | 华夏幸福违约→王文学控制的关联企业 | 王文学 | 华夏幸福旗下多个区域公司、黑牛食品（曾控制）等 |
-| 2023 | 中植系暴雷→解直锟控制的庞大企业群 | 解直锟（中植系） | 中植系直接/间接控制的数百家企业和金融平台全链条崩塌 |
-| 2024 | 宝能系违约→姚振华控制的多个企业群 | 姚振华 | 钜盛华、前海人寿、南玻集团、韶能股份等关联企业全部受影响 |
+| 2011-2012 | Eurozone sovereign-bank "doom loop" | Greek/PIIGS sovereign downgrades -> bank losses -> lending freeze -> deeper recessions | Required EU banking union, ESM bailout funds, ECB OMT program to break loop |
+| 2013 | Cyprus banking crisis | Greek sovereign debt losses -> Cyprus banks (Greek exposure) -> bank failure -> sovereign bailout | First euro-area capital controls; bank restructuring triggering bail-in of uninsured depositors |
+| 2017-2018 | Italian sovereign-bank nexus | Italian banks held 350bn+ EUR in BTPs -> sovereign risk -> bank risk -> sovereign risk | Monte dei Paschi bailout; EU approval of precautionary recapitalization |
+| 2023 | Swiss Credit Suisse failure -> sovereign guarantee | CS failure required Swiss government guarantee ($109bn backstop) | Swiss sovereign contingent liability exposure; sovereign CDS spread widened ~20bp |
+| 2023-2024 | US regional banking crisis -> fiscal cost | SVB, Signature, First Republic -> FDIC deposit insurance fund (DIF) depleted | FDIC special assessment on all banks; DIF restoration cost $16bn+; sovereign contingent liability |
 
-**识别方法（可提前映射的公开数据）：**
-- **同一实际控制人的企业图谱**：通过工商登记信息、上市公司实际控制人披露、股权穿透图识别同一控制人下的企业群
-- **实际控制人负债水平**：通过质押率、个人信用状况、媒体报道等判断控制人自身风险
-- **关联方资金往来**：上市公司关联交易公告中披露的与同一控制人旗下其他企业的资金拆借
-- **非上市公司资金归集风险**：同一控制人将多个子公司的资金集中管理→一个违约导致全部被归集资金冻结
-- **交叉持股/担保关系**：同一控制人旗下企业之间的股权持有和担保关系
-
-**在6种范式中的危险程度排序：**
-
-| 范式 | 危险程度 | 原因 |
-|---|---|---|
-| 存量博弈型 | 1 | 新能源车赛道大量控股集团同时控制多家相关企业，一家资金链断裂易连锁传染 |
-| 技术壁垒型 | 2 | 生物医药孵化平台型企业（药明康德/康龙化成等）体系关联性较强 |
-| 政策驱动型 | 3 | 光伏/半导体领域的控股集团结构复杂但风险可控 |
-| 品牌+渠道型 | 4 | 食品饮料集团（如娃哈哈体系）现金流好，传染概率相对低 |
-| 网络+流量型 | 5 | 交通运输企业集团关联性单一，传染风险有限 |
-| 资产租约型 | 6 | 数据中心企业结构简洁，同实际控制人风险不突出 |
+**Identification Methods:**
+- **Sovereign Debt Holdings**: Banks' holdings of domestic sovereign bonds as % of Tier 1 capital
+- **Sovereign-Bank Correlation**: Rolling correlation between bank CDS and sovereign CDS spreads
+- **Government Guarantee Exposure**: Size and scope of explicit/implicit government guarantees to banking sector
+- **Bailout Fiscal Capacity**: Sovereign fiscal space (Debt/GDP, primary surplus) to absorb banking sector losses
+- **Cross-Border Exposure**: Domestic banks' exposure to foreign sovereign debt (e.g., German banks to Greek bonds)
 
 ---
 
-## 四、现有6种范式传染暴露映射
+## 4. Paradigm Contagion Exposure Mapping (P1-P6)
 
-### 4.1 映射总表
+### 4.1 Paradigm Overview
 
-| 范式 | 最危险传染类型（1-3） | 最危险传导路径（1-3） | 原因 |
-|---|---|---|---|
-| **[政策驱动型](industry-framework.md)（光伏/半导体）** | 1.同行业 2.流动性挤兑 3.同区域国企 | 1.同区域国企（路径3） 2.同行业（路径5） 3.同融资渠道（路径6） | 行业政策周期同步·同质化程度高·国企占比高·融资依赖度高 |
-| **[技术壁垒型](industry-framework.md)（高端装备/生物医药/器械）** | 1.信用链传染 2.同融资渠道 3.流动性挤兑 | 1.供应商-客户链（路径1） 2.同行业（路径5） 3.同实际控制人（路径7） | 供应链关系紧密·关键客户依赖·IPO/再融资渠道对生物医药关键 |
-| **存量博弈型（新能源车）** | 1.同行业 2.信用链传染 3.同融资渠道 | 1.同行业（路径5） 2.供应商-客户链（路径1） 3.担保圈（路径2） | 产能过剩→全行业价格战·上下游同时被挤压·部分企业互保 |
-| **资产租约型（数据中心）** | 1.信用链传染 2.同融资渠道 3.流动性挤兑 | 1.供应商-客户链（路径1） 2.同融资渠道（路径6） 3.担保圈（路径2） | 大客户依赖·REITs/ABS融资依赖·融资渠道一旦冻结直接威胁生存 |
-| **[品牌+渠道型](paradigm-brand-channel.md)（食品饮料/纺织服装）** | 1.信心崩塌 2.同行业 3.信用链传染 | 1.供应商-客户链（路径1） 2.同行业（路径5） 3.同实际控制人（路径7） | 品牌危机传染·食品安全事件可摧毁整个品类 |
-| **[网络+流量型](paradigm-network-traffic.md)（交通运输/商贸零售/传媒互联网）** | 1.信用链传染 2.同融资渠道 3.流动性挤兑 | 1.供应商-客户链（路径1） 2.同融资渠道（路径6） 3.同区域国企（路径3） | 上下游依赖·平台生态锁定·交通运输依赖债券融资·部分国企属性 |
+For the international industry classification used in the Contagion Matrix (19 GICS-based industries), the following six analytical paradigms define shared risk-driver characteristics.
 
-### 4.2 各范式详细暴露分析
-
-#### 范式A：[政策驱动型](industry-framework.md)（光伏/半导体）
-
-| 传染类型 | 暴露程度 | 典型场景 | 历史验证 |
-|---|---|---|---|
-| 信用链传染 | 中等 | 光伏企业向上游硅料供应商传染 | 2018"531新政"后光伏需求骤降→多晶硅价格暴跌→硅料企业坏账（如江西赛维/无锡尚德事件） |
-| 区域共振 | 高 | 半导体/光伏国企的区域信用绑定 | 各省国有光伏/半导体企业受区域信用影响 |
-| 流动性挤兑 | 极高 | 行业政策转向→全行业债券被抛售 | 2021教育行业("双减")：政策转向→全行业融资冻结，虽非光伏/半导体但为政策驱动型行业的经典流动性挤兑案例 |
-| 信心崩塌 | 高 | 龙头国企违约→全行业信仰刷新 | 永煤违约（煤炭/化工，同为国企密集型行业） |
-
-| 传导路径 | 暴露程度 | 原因 |
+| Paradigm | Description | Core Industries (Primary) |
 |---|---|---|
-| 供应商-客户链 | 中等 | 光伏组件供应商较分散，单一客户违约影响有限 |
-| 担保圈 | 中等 | 半导体代工企业互保现象有限，但国企间互保存在 |
-| 同区域国企 | **极高** | 国企占比高，区域信用共振是最核心的风险 |
-| 同评级 | 高 | 国企债存量巨大，同评级冲击影响显著 |
-| 同行业 | **极高** | 政策周期决定行业总需求，全行业同时承压 |
-| 同融资渠道 | 高 | 对银行贷款+债券融资依赖度高 |
-| 同实际控制人 | 中低 | 国有资本投资运营公司体系关联—但风险通常有限 |
+| **P1: Policy-Driven** | Sectors where government policy, regulation, geopolitics, or fiscal/tax regimes determine the demand cycle and profitability | Energy (Oil & Gas), Chemicals, Metals & Mining, Construction Materials, Utilities (Regulated), Financials (Banks/Insurance), Sovereigns & GSEs |
+| **P2: Technology Moat** | R&D-intensive sectors where intellectual property, patents, and proprietary technology create durable competitive advantage | Technology Hardware (Semis), Software & Services, Biotech & Pharma, Healthcare Equipment, Capital Goods (advanced manufacturing) |
+| **P3: Zero-Sum Game** | Cyclical, commoditized sectors where price competition erodes margins; one player's gain is another's loss | Automobiles, Consumer Durables, Metals & Mining (secondary), Construction Materials (secondary) |
+| **P4: Asset Lease** | Infrastructure-heavy sectors where cash flows are driven by physical asset utilization; NOI and DSCR are the key metrics | Utilities (Regulated), Telecommunications, Transportation |
+| **P5: Brand + Channel** | Consumer sectors where brand equity, distribution networks, and consumer trust are the primary value drivers | Consumer Staples, Consumer Durables, Retail (branded) |
+| **P6: Network + Traffic** | Platform and network-effect sectors where scale, user base, and data generate increasing returns | Commercial Services, Retail (e-commerce), Transportation (logistics platforms), Telecommunications (data) |
 
-#### 范式B：[技术壁垒型](industry-framework.md)（高端装备/生物医药/器械）
+### 4.2 Paradigm Contagion Characteristics
 
-| 传染类型 | 暴露程度 | 典型场景 | 历史验证 |
-|---|---|---|---|
-| 信用链传染 | **极高** | 生物医药/高端装备企业高度依赖大客户订单 | 2019某高端装备企业大客户违约→该企业应收账款坏账率飙升 |
-| 区域共振 | 低 | 高端装备/生物医药技术路线差异大，地域绑定弱 | — |
-| 流动性挤兑 | 中高 | 生物医药IPO融资渠道受阻 | 2022美股生物医药板块暴跌→再融资困难→部分Biotech资金链断裂 |
-| 信心崩塌 | 中等 | 某创新药企核心管线失败→投资者对整个赛道的信心受损 | 2023某AI制药公司违约→市场对整个AI制药赛道的融资信心下降 |
-
-| 传导路径 | 暴露程度 | 原因 |
-|---|---|---|
-| 供应商-客户链 | **极高** | 高端装备/生物医药的关键客户集中度极高（政府/部队/大型医院），客户违约几乎无法转嫁成本 |
-| 担保圈 | 高 | 部分未盈利企业以互保方式获取银行融资 |
-| 同区域国企 | 低 | 国企占比低，区域共振不显著 |
-| 同评级 | 中高 | 中低评级为主，但存量债规模有限 |
-| 同行业 | 中高 | 生物医药管线失败可引发行业信心危机但技术差异化程度高 |
-| 同融资渠道 | **极高** | 生物医药依赖IPO+私募股权融资，融资渠道冻结直接威胁存续 |
-| 同实际控制人 | 高 | 孵化平台型企业（如药明康德+药明生物等多板块上市+关联企业）的连带风险 |
-
-#### 范式C：存量博弈型（新能源车）
-
-| 传染类型 | 暴露程度 | 典型场景 | 历史验证 |
-|---|---|---|---|
-| 信用链传染 | 高 | 新能源车企业违约→上游零部件供应商连锁违约 | 2022某新能源车企资金链紧张→多家零部件供应商受波及 |
-| 区域共振 | 中低 | 地方保护主义可能形成区域产业集群，但关联不强 | — |
-| 流动性挤兑 | 高 | 行业价格战→整条产业链盈利能力恶化→全行业融资收紧 | 2023新能源车价格战→行业整体利润压缩→投资者信心恶化 |
-| 信心崩塌 | 高 | 龙头新能源车企违约→市场对整个行业的生存能力失去信心 | 如蔚来/小鹏/零跑等如果其中一家发生严重信用事件→市场对另几家信心也将受损 |
-
-| 传导路径 | 暴露程度 | 原因 |
-|---|---|---|
-| 供应商-客户链 | 高 | 新能源车企业向供应商压款现象严重，违约直接导致供应链危机 |
-| 担保圈 | 高 | 部分新能源车企与其他汽车企业互保/关联担保 |
-| 同区域国企 | 中低 | 新能源车以民企为主 |
-| 同评级 | 高 | 中低评级新能源车企业多，同评级冲击显著 |
-| 同行业 | **极高** | 产能过剩→价格战→全行业利润同步恶化，头部违约直接影响尾部融资 |
-| 同融资渠道 | 高 | 依赖股权融资+债券融资，融资渠道收紧直接威胁尾部企业 |
-| 同实际控制人 | 高 | 控股集团控制多家新能源/科技企业→传染风险 |
-
-#### 范式D：资产租约型（数据中心）
-
-| 传染类型 | 暴露程度 | 典型场景 | 历史验证 |
-|---|---|---|---|
-| 信用链传染 | **极高** | 某数据中心大客户（如大型互联网企业）违约→该数据中心的NOI骤降→DSCR跌破1.0x | 2022部分互联网企业违约→数据中心出租率受影响（虽然数据有限但逻辑明确） |
-| 区域共振 | 中低 | 数据中心分布式布局，区域共振影响有限 | — |
-| 流动性挤兑 | **极高** | REITs/ABS融资渠道冻结→数据中心借新还旧模式断裂 | 2022地产类REITs受地产违约牵连暴跌（数据中心REITs虽未受直接影响但暴露了REITs市场的流动性风险） |
-| 信心崩塌 | 中等 | 数据中心违约→投资者对类REITs模式的信任度下降 | — |
-
-| 传导路径 | 暴露程度 | 原因 |
-|---|---|---|
-| 供应商-客户链 | **极高** | 数据中心高度依赖主要客户租约，单一大客户违约直接击穿NOI和偿债能力 |
-| 担保圈 | 中等 | 部分数据中心企业互保融资，但整体有限 |
-| 同区域国企 | 低 | 数据中心位置分散，区域关联不强 |
-| 同评级 | 中低 | 债券存量有限，同评级冲击可控 |
-| 同行业 | 低 | 数据中心行业竞争格局稳定，单一违约不易冲击全行业 |
-| 同融资渠道 | **极高** | 依赖REITs/ABS融资，该渠道的关闭直接威胁生存 |
-| 同实际控制人 | 低 | 数据中心企业结构简单，同实际控制人风险不突出 |
-
-#### 范式E：[品牌+渠道型](paradigm-brand-channel.md)（食品饮料/纺织服装）
-
-| 传染类型 | 暴露程度 | 典型场景 | 历史验证 |
-|---|---|---|---|
-| 信用链传染 | 中高 | 品牌企业违约→代工厂/供应商应收账款损失 | 2020某服装品牌违约→上游代工厂大量订单取消 |
-| 区域共振 | 低 | 食品饮料/纺织服装企业地域分散，区域共振不显著 | — |
-| 流动性挤兑 | 中等 | 行业整体性危机（如食品安全事件）→全行业债券遭抛售 | — |
-| 信心崩塌 | **极高** | 食品安全事件/品牌危机→消费者信任崩塌→全行业需求崩溃 | 2008三聚氰胺事件（乳制品）→全行业需求暴跌；2022某调味品企业添加剂事件→行业整体情绪受影响 |
-
-| 传导路径 | 暴露程度 | 原因 |
-|---|---|---|
-| 供应商-客户链 | 高 | 代工厂高度依赖品牌方订单，品牌方违约直接冲击代工厂生存 |
-| 担保圈 | 低 | 轻资产企业互保需求低 |
-| 同区域国企 | 极低 | 以民企为主 |
-| 同评级 | 中等 | 消费类信用债存量有限，同评级冲击可控 |
-| 同行业 | 高 | 食品安全事件→品牌信任危机可席卷整个行业 |
-| 同融资渠道 | 低 | 食品饮料企业现金流稳定，融资渠道依赖度低 |
-| 同实际控制人 | 中高 | 多元化消费集团（如娃哈哈/达利/统一等大集团）内部关联传染—但食品饮料集团的现金流通常较好，风险可控 |
-
-#### 范式F：[网络+流量型](paradigm-network-traffic.md)（交通运输/商贸零售/传媒互联网）
-
-| 传染类型 | 暴露程度 | 典型场景 | 历史验证 |
-|---|---|---|---|
-| 信用链传染 | **极高** | 互联网平台/物流平台违约→平台上的商户/供应商集体受波及 | 2021某物流平台违约→平台上数十万中小商户应收账款无法收回 |
-| 区域共振 | 中高 | 交通运输/港口/公路等大型国企的区域信用绑定 | 各省交通/港口投资集团受区域信用影响 |
-| 流动性挤兑 | 高 | 交通运输行业杠杆率较高→融资收紧→高杠杆企业资金链紧张 | 2019海航违约前市场已经开始对高杠杆航空/物流企业收紧融资 |
-| 信心崩塌 | 高 | 头部互联网平台违约→市场对互联网行业的信心大幅下降 | 2022某互联网巨头危机→市场对全部互联网平台的风险评价上升 |
-
-| 传导路径 | 暴露程度 | 原因 |
-|---|---|---|
-| 供应商-客户链 | **极高** | 平台/物流企业的上下游（商户、司机、仓库房东）高度依赖平台 |
-| 担保圈 | 中等 | 交通运输重资产企业之间存在互保融资 |
-| 同区域国企 | 高 | 各省交通/港口/航空集团存在区域共振风险 |
-| 同评级 | 中高 | 交通运输企业债券存量较大 |
-| 同行业 | 中低 | 交通运输/商贸零售企业差异度大，单一违约不易冲击全行业 |
-| 同融资渠道 | **极高** | 交通运输企业（特别是航空公司）依赖大量债券融资 |
-| 同实际控制人 | 中等 | 互联网巨头体系内关联企业传染风险（阿里/腾讯/字节的关联企业） |
-
-### 4.3 传染暴露热图（范式×传染类型×传导路径）
-
-| 范式 | 信用链传染 | 区域共振 | 流动性挤兑 | 信心崩塌 | 最危险路径 | 第二危险路径 |
+| Characteristic | P1: Policy-Driven | P2: Technology Moat | P3: Zero-Sum Game | P4: Asset Lease | P5: Brand + Channel | P6: Network + Traffic |
 |---|---|---|---|---|---|---|
-| 政策驱动型 | ●● | ●●●● | ●●●● | ●●● | 同区域国企 | 同行业 |
-| 技术壁垒型 | ●●●● | ● | ●●● | ●● | 供应商-客户链 | 同融资渠道 |
-| 存量博弈型 | ●●● | ●● | ●●● | ●●● | 同行业 | 供应商-客户链 |
-| 资产租约型 | ●●●● | ● | ●●●● | ●● | 供应商-客户链 | 同融资渠道 |
-| 品牌+渠道型 | ●● | ● | ●● | ●●●● | 供应商-客户链 | 同行业 |
-| 网络+流量型 | ●●●● | ●● | ●●● | ●●● | 供应商-客户链 | 同融资渠道 |
+| **Primary Contagion Type** | R + S | C + L | C + S | C + L | S + C | C + L |
+| **Contagion Speed** | Fast (days-weeks) | Moderate (1-3 months) | Moderate (1-3 months) | Fast (weeks) | Moderate-Variable | Fast (days-weeks) |
+| **Decay Distance** | Region-bound | Supply chain depth | Market-wide | Asset class-bound | Brand-loyalty bound | Network depth |
+| **Historical Amplitude** | Very High | High | High | Moderate | High | High |
+| **Predictability** | Medium | Medium-High | Medium | Medium-High | Low-Medium | Medium |
+| **Trigger Frequency** | Medium | Low-Medium | High | Medium | Low | Medium |
 
-**图例：** ●=低暴露 ●●=中低 ●●●=中等 ●●●●=高 ●●●●●=极高
+### 4.3 Paradigm x Pathway Exposure Grid
+
+| Paradigm | Most Exposed 3 Pathways | Secondary Exposed Pathways | Least Exposed |
+|---|---|---|---|
+| **P1 (Policy-Driven)** | 3-Regional/Sector, 7-Sovereign-Bank, 6-Rating Cliff | 4-Common Creditor, 2-Financial Linkage | 1-Supply Chain |
+| **P2 (Technology Moat)** | 1-Supply Chain, 5-Index Inclusion, 4-Common Creditor | 6-Rating Cliff, 3-Regional/Sector | 7-Sovereign-Bank |
+| **P3 (Zero-Sum Game)** | 2-Financial Linkage, 1-Supply Chain, 5-Index Inclusion | 6-Rating Cliff, 4-Common Creditor | 3-Regional/Sector, 7-Sovereign-Bank |
+| **P4 (Asset Lease)** | 4-Common Creditor, 5-Index Inclusion, 1-Supply Chain | 3-Regional/Sector, 2-Financial Linkage | 7-Sovereign-Bank |
+| **P5 (Brand + Channel)** | 1-Supply Chain, 5-Index Inclusion, 6-Rating Cliff | 3-Regional/Sector | 7-Sovereign-Bank, 2-Financial Linkage |
+| **P6 (Network + Traffic)** | 1-Supply Chain, 4-Common Creditor, 2-Financial Linkage | 5-Index Inclusion, 3-Regional/Sector | 7-Sovereign-Bank |
 
 ---
 
-## 五、传染强度升级因子
+## 5. Contagion Intensity Escalation Factors
 
-### 5.1 升级因子总览
+### 5.1 Escalation Factor Overview
 
-传染强度并非恒定——同样的信用事件，在不同市场条件下引发的传染强度可以相差数个等级。以下是核心升级因子：
+Contagion intensity is not static -- the same credit event can produce materially different contagion outcomes depending on market conditions.
 
-| 升级因子 | 基础状态（1-2级传染） | 升级状态（3-4级传染） | 极端状态（5级传染） | 触发条件 | 可观测指标 |
+| Escalation Factor | Base State (Level 1-2) | Elevated State (Level 3-4) | Extreme State (Level 5) | Trigger Condition | Observable Indicators |
 |---|---|---|---|---|---|
-| **市场恐慌情绪** | VIX<20，信用利差正常 | VIX 20-35，利差走阔30-50bp | VIX>35，利差翻倍 | 市场从"避险"跳入"恐慌"模式 | VIX指数、信用利差、CDS价格 |
-| **监管政策真空** | 监管明确表态维稳 | 监管沉默/"不便评论" | 监管宣布"让市场自己解决"/不救助 | 政府对违约事件不表态 | 监管会议纪要、官员采访、政策文件 |
-| **高杠杆环境** | 市场整体杠杆率<80%（以债券质押式回购规模衡量） | 杠杆率80-110% | 杠杆率>110%+部分机构强制平仓 | 大量机构使用同一类资产作为质押品 | 质押式回购规模、基金杠杆率、券商自营杠杆率 |
-| **信息不对称** | 发行人与市场保持沟通 | 发行人沉默/公告模糊 | 发行人完全失联/董事失联 | 违约后发行人选择沉默 | 公告频率、电话会出席情况、管理层可及性 |
-| **年末/季末效应** | 非季末时段 | 季末前1-2周 | 年末最后两周 | 考核时点叠加 | 日历日期+银行间流动性 |
+| **Market Panic** | VIX < 20, credit spreads normal | VIX 20-35, spreads widen 30-50bp | VIX > 35, spreads double | Market shifts from "risk-off" to "panic" | VIX index, credit spreads, CDS prices, implied correlation |
+| **Regulatory Vacuum** | Regulator explicitly states support | Regulator silent / "no comment" | Regulator declares "market solution" / no bailout | Government withholds policy response to a credit event | Policy meeting minutes, official statements, financial stability reports |
+| **High Leverage** | Market margin debt < 80% of baseline / repo outstanding moderate | Leverage 80-110% of historical baseline | Leverage > 110% + forced liquidations triggered | Large number of institutions using same asset class as collateral | Margin debt, repo outstanding, prime brokerage leverage, fund net leverage |
+| **Information Asymmetry** | Issuer maintains communication | Issuer silent / vague statements | Issuer completely unreachable / management missing | Post-default issuer chooses silence | Filings frequency, earnings call participation, management accessibility |
+| **Year-End Effect** | Non-quarter-end period | 1-2 weeks before quarter-end | Last 2 weeks of calendar year | Regulatory/reporting deadline approaches | Calendar date + interbank liquidity metrics |
 
-### 5.2 各升级因子的详细机制
+### 5.2 Detailed Factor Mechanisms
 
-#### 5.2.1 市场恐慌情绪
+#### 5.2.1 Market Panic
 
-**机制：** 恐慌情绪通过以下链条放大传染：
+**Mechanism:** Panic amplifies contagion through the following chain:
 
 ```
-恐慌情绪上升
-    → 投资者行为趋同（所有人同时减仓高风险资产）
-    → 流动性需求集中爆发
-    → 资产价格暴跌（不是因为基本面变化，而是因为抛售压力）
-    → 更多投资者的风控线被触及（止损/平仓）
-    → 追加抛售 → 价格进一步下跌
-    → 恐慌自我实现
+Market panic rises
+    -> Investor behavior converges (everyone reduces high-risk positions simultaneously)
+    -> Liquidity demand spikes
+    -> Asset prices crash (not due to fundamentals, but selling pressure)
+    -> More investors hit risk limits (stop-loss, margin call)
+    -> Forced additional selling -> further price decline
+    -> Panic becomes self-fulfilling
 ```
 
-**历史案例：**
+**Historical Cases:**
 
-| 时间 | 恐慌背景 | VIX水平 | 传染升级表现 |
+| Year | Panic Background | VIX Level | Contagion Escalation |
 |---|---|---|---|
-| 2020.03（全球疫情） | 全球金融市场恐慌 | VIX>80 | 信用债整体利差跳升150-200bp，无论发行人基本面如何 |
-| 2020.11（永煤违约） | 信用债市场恐慌 | 信用利差跳升 | 整个信用债市场冻结，一级市场取消发行率>30% |
-| 2022.03（地产危机+封控） | 中国经济+地产双重压力 | 中资美元债信用利差跳升 | 全行业无差别抛售 |
+| 2008 (GFC) | Global financial system near collapse | VIX > 80 | Credit spreads across all sectors jumped 200-600bp; interbank lending halted; TARP/TALF/SMCCP emergency programs required |
+| Mar 2020 (COVID) | Global pandemic-driven panic | VIX > 80 (peak 82.69) | IG spreads from 100bp to 400bp; HY from 400bp to 1,100bp; Fed entered corporate bond market for first time ever |
+| Sep 2022 (UK gilt crisis) | Fiscal event (mini-budget) | VIX ~ 35, UK gilt vol > 2 stdev | LDI fund margin calls -> forced gilt selling -> gilt yields surged 100bp in 3 days -> BoE emergency purchase program |
+| Mar 2023 (US regional banking) | SVB failure -> sector-wide deposit flight | VIX ~ 25-30 | Regional bank stock index fell 30%+; all regional bank HTM bond portfolios re-priced; BTFP facility created |
 
-**历史极端值说明：** VIX>35已界定为极端状态。2020年3月疫情引发的VIX>80属于极端状态上沿，超出框架四级划分的正常/升级/极端三级。此极端值在框架中归类为"极端状态(VIX>35)"的特殊子类"历史极端(VIX>50)"，在此状态下传染矩阵所有链路强度自动+1作为全域升级因子。
+**Monitoring Indicators:**
+- VIX / VSTOXX (European) / VNKY (Japan) volatility indices
+- CDX.IG / CDX.HY (North America) and iTraxx Main / iTraxx Crossover (Europe) indices
+- Primary market issuance cancellation rate (>20% = panic)
+- Money market fund flow data
+- Central bank USD swap line utilization
 
-**监测指标：**
-- CICC中资信用债利差指数
-- 中债中短期票据收益率曲线
-- 中资美元债信用利差（JPM Asia Credit Index）
-- VIX（中国版：50ETF波动率指数）
-- 二级市场取消发行占比（>20%=恐慌）
+#### 5.2.2 Regulatory Vacuum
 
-#### 5.2.2 监管政策真空
+**Mechanism:** Regulatory stance anchors market expectations. When a credit event occurs, whether and how the regulator responds directly determines market expectations of "how many more defaults will follow":
 
-**机制：** 监管表态是市场预期的锚。当违约发生后，监管层是否表态、如何表态，直接决定了市场对"后续还有多少违约"的预期：
-
-| 监管态度 | 市场反应 | 传染程度 |
+| Regulatory Stance | Market Reaction | Contagion Level |
 |---|---|---|
-| 明确维稳（"确保金融市场稳定""协调各方化解风险"） | 市场预期可控 | 基础（1-2级） |
-| 沉默/"不便评论" | 市场自行猜度最坏情况 | 升级（3-4级） |
-| "让市场自己解决"/明确不救助 | 刚兑信仰全面打破，市场恐慌达到顶峰 | 极端（5级） |
+| Explicit support ("ensure financial stability," "coordinate resolution") | Market expects contained outcome | Base (Level 1-2) |
+| Silence / "no comment" | Market fills void with worst-case scenario | Elevated (Level 3-4) |
+| "Market solution" / explicit no-bailout | Implicit guarantee faith broken; panic response | Extreme (Level 5) |
 
-**历史案例：**
+**Historical Cases:**
 
-| 时间 | 事件 | 监管表态 | 传染升级程度 |
+| Year | Event | Regulatory Stance | Escalation Magnitude |
 |---|---|---|---|
-| 2019.05（包商银行被接管） | 存款保险基金和央行"接管+保障" | 明确保护个人存款和正常业务 | 中小银行存单利差跳升100-200bp，但系统性风险可控 |
-| 2020.11（永煤违约） | 河南省国资委初期表态模糊 | 信息不对称+态度模糊 | 传染从河南扩散至山西/河北，演变为区域共振+信心崩塌双重冲击 |
-| 2021（恒大违约） | 央行"恒大问题是个别现象" | 明确隔离+不救助 | 市场将恒大与整个地产行业绑定，全行业美元债暴跌30-70% |
+| 2008 (Lehman) | Fed allowed Lehman to fail (initially) | Initial stance: no bailout -> then reversed for AIG | System-wide panic; money market funds broke the buck; entire financial system at risk |
+| 2010-2012 (Eurozone crisis) | Initial policy confusion | EU divided between bailout vs austerity; ECB delayed intervention | Spreads widened 300-800bp across GIIPS; eventually resolved through OMT/ESM |
+| Mar 2020 (COVID) | Central banks acted decisively | Fed announced QE unlimited, then corporate bond purchases; ECB announced PEPP | Market bottomed March 23; credit spreads recovered significantly within weeks |
+| Sep 2022 (UK gilt) | BoE initially silent | BoE initially said "monitoring" -> then emergency gilt purchases | Gilt yields surged 100bp in 3 days; pension fund sector near failure |
+| Mar 2023 (SVB) | US regulators acted initially | Weekend resolution + full deposit guarantee (systemic risk exception) -> then BTFP | Regional bank stress contained after initial SVB/Signature/First Republic failures |
 
-**监测指标：**
-- 监管机构（央行/银保监会/证监会/发改委）针对违约事件的表态文本
-- 地方政府/国资委针对区域违约的表态文本
-- 会议纪要、金融委会议定调
-- 媒体报道倾向（"维稳"or"不救助"）
+**Monitoring Indicators:**
+- Central bank / treasury / regulator statements on financial stability
+- Policy meeting minutes (FOMC, ECB Governing Council, BoE MPC)
+- Financial Stability Reports (FSB, IMF Global Financial Stability Report)
+- Media narrative analysis (bailout vs market resolution language)
 
-#### 5.2.3 高杠杆环境
+#### 5.2.3 High Leverage
 
-**机制：** 高杠杆环境通过以下链条放大传染强度：
+**Mechanism:** High-leverage environment amplifies transmission through:
 
 ```
-市场整体杠杆率高
-    → 多数机构持有的资产已高度质押
-    → 一只债券违约→其被质押的价值下降
-    → 质押比率触发→机构需要补充抵押品或追加保证金
-    → 机构被迫卖出现金（抛售其他资产）
-    → 抛售压力传染至原本不相关的资产类别
-    → 更多保证金追缴→全市场流动性紧张
+Market-wide leverage high
+    -> Most institutions have highly-pledged assets
+    -> A bond defaults -> its collateral value declines
+    -> Haircut triggers -> institutions must post additional collateral or margin
+    -> Institutions forced to sell cash (other assets)
+    -> Selling pressure propagates to previously unrelated asset classes
+    -> More margin calls -> full market liquidity stress
 ```
 
-**历史案例：**
+**Historical Cases:**
 
-| 时间 | 杠杆环境 | 传染事件 | 升级表现 |
+| Year | Leverage Environment | Contagion Event | Escalation |
 |---|---|---|---|
-| 2015.06-07（A股去杠杆） | 场外配资规模极大 | 股灾 | 强制平仓连锁反应→千股跌停→流动性枯竭 |
-| 2016.12（债券市场去杠杆） | 债市杠杆率高 | 国海证券代持违约 | 代持违约→债市整体回调→大量机构被动降杠杆 |
-| 2021.07（地产美元债去杠杆） | 中资地产美元债杠杆投资比例高 | 恒大违约 | 杠杆投资者爆仓→全行业美元债暴跌→外资撤出→境内地产债被波及 |
+| 2008 (GFC) | Investment banks leverage > 30:1 | Lehman, Bear Stearns, Merrill Lynch | Forced deleveraging caused asset fire sales across all markets; repo market froze |
+| 2015 (Swiss franc shock) | High FX carry leverage | SNB removed EUR/CHF floor | FX carry trade forced unwinding; several FX brokers (Alpari, FXCM) bankrupt; global FX vol spike |
+| 2020 (COVID oil crash) | High energy sector leverage | Oil price negative (Apr 2020) | Leveraged oil ETFs liquidated; energy MLP sector restructured; some producers bankruptcy |
+| 2022 (UK LDI crisis) | High pension fund leverage via derivatives | Gilt yield spike | LDI fund margin calls >300bn GBP; BoE emergency gilt purchase; LDI regulation overhauled |
+| 2023 (US regional banks) | High HTM bond portfolio leverage (duration) | SVB HTM losses | Unrealized HTM losses >600bn across all US banks; deposit flight from similar banks |
 
-**监测指标：**
-- 银行间质押式回购余额/净融资量
-- 基金、券商自营、资管产品的杠杆比例
-- 债券质押式回购利率（R007/R001）的波动率
-- 市场融资余额变化趋势
-- CDS/CLN的定价变化
+**Monitoring Indicators:**
+- Total margin debt as % of GDP or market cap
+- Repo outstanding (US tri-party repo, EU repo market)
+- Hedge fund net/gross leverage (Prime Broker surveys)
+- Bank leverage ratio (Tier 1 / Total Assets)
+- Derivative notional to GDP ratio
 
-#### 5.2.4 信息不对称
+#### 5.2.4 Information Asymmetry
 
-**机制：** 信息不对称程度决定了市场在多大程度上用"最坏的假设"来替代缺失的事实：
+**Mechanism:** Information asymmetry determines how much of the "worst possible assumption" the market uses to replace missing facts:
 
 ```
-违约发生后
-    → 发行人沉默（不发公告、不开电话会、高管失联）
-    → 市场无法获取实际风险敞口信息
-    → 投资者以"最坏假设"替代缺失信息
-    → 关联企业的信用评估被急剧压低
-    → 即使后续证明影响有限，损失已无法挽回
+Default event occurs
+    -> Issuer goes silent (no filings, no calls, management missing)
+    -> Market cannot access actual risk exposure information
+    -> Investors replace missing information with "worst-case" assumption
+    -> Related entities' credit assessments sharply downgraded
+    -> Even if impacts prove limited, damage is already done
 ```
 
-**历史案例：**
+**Historical Cases:**
 
-| 时间 | 事件 | 信息不对称程度 | 传染升级表现 |
+| Year | Event | Asymmetry Level | Escalation |
 |---|---|---|---|
-| 2020.11（永煤违约） | 永煤在违约前没有充分沟通 | 极高度 | 市场猜测所有河南国企都可能违约→区域无差别抛售 |
-| 2021.09（恒大违约） | 恒大在违约前信息已经开始高度不透明 | 高度 | 市场无法判断恒大的实际损失敞口→所有地产债被无差别抛售 |
-| 2023（中植系暴雷） | 中植系一直没有公开完整的资产负债信息 | 极高度→完全黑箱 | 市场完全无法估计风险敞口→对全部类似结构企业的信任归零 |
+| 2001-2002 | Enron, WorldCom, Tyco | Extreme | Companies had falsified financials for years; counterparty exposure completely unquantifiable -> cascade of accounting-related credit tightening |
+| 2008 | Lehman counterparty exposure | Very High | Lehman's derivative book was a black box -> AIG, money market funds, CDS counterparties all assumed worst -> systemic freeze |
+| 2020 | Wirecard fraud | Extreme | Absence of auditable financials for years -> partner banks could not quantify liability -> entire German fintech ecosystem penalty |
+| 2023 | First Republic before failure | High | Market could not assess true deposit outflow + HTM loss -> trading at 90% discount to book before FDIC resolution |
 
-**监测指标：**
-- 违约后24/48/72小时内发行人是否发布公告
-- 是否召开市场沟通电话会（管理层出席）
-- 公告内容的详细程度和信息质量
-- 信用评级机构是否及时发布评论
-- 财经媒体对事件的报道量/报道倾向
+**Monitoring Indicators:**
+- Filing timeliness (whether expected filings are made)
+- Audit opinion quality (going concern / material weakness)
+- Management accessibility (earnings call attendance, analyst day frequency)
+- Media investigation volume (critical reporting intensity)
+- Short interest (as a proxy for hidden risk market perception)
 
-#### 5.2.5 年末/季末效应
+#### 5.2.5 Year-End Effect
 
-**机制：** 年末/季末时点，金融机构面临考核压力（流动性覆盖率、流动性比例、不良率等监管指标），风险偏好系统性下降：
+**Mechanism:** At year-end or quarter-end, financial institutions face regulatory/compliance deadlines, reducing risk appetite systematically:
 
 ```
-年末/季末临近
-    → 金融机构风险偏好系统性下降
-    → 对信用风险敏感度上升（"少犯错比多赚钱重要"）
-    → 任何信用事件都会被过度反应
-    → 机构从所有非核心头寸中减仓
-    → 传染从特定主体扩散到市场整体
+Year-end / quarter-end approaching
+    -> Financial institutions' risk appetite systematically declines
+    -> Credit event sensitivity rises ("avoid mistakes > make money")
+    -> Any credit event is over-reacted
+    -> Institutions reduce non-core positions
+    -> Contagion spreads from specific entities to broader market
 ```
 
-**历史案例：**
+**Historical Cases:**
 
-| 时间 | 时点 | 事件 | 传染放大效果 |
+| Year | Period | Event | Amplification |
 |---|---|---|---|
-| 2020.12（年末） | 永煤违约后的12月 | 信用债市场整体冻结 | 年末效应放大违约冲击→一级市场取消发行率>50%→部分优质发行人被迫取消发行 |
-| 2021.12（年末） | 地产危机蔓延 | 年末银行收紧授信 | 地产企业融资情况进一步恶化→多家企业违约集中在年末 |
-| 2018.12（年末） | 民企违约潮 | 年末机构减仓民企债 | 民企债整体利差跳升50-80bp |
+| 2008 | Sep-Nov | GFC full crisis | Year-end panic intensified: Lehman (Sep), Reserve Fund (Sep), AIG (Sep), TARP vote (Oct) |
+| 2010 | Dec | Irish bailout | Year-end sovereign funding stress across Eurozone periphery |
+| 2018 | Dec | US equity + credit selloff | Bond market illiquidity contributed to 4th Q selloff; IG spreads widened 30bp |
+| 2020 | Dec | COVID year-end liquidity stress | Credit markets still fragile; year-end repo rate volatility |
+| 2022 | Dec | LDI/Gilt crisis aftermath | Year-end pension rebalancing + LDI restructuring constraints |
 
-**监测指标：**
-- 日历日期（10月后逐月效应递增，12月达到峰值）
-- 银行间市场7天/14天回购利率（季末年末跳升幅度）
-- 各类型信用债的月末/季末成交量和价格变动
-- 监管考核指标的压力测试结果
+**Monitoring Indicators:**
+- Calendar date (effect increases from Oct, peaks Dec)
+- Interbank rates (LIBOR/OIS spread, EURIBOR-OIS) at quarter-ends
+- Year-end repo specialness and GC repo rate volatility
+- Regulatory deadline impact (LCR, NSFR compliance)
 
-### 5.3 升级因子协同效应
+### 5.3 Escalation Factor Synergy
 
-升级因子之间存在**正协同**——多个升级因子同时出现时，传染强度不是简单相加而是几何级放大：
+Escalation factors exhibit **positive synergy** -- when multiple factors trigger simultaneously, contagion intensity amplifies multiplicatively rather than additively:
 
-| 升级因子组合 | 协同效应 | 历史案例 |
+| Factor Combination | Synergy Coefficient | Historical Case |
 |---|---|---|
-| 恐慌情绪 + 信息不对称 | 市场在信息缺失的情况下自行编造最坏叙事→自我实现的恐慌 | 永煤违约（市场恐慌+河南国资委沉默） |
-| 高杠杆 + 恐慌情绪 | 杠杆投资者首先爆仓→被动抛售→更多投资者被触发→恐慌指数飙升 | 2015股灾、2021地产美元债 |
-| 监管真空 + 年末效应 | 市场在年末考核压力下缺乏政策锚→过度反应→比平时更剧烈的传染 | 2020年12月（永煤违约后一个月） |
-| 三个及以上同时触发 | 系统性风险临界点→传染从局部升级为全市场冲击 | 2008全球金融危机（恐慌+高杠杆+监管真空+信息不对称同时出现） |
+| Market Panic + Information Asymmetry | 1.5x - 2.0x | 2008 (Lehman failure in opaque derivatives market); 2023 (SVB deposit concentration unknown to market) |
+| High Leverage + Market Panic | 2.0x - 3.0x | 2008 (investment bank leverage 30:1 + panic); 2022 (UK LDI leverage + gilt panic) |
+| Regulatory Vacuum + Year-End | 1.5x | 2010 (Eurozone year-end funding stress with policy confusion); 2022 (UK gilt year-end with delayed BoE response) |
+| Three or more simultaneously | 3.0x+ | Global systemic crisis threshold: 2008 (panic + leverage + regulatory vacuum + information asymmetry all active) |
 
-### 5.4 升级因子在传染类型中的权重
+### 5.4 Escalation Factor Weights by Contagion Type
 
-| 升级因子 | 信用链传染 | 区域共振 | 流动性挤兑 | 信心崩塌 |
+| Factor | Credit Chain (C) | Regional Resonance (R) | Liquidity Squeeze (L) | Confidence Collapse (S) |
 |---|---|---|---|---|
-| 恐慌情绪 | 中等（情绪影响应收账款的追偿意愿，但不影响实际现金损失） | 高（恐慌加速区域无差别抛售） | **极高**（恐慌是流动性挤兑的核心燃料） | **极高**（信心崩塌本身就是恐慌的极端表现） |
-| 监管真空 | 低（政府不会干预商业债权债务关系） | **极高**（政府表态直接决定区域信用走向） | 中等（监管可注入流动性但无法改变投资者偏好） | 极高（监管表态是信心崩塌的"开关"） |
-| 高杠杆 | 低（供应链关系与杠杆无关） | 中等（杠杆资金也会参与区域债抛售） | **极高**（高杠杆是流动性挤兑的前提条件） | 高（去杠杆机构的抛售会放大信心崩溃的效果） |
-| 信息不对称 | 中高（信息不对称导致供应商无法判断应收款回收概率） | 高（信息不对称→投资者采用"一刀切"策略） | 中等（基金持仓信息公开程度有限） | **极高**（信息真空是信心崩塌的温床） |
-| 年末效应 | 低（年末催款但不会改变实体的现金回收能力） | 中等（年末减少区域敞口） | 高（年末流动性紧张放大挤兑效果） | 高（年末风险偏好下降放大恐慌） |
+| **Market Panic** | Moderate (emotion affects receivable recovery willingness but not actual cash loss) | High (panic accelerates regional indiscriminate selling) | **Extreme** (panic is the core fuel of liquidity squeeze) | **Extreme** (confidence collapse is the extreme form of panic) |
+| **Regulatory Vacuum** | Low (governments do not intervene in commercial debt relationships) | **Extreme** (government stance directly determines regional credit trajectory) | Moderate (regulator can inject liquidity but cannot change preferences) | Extreme (regulatory stance is the "on/off switch" for confidence collapse) |
+| **High Leverage** | Low (supply chain relationships unrelated to leverage) | Moderate (leveraged funds also participate in regional bond selling) | **Extreme** (leverage is a precondition for liquidity squeeze) | High (deleveraging amplification of confidence crash) |
+| **Information Asymmetry** | Medium-High (asymmetry prevents suppliers from assessing receivable recovery probability) | High (asymmetry -> investors use "blanket" de-risking strategy) | Moderate (fund holding transparency limited) | **Extreme** (information vacuum is the breeding ground for confidence collapse) |
+| **Year-End Effect** | Low (year-end billing does not change actual cash recovery) | Moderate (year-end reduces regional exposure) | High (year-end liquidity tightness amplifies squeeze) | High (year-end risk appetite decline amplifies panic) |
 
 ---
 
-## 六、实操应用指引
+## 6. Practical Application Guide
 
-### 6.1 分析框架操作流程
+### 6.1 Analytical Framework Process
 
-在信用分析中加入传染风险评估的推荐流程：
+Recommended process for incorporating contagion risk assessment into credit analysis:
 
 ```
-第1步：识别传染源（谁可能违约？）
-    ├── 高杠杆/弱资质/到期集中的主体
-    └── 排除内部原因（经营恶化） vs 外部原因（传染接收）
+Step 1: Identify Contagion Source (Who might default?)
+    +-- High leverage / weak credit / concentrated maturity entities
+    +-- Distinguish internal (operational deterioration) vs external (contagion receptor)
 
-第2步：映射传染路径（传染源会通过哪些路径传导？）
-    ├── 供应商-客户链 → 核对前5大客户/供应商
-    ├── 担保圈 → 核对对外担保数据
-    ├── 同区域国企 → 核对区域国企发债图谱
-    ├── 同评级 → 核对负向评级迁移可能性
-    ├── 同行业 → 核对行业信用利差趋势
-    ├── 同融资渠道 → 核对企业融资结构
-    └── 同实际控制人 → 核对实际控制人企业群
+Step 2: Map Contagion Pathways (Which channels will the source transmit through?)
+    +-- Supply Chain -> check top 5 customer/supplier concentration
+    +-- Financial Linkage -> check guarantee and derivative exposure
+    +-- Regional/Sector Concentration -> check regional bond map
+    +-- Common Creditor -> check shared bank/asset manager concentration
+    +-- Index Inclusion -> check index membership and passive fund ownership
+    +-- Rating Cliff Effects -> check rating headroom and sector outlook
+    +-- Sovereign-Bank Nexus -> check government bond exposure
 
-第3步：评估升级因子（当前市场条件是否会放大传染？）
-    ├── 恐慌情绪 → VIX/信用利差
-    ├── 监管真空 → 政策表态
-    ├── 高杠杆 → 质押式回购规模
-    ├── 信息不对称 → 发行人沟通透明度
-    └── 年末效应 → 日历日期+流动性
+Step 3: Assess Escalation Factors (Will current market conditions amplify contagion?)
+    +-- Market Panic -> VIX, credit spreads
+    +-- Regulatory Vacuum -> policy stance
+    +-- High Leverage -> repo outstanding, margin debt
+    +-- Information Asymmetry -> issuer disclosure quality
+    +-- Year-End Effect -> calendar date + liquidity
 
-第4步：输出传染暴露评分
-    ├── 每条路径的暴露评分（1-5）
-    ├── 总体传染风险等级（低/中/高/极高）
-    └── 关键监测指标（哪些数据需要持续跟踪）
+Step 4: Output Contagion Exposure Score
+    +-- Each pathway exposure score (1-5)
+    +-- Overall contagion risk level (Low / Medium / High / Extreme)
+    +-- Key monitoring indicators (which data to track continuously)
 ```
 
-### 6.2 传染暴露评分卡模板
+### 6.2 Contagion Exposure Scorecard Template
 
-| 评估维度 | 1分（极低） | 2分（低） | 3分（中等） | 4分（高） | 5分（极高） |
+| Assessment Dimension | Score 1 (Very Low) | Score 2 (Low) | Score 3 (Medium) | Score 4 (High) | Score 5 (Very High) |
 |---|---|---|---|---|---|
-| **路径覆盖度** | 与传染源无直接/间接连接 | 有间接连接但距离远（≥3层） | 有间接连接（2层） | 有直接连接（1层） | 直接连接+高敞口+无替代方案 |
-| **路径集中度** | 分散（无单一路径>10%敞口） | 较分散（单一路径<20%） | 适度集中（20-30%） | 集中（30-50%） | 极其集中（>50%暴露于单一风险源） |
-| **资产流动性** | 即时可变现（国债/利率债） | 短期可变现（AAA信用债） | 中等变现能力（AA+信用债） | 可变现但有较大折价 | 几乎不可变现（私募/贷款/股权） |
-| **信息透明度** | 定期详细披露+主动沟通 | 定期披露+正常沟通 | 披露时效性和详细程度一般 | 披露延迟/避重就轻 | 不披露/管理层失联 |
-| **外部支持** | 中央/省级政府明确支持 | 地方政府有支持能力和记录 | 支持可能性不确定 | 支持能力弱/意愿不明 | 明确不救助/无支持 |
+| **Pathway Coverage** | No direct/indirect connection to source | Indirect connection, distant (>= 3 layers) | Indirect connection (2 layers) | Direct connection (1 layer) | Direct + high exposure + no substitute |
+| **Pathway Concentration** | Diversified (no single pathway >10%) | Moderately diversified (<20%) | Moderate concentration (20-30%) | Concentrated (30-50%) | Extremely concentrated (>50% exposed to one source) |
+| **Asset Liquidity** | Immediately realizable (treasuries/rates) | Short-term realizable (AAA credit) | Moderate realizable (AA+ credit) | Realizable with significant haircut | Nearly non-realizable (private debt, loans, equity) |
+| **Information Transparency** | Regular detailed disclosure + proactive communication | Regular disclosure + normal communication | Average disclosure timeliness and detail | Delayed disclosure / evasive | No disclosure / management unreachable |
+| **External Support** | Central/sovereign government explicit support | Government has support capacity and track record | Support probability uncertain | Weak support capacity / unclear willingness | Explicit no-bailout / no support |
 
-### 6.3 与现有引擎文档的集成
+### 6.3 Integration with Existing Engine Documents
 
-| 引擎文档 | 集成方式 | 具体操作 |
+| Engine Document | Integration Method | Specific Operation |
 |---|---|---|
-| [传染矩阵](contagion-matrix.md) | 13×13行业传染强度矩阵 | 将本理论中的传导路径映射为行业间具体传导强度 |
-| **行业框架** | 在十维评分中增加D11"传染暴露度"维度 | 每种行业类型附加传染暴露评级 |
-| **范式文档** | 各范式文档的"特殊风险"章节引用本文件 | 在范式文档中加入"本范式下的传染风险暴露"章节 |
-| **定性分析** | 在信息源评估中纳入"信息不对称度" | 将发行人信息透明度作为定性评估的常规维度 |
-| **定量分析** | 在利差分析和压力测试中纳入传染因子 | 将升级因子纳入压力测试参数的敏感性分析 |
-| **双轨方法** | 在交叉对撞矩阵中增加传染风险的A/B分歧评估 | A轨（基本面对传染风险的判断）vs B轨（市场定价隐含的传染风险） |
-| **马赛克引擎** | 增加传染信号提取功能 | 从公开数据中提取传染路径信号、升级因子信号 |
+| [Contagion Matrix](contagion-matrix.md) | 19x19 International Industry Contagion Matrix | Map theoretical pathways to inter-industry contagion intensities |
+| **Industry Framework** | Add D11 "Contagion Exposure" dimension to ten-dimension scoring | Each industry type annotated with contagion exposure rating |
+| **Paradigm Documents** | Reference this document in each paradigm's "Special Risks" section | Add "Contagion Risk Exposure under This Paradigm" subsection |
+| **Qualitative Analysis** | Include "Information Asymmetry Level" in information source assessment | Make entity disclosure transparency a standard dimension |
+| **Quantitative Analysis** | Incorporate contagion factors in spread analysis and stress testing | Include escalation factors in stress test parameter sensitivity analysis |
+| **Dual-Track Method** | Add contagion risk Track A/Track B divergence assessment | Track A (fundamental view of contagion risk) vs Track B (market pricing implied contagion risk) |
+| **Mosaic Engine** | Add contagion signal extraction function | Extract contagion pathway signals, escalation factor signals from public data |
 
-### 6.4 局限性声明
+### 6.4 Limitation Statement
 
-传染理论存在以下固有局限，使用者需知悉：
+Contagion theory has the following inherent limitations:
 
-1. **信心崩塌无法提前预测**——它本质上是一个行为金融事件，其触发点和传导路径取决于市场叙事和群体心理，无法用基本面或模型预测
-2. **升级因子的量化仅为基础**——多个升级因子同时触发时的"跷跷板效应"难以精确量化，历史数据提供的参考价值有限
-3. **非上市企业数据缺口**——传染分析高度依赖公开的供应链、担保、关联方信息，非上市企业的相关数据存在显著缺口
-4. **中国市场特殊性**——本文件的分析逻辑以中国市场为基准，直接应用于其他市场可能需要调整假设和参数
-5. **框架非投资建议**——传染理论提供的是风险分析框架，不构成投资/买卖/持有建议
+1. **Confidence collapse cannot be predicted in advance** -- it is fundamentally a behavioral finance event whose trigger point and transmission path depend on market narrative and herd psychology, beyond fundamental or model prediction
+2. **Escalation factor quantification is preliminary** -- the "multiplicative synergy" of multiple concurrent escalation factors is difficult to quantify precisely; historical data reference value is limited
+3. **Private company data gap** -- contagion analysis relies heavily on public supply chain, guarantee, and related-party information; significant gaps exist for non-public entities
+4. **Framework applicability** -- this framework is calibrated on global systemic events (GFC 2008, Eurozone 2011-12, COVID 2020). Application to specific jurisdictions may require parameter adjustment
+5. **Not investment advice** -- contagion theory provides a risk analysis framework; it does not constitute buy/sell/hold recommendations
 
 ---
 
-## 附录
+## Appendix
 
-### A. 历史传染事件时间线（2015-2025）
+### A. Historical Contagion Event Timeline (2000-2025)
 
-| 年份 | 传染源 | 范围 | 主要传染类型 | 主要路径 |
+| Year | Source | Scope | Primary Type | Primary Pathway |
 |---|---|---|---|---|
-| 2015 | 天威集团（央企） | 央企债首次违约 | 信心崩塌 | 同评级 |
-| 2015 | 山东海龙 | 山东民企担保链 | 信用链传染 | 担保圈 |
-| 2016 | 中铁物资（央企） | 央企债暂停交易 | 信心崩塌 | 同评级+同融资渠道 |
-| 2017 | 齐星集团（山东） | 山东民企担保圈 | 信用链传染 | 担保圈 |
-| 2018 | 丹东港 | 港口企业+区域民企 | 信用链传染 | 同区域+同行业 |
-| 2018 | 上海华信 | 石油化工+能源行业 | 信用链传染 | 同行业+同实际控制人 |
-| 2018 | 东方金钰 | 珠宝行业 | 信用链传染 | 同行业 |
-| 2019 | 庞大集团 | 汽车经销商 | 信用链传染 | 供应商-客户链 |
-| 2019 | 中信国安（中信系） | 中信集团旗下 | 信用链传染 | 同实际控制人 |
-| 2019.05 | 包商银行 | 中小银行 | 流动性挤兑 | 同融资渠道 |
-| 2019 | 方正集团 | 校企（北大系） | 信用链传染 | 同实际控制人 |
-| 2019 | 华晨集团 | 辽宁省国企 | 区域共振 | 同区域国企 |
-| 2020 | 青海国投 | 青海省国企 | 区域共振 | 同区域国企 |
-| 2020.11 | **永煤控股** | **河南→山西→河北国企债 | 区域共振+信心崩塌 | 同区域国企+同评级 |
-| 2020 | 紫光集团 | 半导体行业 | 信心崩塌 | 同行业+同融资渠道 |
-| 2021 | 华夏幸福 | 地产行业 | 信用链传染 | 供应商-客户链 |
-| 2021 | **恒大集团** | **地产行业→建筑商→供应商 | 流动性挤兑+信心崩塌 | 同行业+同融资渠道+供应商链 |
-| 2021 | 苏宁易购 | 零售行业+张近东体系 | 信用链传染 | 同实际控制人 |
-| 2021 | 蓝光发展 | 地产行业 | 同行业传染 | 同行业 |
-| 2021 | 花样年 | 地产行业+美元债 | 流动性挤兑 | 同融资渠道 |
-| 2022 | 融创中国 | 地产行业 | 同行业传染 | 同行业+同融资渠道 |
-| 2022 | 正荣地产 | 地产行业 | 同行业传染 | 同行业+同融资渠道 |
-| 2023 | **中植系暴雷** | **信托行业→财富管理行业 | 信用链传染+信心崩塌 | 同实际控制人+同融资渠道 |
-| 2023 | 碧桂园 | 地产行业 | 同行业传染 | 同行业+供应商链 |
-| 2023 | 远洋集团 | 地产+保险（中国人寿关联） | 同行业传染 | 同行业 |
-| 2024 | 宝能系 | 多元化控股集团 | 信用链传染 | 同实际控制人 |
-| 2024 | 万科流动性压力 | 地产行业 | 同行业传染 | 同行业+同融资渠道 |
+| 2001 | Enron | Energy sector, audit/accounting | Confidence Collapse | Financial Linkage |
+| 2002 | WorldCom | Telecom sector | Confidence Collapse | Rating Cliff |
+| 2007 | BNP Paribas (subprime fund freeze) | Structured credit, global banking | Liquidity Squeeze | Common Creditor |
+| 2008.03 | Bear Stearns | Investment banking, prime brokerage | Liquidity Squeeze | Common Creditor |
+| 2008.09 | **Lehman Brothers** | **Global financial system** | **Confidence Collapse + Liquidity Squeeze** | **Common Creditor + Supply Chain** |
+| 2008.09 | AIG | Insurance, global banking | Credit Chain | Financial Linkage |
+| 2009-2010 | Greece sovereign | Eurozone sovereign debt | Regional Resonance | Sovereign-Bank Nexus |
+| 2010-2012 | **GIIPS sovereigns** | **Eurozone periphery** | **Regional Resonance + Confidence Collapse** | **Sovereign-Bank Nexus** |
+| 2011 | Spanish cajas | Spanish regional banking | Regional Resonance | Regional/Sector Concentration |
+| 2013 | Cyprus banking crisis | Cypriot banking system | Sovereign-Bank Nexus | Regional/Sector Concentration |
+| 2015 | Petrobras | Brazilian oil & gas | Credit Chain | Supply Chain |
+| 2016 | Monte dei Paschi | Italian banking | Regional Resonance | Regional/Sector Concentration |
+| 2018 | EM index exclusion (Argentina/Turkey) | Emerging market bonds | Liquidity Squeeze | Index Inclusion |
+| 2020.03 | **COVID crash** | **Global financial markets** | **Liquidity Squeeze + Confidence Collapse** | **All pathways** |
+| 2020.04 | Negative oil price | Energy sector | Liquidity Squeeze | Index Inclusion |
+| 2020 | Wirecard | German fintech | Credit Chain | Supply Chain + Financial Linkage |
+| 2021 | Evergrande | Global HY property, China | Confidence Collapse | Supply Chain + Regional/Sector |
+| 2022 | LDI/Gilt crisis (UK) | UK pension, gilt market | Liquidity Squeeze | Index Inclusion + Common Creditor |
+| 2023.03 | **SVB / Signature / First Republic** | **US regional banking** | **Liquidity Squeeze + Confidence Collapse** | **Common Creditor + Sovereign-Bank** |
+| 2023.03 | Credit Suisse | Global banking, AT1 market | Confidence Collapse | Sovereign-Bank Nexus + Index Inclusion |
+| 2023-2024 | US commercial real estate stress | Regional bank + CRE debt | Liquidity Squeeze | Common Creditor + Sovereign-Bank |
 
-**特别标注（粗体）= 系统性冲击事件，影响范围超出单一主体和单一行业**
+**Bold = systemic shock events affecting scope beyond a single entity and sector**
 
-### B. 传染信号快速查检表
+### B. Contagion Signal Quick Checklist
 
-在分析中检查以下问题即可快速判断传染暴露度：
+**Step 1: Are YOU a contagion source?**
+- [ ] Do you have high customer concentration (top 5 > 30% of revenue)? -> Your default would infect these customers
+- [ ] Do you have significant off-balance-sheet guarantees (guarantee / net assets > 50%)? -> Compensation pressure infects you
+- [ ] Are you a major counterparty in derivative contracts? -> Your default infects counterparties
+- [ ] Are you in a sector/region with previous default history? -> Your default may trigger regional/sector re-rating
 
-**第一步：你会传染别人吗？**
-- [ ] 你是否有高集中度的大客户（前5大客户>30%收入）？→ 你违约会传染给这些客户
-- [ ] 你是否有大量对外担保（担保金额/净资产>50%）？→ 代偿压力会传染给你
-- [ ] 你是否为其他企业提供资金归集/背靠背融资？→ 资金被归集的企业会受你牵连
-- [ ] 你是否是国资企业且所在省份已有违约记录？→ 你的违约可能触发区域共振
+**Step 2: Are YOU a contagion receptor?**
+- [ ] Are your receivables aging long / concentrated in few customers? -> Customer default infects you
+- [ ] Is your funding channel concentrated (single bond type / bank relationship)? -> Channel freeze infects you
+- [ ] Are you categorized into a "labeled" market group (distressed sector, weak region)? -> Label risk infects you
+- [ ] Are you part of an interconnected corporate group with prior default history? -> Related-party risk infects you
 
-**第二步：别人传染你会受伤吗？**
-- [ ] 你的应收账款账龄是否偏长/是否高度集中于少数客户？→ 客户违约会传染给你
-- [ ] 你的融资渠道是否单一（依赖一种债券/一种融资方式）？→ 融资渠道冻结会传染给你
-- [ ] 你是否被市场归类到某一标签化群体（民企/地产/弱资质区域）？→ 标签风险会传染给你
-- [ ] 你是否属于一个有违约先例的实际控制人体系？→ 实控人风险会传染给你
+**Step 3: Escalation Warning**
+- [ ] Is VIX / credit spread at elevated levels?
+- [ ] What is the regulatory stance on the most recent credit event (supportive / silent / no bailout)?
+- [ ] Is market leverage above historical baseline?
+- [ ] Is the defaulted entity in an information vacuum?
+- [ ] Is the current date near quarter-end / year-end?
 
-**第三步：升级因子警示**
-- [ ] 当前VIX/信用利差是否处于异常高位？
-- [ ] 监管对最近的违约事件是什么态度（维稳/沉默/不救助）？
-- [ ] 市场整体杠杆率是否偏高？
-- [ ] 违约企业是否处于沟通真空期？
-- [ ] 当前是否靠近季度末/年末？
+**Scoring Reference:** Step 1 + Step 2 combined hit > 3 "Yes" -> High / Very High contagion risk; hit 2 "Yes" -> Medium risk; hit 1 "Yes" -> Low risk. Any "Yes" in Step 3 increases risk level by 1-2 notches.
 
-**评分参考：** 第一步+第二步合计命中3个以上"是"→传染风险高/极高；命中2个→中等风险；命中1个→低风险。第三步任何"是"的答案都会使风险上升1-2档。
+### C. Version History
 
-### C. 版本变更记录
-
-| 版本 | 日期 | 变更内容 | 作者 |
+| Version | Date | Changes | Author |
 |---|---|---|---|
-| v0.6.1-alpha | 2026-07-10 | 初版创建：四种传染类型 · 七条传导路径 · 六种范式映射 · 升级因子 | 引擎团队 |
-| v0.7.0-alpha | 2026-07-10 | 系统智能层整合：引擎版本统一为v0.7.0-alpha，与传染矩阵/集中度框架/预警框架形成完整系统智能层 | 引擎团队 |
+| v0.6.1-alpha | 2026-07-10 | Initial creation: Four contagion types / Seven pathways / Six-paradigm mapping / Escalation factors (China market focused) | Engine Team |
+| v0.7.0-alpha | 2026-07-10 | Systemic intelligence layer integration: engine version unified to v0.7.0-alpha, forming complete contagion framework with contagion matrix | Engine Team |
+| v0.8.4-release | 2026-07-10 | Internationalization: replaced China-specific examples with global systemic events (GFC 2008, Eurozone 2011-12, COVID 2020); converted six paradigms to international P1-P6 framework; harmonized seven pathways to global financial transmission channels | Engine Team |

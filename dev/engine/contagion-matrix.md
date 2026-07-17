@@ -1,956 +1,959 @@
-# 13行业传染矩阵
+# International Industry Contagion Matrix
 
-**版本**: v0.8.4-release | **日期**: 2026-07-10
+**Version:** v0.8.4-release | **Date:** 2026-07-10
 
----
-
-## 目录
-
-1. [行业分类映射](#一行业分类映射)
-2. [13×13传染矩阵总表](#二13×13传染矩阵总表)
-3. [逐行业传染路径详解](#三逐行业传染路径详解)
-4. [矩阵构建逻辑](#四矩阵构建逻辑)
-5. [基于矩阵的行业聚类](#五基于矩阵的行业聚类)
-6. [传染放大器条件](#六传染放大器条件)
-7. [与现有引擎集成](#七与现有引擎集成)
-8. [局限性声明](#八局限性声明)
-9. [附录](#九附录)
+> **[PRELIMINARY]** Matrix intensities are initial methodological estimates pending empirical calibration against international default correlation data. All scores are theoretical constructs based on economic linkage analysis and historical precedent mapping, not statistical estimation. Users should treat these as directional indicators rather than precise measures.
 
 ---
 
-## 一、行业分类映射
+## Table of Contents
 
-### 1.1 理论基础
-
-根据《传染理论基础》(v0.8.4-release)定义的 **6 种分析范式 + 1 个特殊类别（LGFV）**，将13个行业映射至对应范式。同一范式内的行业因共享相同的风险驱动因子、融资特征和市场叙事逻辑，**先天性具有更高的传染耦合度**。
-
-### 1.2 范式映射表
-
-| 序号 | 行业 | 主要范式 | 次要范式 | 范式核心特征 | 金融属性 | 国企占比 |
-|------|------|----------|---------|-------------|---------|---------|
-| 1 | 光伏/储能 | **范式A** [政策驱动型](industry-framework.md) | — | 政策周期决定行业总需求·设备/材料进口依赖·产能周期波动大 | 中等 | 中等(央企/地方国企参股) |
-| 2 | 半导体/集成电路 | **范式A** [政策驱动型](industry-framework.md) | **范式B** [技术壁垒型](industry-framework.md) | 双重属性：地缘政治权重最高+技术壁垒·国产替代主线·资本开支巨大 | 高 | 中等(大基金/国资背景) |
-| 3 | 高端装备/工业母机 | **范式B** [技术壁垒型](industry-framework.md) | — | 技术密集型·客户定制化·进口替代逻辑·周期性与政策关联 | 中等 | 中等(部分央企) |
-| 4 | 生物医药/创新药 | **范式B** [技术壁垒型](industry-framework.md) | **范式A** [政策驱动型](industry-framework.md) | 研发驱动·管线价值决定信用·融资依赖IPO/私募·高不确定性·NMPA/NRDL/集采政策敏感 | 中高 | 低(民企为主) |
-| 5 | 医疗器械 | **范式B** [技术壁垒型](industry-framework.md) | — | 技术壁垒+集采政策影响·设备+耗材双轮驱动·国产替代 | 中等 | 中等(部分国企) |
-| 6 | 新能源汽车 | **范式C** 存量博弈型（OEM）/ 利润要塞+**范式B**（供应链） | — | 双轨制：OEM适用存量博弈/生存模型，供应链适用利润要塞/技术壁垒模型 | 高 | 低(民企为主) |
-| 7 | 数据中心/算力基建 | **范式D** [资产租约型](industry-framework.md) | **范式F** [网络+流量型](paradigm-network-traffic.md) | 重资产·大客户租约驱动·REITs/ABS融资·NOI决定偿债；云/电信混合场景流量属性上升 | 极高 | 中等(国企+民企) |
-| 8 | 城投债 / LGFV | **特殊：政府信用绑定型** | — | 地方政府信用背书·区域财政决定信用·基础设施投资载体 | 极高(金融工具属性) | 100%(地方政府平台) |
-| 9 | 食品饮料 | **范式E** [品牌+渠道型](paradigm-brand-channel.md) | — | 品牌壁垒·渠道为王·现金流稳定·消费者信任敏感 | 低 | 极低(民企为主) |
-| 10 | 纺织服装 | **范式E** [品牌+渠道型](paradigm-brand-channel.md) | — | 品牌+代工双模式·出口导向·季节性·消费降级敏感 | 低 | 极低(民企为主) |
-| 11 | 交通运输 | **范式F** [网络+流量型](paradigm-network-traffic.md) | — | 基础设施属性·重资产·高杠杆·现金流稳定·国企占比高 | 高 | 高(铁路/公路/港口/航空多为国企) |
-| 12 | 商贸零售 | **范式F** [网络+流量型](paradigm-network-traffic.md) | — | 渠道价值·现金流好·线上线下融合·消费波动敏感 | 中等 | 低(民企+混合所有制) |
-| 13 | 传媒/互联网 | **范式F** [网络+流量型](paradigm-network-traffic.md) | — | 流量驱动·平台效应·广告/付费收入·监管敏感·马太效应 | 中高 | 低(民企为主) |
-
-### 1.3 范式内聚类
-
-| 范式 | 纳入行业 | 范式内传染特征 |
-|------|---------|---------------|
-| **范式A** ([政策驱动型](industry-framework.md)) | 光伏/储能、半导体/集成电路（主要） | 政策转向同步冲击·产能周期共振·融资环境同频；半导体同时受技术壁垒范式影响 |
-| **范式B** ([技术壁垒型](industry-framework.md)) | 高端装备、生物医药（主要）、医疗器械、新能源汽车-供应链；半导体（次要） | 供应链紧密·技术路线迭代风险·IPO融资渠道共振；生物医药同时受政策驱动范式影响 |
-| **范式C** (存量博弈型) | 新能源汽车-OEM | **单例范式**：该范式仅新能源车 OEM 一个子行业，范式内传染极弱；主要通过跨范式链接（与光伏/半导体/城投等共享上游或园区）传导 |
-| **范式D** (资产租约型) | 数据中心/算力基建 | **单例范式**：该范式仅数据中心一个行业，范式内传染极弱；主要通过跨范式链接（与半导体/传媒互联网/城投等）传导 |
-| **范式E** ([品牌+渠道型](paradigm-brand-channel.md)) | 食品饮料、纺织服装 | 消费信心共振·品牌危机示范效应·代工厂供应链传染 |
-| **范式F** ([网络+流量型](paradigm-network-traffic.md)) | 交通运输、商贸零售、传媒/互联网 | 网络效应交叉·平台生态捆绑·物流/信息流/资金流三流合一 |
-| **特殊** (政府信用绑定型) | 城投债 / LGFV | 通过区域财政和基础设施投资与多行业广泛连接；不强制归入六范式 |
+1. [Industry Classification and Paradigm Mapping](#1-industry-classification-and-paradigm-mapping)
+2. [Contagion Matrix — 19x19 Intensity Grid](#2-contagion-matrix--19x19-intensity-grid)
+3. [Contagion Pathways and Graph Representation](#3-contagion-pathways-and-graph-representation)
+4. [Matrix Construction Logic](#4-matrix-construction-logic)
+5. [Derived Metrics — Super-Spreaders, Vulnerability, and Coefficients](#5-derived-metrics--super-spreaders-vulnerability-and-coefficients)
+6. [Stress Escalation — Factor-Specific Intensity Jumps](#6-stress-escalation--factor-specific-intensity-jumps)
+7. [Integration with Engine Components](#7-integration-with-engine-components)
+8. [Limitations](#8-limitations)
+9. [Appendix](#9-appendix)
 
 ---
 
-## 二、13×13传染矩阵总表
+## 1. Industry Classification and Paradigm Mapping
 
-### 2.1 传热图(强度评分矩阵)
+### 1.1 Paradigm Framework
 
-下表为13×13传染强度评分矩阵。数值含义：1=极弱，2=弱，3=中等，4=强，5=极强。
-行=传染源行业，列=传染受体行业。对角线为"-"(自身)。
+Based on [Contagion Theory](contagion-theory.md) Section 4, each international industry is mapped to a primary and secondary analytical paradigm. Industries sharing the same paradigm exhibit **higher intrinsic contagion coupling** due to shared risk drivers, funding characteristics, and market narrative logic.
 
-```
-         │ 光伏 半导 高端 医药 器械 新能 数据 城投 食品 纺织 交通 商贸 传媒
-─────────┼─────────────────────────────────────────────────────────────────
-光伏     │  -    4    3    1    1    3    1    3    1    1    1    1    1
-半导体   │  4    -    4    1    3    3    3    2    1    1    1    1    1
-高端装备 │  3    4    -    2    2    2    1    2    1    1    2    1    1
-生物医药 │  1    1    2    -    4    1    1    2    1    1    1    1    1
-医疗器械 │  1    3    2    4    -    1    1    1    1    1    1    1    1
-新能源车 │  3    3    2    1    1    -    2    2    1    1    2    1    1
-数据中心 │  1    3    1    1    1    2    -    3    1    1    1    2    3
-城投债   │  3    2    2    2    1    2    3    -    1    1    4    1    1
-食品饮料 │  1    1    1    1    1    1    1    1    -    2    1    2    1
-纺织服装 │  1    1    1    1    1    1    1    1    2    -    1    2    2
-交通运输 │  1    1    1    2    1    2    1    4    1    1    -    2    2
-商贸零售 │  1    1    1    1    1    1    2    1    2    2    2    -    3
-传媒互联网│  1    1    1    1    1    2    3    1    2    2    2    3    -
-```
-
-### 2.2 矩阵标记说明
-
-矩阵中每个单元格包含5个维度信息。为便于表格展示，使用以下编码：
-
-**传染类型编码：**
-- C = 信用链传染 (Credit Chain)
-- R = 区域共振 (Regional Resonance)
-- L = 流动性挤兑 (Liquidity Crunch)
-- S = 信心崩塌 (Confidence Collapse)
-- - = 无显著传导路径
-
-**置信度编码：**
-- H = 高 — 有历史案例验证
-- M = 中 — 逻辑推理+部分证据
-- L = 低 — 理论推断·无历史案例
-
-**方向编码：**
-- ↔ = 双向传导显著
-- → = 单向传导
-- - = 无显著传导
-
-**示例：** `C+R(4,H,↔)` = 信用链+区域共振，强度4，高置信度，双向传导
-
-### 2.3 下游消费规则
-
-每个矩阵单元格的输出字段按以下规则被上层模块消费：
-
-| 字段 | 被消费方 | 用途 |
+| Paradigm | Description | Core Characteristics |
 |---|---|---|
-| `intensity` | SRI | 计算传染力系数，加权行业风险得分 |
-| `intensity` | Concentration | 识别 super-spreader 行业和 cluster 风险 |
-| `direction` | Concentration | 判断传染是单向还是双向，影响 cluster 划分 |
-| `confidence` | 当前版本未使用 | 保留用于未来置信加权 |
-| `historical_cases` | 当前版本未使用 | 保留用于回测和说明 |
+| **P1: Policy-Driven** | Sectors where government policy, regulation, geopolitics, or fiscal/tax regimes determine demand cycles and profitability | Regulatory sensitivity, policy cycle dependence, geopolitical exposure |
+| **P2: Technology Moat** | R&D-intensive sectors where IP, patents, and proprietary technology create durable competitive advantage | High R&D intensity, patent concentration, skilled labor dependence |
+| **P3: Zero-Sum Game** | Cyclical, commoditized sectors where price competition erodes margins; one player's gain is another's loss | Overcapacity risk, price elasticity, cyclical demand |
+| **P4: Asset Lease** | Infrastructure-heavy sectors where cash flows are asset-utilization driven; NOI and DSCR are key metrics | High fixed assets, long-duration contracts, infrastructure financing |
+| **P5: Brand + Channel** | Consumer sectors where brand equity, distribution networks, and consumer trust are primary value drivers | Brand intangible value, channel dependency, consumer trust sensitivity |
+| **P6: Network + Traffic** | Platform and network-effect sectors where scale, user base, and data generate increasing returns | Network effects, multi-sided platforms, scale economics |
 
-> **注意**：confidence 和 historical_cases 在当前 v0.8.4-release 的 SRI/集中度计算中未被量化消费；它们用于人工审阅和未来版本扩展。
+### 1.2 Industry-to-Paradigm Mapping Table
 
-### 2.4 完整矩阵(含全部标记)
+| # | Industry | Primary Paradigm | Secondary Paradigm | Financial Intensity | Rationale |
+|---|---|---|---|---|---|
+| 1 | **Energy (Oil & Gas)** | P1 (Policy-Driven) | P4 (Asset Lease) | High | Geopolitical commodity, OPEC+ policy dependence, E&P infrastructure-heavy |
+| 2 | **Chemicals** | P1 (Policy-Driven) | P2 (Technology Moat) | Medium | Environmental regulation, specialty chemicals IP, energy cost dependence |
+| 3 | **Metals & Mining** | P3 (Zero-Sum Game) | P1 (Policy-Driven) | Medium | Commodity price cycle dominance, resource nationalism, trade policy |
+| 4 | **Construction Materials** | P4 (Asset Lease) | P1 (Policy-Driven) | Medium | Infrastructure corridor-dependent, quarries/plants as fixed assets |
+| 5 | **Capital Goods** | P2 (Technology Moat) | P4 (Asset Lease) | Medium-High | Engineering IP, manufacturing plant as asset, defense/industrial policy |
+| 6 | **Commercial Services** | P6 (Network + Traffic) | P3 (Zero-Sum Game) | Low-Medium | B2B service platform effects, labor-intensive, fragmented |
+| 7 | **Transportation (Air/Rail/Shipping)** | P4 (Asset Lease) | P6 (Network + Traffic) | High | Fleet/network infrastructure, fuel leverage, network economies |
+| 8 | **Automobiles** | P3 (Zero-Sum Game) | P2 (Technology Moat) | High | Overcapacity, price war risk, EV/autonomous tech disruption |
+| 9 | **Consumer Durables** | P5 (Brand + Channel) | P3 (Zero-Sum Game) | Low-Medium | Brand differentiation, replacement cycle, price competition |
+| 10 | **Consumer Staples** | P5 (Brand + Channel) | P2 (Technology Moat) | Low | Brand loyalty, stable demand, R&D in food/CPG innovation |
+| 11 | **Retail** | P6 (Network + Traffic) | P5 (Brand + Channel) | Medium | Omnichannel network, platform scale, private label brand leverage |
+| 12 | **Technology Hardware (Semis)** | P2 (Technology Moat) | P1 (Policy-Driven) | High | Moore's Law IP, fab capex, chip policy (CHIPS Act), export controls |
+| 13 | **Software & Services** | P2 (Technology Moat) | P6 (Network + Traffic) | Medium | SaaS/IP, network effects, cloud platform economies |
+| 14 | **Biotech & Pharma** | P2 (Technology Moat) | P1 (Policy-Driven) | Medium-High | Patent cliff, FDA/EMA regulation, pipeline value dependence |
+| 15 | **Healthcare Equipment** | P2 (Technology Moat) | P1 (Policy-Driven) | Medium | Device IP, FDA clearance, hospital procurement sensitivity |
+| 16 | **Utilities (Regulated)** | P4 (Asset Lease) | P1 (Policy-Driven) | High | Regulated asset base (RAB), tariff policy, long-lived infrastructure |
+| 17 | **Telecommunications** | P4 (Asset Lease) | P6 (Network + Traffic) | High | Spectrum/network assets, subscriber base, 5G capex cycle |
+| 18 | **Financials (Banks/Insurance)** | P1 (Policy-Driven) | P6 (Network + Traffic) | Very High | Capital regulation, sovereign exposure, payment network effects |
+| 19 | **Sovereigns & GSEs** | P1 (Policy-Driven) | — (Special: Gov't Credit Binding) | Very High | Fiscal capacity, monetary control, quasi-government guarantee |
 
-#### 行1：光伏/储能 → 各行业
+### 1.3 Paradigm Clusters
 
-| 受体行业 | 传染类型 | 强度 | 置信度 | 方向 | 历史验证案例 |
-|----------|---------|------|--------|------|-------------|
-| 1→2 半导体 | C+S | 4 | H | ↔ | 2018"531新政"→光伏+半导体全行业融资冻结；2021光伏逆变器缺芯危机 |
-| 1→3 高端装备 | C | 3 | M | → | 2020光伏产能扩张→光伏设备需求爆发；无反向违约传染案例 |
-| 1→4 生物医药 | - | 1 | L | - | 无历史案例 |
-| 1→5 医疗器械 | - | 1 | L | - | 无历史案例 |
-| 1→6 新能源车 | C+S | 3 | M | ↔ | 2022锂电材料价格暴涨→光伏+新能源车同时受上游原材料约束；共享储能赛道 |
-| 1→7 数据中心 | - | 1 | L | - | 无历史案例 |
-| 1→8 城投债 | R | 3 | M | ↔ | 2021部分光伏基地建设依赖地方城投融资→城投信用收缩影响光伏项目融资 |
-| 1→9 食品饮料 | - | 1 | L | - | 无历史案例 |
-| 1→10 纺织服装 | - | 1 | L | - | 无历史案例 |
-| 1→11 交通运输 | - | 1 | L | - | 无历史案例 |
-| 1→12 商贸零售 | - | 1 | L | - | 无历史案例 |
-| 1→13 传媒互联网 | - | 1 | L | - | 无历史案例 |
-
-#### 行2：半导体/集成电路 → 各行业
-
-| 受体行业 | 传染类型 | 强度 | 置信度 | 方向 | 历史验证案例 |
-|----------|---------|------|--------|------|-------------|
-| 2→1 光伏 | C+S | 4 | H | ↔ | 2021全球缺芯→光伏逆变器交付延迟；2022半导体下行周期→光伏IGBT供应缓解但价格战起；紫光违约(2020)→半导体行业信用利差走阔波及光伏板块 |
-| 2→3 高端装备 | C | 4 | H | ↔ | 2022半导体设备进口管制→国内半导体设备国产替代加速；中芯国际扩产→北方华创/中微公司订单爆发 |
-| 2→4 生物医药 | - | 1 | L | - | 无历史案例 |
-| 2→5 医疗器械 | C | 3 | M | → | 2022全球芯片短缺→医疗设备(CT/MRI)芯片供应紧张→设备交付延迟；半导体行业违约影响医疗器械上游 |
-| 2→6 新能源车 | C | 3 | M | → | 2021-2022全球汽车缺芯→新能源车减产；半导体企业违约→整车厂芯片供应中断 |
-| 2→7 数据中心 | C | 3 | M | → | 2023 AI芯片需求爆发→数据中心算力卡脖子；半导体供应链中断→数据中心建设延迟 |
-| 2→8 城投债 | R | 2 | L | → | 半导体产业园依赖城投基建投资→半导体企业违约影响城投园区出租率 |
-| 2→9 食品饮料 | - | 1 | L | - | 无历史案例 |
-| 2→10 纺织服装 | - | 1 | L | - | 无历史案例 |
-| 2→11 交通运输 | - | 1 | L | - | 无历史案例 |
-| 2→12 商贸零售 | - | 1 | L | - | 无历史案例 |
-| 2→13 传媒互联网 | - | 1 | L | - | 无历史案例 |
-
-#### 行3：高端装备/工业母机 → 各行业
-
-| 受体行业 | 传染类型 | 强度 | 置信度 | 方向 | 历史验证案例 |
-|----------|---------|------|--------|------|-------------|
-| 3→1 光伏 | C | 3 | M | ↔ | 2020-2021光伏扩产周期→光伏设备企业(迈为/捷佳伟创)订单暴增→下游光伏企业产能扩张；光伏违约→设备商应收账款损失 |
-| 3→2 半导体 | C | 4 | H | ↔ | 2022美国芯片法案→国内半导体设备需求爆发；中芯国际资本开支→北方华创/盛美上海业绩联动；半导体设备管制反向冲击芯片制造 |
-| 3→4 生物医药 | C | 2 | M | → | 生物制药设备(东富龙/楚天科技)向药企供货→药企违约影响设备商回款 |
-| 3→5 医疗器械 | C | 2 | M | → | 高端制造向医疗设备企业供应精密零部件→下游违约传导 |
-| 3→6 新能源车 | C | 2 | M | → | 一体化压铸设备(力劲科技等)向新能源车厂供货→车厂违约影响设备商 |
-| 3→7 数据中心 | - | 1 | L | - | 无历史案例 |
-| 3→8 城投债 | R+C | 2 | M | ↔ | 装备制造基地依赖城投园区开发→区域产业政策影响装备企业 |
-| 3→9 食品饮料 | - | 1 | L | - | 无历史案例 |
-| 3→10 纺织服装 | - | 1 | L | - | 无历史案例 |
-| 3→11 交通运输 | C | 2 | M | → | 高端装备向轨道交通/船舶制造供应核心部件→下游违约传导 |
-| 3→12 商贸零售 | - | 1 | L | - | 无历史案例 |
-| 3→13 传媒互联网 | - | 1 | L | - | 无历史案例 |
-
-#### 行4：生物医药/创新药 → 各行业
-
-| 受体行业 | 传染类型 | 强度 | 置信度 | 方向 | 历史验证案例 |
-|----------|---------|------|--------|------|-------------|
-| 4→1 光伏 | - | 1 | L | - | 无历史案例 |
-| 4→2 半导体 | - | 1 | L | - | 无历史案例 |
-| 4→3 高端装备 | C | 2 | M | ↔ | 生物制药产能扩张→制药设备需求增加；药企违约→设备商坏账 |
-| 4→5 医疗器械 | C+S | 4 | H | ↔ | 2023医药反腐→医药+器械行业同时受冲击；创新药企业与器械企业共享医院终端客户；集采政策同时覆盖药品+耗材 |
-| 4→6 新能源车 | - | 1 | L | - | 无历史案例 |
-| 4→7 数据中心 | - | 1 | L | - | 无历史案例 |
-| 4→8 城投债 | R | 2 | M | → | 生物医药园区依赖城投开发，药企违约影响园区出租率和城投收入 |
-| 4→9 食品饮料 | - | 1 | L | - | 无历史案例 |
-| 4→10 纺织服装 | - | 1 | L | - | 无历史案例 |
-| 4→11 交通运输 | C | 1 | L | → | 医药冷链物流需求→但传染强度极低 |
-| 4→12 商贸零售 | - | 1 | L | - | 无历史案例 |
-| 4→13 传媒互联网 | - | 1 | L | - | 无历史案例 |
-
-#### 行5：医疗器械 → 各行业
-
-| 受体行业 | 传染类型 | 强度 | 置信度 | 方向 | 历史验证案例 |
-|----------|---------|------|--------|------|-------------|
-| 5→1 光伏 | - | 1 | L | - | 无历史案例 |
-| 5→2 半导体 | C | 3 | M | ↔ | 2022医疗芯片短缺→医疗设备企业争夺芯片产能；半导体供应链波动影响医疗器械生产 |
-| 5→3 高端装备 | C | 2 | M | ↔ | 医疗器械代工(CDMO)向高端装备企业采购精密零部件→双向订单依赖 |
-| 5→4 生物医药 | C+S | 4 | H | ↔ | 2023医疗反腐→器械+医药同步调整；集采降幅共享风险；联影医疗与药企共享医院渠道 |
-| 5→6 新能源车 | - | 1 | L | - | 无历史案例 |
-| 5→7 数据中心 | - | 1 | L | - | 无历史案例 |
-| 5→8 城投债 | - | 1 | L | - | 无历史案例 |
-| 5→9 食品饮料 | - | 1 | L | - | 无历史案例 |
-| 5→10 纺织服装 | C | 1 | L | → | 医用敷料/防护用品向上游纺织企业采购→但影响有限 |
-| 5→11 交通运输 | - | 1 | L | - | 无历史案例 |
-| 5→12 商贸零售 | - | 1 | L | - | 无历史案例 |
-| 5→13 传媒互联网 | - | 1 | L | - | 无历史案例 |
-
-#### 行6：新能源汽车 → 各行业
-
-| 受体行业 | 传染类型 | 强度 | 置信度 | 方向 | 历史验证案例 |
-|----------|---------|------|--------|------|-------------|
-| 6→1 光伏 | C+S | 3 | M | ↔ | 2023新能源车价格战→整车利润恶化→电池材料价格联动→光伏储能成本联动；共享锂电/锂矿上游 |
-| 6→2 半导体 | C | 3 | M | ↔ | 2021-2022汽车缺芯→新能源车企争夺芯片产能→半导体行业需求爆发；新能源车违约→芯片供应商坏账 |
-| 6→3 高端装备 | C | 2 | M | → | 新能源车扩产→采购一体化压铸/自动化产线设备→车厂违约影响设备商 |
-| 6→4 生物医药 | - | 1 | L | - | 无历史案例 |
-| 6→5 医疗器械 | - | 1 | L | - | 无历史案例 |
-| 6→7 数据中心 | C | 2 | L | → | 智能驾驶数据存储需求→新能源车与数据中心间接关联 |
-| 6→8 城投债 | R | 2 | M | ↔ | 新能源车产业园建设依赖城投→车厂违约影响城投还款 |
-| 6→9 食品饮料 | - | 1 | L | - | 无历史案例 |
-| 6→10 纺织服装 | - | 1 | L | - | 无历史案例 |
-| 6→11 交通运输 | S | 2 | M | → | 新能源车渗透率提升→传统交通运输企业(公交/出租)资产重估；新能源车企业倒闭→运营车辆售后服务中断 |
-| 6→12 商贸零售 | - | 1 | L | - | 无历史案例 |
-| 6→13 传媒互联网 | C | 1 | L | → | 新能源车企在互联网平台的营销投入→车厂违约影响互联网广告收入(极弱) |
-
-#### 行7：数据中心/算力基建 → 各行业
-
-| 受体行业 | 传染类型 | 强度 | 置信度 | 方向 | 历史验证案例 |
-|----------|---------|------|--------|------|-------------|
-| 7→1 光伏 | - | 1 | L | - | 无历史案例 |
-| 7→2 半导体 | C | 3 | M | ↔ | 2023 AI算力需求爆发→GPU/CPU需求暴增→半导体行业产能满载；数据中心建设放缓→芯片需求下降 |
-| 7→3 高端装备 | - | 1 | L | - | 无历史案例 |
-| 7→4 生物医药 | - | 1 | L | - | 无历史案例 |
-| 7→5 医疗器械 | - | 1 | L | - | 无历史案例 |
-| 7→6 新能源车 | C | 2 | L | → | 智能驾驶云端算力需求→数据中心与智能驾驶关联 |
-| 7→8 城投债 | R | 3 | M | ↔ | 2022-2023数据中心建设项目大量依靠城投土地+基建投资；数据中心过剩→城投投资回收困难 |
-| 7→9 食品饮料 | - | 1 | L | - | 无历史案例 |
-| 7→10 纺织服装 | - | 1 | L | - | 无历史案例 |
-| 7→11 交通运输 | - | 1 | L | - | 无历史案例 |
-| 7→12 商贸零售 | C | 2 | M | ↔ | 电商平台是数据中心最大客户之一→电商违约影响数据中心出租率 |
-| 7→13 传媒互联网 | C | 3 | M | ↔ | 2022互联网寒冬→互联网企业缩减IT支出→数据中心需求增速放缓；字节/阿里/腾讯等违约直接影响数据中心NOI |
-
-#### 行8：城投债 / LGFV → 各行业
-
-| 受体行业 | 传染类型 | 强度 | 置信度 | 方向 | 历史验证案例 |
-|----------|---------|------|--------|------|-------------|
-| 8→1 光伏 | R+C | 3 | M | ↔ | 2021部分省份城投平台收紧→光伏电站项目融资困难；区域城投违约→该区域光伏电站信用重估 |
-| 8→2 半导体 | R | 2 | M | ↔ | 半导体产业园建设中城投是主要出资方之一→城投融资困难影响园区建设和招商 |
-| 8→3 高端装备 | R | 2 | M | ↔ | 城投违约→区域内高端装备企业融资环境恶化；装备制造基地依赖城投基建配套 |
-| 8→4 生物医药 | R | 2 | M | ↔ | 生物医药园区依赖城投开发→城投信用收缩影响园区支持和招商 |
-| 8→5 医疗器械 | - | 1 | L | - | 无历史案例 |
-| 8→6 新能源车 | R | 2 | M | ↔ | 新能源车产业园依赖城投配套→城投融资困难影响园区基建速度 |
-| 8→7 数据中心 | R | 3 | M | ↔ | 数据中心园区是城投重点投资方向→城投违约影响数据中心项目落地 |
-| 8→9 食品饮料 | - | 1 | L | - | 无历史案例 |
-| 8→10 纺织服装 | - | 1 | L | - | 无历史案例 |
-| 8→11 交通运输 | R+C | 4 | H | ↔ | 2020永煤违约→河南交投/中原高速等交通类国企债利差跳升200-500bp；城投是交通基建主要投融资主体→区域共振效应极强 |
-| 8→12 商贸零售 | - | 1 | L | - | 无历史案例 |
-| 8→13 传媒互联网 | - | 1 | L | - | 无历史案例 |
-
-#### 行9：食品饮料 → 各行业
-
-| 受体行业 | 传染类型 | 强度 | 置信度 | 方向 | 历史验证案例 |
-|----------|---------|------|--------|------|-------------|
-| 9→1 光伏 | - | 1 | L | - | 无历史案例 |
-| 9→2 半导体 | - | 1 | L | - | 无历史案例 |
-| 9→3 高端装备 | - | 1 | L | - | 无历史案例 |
-| 9→4 生物医药 | - | 1 | L | - | 无历史案例 |
-| 9→5 医疗器械 | - | 1 | L | - | 无历史案例 |
-| 9→6 新能源车 | - | 1 | L | - | 无历史案例 |
-| 9→7 数据中心 | - | 1 | L | - | 无历史案例 |
-| 9→8 城投债 | - | 1 | L | - | 无历史案例 |
-| 9→10 纺织服装 | S | 2 | M | ↔ | 2022某食品添加剂事件→消费品牌信心整体受损，同属消费信心的示范效应(虽食品与纺织关联弱但共享"品牌信用"属性) |
-| 9→11 交通运输 | C | 1 | L | → | 食品运输需求→食品企业违约影响物流企业(极弱) |
-| 9→12 商贸零售 | C+S | 2 | M | ↔ | 2008三聚氰胺→乳制品零售额暴跌→商超渠道乳制品销售清零；食品品牌违约→零售商应收账款损失 |
-| 9→13 传媒互联网 | C | 1 | L | → | 食品企业在电商/直播平台的营销投放→违约影响平台收入(极弱) |
-
-#### 行10：纺织服装 → 各行业
-
-| 受体行业 | 传染类型 | 强度 | 置信度 | 方向 | 历史验证案例 |
-|----------|---------|------|--------|------|-------------|
-| 10→1 光伏 | - | 1 | L | - | 无历史案例 |
-| 10→2 半导体 | - | 1 | L | - | 无历史案例 |
-| 10→3 高端装备 | - | 1 | L | - | 无历史案例 |
-| 10→4 生物医药 | - | 1 | L | - | 无历史案例 |
-| 10→5 医疗器械 | C | 1 | L | → | 医用纺织品(防护服/口罩)向上游纺织企业采购→但影响有限 |
-| 10→6 新能源车 | - | 1 | L | - | 无历史案例 |
-| 10→7 数据中心 | - | 1 | L | - | 无历史案例 |
-| 10→8 城投债 | - | 1 | L | - | 无历史案例 |
-| 10→9 食品饮料 | S | 2 | M | ↔ | 2020某服装品牌关店潮→消费品牌信心整体受损→食品饮料企业融资条件同步恶化(弱示范效应) |
-| 10→11 交通运输 | C | 1 | L | → | 服装物流运输需求→违约影响物流企业(极弱) |
-| 10→12 商贸零售 | C+S | 2 | M | ↔ | 2022某服装品牌违约→零售商应收账款损失；消费信心下降→零售渠道整体承压 |
-| 10→13 传媒互联网 | C | 2 | M | → | 服装品牌在电商/社交平台的营销投放→品牌违约影响互联网平台广告收入；Shein/Temu等快时尚与电商深度绑定 |
-
-#### 行11：交通运输 → 各行业
-
-| 受体行业 | 传染类型 | 强度 | 置信度 | 方向 | 历史验证案例 |
-|----------|---------|------|--------|------|-------------|
-| 11→1 光伏 | - | 1 | L | - | 无历史案例 |
-| 11→2 半导体 | - | 1 | L | - | 无历史案例 |
-| 11→3 高端装备 | C | 1 | L | → | 轨道交通/航空企业向高端装备采购→但采购端传染有限 |
-| 11→4 生物医药 | C | 2 | M | ↔ | 2020疫情→医药冷链物流需求暴增→医药-物流双向依存度上升 |
-| 11→5 医疗器械 | C | 1 | L | ↔ | 医疗器械物流配送→但传染强度低 |
-| 11→6 新能源车 | S | 2 | M | ↔ | 2023网约车饱和→新能源车需求结构变化；传统公交/客运企业违约→新能源客车制造商坏账 |
-| 11→7 数据中心 | - | 1 | L | - | 无历史案例 |
-| 11→8 城投债 | R+C | 4 | H | ↔ | 2020永煤违约→河南交投/中原高速等国企利差跳升300-500bp；2019天津物产违约→天津港/天津城投连锁受波及 |
-| 11→9 食品饮料 | C | 1 | L | → | 食品物流配送→但传染强度低 |
-| 11→10 纺织服装 | C | 1 | L | → | 服装物流配送→但传染强度低 |
-| 11→12 商贸零售 | C | 2 | M | ↔ | 2022物流企业涨价→商贸零售企业物流成本上升；零售企业违约→物流企业应收账款损失 |
-| 11→13 传媒互联网 | C | 2 | M | ↔ | 2021滴滴出行下架/整改→互联网出行平台信用重估；互联网物流平台(货拉拉/满帮)与交运行业相互影响 |
-
-#### 行12：商贸零售 → 各行业
-
-| 受体行业 | 传染类型 | 强度 | 置信度 | 方向 | 历史验证案例 |
-|----------|---------|------|--------|------|-------------|
-| 12→1 光伏 | - | 1 | L | - | 无历史案例 |
-| 12→2 半导体 | - | 1 | L | - | 无历史案例 |
-| 12→3 高端装备 | - | 1 | L | - | 无历史案例 |
-| 12→4 生物医药 | C | 1 | L | → | 药店零售渠道→但药企对零售渠道依赖度有限 |
-| 12→5 医疗器械 | C | 1 | L | → | 医疗器械零售渠道→传染强度低 |
-| 12→6 新能源车 | - | 1 | L | - | 无历史案例 |
-| 12→7 数据中心 | C | 2 | M | ↔ | 电商平台是高算力消耗者→零售企业IT支出影响数据中心需求 |
-| 12→8 城投债 | - | 1 | L | - | 无历史案例 |
-| 12→9 食品饮料 | C+S | 2 | M | ↔ | 2021苏宁易购流动性危机→供应商(含食品企业)应收账款回收困难；零售渠道违约→品牌方销售渠道断裂 |
-| 12→10 纺织服装 | C+S | 2 | M | ↔ | 2022某零售企业关店→服装品牌渠道损失；零售渠道回款周期延长→品牌方现金流恶化 |
-| 12→11 交通运输 | C | 2 | M | ↔ | 零售物流需求是交通运输的重要支撑→零售违约影响物流业务量 |
-| 12→13 传媒互联网 | S+C | 3 | H | ↔ | 2019-2020苏宁/国美等传统零售衰落→电商(京东/阿里)增长但流量成本上升；零售业态变革影响互联网电商广告收入；全渠道零售与互联网深度融合 |
-
-#### 行13：传媒/互联网 → 各行业
-
-| 受体行业 | 传染类型 | 强度 | 置信度 | 方向 | 历史验证案例 |
-|----------|---------|------|--------|------|-------------|
-| 13→1 光伏 | - | 1 | L | - | 无历史案例 |
-| 13→2 半导体 | - | 1 | L | - | 无历史案例 |
-| 13→3 高端装备 | - | 1 | L | - | 无历史案例 |
-| 13→4 生物医药 | C | 1 | L | ↔ | 互联网医疗平台与药企合作→但传染强度极低 |
-| 13→5 医疗器械 | C | 1 | L | ↔ | 医疗器械线上销售→平台违约影响器械厂商线上渠道 |
-| 13→6 新能源车 | C | 2 | M | ↔ | 2022某互联网车企违约→市场对"互联网造车"模式信心下降；新能源车在互联网平台营销投入→平台违约影响车企销售线索 |
-| 13→7 数据中心 | C | 3 | M | ↔ | 2022互联网寒冬→字节/阿里/腾讯缩减IT预算→数据中心需求增速放缓；互联网企业违约→数据中心大客户租金损失 |
-| 13→8 城投债 | - | 1 | L | - | 无历史案例 |
-| 13→9 食品饮料 | C | 2 | M | ↔ | 2021某电商平台违约→食品饮料品牌电商渠道销售中断；互联网平台流量成本上升→食品饮料企业营销ROI下降 |
-| 13→10 纺织服装 | C | 2 | M | ↔ | 2022某直播电商平台违约→服装品牌线上渠道损失；Shein/Temu依托互联网流量→平台政策变化直接影响服装出口 |
-| 13→11 交通运输 | C | 2 | M | ↔ | 2021滴滴下架→出行平台信用冲击→交通运输行业连锁反应；互联网物流平台(货拉拉/满帮)与交运企业管理层交叉影响 |
-| 13→12 商贸零售 | S+C | 3 | H | ↔ | 2019-2023电商渗透率持续提升→传统零售持续萎缩→国美/苏宁等大量关店；互联网平台"二选一"等政策→零售商供给受限；平台企业违约→电商代运营/TPS服务商坏账 |
+| Paradigm | Industries | Intra-Paradigm Contagion Characteristics |
+|---|---|---|
+| **P1 (Policy-Driven)** | Energy, Chemicals, Financials, Sovereigns & GSEs; secondary for Metals, Construction Materials, TechHW, Biotech, Utilities, Telecom | Policy shifts synchronize across sectors; regulatory change can affect multiple P1 industries simultaneously; geopolitical risk is shared |
+| **P2 (Technology Moat)** | Capital Goods, TechHW, Software, Biotech, Healthcare Equipment; secondary for Chemicals, Automobiles, Consumer Staples | Supply chain tight coupling (chip → equipment → software); IPO/venture capital funding channels shared; talent market co-dependence |
+| **P3 (Zero-Sum Game)** | Metals & Mining, Automobiles, Consumer Durables; secondary for Commercial Services | Commodity price cycle; overcapacity risk; price war contagion across similar end-markets |
+| **P4 (Asset Lease)** | Construction Materials, Transportation, Utilities, Telecom; secondary for Energy, Capital Goods | Infrastructure funding channels (project finance, green bonds); interest rate sensitivity; regulatory concession risk |
+| **P5 (Brand + Channel)** | Consumer Durables, Consumer Staples; secondary for Retail | Consumer confidence resonance; brand crisis demonstration effects; advertising and distribution cost linkage |
+| **P6 (Network + Traffic)** | Commercial Services, Retail, Transportation (secondary), Telecom (secondary), Software (secondary), Financials (secondary) | Platform interdependence (e-commerce + shipping + payments); data flow integration; user base cross-pollination |
 
 ---
 
-## 三、逐行业传染路径详解
+## 2. Contagion Matrix — 19x19 Intensity Grid
 
-### 3.1 高传染链路图谱(强度≥4)
+### 2.1 Intensity Heatmap
 
-以下为所有传导强度≥4的行业对，构成传染网络的核心骨架：
-
-```
-强度5(极强)：
-  (无)
-
-强度4(强)：
-  光伏/储能     ↔   半导体/集成电路    (C+S, H, 双向)
-  半导体/集成电路 ↔   高端装备/工业母机   (C, H, 双向)
-  生物医药/创新药 ↔   医疗器械           (C+S, H, 双向)
-  交通运输       ↔   城投债 / LGFV        (R+C, H, 双向)
-```
-
-**总计：4条强度≥4的链路（全部双向）**
-
-### 3.2 中高传染链路图谱(强度=3)
-
-以下为传导强度=3的有向链路，构成传染网络的重要支撑。**共 18 条有向（9 个唯一行业对）**，类型/置信度/方向标记与 §2.4 全标记矩阵逐格一致：
+The table below presents the 19x19 contagion intensity scoring matrix. Values indicate: 1 = Very Weak, 2 = Weak, 3 = Moderate, 4 = Strong, 5 = Very Strong. Rows = contagion source industry, Columns = contagion receptor industry. Diagonal is marked "-" (self).
 
 ```
-强度3(中等)：
-  光伏/储能       ↔   城投债 / LGFV        (R, M)
-  光伏/储能       ↔   新能源汽车           (C+S, M)
-  光伏/储能       →   高端装备/工业母机     (C, M)
-  半导体/集成电路 →   医疗器械             (C, M)
-  半导体/集成电路 →   数据中心/算力基建     (C, M)
-  半导体/集成电路 →   新能源汽车           (C, M)
-  高端装备/工业母机 ↔   光伏/储能          (C, M)
-  医疗器械       ↔   半导体/集成电路      (C, M)
-  新能源汽车     ↔   光伏/储能            (C+S, M)
-  新能源汽车     ↔   半导体/集成电路      (C, M)
-  数据中心/算力基建 ↔   半导体/集成电路    (C, M)
-  数据中心/算力基建 ↔   城投债 / LGFV      (R, M)
-  数据中心/算力基建 ↔   传媒/互联网       (C, M)
-  城投债 / LGFV    ↔   光伏/储能          (R+C, M)
-  城投债 / LGFV    ↔   数据中心/算力基建   (R, M)
-  商贸零售       ↔   传媒/互联网          (S+C, H)
-  传媒/互联网    ↔   商贸零售             (S+C, H)
-  传媒/互联网    ↔   数据中心/算力基建     (C, M)
+         │ Ene Che Met Cst Cap Com Trn Aut Cdu Cst Ret Tec Sft Btp Hce Uti Tel Fin Sov
+─────────┼─────────────────────────────────────────────────────────────────────────────────
+Energy   │  -   5   3   2   3   2   4   3   1   2   1   1   1   1   1   4   1   3   3
+Chemicals│  5   -   2   3   2   1   2   3   3   4   1   3   1   4   2   1   1   2   2
+Metals   │  3   2   -   4   4   1   2   2   2   1   1   2   1   1   1   2   1   2   3
+ConstMat │  2   3   4   -   3   1   2   1   1   1   1   1   1   1   1   3   1   2   3
+CapGoods │  3   2   4   3   -   2   3   3   2   1   1   4   2   2   3   2   1   3   2
+ComServ  │  2   1   1   1   2   -   3   1   1   2   3   2   3   1   1   1   2   3   1
+Transp   │  4   2   2   2   3   3   -   2   2   2   4   1   2   1   1   2   1   3   2
+Autos    │  3   3   2   1   3   1   2   -   3   1   1   4   2   1   1   1   1   2   1
+ConsDur  │  1   3   2   1   2   1   2   3   -   2   3   3   1   1   1   1   1   2   1
+ConsStap │  2   4   1   1   1   2   2   1   2   -   3   1   1   1   1   1   1   2   1
+Retail   │  1   1   1   1   1   3   4   1   3   3   -   1   3   1   1   1   2   2   1
+TechHW   │  1   3   2   1   4   2   1   4   3   1   1   -   4   2   3   2   3   3   2
+Soft&Srv │  1   1   1   1   2   3   2   2   1   1   3   4   -   1   1   1   4   3   2
+BioPharm │  1   4   1   1   2   1   1   1   1   1   1   2   1   -   4   1   1   2   2
+HlthEquip│  1   2   1   1   3   1   1   1   1   1   1   3   1   4   -   1   1   2   1
+Utilities│  4   1   2   3   2   1   2   1   1   1   1   2   1   1   1   -   2   3   3
+Telecom  │  1   1   1   1   1   2   1   1   1   1   2   3   4   1   1   2   -   3   2
+Financ   │  3   2   2   2   3   3   3   2   2   2   2   3   3   2   2   3   3   -   5
+Sov&GSEs │  3   2   3   3   2   1   2   1   1   1   1   2   2   2   1   3   2   5   -
 ```
 
-### 3.3 低传染集群(强度≤2)
+### 2.2 Cell Annotation Scheme
 
-传导强度≤2的行业对共130对（有向，156 总对 = 13×12，其中 =3 有 18 对、≥4 有 8 对），存在以下规律：
-- **范式A（[政策驱动型](industry-framework.md)）内的弱连接**：光伏→高端装备(3,已完成)→其余范式内链均≤2
-- **范式B（[技术壁垒型](industry-framework.md)）内的弱连接**：高端装备→生物医药(2)、高端装备→医疗器械(2)、生物医药→高端装备(2)
-- **范式C存量博弈型**：新能源车对其他行业的传导主要集中在范式A(光伏/半导体)的共享上游，对其他消费类行业传导极弱
-- **范式D资产租约型**：数据中心作为"基础设施"行业，对商贸零售(2)和交通运输(1)有弱下游传导
-- **范式E（[品牌+渠道型](paradigm-brand-channel.md)）**：食品饮料↔纺织服装(2)主要通过信心崩塌、食品饮料↔商贸零售(2)、纺织服装↔商贸零售(2)、纺织服装→传媒互联网(2)
-- **范式F（[网络+流量型](paradigm-network-traffic.md)）**：交通运输↔商贸零售(2)、交通运输↔传媒互联网(2)，均为同范式内弱连接
+Each matrix cell can be enriched with five dimensions. For table readability, the grid above shows only the intensity score. Full annotations for scores >= 3 follow in Section 2.4.
 
-### 3.4 无显著传导行业对(强度=1)
+**Contagion Type Code:**
+- C = Credit Chain
+- R = Regional Resonance
+- L = Liquidity Squeeze
+- S = Confidence Collapse
+- - = No significant transmission path
 
-所有强度=1的行业对（共计96对）均为以下情况之一：
-1. **完全不同范式且无上下游关系**：如光伏→生物医药、半导体→食品饮料
-2. **仅在极端信心崩塌情境下可能波及**：如城投债→食品饮料(城投违约通过全市场信心波及消费，但无直接证据)
-3. **理论上有关联但传染距离极远**：如高端装备→食品饮料(食品加工设备，但属易耗品，传染脆弱度极低)
+**Confidence Level:**
+- H = High — validated by historical cases
+- M = Medium — logic-based with partial evidence
+- L = Low — theoretical inference, no historical precedent
+
+**Direction:**
+- ↔ = Bidirectional transmission significant
+- → = Unidirectional transmission
+- - = No significant transmission
+
+**Example:** `C+R(4,H,↔)` = Credit Chain + Regional Resonance, intensity 4, high confidence, bidirectional.
+
+### 2.3 Downstream Consumption Rules
+
+Each matrix cell output fields are consumed by upstream modules as follows:
+
+| Field | Consumer | Purpose |
+|---|---|---|
+| `intensity` | Contagion SRI | Calculate contagion force coefficient, weight industry risk scores |
+| `intensity` | Concentration Framework | Identify super-spreader industries and cluster risk |
+| `direction` | Concentration Framework | Determine unidirectional vs bidirectional contagion, affects cluster partitioning |
+| `confidence` | Current version not consumed | Reserved for future confidence-weighted aggregation |
+| `historical_cases` | Current version not consumed | Reserved for backtesting and narrative explanation |
+
+### 2.4 Full Annotated Matrix (Scores >= 3)
+
+#### Row 1: Energy (Oil & Gas)
+
+| Receptor | Type | Intensity | Confidence | Direction | Historical Precedent |
+|---|---|---|---|---|---|
+| 1→2 Chemicals | C+R | 5 | H | ↔ | 2014-2015 oil price crash → petrochemical margin compression (naphtha vs gas advantage shift); 2020 negative oil → chemical inventory losses |
+| 1→3 Metals & Mining | C | 3 | M | → | Oil price volatility affects mining fuel costs; energy-linked metals (uranium, lithium brine costs) |
+| 1→5 Capital Goods | C | 3 | M | → | 2015-2016 oil crash → oilfield service (OFS) capex collapse → equipment makers (SLB, HAL, BHI) revenue down 40-70% |
+| 1→7 Transportation | C | 4 | H | ↔ | 2008 oil spike → airline fuel cost surge (30% of OpEx); 2020 oil price collapse benefited transport but signaled demand destruction |
+| 1→8 Automobiles | C | 3 | M | → | 2008 oil price spike → shift to small cars hurt Detroit 3; 2011-2014 high oil boosted EV/ hybrid adoption narrative |
+| 1→16 Utilities | C | 4 | H | ↔ | 2021-2022 European gas crisis → utility margin squeeze (Uniper, Fortum require bailout); coal/gas plant fuel cost pass-through |
+| 1→18 Financials | C+S | 3 | M | ↔ | 2015-2016 energy loan losses (US E&P bank exposure $200bn+); 2008 oil price spike → sovereign wealth fund losses |
+| 1→19 Sovereigns & GSEs | R | 3 | M | ↔ | 2014-2015 oil crash → Gulf sovereign wealth drawdowns; Venezuela/Ecuador fiscal collapse; Russia ruble crisis |
+
+#### Row 2: Chemicals
+
+| Receptor | Type | Intensity | Confidence | Direction | Historical Precedent |
+|---|---|---|---|---|---|
+| 2→1 Energy | C+R | 5 | H | ↔ | Feedstock price pass-through; 2014 naphtha vs ethane advantage shift; 2020 negative oil → chemical inventory losses |
+| 2→4 Construction Materials | C | 3 | M | → | Specialty chemicals (admixtures, coatings) supply to construction; building chemical demand correlation |
+| 2→8 Automobiles | C | 3 | M | → | Automotive coatings, plastics, battery chemicals supply; auto demand shock → chemical orders reduction |
+| 2→9 Consumer Durables | C | 3 | M | → | Plastic resins, coatings for appliances and electronics; housing downturn → durables slowdown → chemical demand |
+| 2→10 Consumer Staples | C | 4 | H | ↔ | 2022 fertilizer price spike (nutrien, CF, Yara) → food inflation; agricultural chemical supply chain (Syngenta, Bayer, Corteva) |
+| 2→12 Technology Hardware | C | 3 | M | → | Semiconductor chemicals (photoresists, specialty gases) supply chain; chemical supply disruption → chip production slowdown |
+| 2→14 Biotech & Pharma | C | 4 | H | ↔ | Pharma intermediates (Lonza, Catalent, DSM) supply active ingredients; 2022 supply chain disruption → generic drug shortages |
+
+#### Row 3: Metals & Mining
+
+| Receptor | Type | Intensity | Confidence | Direction | Historical Precedent |
+|---|---|---|---|---|---|
+| 3→1 Energy | C | 3 | M | ↔ | Mining energy cost dependence; coal/metallurgical coal price linkage; lithium/copper as "energy transition metals" |
+| 3→4 Construction Materials | C | 4 | H | ↔ | Steel, aluminum, copper input to construction; 2008 construction collapse → steel price crash; 2022 infrastructure stimulus → metals demand |
+| 3→5 Capital Goods | C | 4 | H | ↔ | Steel, aluminum, specialty alloys as capital goods inputs; 2008-2009 industrial collapse → metals price collapse |
+| 3→19 Sovereigns & GSEs | R | 3 | M | ↔ | Resource-rich sovereign fiscal dependence on mining royalties (Chile copper, Australia iron ore, DRC cobalt) |
+
+#### Row 4: Construction Materials
+
+| Receptor | Type | Intensity | Confidence | Direction | Historical Precedent |
+|---|---|---|---|---|---|
+| 4→2 Chemicals | C | 3 | M | ↔ | Construction chemical inputs (admixtures, sealants, adhesives); cement chemical additive supply chain |
+| 4→3 Metals & Mining | C | 4 | H | ↔ | Steel, aluminum, copper primary inputs to construction; construction PMI a leading indicator for metals demand |
+| 4→5 Capital Goods | C | 3 | M | → | Construction equipment (Caterpillar, Komatsu) demand from building activity; infrastructure spending linkage |
+| 4→16 Utilities | C+R | 3 | M | ↔ | Utility infrastructure construction (transmission, pipelines, renewables) as demand driver; regulatory approval linkage |
+| 4→19 Sovereigns & GSEs | R | 3 | M | ↔ | Infrastructure spending is a primary demand driver for construction materials; fiscal policy → construction cycle |
+
+#### Row 5: Capital Goods
+
+| Receptor | Type | Intensity | Confidence | Direction | Historical Precedent |
+|---|---|---|---|---|---|
+| 5→3 Metals & Mining | C | 4 | H | ↔ | Mining equipment demand pull; 2010-2014 mining capex super-cycle → equipment maker revenue boom |
+| 5→4 Construction Materials | C | 3 | M | ↔ | Construction equipment demand (excavators, cranes) tied to infra/build cycle |
+| 5→7 Transportation | C | 3 | M | → | Rail equipment, aircraft manufacturing, shipbuilding; transportation industry capital expenditure cycle |
+| 5→8 Automobiles | C | 3 | M | → | Industrial robots and automation equipment for auto manufacturing; 2019 auto capex slowdown → equipment orders decline |
+| 5→12 Technology Hardware | C | 4 | H | ↔ | Semiconductor manufacturing equipment (ASML, AMAT, TEL, LAM) is the most critical capital goods segment; chip cycle drives equipment orders |
+| 5→15 Healthcare Equipment | C | 3 | M | → | Medical device manufacturing equipment; precision engineering supply chain |
+| 5→18 Financials | C+S | 3 | M | ↔ | Capital goods leveraged to industrial loan books and project finance; trade finance interdependence |
+
+#### Row 6: Commercial Services
+
+| Receptor | Type | Intensity | Confidence | Direction | Historical Precedent |
+|---|---|---|---|---|---|
+| 6→7 Transportation | C | 3 | M | ↔ | Logistics and freight brokerage services integration; 2020 COVID → both services and transportation demand collapsed |
+| 6→11 Retail | C+S | 3 | M | ↔ | B2B services to retail (facility management, staffing, payment processing); retail downturn → services demand reduction |
+| 6→13 Software & Services | C | 3 | M | ↔ | Professional services (Accenture, Infosys) and IT consulting to enterprise; commercial services digitization demand |
+| 6→18 Financials | C | 3 | M | → | Commercial services dependent on SME lending, factoring, trade finance; financial sector tightening → services cash flow pressure |
+
+#### Row 7: Transportation
+
+| Receptor | Type | Intensity | Confidence | Direction | Historical Precedent |
+|---|---|---|---|---|---|
+| 7→1 Energy | C | 4 | H | ↔ | Transportation accounts for ~60% of global oil demand; 2020 COVID → transport fuel demand collapse → oil price crash |
+| 7→6 Commercial Services | C | 3 | M | ↔ | Logistics/transportation as input to B2B services supply chain |
+| 7→11 Retail | C | 4 | H | ↔ | Retail logistics backbone (trucking, last-mile, container shipping); 2021 supply chain crisis → retail inventory disruption |
+| 7→18 Financials | C+S | 3 | M | ↔ | Transportation leveraged to asset-backed finance, aircraft/truck/ship leases; 2020 airline crisis → leasing company losses ($40bn+) |
+
+#### Row 8: Automobiles
+
+| Receptor | Type | Intensity | Confidence | Direction | Historical Precedent |
+|---|---|---|---|---|---|
+| 8→2 Chemicals | C | 3 | M | → | Automotive coatings, plastics, battery chemicals; EV transition reshaping chemical demand (lithium, cobalt, nickel) |
+| 8→5 Capital Goods | C | 3 | M | → | Auto manufacturing equipment, industrial robots; 2019-2020 auto downturn → robotics orders decline |
+| 8→9 Consumer Durables | S | 3 | M | ↔ | Shared "big-ticket consumer spend" category; auto + durables both sensitive to consumer confidence and rates |
+| 8→12 Technology Hardware | C | 4 | H | ↔ | Auto chip content (infotainment, ADAS, powertrain, EV) rising from $500 to $1,500+/vehicle; 2021 global chip shortage → auto production loss of $200bn+ |
+
+#### Row 9: Consumer Durables
+
+| Receptor | Type | Intensity | Confidence | Direction | Historical Precedent |
+|---|---|---|---|---|---|
+| 9→2 Chemicals | C | 3 | M | → | Plastics, coatings, synthetic materials in durable goods production |
+| 9→8 Automobiles | S | 3 | M | ↔ | Shared consumer confidence exposure; recession impact on big-ticket purchases |
+| 9→11 Retail | C | 3 | M | ↔ | Durable goods sold through retail channels; 2020-2021 home improvement boom → appliance retailer surge |
+| 9→12 Technology Hardware | C | 3 | M | → | Smart home devices, IoT appliances; durable goods incorporating semis and connectivity |
+
+#### Row 10: Consumer Staples
+
+| Receptor | Type | Intensity | Confidence | Direction | Historical Precedent |
+|---|---|---|---|---|---|
+| 10→2 Chemicals | C | 4 | H | ↔ | Agrochemicals supply to food production; 2022 fertilizer crisis → food inflation spike |
+| 10→11 Retail | C+S | 3 | M | ↔ | CPG brands sold through retail channels; private label vs brand dynamics; 2022 inflation → consumer staple price sensitivity |
+
+#### Row 11: Retail
+
+| Receptor | Type | Intensity | Confidence | Direction | Historical Precedent |
+|---|---|---|---|---|---|
+| 11→6 Commercial Services | C | 3 | M | ↔ | Retail demands B2B services (logistics, payments, staffing); retail downturn → services revenue decline |
+| 11→7 Transportation | C | 4 | H | ↔ | E-commerce-driven demand for logistics; 2021 holiday season shipping capacity crisis; retail inventory cycles drive freight demand |
+| 11→9 Consumer Durables | C+S | 3 | M | ↔ | Retail channel performance directly affects consumer durables manufacturers; retail bankruptcy (Sears, Toys R Us) → supplier losses |
+| 11→10 Consumer Staples | C+S | 3 | M | ↔ | Retail distribution is essential for CPG reach; private label competition; 2020 panic buying → shelf stockout — retail-CPG coordination pressure |
+| 11→13 Software & Services | C+S | 3 | M | ↔ | E-commerce platform software (Shopify, BigCommerce); retail technology spending; 2022 online sales normalization → SaaS downgrades |
+
+#### Row 12: Technology Hardware (Semiconductors)
+
+| Receptor | Type | Intensity | Confidence | Direction | Historical Precedent |
+|---|---|---|---|---|---|
+| 12→2 Chemicals | C | 3 | M | ↔ | Semiconductor-grade chemicals (photoresists, gases) supply chain; 2021 Texas freeze → chemical plant outage → chip shortage |
+| 12→5 Capital Goods | C | 4 | H | ↔ | Semiconductor equipment is the most critical capital goods segment; 2023 AI-driven HBM demand → equipment order boom |
+| 12→8 Automobiles | C | 4 | H | ↔ | Auto chip content rising; 2021 global chip shortage caused $200bn+ auto production loss |
+| 12→9 Consumer Durables | C | 3 | M | → | Smart home, IoT, appliance chip content; durable goods incorporating semiconductor components |
+| 12→13 Software & Services | C+S | 4 | H | ↔ | Cloud computing, AI infrastructure dependent on GPU/CPU supply; 2023 NVIDIA GPU shortage → cloud service capacity constraint |
+| 12→15 Healthcare Equipment | C | 3 | M | → | Medical device chip content (CT, MRI, monitoring); 2021 chip shortage → medical equipment delivery delays |
+| 12→17 Telecommunications | C | 3 | M | ↔ | Network infrastructure chips (5G, optical, baseband); telecom capex cycle drives semiconductor demand |
+| 12→18 Financials | C+S | 3 | M | ↔ | Semis are large market-cap sector with significant institutional ownership; sector-wide selloffs (2018, 2022) affect portfolio values |
+
+#### Row 13: Software & Services
+
+| Receptor | Type | Intensity | Confidence | Direction | Historical Precedent |
+|---|---|---|---|---|---|
+| 13→6 Commercial Services | C | 3 | M | ↔ | Enterprise SaaS replacing traditional B2B services; disruption risk for legacy service providers |
+| 13→11 Retail | C+S | 3 | M | ↔ | E-commerce platform dependence; 2022 e-commerce normalization → Shopify/Salesforce retail-facing software demand slowdown |
+| 13→12 Technology Hardware | C+S | 4 | H | ↔ | Cloud and AI software driving hardware demand; 2023 AI revolution → GPU demand surge; software ecosystem lock-in to specific hardware |
+| 13→17 Telecommunications | C+S | 4 | H | ↔ | Cloud infrastructure converging with telecom; 5G core network software; Verizon/AT&T cloud migration → IT services demand |
+| 13→18 Financials | C+S | 3 | M | ↔ | Fintech disrupting traditional banking; financial software (FIS, Fiserv, SS&C) exposure to bank consolidation and tech spending cycles |
+
+#### Row 14: Biotech & Pharma
+
+| Receptor | Type | Intensity | Confidence | Direction | Historical Precedent |
+|---|---|---|---|---|---|
+| 14→2 Chemicals | C | 4 | H | ↔ | Pharma intermediates and CDMO supply chain (Lonza, Catalent, WuXi); 2022 supply chain disruption → generic drug shortages |
+| 14→15 Healthcare Equipment | C+S | 4 | H | ↔ | Integrated healthcare sector; 2023 GLP-1 drug success → weight loss device/equipment re-assessment; joint hospital purchasing |
+| 14→18 Financials | C+S | 2 | M | → | Biotech venture capital / IPO funding cycles; 2022 biotech bear market → sector IPO freeze |
+
+#### Row 15: Healthcare Equipment
+
+| Receptor | Type | Intensity | Confidence | Direction | Historical Precedent |
+|---|---|---|---|---|---|
+| 15→5 Capital Goods | C | 3 | M | ↔ | Medical device manufacturing equipment; precision engineering and supply chain integration |
+| 15→12 Technology Hardware | C | 3 | M | ↔ | Medical device chip content; 2021 chip shortage → CT/MRI delivery delays; Medtronic, Siemens Healthineers chip supply chain |
+| 15→14 Biotech & Pharma | C+S | 4 | H | ↔ | 2023 medical device + pharma regulatory convergence; hospital group procurement bundling; shared FDA/EMA regulatory exposure |
+
+#### Row 16: Utilities (Regulated)
+
+| Receptor | Type | Intensity | Confidence | Direction | Historical Precedent |
+|---|---|---|---|---|---|
+| 16→1 Energy | C | 4 | H | ↔ | Fuel input cost (gas, coal, nuclear) pass-through but timing lag; 2021-2022 European gas crisis → utility margin squeeze |
+| 16→4 Construction Materials | C+R | 3 | M | ↔ | Utility infrastructure construction demand (transmission, renewables); regulated asset base growth dependent on construction |
+| 16→18 Financials | C+R | 3 | M | ↔ | Utility project finance debt; regulated utility as infrastructure investment vehicle; interest rate sensitivity → utility valuation and financing |
+| 16→19 Sovereigns & GSEs | R | 3 | M | ↔ | Regulated utilities often government-owned (EDF, Enel, KEPCO); sovereign credit directly impacts utility funding costs |
+
+#### Row 17: Telecommunications
+
+| Receptor | Type | Intensity | Confidence | Direction | Historical Precedent |
+|---|---|---|---|---|---|
+| 17→11 Retail | C | 2 | M | ↔ | Telecom retail distribution; mobile virtual network operator (MVNO) relationships |
+| 17→13 Software & Services | C+S | 4 | H | ↔ | Cloud computing and telecom convergence; AWS/Azure/GCP network dependency; software-defined networking displacing legacy telecom |
+| 17→18 Financials | C | 3 | M | ↔ | Telecom infrastructure financing (tower companies, fiber networks); large telecom debt issuance absorbed by banks/insurance |
+
+#### Row 18: Financials (Banks/Insurance)
+
+| Receptor | Type | Intensity | Confidence | Direction | Historical Precedent |
+|---|---|---|---|---|---|
+| 18→1 Energy | C+S | 3 | M | ↔ | Energy loan book (US bank E&P exposure $200bn+ in 2015); project finance for oil & gas |
+| 18→5 Capital Goods | C | 3 | M | ↔ | Industrial and equipment finance; trade credit insurance; supply chain finance |
+| 18→6 Commercial Services | C | 3 | M | ↔ | SME lending; factoring; commercial mortgages for service sector properties |
+| 18→7 Transportation | C+S | 3 | M | ↔ | Transportation asset finance (aircraft, ships, railcars); 2020 airline crisis → aircraft lessor/ bank exposure |
+| 18→12 Technology Hardware | C+S | 3 | M | ↔ | Tech lending (SVB model focused on tech/VC); 2023 SVB failure specifically tied to tech sector concentration |
+| 18→13 Software & Services | C+S | 3 | M | ↔ | Software company debt and deposit concentration; SVB 2023: large uninsured deposits from VC-backed tech firms |
+| 18→16 Utilities | C+R | 3 | M | ↔ | Utility project finance and infrastructure debt |
+| 18→17 Telecommunications | C | 3 | M | ↔ | Telco infrastructure loans, tower REIT, spectrum financing |
+| 18→19 Sovereigns & GSEs | R+L+S | 5 | H | ↔ | The sovereign-bank nexus: banks hold government bonds, government guarantees banks; 2008 GFC → sovereign rescues; 2011 Eurozone → bank-sovereign doom loop; 2023 Credit Suisse → government backstop |
+
+#### Row 19: Sovereigns & GSEs
+
+| Receptor | Type | Intensity | Confidence | Direction | Historical Precedent |
+|---|---|---|---|---|---|
+| 19→1 Energy | R | 3 | M | ↔ | Sovereign fiscal dependence on oil revenue; OPEC+ policy coordination; resource-backed loans |
+| 19→3 Metals & Mining | R | 3 | M | ↔ | Mining royalties and sovereign exposure; Chile copper, DRC cobalt, Australia iron ore fiscal dependence |
+| 19→4 Construction Materials | R | 3 | M | ↔ | Sovereign infrastructure spending drives construction materials demand; fiscal stimulus → construction activity |
+| 19→16 Utilities | R | 3 | M | ↔ | State-owned utilities (EDF, Enel, KEPCO, CEPALCO); sovereign credit directly affects utility funding and tariff policy |
+| 19→18 Financials | R+L+S | 5 | H | ↔ | The sovereign-bank nexus in full force: sovereign default → bank balance sheet destruction → credit contraction; 2011-2012 Eurozone crisis is the definitive case |
 
 ---
 
-## 四、矩阵构建逻辑
+## 3. Contagion Pathways and Graph Representation
 
-### 4.1 五大构建原则
+### 3.1 High-Intensity Links (Score >= 4)
 
-#### 原则1：同一分析范式内的行业传导强度高
+The following links form the structural backbone of the global industry contagion network:
 
-| 范式 | 行业组合 | 强度 | 逻辑依据 |
-|------|---------|------|---------|
-| 范式A([政策驱动型](industry-framework.md)) | 光伏↔半导体 | 4 | 共享政策资金支持·同受产业政策周期驱动·设备/材料进口依赖一致·产能周期同步·同为"新质生产力"标签 |
-| 范式B([技术壁垒型](industry-framework.md)) | 生物医药↔医疗器械 | 4 | 同一监管体系(集采/医保)·共享医院终端·研发驱动同质·均为技术替代风险暴露 |
-| 范式B([技术壁垒型](industry-framework.md)) | 高端装备↔半导体 | 4 | 装备是半导体的上游·进口替代双主线·同为制造强国战略核心 |
-| 范式E([品牌+渠道型](paradigm-brand-channel.md)) | 食品饮料↔纺织服装 | 2 | 共享"消费信心"属性·品牌危机示范效应·但实质性信用链关联弱 |
+```
+Score 5 (Very Strong):
+  Energy (1)       ↔    Chemicals (2)                  (C+R, H)
+  Financials (18)  ↔    Sovereigns & GSEs (19)           (R+L+S, H)
 
-**例外说明：** 范式F([网络+流量型](paradigm-network-traffic.md))内交通运输、商贸零售、传媒互联网三行业之间传导强度最高仅达3(商贸零售↔传媒互联网)，低于范式A和B内部的4分。原因：交通运输偏基础设施属性，与商贸零售/互联网的流量属性虽有连接但耦合度不足以达到强传染水平。
+Score 4 (Strong):
+  Energy (1)       ↔    Transportation (7)               (C, H)
+  Energy (1)       ↔    Utilities (16)                   (C, H)
+  Chemicals (2)    →    Consumer Staples (10)             (C, H)
+  Chemicals (2)    →    Biotech & Pharma (14)             (C, H)
+  Metals & Mining (3) ↔  Construction Materials (4)       (C, H)
+  Metals & Mining (3) ↔  Capital Goods (5)                (C, H)
+  Capital Goods (5) ↔    Technology Hardware (12)         (C, H)
+  Transportation (7) ↔   Retail (11)                      (C, H)
+  Automobiles (8)  ↔    Technology Hardware (12)          (C, H)
+  Technology Hardware↔   Software & Services (13)         (C+S, H)
+  Biotech & Pharma↔     Healthcare Equipment (15)         (C+S, H)
+  Software & Services↔  Telecommunications (17)          (C+S, H)
+  Sovereigns & GSEs↔    Financials (18)                   (R+L+S, H)
+  Chemicals (2)    ↔    Technology Hardware (12)          (C, M)
+  Capital Goods (5) ↔   Automobiles (8)                   (C, M)
+  Technology Hardware↔  Healthcare Equipment (15)         (C, M)
 
-#### 原则2：上下游关系传导强度高
+Total: 17 high-intensity links (score >= 4), including 2 at score 5
+```
 
-| 上游行业 | 下游行业 | 强度 | 逻辑依据 |
-|---------|---------|------|---------|
-| 半导体(芯片) | → 光伏(逆变器/储能BMS) | 4 | 核心上游断供→下游生产停滞 |
-| 半导体(芯片) | → 医疗器械(CT/MRI芯片) | 3 | 关键零部件依赖，但替代弹性高于光伏 |
-| 半导体(芯片) | → 新能源汽车(智能驾驶芯片) | 3 | 汽车缺芯已验证传导 |
-| 半导体(芯片) | → 数据中心(AI芯片) | 3 | AI算力需求驱动传导 |
-| 高端装备(设备) | → 半导体(制造) | 4 | 设备是芯片制造的瓶颈 |
-| 高端装备(设备) | → 光伏(制造) | 3 | 光伏设备依赖度中等 |
-| 城投债 / LGFV | → 交通运输(基建) | 4 | 城投是交运基建投融资主体 |
+### 3.2 Moderate-Intensity Links (Score = 3)
 
-#### 原则3：同区域依赖传导强度高
+Score-3 links form the secondary transmission network. In total there are 62 unique moderate-intensity directed links connecting industries across all paradigms. Key clusters:
 
-城投债 / LGFV作为信用绑定区域财政的特殊行业，通过以下机制向多行业传导：
+**P1 (Policy-Driven) Cluster:**
+- Energy ↔ Financials, Energy ↔ Sovereigns
+- Chemicals ↔ Automobiles, Chemicals ↔ Consumer Durables
+- Financials ↔ Capital Goods, Financials ↔ Commercial Services
+- Financials ↔ Transportation, Financials ↔ Tech Hardware, Financials ↔ Software
+- Sovereigns ↔ Energy, Sovereigns ↔ Metals & Mining, Sovereigns ↔ Construction Materials, Sovereigns ↔ Utilities
 
-| 关联行业 | 强度 | 区域传导机制 |
-|---------|------|-------------|
-| 交通运输 | 4 | 交通基础设施100%依赖地方财政/城投平台融资 |
-| 光伏 | 3 | 光伏电站选址取决于地方土地+并网资源→城投平台是重要合作方 |
-| 数据中心 | 3 | 数据中心园区建设依赖城投土地+基建配套 |
-| 高端装备 | 2 | 装备制造园区由城投开发运营 |
-| 新能源车 | 2 | 新能源车产业园依赖城投基建 |
-| 生物医药 | 2 | 生物医药园区由城投开发 |
-| 半导体 | 2 | 半导体产业园由城投提供配套 |
+**P2 (Technology Moat) Cluster:**
+- Tech Hardware ↔ Capital Goods (also score 4), Tech Hardware ↔ Healthcare
+- Software ↔ Commercial Services, Software ↔ Retail
+- Biotech ↔ Financials, Healthcare Equipment ↔ Capital Goods
+- Capital Goods ↔ Transportation, Capital Goods ↔ Healthcare Equipment
 
-**关键结论：** 城投债的传染主要通过区域共振传导至基建相关行业，对纯市场化/消费类行业传导弱。
+**P3 (Zero-Sum Game) Cluster:**
+- Automobiles ↔ Chemicals, Automobiles ↔ Consumer Durables
+- Metals & Mining ↔ Energy, Metals & Mining ↔ Construction Materials
 
-#### 原则4：消费品行业间传导弱
+**P4 (Asset Lease) Cluster:**
+- Construction Materials ↔ Capital Goods, Construction Materials ↔ Utilities
+- Transportation ↔ Capital Goods, Transportation ↔ Commercial Services
+- Telecommunications ↔ Software & Services (also score 4), Telecom ↔ Financials
+- Utilities ↔ Financials, Utilities ↔ Sovereigns
 
-食品饮料(范式E[品牌+渠道型](paradigm-brand-channel.md))和纺织服装(范式E[品牌+渠道型](paradigm-brand-channel.md))之间的传导强度仅为2，主要通过信心崩塌(品牌危机示范效应)而非实质性信用链：
+**P5 (Brand + Channel) Cluster:**
+- Consumer Staples ↔ Retail, Consumer Durables ↔ Retail
+- Consumer Durables ↔ Chemicals, Consumer Staples ↔ Chemicals
+- Consumer Durables ↔ Technology Hardware
 
-- **传导机制：** 当某消费品牌发生严重信用事件(如食品安全丑闻/品牌破产)，投资者可能对整个消费板块的风险偏好下降，从而影响同一大消费标签的其他行业
-- **强度限制(≤2)原因：**
-  - 食品饮料和纺织服装的供应链完全不重叠
-  - 消费者群体虽有交叉但品牌忠诚度差异大
-  - 信用风险暴露(应收账款/担保)几乎不存在跨行业关联
-  - 仅在"恐慌性抛售消费类信用债"时可能同步波动
+**P6 (Network + Traffic) Cluster:**
+- Retail ↔ Commercial Services, Retail ↔ Software & Services
+- Commercial Services ↔ Transportation, Commercial Services ↔ Software
+- Commercial Services ↔ Financials
 
-#### 原则5：金融属性越强的行业传染力越强
+### 3.3 Low-Intensity Links (Score <= 2)
 
-| 行业 | 金融属性 | 传染力总分(行合计) | 传染力排名 |
-|------|---------|-------------------|-----------|
-| 城投债 / LGFV | 极高 | 24 | 2 |
-| 半导体/集成电路 | 高 | 26 | 1 |
-| 交通运输 | 高 | 20 | 5 |
-| 新能源汽车 | 中高 | 21 | 3(并列) |
-| 数据中心 | 极高 | 21 | 3(并列) |
-| 光伏/储能 | 中等 | 22 | 4 |
-| 食品饮料 | 低 | 14 | 13 |
-| 纺织服装 | 低 | 16 | 11 |
+Score-2 or 1 links (222 out of 342 off-diagonal pairs, 64.9%) represent pairs with minimal or negligible direct contagion risk. Typical patterns:
 
-### 4.2 对称性分析
+1. **Cross-paradigm unrelated sectors**: e.g., Consumer Staples ↔ Technology Hardware (1); Metals & Mining ↔ Software (1)
+2. **Purely financial channel without sector linkage**: e.g., Telecom ↔ Consumer Durables (1)
+3. **Theoretical but unproven channels**: e.g., Biotech ↔ Transportation (1); Healthcare Equipment ↔ Retail (1)
 
-矩阵不对称的原因：
+### 3.4 Graph Centrality Summary
 
-| 类型 | 示例 | 解释 |
-|------|------|------|
-| 上下游不对称 | 半导体→医疗器械(3) vs 医疗器械→半导体(3) | 半导体是上游，对下游影响大；下游违约对上游影响有限（此处对称因医疗芯片双向依赖：上游缺芯影响器械生产，下游采购调整影响芯片订单） |
-| 规模不对称 | 城投→多行业(3/4) vs 行业→城投(1/2) | 城投债的信用事件通过区域共振广泛传导；单一行业对城投的影响受限于行业敞口规模 |
-| 金融属性不对称 | 城投→交通运输(4) vs 交通运输→城投(4) | 交通基建与城投是双向强耦合，此对对称 |
-| 范式内对称 | 光伏↔半导体(4)| 同一范式内双向强度均衡 |
-| 说明 | 医疗器械↔半导体(3↔3) | 上例"医疗器械→半导体(1)"为早期草案数据，矩阵§2实际值为3。医疗器械与半导体同属"中国制造2025"范式，共享供应链(医疗芯片)和融资渠道，双向均为强度3。此对非不对称，归入范式内对称类别。 |
-
-### 4.3 未在矩阵中体现但需注意的传导
-
-1. **通过融资渠道的间接传染**：城投债的流动性挤兑可以通过"信用债→银行理财→全市场"路径传染至食品饮料等消费行业，但在正常环境中此路径已衰减至强度1
-2. **通过实际控制人的传染**：如张近东(苏宁)控制的苏宁易购(商贸零售)和苏宁置业(地产)之间的传染，但地产不在13行业之列
-3. **通过区域互保网络的间接传染**：山东省某些地级市的城投平台为民企(纺织/食品)提供担保→城投违约→民企信用危机，此类间接传导本矩阵已通过城投→各行业纳入
+| Measure | Top 3 Industries | Interpretation |
+|---|---|---|
+| **Degree Centrality** | Tech Hardware (12), Financials (18), Energy (1) | Most connected — highest number of intensity >= 3 links |
+| **Betweenness Centrality** | Financials (18), Technology Hardware (12), Chemicals (2) | Key bridges between otherwise disconnected sector clusters |
+| **Closeness Centrality** | Financials (18), Energy (1), Technology Hardware (12) | Fastest transmission path to any other sector |
+| **Eigenvector Centrality** | Financials (18), Sovereigns (19), Technology Hardware (12) | Connected to the most highly-connected sectors |
 
 ---
 
-## 五、基于矩阵的行业聚类
+## 4. Matrix Construction Logic
 
-### 5.1 高传染集群(行业间传导≥4)
+### 4.1 Five Construction Principles
 
-| 集群编号 | 集群名称 | 包含行业 | 核心链路 | 传染类型 |
-|---------|---------|---------|---------|---------|
-| **集群A** | 产业制造核心三角 | 光伏/储能、半导体/集成电路、高端装备/工业母机 | 光伏↔半导体(4), 半导体↔高端装备(4), 光伏→高端装备(3) | 信用链+信心崩塌 |
-| **集群B** | 医疗健康双核 | 生物医药/创新药、医疗器械 | 生物医药↔医疗器械(4) | 信用链+信心崩塌 |
-| **集群C** | 政府基建-交运联合 | 城投债 / LGFV、交通运输 | 城投债↔交通运输(4) | 区域共振+信用链 |
+#### Principle 1: Shared Paradigm Elevates Coupling
 
-**集群特征分析：**
+Industries under the same analytical paradigm exhibit systematically higher contagion intensity due to shared risk factors:
 
-- **集群A(产业制造核心三角)**：三个均为范式A/B叠加行业·共享"国产替代+进口依赖+政策驱动"叙事·资本开支大周期同步·是中国制造业的核心传染敏感带
-- **集群B(医疗健康双核)**：两个行业共享医院终端、共受集采政策影响、研发管线逻辑相似·传染耦合度极高但影响范围有限(集中在医疗板块内部)
-- **集群C(政府基建-交运联合)**：中国交通基建投融资模式决定了城投和交运的深度绑定·这是最容易被触发的高传染链路(已有多起历史验证)
+| Paradigm | Example Pair | Intensity | Rationale |
+|---|---|---|---|
+| P1 (Policy-Driven) | Energy ↔ Sovereigns | 3 | Resource fiscal policy, geopolitical risk, regulatory cycle synchronization |
+| P2 (Technology Moat) | Tech Hardware ↔ Software | 4 | Ecosystem lock-in (Apple, Wintel, ARM); AI/GPU dependency |
+| P3 (Zero-Sum Game) | Automobiles ↔ Consumer Durables | 3 | Shared consumer discretionary spending; replacement cycle correlation |
+| P4 (Asset Lease) | Transportation ↔ Utilities | 2 | Both are infrastructure-intensive but serve different end-markets |
+| P5 (Brand + Channel) | Consumer Staples ↔ Consumer Durables | 2 | Share "consumer trust" attribute but fundamentally different demand drivers |
+| P6 (Network + Traffic) | Retail ↔ Software & Services | 3 | E-commerce platform ecosystem; cloud → omnichannel integration |
 
-### 5.2 中传染集群(强度2-3)
+#### Principle 2: Upstream-Downstream Supply Chain
 
-| 集群编号 | 集群名称 | 包含行业 | 核心链路强度区间 |
-|---------|---------|---------|----------------|
-| **集群D** | 新能源生态 | 光伏/储能、新能源汽车、半导体、城投债 | 2-3 |
-| **集群E** | 数字基础设施 | 数据中心、传媒/互联网、商贸零售、半导体 | 2-3 |
-| **集群F** | 消费流通 | 食品饮料、纺织服装、商贸零售、传媒/互联网 | 2-3 |
-| **集群G** | 医疗供应链 | 生物医药、医疗器械、高端装备、交通运输 | 2 |
-| **集群H** | 交运物流 | 交通运输、商贸零售、传媒/互联网 | 2 |
+Vertical supply chain relationships drive direct credit chain contagion:
 
-**集群特征分析：**
+| Upstream | Downstream | Intensity | Basis |
+|---|---|---|---|
+| Energy | Chemicals | 5 | Direct feedstock; ~60% of chemical production is petrochemical-based |
+| Energy | Transportation | 4 | Fuel is ~25-30% of airline OpEx, ~20% of trucking |
+| Energy | Utilities | 4 | Fuel (gas/coal) = ~40-60% of thermal generation cost |
+| Chemicals | Consumer Staples | 4 | Fertilizer, food additives, packaging — essential inputs |
+| Chemicals | Biotech & Pharma | 4 | Pharma intermediates are specialty chemicals |
+| Metals & Mining | Construction Materials | 4 | Primary steel, aluminum, copper inputs |
+| Metals & Mining | Capital Goods | 4 | Equipment manufacturing uses 25-30% of global steel |
+| Technology Hardware | Automobiles | 4 | Chip content per vehicle rising exponentially |
+| Technology Hardware | Software & Services | 4 | Cloud/AI hardware enables software ecosystem |
+| Technology Hardware | Capital Goods | 4 | Semiconductor equipment is the highest-value capital goods segment |
 
-- **集群D(新能源生态)**：光伏+新能源车共享锂电上游·半导体是共同上游(芯片/IGBT)·城投是园区建设方·多行业在同一叙事线上
-- **集群E(数字基础设施)**：数据中心是底层算力提供者·传媒互联网是最大客户·商贸零售是第二大客户·半导体是设备提供者
-- **集群F(消费流通)**：消费品牌(食品/纺织)通过零售渠道和互联网平台销售→共享消费信心→但实质性传染弱
-- **集群G(医疗供应链)**：医疗器械→高端装备(精密零部件)·生物医药→交通运输(冷链)·属边缘供应链传染
-- **集群H(交运物流)**：物流企业连接商贸零售和互联网平台→属于产业服务型传导
+#### Principle 3: Common Creditor / Financial Intermediation
 
-### 5.3 低传染集群(强度≤1)
+Financials and Sovereigns serve as the "hub" sectors transmitting contagion across the real economy through credit channels:
 
-| 集群编号 | 集群名称 | 包含行业 | 特征 |
-|---------|---------|---------|------|
-| **集群I** | 跨范式无关集群 | 所有涉及食品饮料/纺织服装与光伏/半导体/高端装备/城投债的组合 | 完全不同的范式·无上下游关系·不受同一政策驱动 |
-| **集群J** | 纯消费-纯制造隔离集群 | 食品饮料/纺织服装与生物医药/医疗器械 | 虽然都是消费相关但购买决策/监管环境/渠道完全不同 |
+| Path | Intensity | Mechanism |
+|---|---|---|
+| Financials → All sectors | 3 (avg) | Credit supply contraction affects all borrowers simultaneously |
+| Sovereigns → Financials | 5 | Government bond holdings at banks; fiscal guarantee of banking system |
+| Financials → Sovereigns | 5 | Bank bailout costs = sovereign contingent liability |
 
-**统计：** 强度≤1的行业对共96对，占全部169对的56.8%。这些对在正常环境中基本不存在传导风险。
+#### Principle 4: Consumer Confidence Resonance
 
-### 5.4 隔离行业
+Consumer-facing sectors share exposure to household confidence, disposable income trends, and spending cycles — but the transmission is primarily through Confidence Collapse (S) rather than Credit Chain (C):
 
-以下行业与其他行业的传导关联最少(平均传导强度最低)：
+| Path | Intensity | Mechanism |
+|---|---|---|
+| Consumer Staples ↔ Retail | 3 | CPG retail exposure; private label competition |
+| Consumer Durables ↔ Retail | 3 | Durable goods retail distribution channel |
+| Consumer Staples ↔ Consumer Durables | 2 | Weak — different spending categories, supply chains do not overlap |
+| Consumer Durables ↔ Automobiles | 3 | Both share "big-ticket discretionary" category; interest rate sensitivity |
 
-| 排名 | 行业 | 平均传导强度 | 特征 |
-|------|------|-------------|------|
-| 1 | 食品饮料 | 1.08 | 仅与纺织服装(2)·商贸零售(2)·传媒(1)有弱连接 |
-| 2 | 纺织服装 | 1.17 | 仅与食品饮料(2)·商贸零售(2)·传媒(2)·医疗器械(1)有弱连接 |
-| 3 | 生物医药 | 1.50 | 集中与医疗器械(4)连接·其余均为1 |
+#### Principle 5: Higher Financial Intensity Amplifies Contagion Reach
 
-**结论：** 食品饮料和纺织服装是矩阵中"最孤立"的行业，它们主要嵌入消费流通集群(强度2-3)内，与制造业、基建类行业几乎不存在可测的传染路径。这验证了原则4：消费品行业间传导弱，消费品与非消费品之间传导更弱。
+Industries with higher financial intensity (larger debt markets, more leveraged balance sheets, higher institutional ownership) have broader contagion reach:
 
-### 5.5 超级传染者
+| Industry | Financial Intensity | Row Sum (Contagion Force) | Rank |
+|---|---|---|---|
+| Financials | Very High | 48 | 1 |
+| Technology Hardware | High | 44 | 2 |
+| Energy | High | 43 | 3 |
+| Sovereigns & GSEs | Very High | 42 | 4 |
+| Chemicals | Medium | 40 | 5 |
+| Capital Goods | Medium-High | 39 | 6 |
+| Transportation | High | 38 | 7 |
+| Software & Services | Medium | 36 | 8 |
+| Automobiles | High | 34 | 9 |
+| Retail | Medium | 33 | 10 |
+| Biotech & Pharma | Medium-High | 30 | 11 |
+| Utilities | High | 30 | 12 |
+| Metals & Mining | Medium | 29 | 13 |
+| Healthcare Equipment | Medium | 28 | 14 |
+| Construction Materials | Medium | 27 | 15 |
+| Consumer Durables | Low-Medium | 27 | 16 |
+| Telecommunications | High | 25 | 17 |
+| Consumer Staples | Low | 25 | 18 |
+| Commercial Services | Low-Medium | 24 | 19 |
 
-超级传染者 = 行合计(该行业对外传染力)排名前3的行业：
+### 4.2 Asymmetry Analysis
 
-| 排名 | 行业 | 传染力总分 | 主要传染对象(强度≥3) | 核心逻辑 |
-|------|------|-----------|-------------------|---------|
-| **1** | **半导体/集成电路** | **25** | 光伏(4)·高端装备(4)·医疗器械(3)·新能源车(3)·数据中心(3) | 全产业上游·"工业粮食"·几乎影响所有科技/制造类行业 |
-| **2** | **城投债 / LGFV** | **23** | 交通运输(4)·光伏(3)·数据中心(3) | 区域信用绑定+基建融资枢纽·通过区域共振向多行业传导 |
-| **3** | **高端装备/工业母机** | **22** | 半导体(4)·光伏(3) | 制造业"母机"·下游覆盖半导体/光伏/医疗/交通 |
+The matrix is not perfectly symmetric; key asymmetries include:
 
-**补充观察：** 光伏/储能(21分)和新能源汽车(20分)紧随其后，构成"准超级传染者"梯队。
+| Type | Example | Explanation |
+|---|---|---|
+| **Supply Chain Asymmetry** | Energy → Transportation (4) vs Transportation → Energy (4) | Symmetric: fuel cost impact on transportation (input) AND transport demand impact on energy (output) are both strong |
+| **Vertical Asymmetry** | Chemicals → Consumer Staples (4) vs Consumer Staples → Chemicals (1) | Chemicals are upstream input for CPG, but CPG demand has limited reverse impact on chemical production |
+| **Financial Hub Asymmetry** | Sovereigns → Financials (5) vs Financials → Sovereigns (5) | Symmetric in the sovereign-bank nexus: the doom loop is bidirectional |
+| **Scale/Concentration Asymmetry** | Financials → All (3 avg) vs Individual sector → Financials (1-3) | Financials have broad diversified exposure to all sectors; individual sector stress has limited impact on diversified bank portfolios |
 
-### 5.6 脆弱行业
+### 4.3 Channels Not Exhaustively Captured
 
-脆弱行业 = 列合计(该行业被传染风险)排名前3的行业：
-
-| 排名 | 行业 | 风险暴露总分 | 主要被传染源(强度≥3) | 核心逻辑 |
-|------|------|------------|-------------------|---------|
-| **1** | **半导体/集成电路** | **25** | 光伏(4)·高端装备(4)·医疗器械(3)·新能源车(3)·数据中心(3) | 处在所有科技/制造产业链的中心位置·上下左右均受传染 |
-| **2** | **城投债 / LGFV** | **23** | 交通运输(4)·光伏(3)·数据中心(3) | 区域信用链条中的被动受体·多行业违约均可传导至城投 |
-| **3** | **光伏/储能** | **21** | 半导体(4)·高端装备(3)·新能源车(3)·城投债(3) | 上游依赖半导体+高端装备·下游依赖电网/城投·双重脆弱 |
-
-**关键发现：** 半导体既是第一名超级传染者(25分)，也是第一名脆弱行业(25分)。这揭示了半导体在传染网络中的"中心节点"属性——它既是传染源头(向其上下游发散)，也是传染受体(被上下游影响)。这种双重属性意味着半导体行业的信用事件可能引发**系统性传染**而不只是局部传导。
-
----
-
-## 六、传染放大器条件
-
-### 6.1 升级因子到矩阵的映射
-
-根据《传染理论基础》第5节定义的5个升级因子，定义各因子对矩阵的影响权重：
-
-| 升级因子 | 适用传染类型 | 受影响最大的行业对 | 最大跳升幅度 |
-|---------|------------|------------------|-------------|
-| **市场恐慌情绪** | 信心崩塌(S)·流动性挤兑(L) | 所有含"S"或"L"标记的对 | +1~+2 |
-| **监管政策真空** | 区域共振(R)·信心崩塌(S) | 城投债相关的所有对 | +1~+3 |
-| **高杠杆环境** | 流动性挤兑(L) | 含"L"标记+金融属性高的行业对 | +1~+2 |
-| **信息不对称** | 信心崩塌(S)·信用链(C) | 所有含"C"的对 | +1 |
-| **年末/季末效应** | 全部类型 | 全部对 | +0~+1 |
-
-### 6.2 正常环境→压力环境强度跳升量表
-
-以下定义当某一升级因子或多个升级因子同时触发时，矩阵内特定行业对的强度跳升规则。
-
-#### 跳升规则1：市场恐慌情绪触发
-
-**触发条件：** VIX>20（进入升级状态，参见[contagion-theory.md](contagion-theory.md) §5.1 VIX三级划分）或 信用利差走阔>50bp 或 一级市场取消发行占比>20%
-
-| 受影响行业对 | 正常强度 | 恐慌强度 | 跳升逻辑 |
-|-------------|---------|---------|---------|
-| 半导体→光伏 | 4 | 5 | 恐慌加剧供应链断供威胁→封锁强度达极限 |
-| 半导体→新能源车 | 3 | 4 | 恐慌→汽车芯片加速囤积/中断 |
-| 城投债→交通运输 | 4 | 5 | 恐慌→区域债券无差别抛售→交通类国企融资冻结 |
-| 生物医药↔医疗器械 | 4 | 5 | 恐慌→医疗板块整体抛售→信用利差同步跳升 |
-| 商贸零售↔传媒互联网 | 3 | 4 | 恐慌→消费+互联网板块同步抛售 |
-| 所有含"S"标记的对 | 基础值 | 基础值+1 | 信心崩塌在恐慌环境中自我实现 |
-| 所有含"L"标记的对 | 基础值 | 基础值+1 | 流动性挤兑在恐慌环境中加速 |
-| 食品饮料↔纺织服装 | 2 | 3 | 恐慌→消费板块无差别抛售 |
-
-#### 跳升规则2：监管政策真空触发
-
-**触发条件：** 违约后72小时内监管层无明确表态，或表态模糊("让市场自己解决")
-
-| 受影响行业对 | 正常强度 | 监管真空强度 | 跳升逻辑 |
-|-------------|---------|------------|---------|
-| 城投债→交通运输 | 4 | 5(极强) | 区域国企信仰崩塌→同区域交运国企被无差别抛售 |
-| 城投债→光伏 | 3 | 4 | 城投违约+监管沉默→光伏电站项目融资冻结 |
-| 城投债→数据中心 | 3 | 4 | 城投违约+监管沉默→数据中心园区建设中断 |
-| 城投债→新能源车 | 2 | 3 | 城投违约→新能源车产业园支持快速收缩 |
-| 城投债→半导体 | 2 | 3 | 城投违约→半导体产业园招商停滞 |
-| 城投债→高端装备 | 2 | 3 | 城投违约→装备制造园区基建停滞 |
-| 城投债→生物医药 | 2 | 3 | 城投违约→生物医药园区开发中断 |
-
-**特别说明：** 监管政策真空对城投债相关对的影响最大(最大跳升+1~+2)，对其他非城投相关对影响有限(+0~+1)。原因：监管表态直接决定区域信用走向(理论文档5.2.2节)。
-
-#### 跳升规则3：高杠杆环境触发
-
-**触发条件：** 质押式回购规模/净融资量超过历史90分位数，或基金/券商自营杠杆率>110%
-
-| 受影响行业对 | 正常强度 | 高杠杆强度 | 跳升逻辑 |
-|-------------|---------|-----------|---------|
-| 城投债→交通运输 | 4 | 5 | 杠杆投资城投债的机构被迫平仓→交运债被抛售 |
-| 数据中心↔传媒互联网 | 3 | 4 | 杠杆资金在互联网板块的质押式回购→触发平仓 |
-| 商贸零售↔传媒互联网 | 3 | 4 | 消费/互联网板块联动杠杆→平仓传染 |
-| 半导体↔光伏 | 4 | 5 | 半导体/光伏板块存在大量杠杆化ETF和信用债投资 |
-| 数据中心→城投债 | 3 | 4 | 数据中心REITs/ABS杠杆化→流动性冲击加速 |
-
-#### 跳升规则4：信息不对称触发
-
-**触发条件：** 违约企业24小时内未发布公告，或管理层失联，或关键财务数据缺失
-
-| 受影响行业对 | 正常强度 | 信息不对称强度 | 跳升逻辑 |
-|-------------|---------|--------------|---------|
-| 所有含"C"(信用链)标记的对 | 基础值 | 基础值+1 | 市场无法判断实际供应链敞口→采用最坏假设→抛售加速 |
-| 所有含"R"(区域共振)标记的对 | 基础值 | 基础值+1 | 无法确认区域实际暴露→区域债券无差别抛售 |
-| 城投债→交通运输 | 4 | 5 | 信息真空→区域交运国企全部被"一刀切" |
-
-#### 跳升规则5：年末/季末效应触发
-
-**触发条件：** 距离季度末≤2周 或 距离年末≤4周
-
-| 受影响行业对 | 正常强度 | 年末效应强度 | 跳升逻辑 |
-|-------------|---------|------------|---------|
-| 全部矩阵对 | 基础值 | 基础值+0~+1 | 机构风险偏好系统性下降→信用事件被过度反应 |
-| 城投债相关的所有对 | 基础值 | 基础值+1 | 年末考核→银行压缩区域敞口→城投融资环境急剧恶化 |
-
-### 6.3 升级因子协同效应(超级放大器)
-
-当多个升级因子同时触发时，强度跳升遵循**叠加而非简单相加**原则：
-
-| 因子组合 | 协同系数 | 受影响最严重的行业对 | 示例：强度跳升计算 |
-|---------|---------|------------------|------------------|
-| 市场恐慌 + 监管真空 | 1.5x | 城投债→交通运输 | 4→5(恐慌)+1(真空)→6→但上限5→最终=5 |
-| 市场恐慌 + 高杠杆 | 2.0x | 半导体→光伏 | 4→5(恐慌)→但高杠杆使传导速度加倍 |
-| 监管真空 + 年末效应 | 1.5x | 城投债→多个行业 | 各跳升1→叠加后总跳升2~3 |
-| 三个及以上同时触发 | 3.0x | 全部矩阵对 | 系统性临界点→矩阵中的大部分链路强度+1~+2 |
-
-**协同效应上限：** 无论多少个升级因子同时触发，任何一条链路的强度上限为5（极强）。
-
-### 6.4 升级因子触发概率与监测
-
-| 升级因子 | 触发概率(年度) | 主要触发季节 | 核心监测指标 | 预警阈值 |
-|---------|--------------|------------|-------------|---------|
-| 市场恐慌情绪 | 15-20% | 3月/8月/11月 | VIX指数·信用利差·取消发行率 | VIX>35（极端状态，参见[contagion-theory.md](contagion-theory.md) §5.1）·利差跳升>30bp |
-| 监管政策真空 | 5-10% | 年末/重大违约后 | 监管机构表态文本·金融委会议纪要 | 违约后48小时无表态 |
-| 高杠杆环境 | 20-30% | 降准降息宽松期后 | 质押式回购余额·基金杠杆率 | 回购余额>6万亿 |
-| 信息不对称 | 10-15% | 突发违约后 | 发行人公告时间·电话会召开情况 | 违约后24小时无公告 |
-| 年末/季末效应 | 100%(周期性) | 3/6/9月末·12月 | 日历日期·R007/R001波动率 | 距离季末≤2周 |
+1. **Multi-step cascade**: The matrix captures direct (A→B) transmission only. Second-order (A→B→C) cascades — e.g., Energy default → Chemical producer slowdown → Consumer Staples packaging shortage — require multi-step simulation beyond the pairwise matrix
+2. **Common ownership / institutional investor overlap**: Two sectors with no direct economic linkage can co-move if owned by the same leveraged investor base (e.g., cross-sector ETF rebalancing)
+3. **Geopolitical event-driven correlation**: A single geopolitical event (sanctions, trade war, conflict) can simultaneously affect multiple paradigm-unrelated sectors (e.g., Russia-Ukraine 2022 simultaneously hit Energy, Chemicals, Agriculture/Consumer Staples, and Metals & Mining)
+4. **Liquidity-driven path**: In extreme stress, liquidity squeeze can transmit between any pair regardless of economic linkage — the matrix does not attribute score-5 liquidity contagion to all cells, but users should be aware of this limitation (see Section 6 for stress escalation)
 
 ---
 
-## 七、与现有引擎集成
+## 5. Derived Metrics — Super-Spreaders, Vulnerability, and Coefficients
 
-### 7.1 分析金字塔如何引用本矩阵
+### 5.1 Super-Spreader Industries (Top 3 Row Sums)
 
-现有分析金字塔框架(从M1到M4)中，本矩阵的集成如下：
+Super-spreaders are industries whose default or distress causes the widest contagion to other sectors. Measured by **row sum** (total outgoing contagion intensity).
 
-#### M1(行业基本面分析)
-| 金字塔层级 | 集成方式 | 具体操作 |
-|-----------|---------|---------|
-| 行业边界定义 | 在"行业生态图谱"中加入**传染暴露节点** | 每个行业分析需标出与上下游行业的传染耦合度(引用矩阵强度值) |
-| 行业供需分析 | 在"需求驱动因素"中纳入**下游信用风险传染** | 下游高负债行业的需求波动→传染至本行业的机制 |
-| 行业政策分析 | 在"政策敏感性评估"中增加**政策同频传染** | 与同受某一政策驱动的其他行业同步分析(如光伏+半导体同受美国芯片法案影响) |
+| Rank | Industry | Row Sum | Key Targets (Score >= 3) | Core Logic |
+|---|---|---|---|---|
+| **1** | **Financials (Banks/Insurance)** | **48** | Sovereigns(5), TechHW(3), Software(3), Energy(3), Transport(3), CapGoods(3), ComServ(3), Utilities(3), Telecom(3), Chemicals(2) | Central credit intermediary; credit supply contraction affects all sectors; sovereign-bank nexus is the highest-intensity link in the matrix |
+| **2** | **Technology Hardware (Semis)** | **44** | Software(4), Automobiles(4), CapGoods(4), Chemicals(3), Healthcare(3), Consumer Durables(3), Telecom(3), Financials(3) | "Industrial rice" — chips are essential inputs to virtually all manufacturing and technology sectors |
+| **3** | **Energy (Oil & Gas)** | **43** | Chemicals(5), Transportation(4), Utilities(4), Automobiles(3), CapGoods(3), Metals(3), Financials(3), Sovereigns(3) | Primary commodity with economy-wide cost impact; petrochemical feedstock; fuel for transport and power generation |
 
-**注意：** 本矩阵的传染强度（1-5级）与行业金字塔评分（L1-L4每层1-5分，加权总分最高10分）是两套独立的评分体系。传染强度衡量的是行业间信用风险传导的力度，而非行业的基本面质量。两者不可直接对比或换算。
+**Note:** Sovereigns & GSEs rank 4th (row sum 42), just outside top 3.
 
-#### M2(个体信用分析)
-| 金字塔层级 | 集成方式 | 具体操作 |
-|-----------|---------|---------|
-| 供应链分析 | 在客户/供应商集中度检查中引用矩阵 | 若客户的行业是矩阵中的高传染行业(如半导体)，需重点评估 |
-| 融资渠道分析 | 检查企业融资渠道是否与矩阵中的高脆弱行业重叠 | 如企业与城投债共享同一融资渠道(银行授信/债券市场) |
-| 区域分析 | 引用矩阵中"城投债"相关的区域传染因子 | 企业所在区域是否有城投债违约记录→区域共振评估 |
+### 5.2 Vulnerable Industries (Top 3 Column Sums)
 
-#### M3(行业比较与排序)
-| 金字塔层级 | 集成方式 | 具体操作 |
-|-----------|---------|---------|
-| 行业优先级排序 | 在排序权重中增加**传染风险调整因子** | 高传染集群(集群A/B/C)的行业在做跨行业比较时，需额外扣减传染风险 |
-| 行业轮动分析 | 在轮动逻辑中增加**传染触发阈值** | 监测矩阵中高传染链路是否出现强度升级信号 |
+Vulnerable industries are those most exposed to incoming contagion from other sectors. Measured by **column sum** (total incoming contagion exposure).
 
-#### M4(组合风控)
-| 金字塔层级 | 集成方式 | 具体操作 |
-|-----------|---------|---------|
-| 集中度压力测试 | 使用矩阵做**组合传染模拟**(详见7.2)，联动[集中度分析框架](concentration-framework.md) | 输入假想违约→矩阵驱动传播→输出组合影响，五维综合评分作为加压测试初始条件 |
-| 行业集中度限制 | 在集中度管理中增加**传染关联集中度**，引用[集中度分析框架](concentration-framework.md)§2.3 | 不仅是单一行业集中度，还要考虑集群A+B+C的**总暴露敞口** |
-| 限额管理系统 | 在限额中增加**传染路径限额**，联动[系统性预警框架](systemic-warning-framework.md)SRI阈值 | 对高传染链路(A→B)设定额外限额扣减，SRI≥1.0时触发限额收紧 |
-| 系统性风险监控 | 引用[系统性预警框架](systemic-warning-framework.md)SRI温度计 | M4组合风控的顶层仪表盘，以SRI读数驱动集中度限额的动态调整 |
+| Rank | Industry | Column Sum | Key Sources (Score >= 3) | Core Logic |
+|---|---|---|---|---|
+| **1** | **Financials (Banks/Insurance)** | **48** | Sovereigns(5), Energy(3), CapGoods(3), ComServ(3), Transport(3), TechHW(3), Software(3), Utilities(3), Telecom(3) | The most "central" node: exposed to every sector through loan books, investment portfolios, and derivative counterparty risk |
+| **2** | **Energy (Oil & Gas)** | **43** | Chemicals(5), Transport(4), Utilities(4), Capital Goods(3), Automobiles(3), TechHW(3), Financials(3), Sovereigns(3) | Dual vulnerability: input cost side (chemicals → energy) and demand side (transport, utilities, industrial) |
+| **3** | **Technology Hardware (Semis)** | **44** | CapGoods(4), Software(4), Automobiles(4), Chemicals(3), Healthcare(3), Retail(3), Telecom(3), Financials(3) | Technology hardware is simultaneously a super-spreader AND a highly vulnerable industry — a "central hub" property with dual risk |
 
-五维集中度分析框架（[concentration-framework.md](concentration-framework.md)）和系统性预警框架（[systemic-warning-framework.md](systemic-warning-framework.md)）在M4层引用本矩阵的传染强度和行业聚类结果，用于组合层面的传染压力测试和集中度调整。
+**Key finding:** Technology Hardware (Semis) is simultaneously the #2 super-spreader (row sum 44) and #3 vulnerable industry (column sum 44). This "central node" property means semiconductor sector credit events may trigger **systemic contagion** not limited to local pathways.
 
-### 7.2 M4(组合风控)集中度压力测试流程
+### 5.3 Contagion Coefficients
 
-本矩阵的核心应用场景——M4组合框架下的**传染集中度压力测试**：
+#### Contagion Force Coefficient (CFC)
+
+Measures the relative contagion transmission capacity of each industry:
 
 ```
-步骤1：设置压力场景
-  ├── 选择1-3个违约触发行业（如：半导体+城投债）
-  └── 选择升级因子组合（如：市场恐慌+年末效应）
-  
-步骤2：加载传染矩阵
-  ├── 读取13×13矩阵的强度值
-  ├── 根据升级因子调整强度（按6.2节跳升规则）
-  └── 生成"加压后矩阵"
-  
-步骤3：计算组合传染敞口
-  ├── 持仓中每个发行人的行业标签
-  ├── 通过加压后矩阵计算从触发行业到持仓的传染路径
-  └── 输出"组合传染影响评分"
-  
-步骤4：评估集中度超限
-  ├── 单一行业集中度 > 阈值（如15%）→ 警告
-  ├── 集群A+B+C总敞口 > 阈值（如30%）→ 高度警告
-  └── 持仓在超级传染者行业(半导体/城投债)的敞口 > 单一阈值 → 约束
-  
-步骤5：输出压力测试报告
-  ├── 最坏情况下的组合传染损失估计
-  ├── 高传染链路暴露清单（哪些行业对同时出现在持仓中）
-  ├── 建议：减仓高传染集群中的弱资质发行人或增加对冲
-  └── 建议：为超级传染者行业设置额外的敞口上限
+CFC_i = Row_Sum_i / Max(Row_Sum)
 ```
 
-**示例：半导体违约压力测试**
+| Rank | Industry | Row Sum | CFC |
+|---|---|---|---|
+| 1 | Financials | 48 | 1.00 |
+| 2 | Technology Hardware | 44 | 0.92 |
+| 3 | Energy | 43 | 0.90 |
+| 4 | Sovereigns & GSEs | 42 | 0.88 |
+| 5 | Chemicals | 40 | 0.83 |
+| 6 | Capital Goods | 39 | 0.81 |
+| 7 | Transportation | 38 | 0.79 |
+| 8 | Software & Services | 36 | 0.75 |
+| 9 | Automobiles | 34 | 0.71 |
+| 10 | Retail | 33 | 0.69 |
+| 11 | Biotech & Pharma | 30 | 0.63 |
+| 12 | Utilities | 30 | 0.63 |
+| 13 | Metals & Mining | 29 | 0.60 |
+| 14 | Healthcare Equipment | 28 | 0.58 |
+| 15 | Consumer Durables | 27 | 0.56 |
+| 16 | Construction Materials | 27 | 0.56 |
+| 17 | Telecommunications | 25 | 0.52 |
+| 18 | Consumer Staples | 25 | 0.52 |
+| 19 | Commercial Services | 24 | 0.50 |
+
+#### Contagion Vulnerability Coefficient (CVC)
+
+Measures the relative contagion reception vulnerability of each industry:
 
 ```
-假设场景：某AAA半导体企业违约
-触发升级因子：市场恐慌(VIX>35) + 高杠杆环境
-
-加压后矩阵受影响路径：
-  半导体→光伏:   4→5 (市场恐慌跳升)
-  半导体→高端装备: 4→5 (市场恐慌跳升)
-  半导体→新能源车: 3→4 (市场恐慌+高杠杆跳升)
-  半导体→数据中心: 3→4 (市场恐慌+高杠杆跳升)
-  半导体→医疗器械: 3→4 (市场恐慌跳升)
-
-组合影响：
-  如果组合同时持有半导体 + 光伏 + 高端装备 + 新能源车敞口
-  → 总敞口需<25%阈值
-  → 建议将这四个行业视为"一个传染集群"统一管理集中度
+CVC_i = Col_Sum_i / Max(Col_Sum)
 ```
 
-### 7.3 行业方法论"传染暴露"章节建议
+| Rank | Industry | Col Sum | CVC |
+|---|---|---|---|
+| 1 | Financials | 48 | 1.00 |
+| 2 | Technology Hardware | 44 | 0.92 |
+| 3 | Energy | 43 | 0.90 |
+| 4 | Sovereigns & GSEs | 42 | 0.88 |
+| 5 | Chemicals | 40 | 0.83 |
+| 6 | Capital Goods | 39 | 0.81 |
+| 7 | Transportation | 38 | 0.79 |
+| 8 | Software & Services | 36 | 0.75 |
+| 9 | Automobiles | 34 | 0.71 |
+| 10 | Retail | 33 | 0.69 |
+| 11 | Biotech & Pharma | 30 | 0.63 |
+| 12 | Utilities | 30 | 0.63 |
+| 13 | Metals & Mining | 29 | 0.60 |
+| 14 | Healthcare Equipment | 28 | 0.58 |
+| 15 | Consumer Durables | 27 | 0.56 |
+| 16 | Construction Materials | 27 | 0.56 |
+| 17 | Telecommunications | 25 | 0.52 |
+| 18 | Consumer Staples | 25 | 0.52 |
+| 19 | Commercial Services | 24 | 0.50 |
 
-建议在每个行业的行业方法论文档中增加**第N章 "传染暴露"** 或作为"特殊风险"章节的子章节，包含以下模板内容：
-
-#### 建议的传染暴露章节模板
+#### Contagion Net Exposure Ratio (CNER)
 
 ```
-### X. 传染暴露
-
-#### X.1 本行业的传染矩阵位置
-- 所属范式：[范式名称]
-- 超级传染者排名：[排名/13]
-- 脆弱行业排名：[排名/13]
-- 所属集群：[集群编号+名称]
-
-#### X.2 本行业作为传染源
-- 主要传染对象(强度≥3)：列出行业对及强度
-- 最强传导路径：[最强路径说明]
-- 历史验证案例：[有则列出，无则说明]
-
-#### X.3 本行业作为传染受体
-- 主要传染来源(强度≥3)：列出行业对及强度
-- 最脆弱路径：[最脆弱路径说明]
-- 被传染的临界条件：[什么情况下最易被传染]
-
-#### X.4 压力环境下的强度跳升
-- 最危险的升级因子组合：[因子组合]+[跳升后的强度]
-- 行业特有的脆弱因子：[如：半导体最怕"高杠杆+市场恐慌"组合]
-
-#### X.5 集中度管理建议
-- 与超级传染者行业(半导体/城投债/高端装备)的联动敞口限额建议
-- 集群内总敞口限额建议
+CNER_i = Row_Sum_i / Col_Sum_i
 ```
 
-#### 需要修改的现有文档清单
+| Industry | Row Sum | Col Sum | CNER | Interpretation |
+|---|---|---|---|---|
+| Commercial Services | 24 | 24 | 1.00 | Balanced |
+| Telecommunications | 25 | 25 | 1.00 | Balanced |
+| Metals & Mining | 29 | 29 | 1.00 | Balanced |
+| Construction Materials | 27 | 27 | 1.00 | Balanced |
+| Technology Hardware | 44 | 44 | 1.00 | Balanced (central hub) |
+| Energy | 43 | 43 | 1.00 | Balanced |
+| Financials | 48 | 48 | 1.00 | Balanced (central hub) |
+| Consumer Durables | 27 | 27 | 1.00 | Balanced |
+| Consumer Staples | 25 | 25 | 1.00 | Balanced |
+| Healthcare Equipment | 28 | 28 | 1.00 | Balanced |
+| Capital Goods | 39 | 39 | 1.00 | Balanced |
+| Chemicals | 40 | 40 | 1.00 | Balanced |
+| Utilities | 30 | 30 | 1.00 | Balanced |
+| Transportation | 38 | 38 | 1.00 | Balanced |
+| Retail | 33 | 33 | 1.00 | Balanced |
+| Automobiles | 34 | 34 | 1.00 | Balanced |
+| Software & Services | 36 | 36 | 1.00 | Balanced |
+| Biotech & Pharma | 30 | 30 | 1.00 | Balanced |
+| Sovereigns & GSEs | 42 | 42 | 1.00 | Balanced |
 
-| 文档 | 路径 | 修改内容 |
-|------|------|---------|
-| contagion-theory.md | dev/engine/contagion-theory.md | 在6.3节"与现有引擎文档的集成"中增加指向本矩阵的链接 |
-| industry-framework.md | dev/engine/industry-framework.md | 在框架模板中增加"传染暴露"章节占位 |
-| paradigm-*.md (6个范式文档) | dev/engine/paradigm-*.md | 每个范式文档的"特殊风险"章节引用本矩阵 |
-| output-layered-framework.md | dev/engine/output-layered-framework.md | 在M4组合风控部分增加传染矩阵引用 |
-| concentration-framework.md | dev/engine/concentration-framework.md | 在§9.2集成表中增加本矩阵引用 |
-| systemic-warning-framework.md | dev/engine/systemic-warning-framework.md | 在§10.3集成表中增加本矩阵引用 |
+**Note on symmetry:** The CNER for all industries is 1.00 because the matrix is structurally symmetric (each off-diagonal pair is assigned the same intensity in both directions). This reflects the design principle that the matrix captures linkage **existence** and **magnitude** rather than unidirectional flow. Directional asymmetries (e.g., upstream → downstream) are captured in the detailed annotations (Section 2.4) and in practical application (Section 6 stress scenario design), but the base matrix is symmetric. Future calibrated versions may introduce asymmetry coefficients based on empirical directional default correlation data.
 
-### 7.4 矩阵更新与维护机制
+### 5.4 Industry Clustering
 
-| 更新类型 | 触发条件 | 更新频率 | 负责角色 |
-|---------|---------|---------|---------|
-| 强度微调 | 新历史案例验证 | 按需 | 引擎团队 |
-| 置信度升级 | 新历史案例验证(低→中→高) | 季度 | 引擎团队 |
-| 新增行业 | 覆盖新行业 | 版本更新 | 引擎团队 |
-| 升级因子参数 | 市场环境结构性变化 | 半年度 | 风险管理 |
-| 全面重审 | 重大系统性信用事件后 | 事件驱动 | 引擎+风险管理 |
+#### High-Contagion Cluster (Intra-cluster average intensity >= 3.0)
+
+| Cluster | Industries | Core Links | Dominant Contagion Type |
+|---|---|---|---|
+| **A: Energy-Chemicals-Transport-Utilities** | Energy, Chemicals, Transportation, Utilities | Energy↔Chemicals(5), Energy↔Transport(4), Energy↔Utilities(4), Chemicals↔Transport(2) | Credit Chain |
+| **B: Tech-Auto-Capital Goods** | Technology Hardware, Software & Services, Automobiles, Capital Goods | Tech HW↔Software(4), Tech HW↔Autos(4), Cap Goods↔Tech HW(4), Cap Goods↔Autos(3) | Credit Chain + Confidence Collapse |
+| **C: Sovereign-Financial Hub** | Sovereigns & GSEs, Financials | Sovereigns↔Financials(5) | All types (each contaminated through the nexus) |
+| **D: Bio-Healthcare** | Biotech & Pharma, Healthcare Equipment | Biotech↔Healthcare Equip(4), Chemicals↔Biotech(4) | Credit Chain + Confidence Collapse |
+
+#### Moderate-Contagion Cluster (Intra-cluster average intensity 2.0-2.9)
+
+| Cluster | Industries | Key Links |
+|---|---|---|
+| **E: Retail-Consumer-Logistics** | Retail, Consumer Staples, Consumer Durables, Transportation | Retail↔Transport(4), Retail↔Consumer Staples(3), Retail↔Consumer Durables(3), Consumer Staples↔Chemicals(4) |
+| **F: Infrastructure-Construction** | Construction Materials, Metals & Mining, Capital Goods, Utilities | Metals↔Const Mat(4), Metals↔Cap Goods(4), Const Mat↔Utilities(3) |
+| **G: Telecom-Software** | Telecommunications, Software & Services | Telecom↔Software(4) |
+| **H: Commercial Services-Network** | Commercial Services, Retail, Transportation, Software | ComServ↔Retail(3), ComServ↔Transport(3), ComServ↔Software(3) |
 
 ---
 
-## 八、局限性声明
+## 6. Stress Escalation — Factor-Specific Intensity Jumps
 
-1. **矩阵是静态快照：** 本矩阵反映的是2026年7月的行业结构和传染关系。随着产业结构演变(如AI算力行业扩张、新能源产业链重构)，矩阵内强度和方向需要定期更新。
+### 6.1 Escalation Factor Mapping
 
-2. **信心崩塌无法完全矩阵化：** 信心崩塌(S)作为无明确边界的传染类型，在矩阵中被限制在较低强度(最高4·仅用于已验证的行业对)。但实际中，极端信心崩塌事件可以跨越任何行业边界(如2008全球金融危机时与次贷无关的行业也被波及)。矩阵无法捕捉此类"黑天鹅"传染。
+Based on the five escalation factors defined in [Contagion Theory](contagion-theory.md) Section 5, each factor affects specific matrix linkages:
 
-3. **间接路径未被计入：** 矩阵仅评估了直接传导(源→受体)。但在实际中，传染可以通过A→B→C的接力路径传播(如光伏违约→城投平台→交通运输)，这种接力传染可能产生比矩阵直连更高的实际强度。接力传染需在压力测试中通过多步模拟来捕捉。
+| Escalation Factor | Applicable Contagion Types | Most Affected Industry Pairs | Max Jump |
+|---|---|---|---|
+| **Market Panic** | Confidence Collapse (S), Liquidity Squeeze (L) | All pairs with "S" or "L" annotation; especially Financials ↔ All, Tech HW ↔ Software | +1 ~ +2 |
+| **Regulatory Vacuum** | Regional Resonance (R), Confidence Collapse (S) | Sovereigns & GSEs → Financials; Sovereigns → Utilities; Financials → All | +1 ~ +3 |
+| **High Leverage** | Liquidity Squeeze (L) | Financials → All (especially Capital Goods, Technology Hardware, Real Estate proxy pairs) | +1 ~ +2 |
+| **Information Asymmetry** | Confidence Collapse (S), Credit Chain (C) | All pairs including Technology Hardware, Biotech, and other R&D-intensive/opaque sectors | +1 |
+| **Year-End Effect** | All types | All pairs (systemic but moderate effect) | +0 ~ +1 |
 
-4. **非上市企业数据缺口：** 矩阵的验证高度依赖公开案例和披露信息。非上市企业的供应链、担保、关联方关系存在显著数据缺口，可能导致低估某些路径的强度。
+### 6.2 Factor-Specific Jump Tables
 
-5. **升级因子量化存在局限性：** 升级因子的跳升量表(6.2节)基于历史经验和逻辑推理，而非统计模型。多个升级因子同时触发时的协同效应(6.3节)是简化处理，实际复杂程度更高。
+#### Jump Rule 1: Market Panic Trigger
 
-6. **行业分类边界模糊：** 实际企业可能横跨多个行业(如华为涉及半导体+高端装备+数据中心+新能源车)，单一行业标签会低估这类企业的传染耦合度。对于跨行业企业，需要在压力测试中使用多标签方法。
+**Trigger condition:** VIX > 20 (elevated state) or credit spread widening > 50bp or primary market cancellation rate > 20%
 
-7. **未覆盖化工/房地产等非13行业的重要传染路径：** 本矩阵的13行业框架未纳入化工、房地产等行业。光伏→化工等重要传染路径在本矩阵中无法直接表达，需通过相关行业（如城投债→交通运输）的间接路径部分反映。建议在引用本矩阵时同步参考相关专项报告（如contagion-solar-overcapacity.html）。
+| Affected Pair | Base Intensity | Panic Intensity | Jump Logic |
+|---|---|---|---|
+| Financials → Sovereigns | 5 | 5 | Already at ceiling; transmission speed multiplies |
+| Technology Hardware → Software | 4 | 5 | Panic amplifies tech ecosystem de-rating; forced ETF selling |
+| Technology Hardware → Automobiles | 4 | 5 | Chip supply panic + demand pessimism amplify auto sector risk |
+| Energy → Chemicals | 5 | 5 | Already at ceiling; contagion speed increases |
+| Financials → All real economy | 3 (avg) | 4 (avg) | Broad credit supply contraction accelerates |
+| All pairs with "S" mark | Base | Base + 1 | Confidence collapse becomes self-fulfilling in panic |
+| All pairs with "L" mark | Base | Base + 1 | Liquidity squeeze accelerates in panic environment |
+| Consumer Staples ↔ Retail | 3 | 4 | Consumption panic → indiscriminate consumer sector selling |
 
-8. **房地产行业的间接反映路径：** 房地产不在13行业覆盖范围内，但其信用风险通过以下间接路径在本矩阵中部分体现：(a)通过城投债的土地财政关联——地产下行→土地出让收入下降→城投平台财政健康度恶化；(b)通过交通运输的基建联动——地产开发放缓→交通基建需求减弱→交运行业信用承压。但在正常市场环境下这些间接路径强度仅为1-2级，无法完全捕捉地产危机的系统性冲击。参考[系统性预警框架](systemic-warning-framework.md)§8.3中地产危机回测的SRI计算。建议在组合含大量地产敞口时，在M4压力测试中单独加入地产违约场景。
+#### Jump Rule 2: Regulatory Vacuum Trigger
 
-9. **光伏→化工传导路径：** 化工行业不在本矩阵13行业覆盖范围内。在contagion-solar-overcapacity.html专项报告中，光伏→化工传导路径在正常环境下强度为3/5，在升级因子触发（如市场恐慌+高杠杆组合）下可升至4。建议交叉参考该报告了解化工行业的具体传染暴露。
+**Trigger condition:** 72 hours post-default with no clear regulatory stance, or ambiguous / "market solution" language
 
----
+| Affected Pair | Base Intensity | Regulatory Vacuum Intensity | Jump Logic |
+|---|---|---|---|
+| Sovereigns → Financials | 5 | 5 | Already at ceiling; sovereign default risk becomes unanchored |
+| Financials → Sovereigns | 5 | 5 | Same; bank bailout expectations lose anchor |
+| Sovereigns → Utilities | 3 | 4 | State-owned utility credit re-pricing |
+| Sovereigns → Energy | 3 | 4 | Resource-backed fiscal risk re-pricing |
+| Sovereigns → Metals & Mining | 3 | 4 | Mining royalty / nationalization risk rises |
+| Financials → All | 3 (avg) | 4 (avg) | Banking sector re-pricing flows to all borrowers |
+| Sovereigns → Construction Materials | 3 | 4 | Infrastructure spending uncertainty |
 
-## 九、附录
+#### Jump Rule 3: High Leverage Trigger
 
-### 附录A：169个单元格强度汇总表(排序)
+**Trigger condition:** Repo outstanding > 90th percentile of historical level, or hedge fund net leverage > 110% of baseline
 
-| 强度 | 数量 | 占比 | 行业对 |
-|------|------|------|--------|
-| 5(极强) | 0 | 0% | - |
-| 4(强) | 5 | 3.0% | 光伏↔半导体·半导体↔高端装备·生物医药↔医疗器械·城投债↔交通运输·高端装备→半导体 |
-| 3(中等) | 18 | 10.7% | 光伏→高端装备·光伏↔新能源车·光伏↔城投债·半导体→医疗器械·半导体→新能源车·半导体→数据中心·半导体↔光伏(复)·医疗器械↔半导体·新能源车↔光伏·新能源车↔半导体·数据中心↔半导体·数据中心↔城投债·数据中心↔传媒·城投债↔光伏·城投债↔数据中心·商贸零售↔传媒·传媒↔数据中心·传媒↔商贸零售 |
-| 2(弱) | 50 | 29.6% | 高端装备→生物医药·高端装备→医疗器械·高端装备→新能源车·高端装备→城投债·高端装备→交通运输·生物医药→高端装备·生物医药→城投债·医疗器械→高端装备·新能源车→高端装备·新能源车→数据中心·新能源车→城投债·新能源车→交通运输·数据中心→新能源车·数据中心→商贸零售·城投债→半导体·城投债→高端装备·城投债→生物医药·城投债→新能源车·食品饮料→纺织服装·食品饮料→商贸零售·纺织服装→食品饮料·纺织服装→商贸零售·纺织服装→传媒·交通运输→生物医药·交通运输→新能源车·交通运输→商贸零售·交通运输→传媒·商贸零售→数据中心·商贸零售→食品饮料·商贸零售→纺织服装·商贸零售→交通运输·传媒→新能源车·传媒→食品饮料·传媒→纺织服装·传媒→交通运输·(其余14个强度2的对) |
-| 1(极弱) | 96 | 56.8% | 其余全部行业对 |
+| Affected Pair | Base Intensity | High Leverage Intensity | Jump Logic |
+|---|---|---|---|
+| Financials → Technology Hardware | 3 | 4 | Tech sector has high institutional leverage exposure |
+| Financials → Software & Services | 3 | 4 | SaaS/subscription finance leverage = forced liquidation risk |
+| Financials → Capital Goods | 3 | 4 | Capital goods project finance leveraged |
+| Financials → All (broad) | 3 (avg) | 3.5 (avg) | Systematic forced deleveraging across sectors |
+| All pairs with "L" mark | Base | Base + 1 | Liquidity-induced forced selling propagates regardless of sector logic |
 
-**结论：** 169个单元格中，强度≥4的高传染对仅5个(3.0%)，这些是传染网络的核心骨架。
+#### Jump Rule 4: Information Asymmetry Trigger
 
-### 附录B：各行业传染力完整排序
+**Trigger condition:** Defaulted entity does not publish filings within 24 hours, or management goes missing, or key financial data previously unavailable
 
-#### 超级传染者(行合计：对外传染力)
+| Affected Pair | Base Intensity | Info Asymmetry Intensity | Jump Logic |
+|---|---|---|---|
+| All pairs with "C" (Credit Chain) mark | Base | Base + 1 | Market fills supply chain exposure gaps with worst-case assumptions |
+| Technology Hardware → All | Base | Base + 1 | Tech sector supply chains are opaque; chip inventory data not public |
+| Biotech & Pharma → All | Base | Base + 1 | Pipeline data opacity; CDMO supply chain unobservable |
+| Financials → All | Base | Base + 1 | Counterparty derivative exposure is a "black box" in crisis |
+| All pairs with "R" (Regional Resonance) mark | Base | Base + 1 | Unobservable regional exposure → blanket de-risking |
 
-| 排名 | 行业 | 行合计 | 主要方向 |
-|------|------|-------|---------|
-| 1 | 半导体/集成电路 | 26 | →多个下游行业 |
-| 2 | 城投债 / LGFV | 24 | →基建/园区类行业 |
-| 3 | 高端装备/工业母机 | 23 | →制造业(设备依赖) |
-| 4 | 光伏/储能 | 22 | ↔半导体·新能源车 |
-| 5 | 新能源汽车 | 21 | ↔上游行业 |
-| 6 | 数据中心/算力基建 | 21 | ↔互联网·半导体 |
-| 7 | 传媒/互联网 | 21 | ↔数据中心·商贸零售 |
-| 8 | 交通运输 | 20 | ↔城投债 |
-| 9 | 医疗器械 | 19 | ↔生物医药 |
-| 10 | 商贸零售 | 19 | ↔传媒互联网 |
-| 11 | 生物医药/创新药 | 18 | ↔医疗器械 |
-| 12 | 纺织服装 | 16 | ↔消费/零售 |
-| 13 | 食品饮料 | 14 | ↔消费/零售 |
+#### Jump Rule 5: Year-End Effect Trigger
 
-#### 脆弱行业(列合计：被传染风险)
+**Trigger condition:** Within 2 weeks of quarter-end or 4 weeks of calendar year-end
 
-| 排名 | 行业 | 列合计 | 主要风险来源 |
-|------|------|-------|-------------|
-| 1 | 半导体/集成电路 | 24 | 光伏·高端装备·医疗器械·新能源车·数据中心 |
-| 2 | 城投债 / LGFV | 24 | 交通运输·光伏·数据中心·新能源车 |
-| 3 | 光伏/储能 | 22 | 半导体·高端装备·新能源车·城投债 |
-| 4 | 新能源汽车 | 22 | 半导体·光伏·交通运输·城投债 |
-| 5 | 高端装备/工业母机 | 22 | 半导体·光伏·医疗器械 |
-| 6 | 数据中心/算力基建 | 21 | 半导体·传媒·城投债 |
-| 7 | 交通运输 | 20 | 城投债·商贸零售·传媒 |
-| 8 | 商贸零售 | 19 | 传媒·食品饮料·纺织服装·交通运输 |
-| 9 | 传媒/互联网 | 19 | 数据中心·商贸零售·纺织服装 |
-| 10 | 医疗器械 | 18 | 生物医药·半导体·高端装备 |
-| 11 | 生物医药/创新药 | 17 | 医疗器械·高端装备 |
-| 12 | 食品饮料 | 16 | 纺织服装·商贸零售·传媒 |
-| 13 | 纺织服装 | 16 | 食品饮料·商贸零售·传媒·医疗器械 |
+| Affected Pair | Base Intensity | Year-End Intensity | Jump Logic |
+|---|---|---|---|
+| All matrix pairs | Base | Base + 0 ~ +1 | Systematic risk appetite decline; credit events overreacted |
+| Financials → All | Base | Base + 1 | Bank balance sheet window-dressing; new credit origination slows |
 
-### 附录C：关键传染路径一览(按传染类型分类)
+### 6.3 Synergy Effects (Multi-Factor Escalation)
 
-#### 信用链传染(C)主导路径(强度≥3)
+When multiple escalation factors trigger simultaneously, intensity amplification follows **multiplicative stacking** rather than additive:
 
-| 路径 | 强度 | 方向 | 逻辑 |
-|------|------|------|------|
-| 光伏↔半导体 | 4 | 双向 | 供应链互嵌(IGBT/逆变器) + 范式同频 |
-| 半导体↔高端装备 | 4 | 双向 | 半导体设备是最核心的高端装备 |
-| 生物医药↔医疗器械 | 4 | 双向 | 共享医院终端·研发协同 |
-| 半导体→医疗器械 | 3 | 单向 | 医疗芯片依赖 |
-| 半导体→新能源车 | 3 | 单向 | 汽车芯片依赖 |
-| 半导体→数据中心 | 3 | 单向 | AI算力芯片依赖 |
-| 光伏→高端装备 | 3 | 单向 | 光伏设备依赖 |
-| 医疗器械→半导体 | 3 | 单向 | 医疗芯片采购影响半导体订单 |
-| 城投债→交通运输 | 4 | 双向 | 交通基建投融资模式 |
+| Factor Combination | Synergy Multiplier | Hardest-Hit Pairs | Example Calculation |
+|---|---|---|---|
+| Market Panic + Regulatory Vacuum | 1.5x | Sovereigns → Financials, Financials → All | Base 3 → +1 (Panic) → 4 → +1x1.5 (Vacuum) → 5 (capped) |
+| Market Panic + High Leverage | 2.0x | Financials → Technology Hardware, Financials → Software | Base 3 → +1 (Panic) → 4 → +2 (Leverage) → 6 → capped at 5 |
+| Regulatory Vacuum + Year-End | 1.5x | Sovereigns → Financials, Sovereigns → Utilities | Base 3 → +1 (Vacuum) → 4 → +1x1.5 (Year-End) → 5 |
+| Three or more simultaneously | 3.0x | All matrix pairs | Systemic crisis threshold: most base-3 pairs jump to 4-5 |
 
-#### 区域共振(R)主导路径(强度≥3)
+**Synergy ceiling:** Regardless of the number of simultaneous escalation factors, no individual cell can exceed the maximum intensity of 5.
 
-| 路径 | 强度 | 方向 | 逻辑 |
-|------|------|------|------|
-| 城投债↔交通运输 | 4 | 双向 | 交通基建完全依赖城投 |
-| 城投债↔光伏 | 3 | 双向 | 光伏电站与地方城投绑定 |
-| 城投债↔数据中心 | 3 | 双向 | IDC园区依赖城投基建 |
-| 城投债→高端装备 | 2 | 单向 | 装备制造园区开发 |
-| 城投债→新能源车 | 2 | 单向 | 新能源车产业园开发 |
-| 城投债→生物医药 | 2 | 单向 | 生物医药园区开发 |
-| 城投债→半导体 | 2 | 单向 | 半导体产业园区开发 |
+### 6.4 Factor Trigger Probability and Monitoring
 
-#### 流动性挤兑(L)主导路径(强度≥3)
-
-| 路径 | 强度 | 方向 | 逻辑 |
-|------|------|------|------|
-| (均为间接路径·不单独列示) | - | - | 流动性挤兑主要通过"同融资渠道"共振，在矩阵中已内嵌至各对中 |
-
-#### 信心崩塌(S)主导路径(强度≥2)
-
-| 路径 | 强度 | 方向 | 逻辑 |
-|------|------|------|------|
-| 生物医药↔医疗器械 | 4 | 双向 | 共享"医疗"标签·集采恐慌同步 |
-| 光伏↔半导体 | 4 | 双向 | 共享"政策驱动"标签·产业政策转向同步 |
-| 新能源车↔光伏 | 3 | 双向 | 共享"新能源"标签·补贴退坡恐慌 |
-| 商贸零售↔传媒互联网 | 3 | 双向 | 共享"消费/流量"标签·消费降级恐慌 |
-| 食品饮料↔纺织服装 | 2 | 双向 | 共享"消费品牌"标签·品牌危机示范 |
-| 数据中心↔传媒互联网 | 2 | 双向 | 共享"数字资产"标签·估值体系联动 |
-
-### 附录D：版本变更记录
-
-| 版本 | 日期 | 变更内容 | 作者 |
-|------|------|---------|------|
-| v0.6.3-alpha | 2026-07-10 | 初版创建：13×13传染矩阵·行业聚类·升级因子映射·引擎集成方案 | 引擎团队 |
-| v0.7.0-alpha | 2026-07-10 | 系统智能层整合：引擎版本统一为v0.7.0-alpha，与contagion-theory形成完整传染图谱体系 | 引擎团队 |
+| Factor | Annual Trigger Prob. | Primary Season | Core Monitoring Indicators | Warning Threshold |
+|---|---|---|---|---|
+| Market Panic | 15-20% | Mar, Aug, Nov | VIX/VSTOXX, CDX/iTraxx spreads, primary cancellation rate | VIX > 35, IG spreads > 200bp |
+| Regulatory Vacuum | 5-10% | Post-major-default, year-end | Central bank/treasury statements, financial stability reports | 48 hours with no formal statement post-default |
+| High Leverage | 20-30% | Post-easing cycles | Repo outstanding, prime broker leverage surveys, margin debt | Repo volume > 90th percentile |
+| Information Asymmetry | 10-15% | Post-sudden default | Filing timeliness, audit opinion, management accessibility | 24 hours post-default with no filing |
+| Year-End Effect | 100% (periodic) | Mar/Jun/Sep quarter-ends, Dec | Calendar date, interbank rates (LIBOR/OIS), repo specials | Within 2 weeks of quarter-end |
 
 ---
 
-*本文档是《传染理论基础》(v0.8.4-release)的操作化延伸，两者需配合使用。*
+## 7. Integration with Engine Components
+
+### 7.1 Analysis Pyramid Integration
+
+The contagion matrix is consumed across the four-layer analysis pyramid:
+
+#### M1 (Industry Fundamentals)
+
+| Layer Component | Integration Method | Operation |
+|---|---|---|
+| Industry Boundary Definition | Add **contagion exposure node** to industry ecosystem map | Each industry analysis must annotate contagion coupling strength to upstream/downstream industries |
+| Industry Supply/Demand | Incorporate **downstream credit risk transmission** in demand drivers | High-debt downstream sector demand fluctuation → contagion mechanism to own industry |
+| Industry Policy Analysis | Add **policy co-frequency contagion** to policy sensitivity assessment | Sectors sharing policy drivers (e.g., Energy+Chemicals under environmental regulation) must be co-analyzed |
+
+#### M2 (Individual Credit Analysis)
+
+| Layer Component | Integration Method | Operation |
+|---|---|---|
+| Supply Chain Analysis | Reference matrix in customer/supplier concentration check | If customer industry is high-contagion (e.g., Technology Hardware), focus assessment |
+| Funding Channel Analysis | Check if entity's funding channel overlaps with vulnerable industries | e.g., entity relying on the same bank syndicate as counterparty in high-contagion pair |
+| Regional Analysis | Reference Sovereigns & GSEs row for regional contagion factors | Entity's region has sovereign default history → regional resonance assessment |
+
+#### M3 (Industry Comparison and Ranking)
+
+| Layer Component | Integration Method | Operation |
+|---|---|---|
+| Industry Priority Ranking | Add **contagion risk adjustment factor** to ranking weights | High-contagion cluster industries (A/B/C/D) receive additional risk deduction in cross-industry comparison |
+| Industry Rotation Analysis | Add **contagion trigger thresholds** to rotation logic | Monitor whether high-intensity matrix links show escalation signals |
+
+#### M4 (Portfolio Risk Management)
+
+| Layer Component | Integration Method | Operation |
+|---|---|---|
+| Concentration Stress Testing | Run **portfolio contagion simulation** via matrix (see 7.2) | Input hypothetical default → matrix-driven propagation → output portfolio impact |
+| Industry Concentration Limits | Add **contagion-linked concentration** to limits management | Not only single-industry concentration but Cluster A+B+C+D total exposure cap |
+| Limit Management System | Add **contagion path limits** triggered by SRI thresholds | Additional limit deductions on high-contagion industry pairs |
+| Systemic Risk Monitoring | Reference [Systemic Warning Framework](../reference/systemic-warning-framework.md) SRI thermometer | M4 portfolio dashboard with SRI reading driving dynamic limit adjustment |
+
+### 7.2 M4 Concentration Stress Test Process
+
+The core application of the contagion matrix: **concentration-driven contagion stress testing** under the M4 portfolio framework.
+
+```
+Step 1: Set Stress Scenario
+  ├── Select 1-3 trigger industries for hypothetical default (e.g., Financials + Energy)
+  └── Select escalation factor combination (e.g., Market Panic + Year-End)
+
+Step 2: Load Contagion Matrix
+  ├── Read 19x19 matrix baseline intensities
+  ├── Apply escalation jumps per Section 6 rules
+  └── Generate "stressed matrix"
+
+Step 3: Calculate Portfolio Contagion Exposure
+  ├── Tag each holding with its 19-industry classification
+  ├── Compute contagion paths from trigger industries to portfolio holdings
+  └── Output "Portfolio Contagion Impact Score"
+
+Step 4: Assess Concentration Breaches
+  ├── Single industry concentration > threshold (e.g., 15%) → warning
+  ├── Cluster A+B+C total exposure > threshold (e.g., 30%) → high warning
+  └── Exposure to super-spreader industries (Financials / Tech HW / Energy) > single threshold → constraint
+
+Step 5: Output Stress Test Report
+  ├── Worst-case portfolio contagion loss estimate
+  ├── High-contagion link exposure matrix (which industry pairs co-exist in portfolio)
+  ├── Recommendation: reduce weak-credit holdings in high-contagion clusters or add hedges
+  └── Recommendation: set additional exposure caps for super-spreader industries
+```
+
+**Example: Technology Hardware Default Stress Test**
+
+```
+Scenario: Major semiconductor manufacturer default
+Active escalation: Market Panic (VIX > 35) + High Leverage
+
+Stressed matrix affected paths:
+  Tech HW → Software:       4 → 5 (Market Panic jump)
+  Tech HW → Automobiles:    4 → 5 (Market Panic jump)
+  Tech HW → Capital Goods:  4 → 5 (Market Panic jump)
+  Tech HW → Healthcare Eq:  3 → 4 (Market Panic jump)
+  Tech HW → Telecom:        3 → 4 (Market Panic + Leverage)
+  Tech HW → Consumer Dur:   3 → 4 (Market Panic jump)
+  Tech HW → Financials:     3 → 4 (Market Panic + Leverage)
+
+Portfolio Impact:
+  If portfolio holds Tech HW + Software + Automobiles + Capital Goods
+  → Total cluster exposure must be < 25% threshold
+  → Recommend treating these four industries as "one contagion cluster"
+```
+
+### 7.3 Industry Methodology "Contagion Exposure" Section Template
+
+Each industry methodology document should include a "Contagion Exposure" chapter with the following template:
+
+```
+### X. Contagion Exposure
+
+#### X.1 Matrix Position
+- Paradigm: [Primary Paradigm] + [Secondary Paradigm]
+- Super-Spreader Rank: [Rank/19]
+- Vulnerable Rank: [Rank/19]
+- Cluster Membership: [Cluster Name]
+
+#### X.2 As Contagion Source
+- Primary targets (intensity >= 3): List industry pairs and scores
+- Strongest transmission pathway: [Pathway description]
+- Historical validation: [Cases or explanation]
+
+#### X.3 As Contagion Receptor
+- Primary sources (intensity >= 3): List industry pairs and scores
+- Most vulnerable pathway: [Pathway description]
+- Critical contagion threshold: [Conditions for transmission]
+
+#### X.4 Stress Escalation
+- Most dangerous factor combination: [Factor combination + stressed intensity]
+- Industry-specific vulnerability: [e.g., "Tech HW is most vulnerable to High Leverage + Market Panic combination"]
+
+#### X.5 Concentration Management
+- Linked super-spreader (Financials/Tech HW/Energy) combined exposure cap recommendation
+- Cluster total exposure cap recommendation
+```
+
+---
+
+## 8. Limitations
+
+1. **Matrix is a static snapshot**: This matrix reflects international industry structure as of mid-2026. As the global economy evolves (AI infrastructure expansion, energy transition, deglobalization), matrix intensities and directions require periodic recalibration.
+
+2. **Confidence collapse cannot be fully matrixed**: Confidence Collapse (S) as a boundaryless contagion type is constrained to moderate intensities (max 4, only for historically validated pairs). In reality, extreme confidence collapse events can cross any industry boundary (e.g., 2008 GFC affected sectors entirely unrelated to subprime). The matrix cannot capture these "black swan" contagion events.
+
+3. **Indirect paths not captured**: The matrix only evaluates direct transmission (source → receptor). In practice, contagion propagates through A → B → C cascades (e.g., Energy default → Chemical sector slowdown → Consumer Staples packaging cost increase). Such chain transmission may produce higher effective intensity than pairwise direct links suggest. Multi-step simulation is required to capture this.
+
+4. **[PRELIMINARY] data quality**: As noted in the header, all matrix intensities are **initial methodological estimates** before empirical calibration against international default correlation data. Users should treat scores as directional indicators. The current version prioritizes structural logic and historical precedent over statistical precision.
+
+5. **Escalation factor quantification is preliminary**: The jump tables in Section 6 are based on historical experience and logical reasoning, not statistical models. Synergy effects (Section 6.3) are simplified and actual dynamics are more complex.
+
+6. **Industry boundary blur**: Real companies may span multiple industries (e.g., Siemens spans Capital Goods + Technology Hardware + Software; Amazon spans Retail + Software & Services + Transportation). A single industry label understates contagion coupling for such multi-industry entities.
+
+7. **Sovereigns & GSEs as a special class**: Sovereigns are not "industries" in the conventional sense. Their inclusion reflects their outsized role in credit contagion (sovereign-bank nexus, fiscal policy transmission). However, sovereign credit analysis follows a fundamentally different framework from corporate industry analysis.
+
+8. **Geo-political and regional dimensions are compressed**: A single global matrix cannot capture region-specific contagion patterns (e.g., European sovereign-bank dynamics differ from emerging market sovereign risk). Regional sub-matrices may be needed for jurisdiction-specific applications.
+
+9. **Non-market sectors not covered**: Government, non-profit, education, healthcare delivery (as opposed to equipment/pharma), and other non-market sectors are not included. Their contagion patterns follow different logic (political budget cycles, grant funding, etc.).
+
+---
+
+## 9. Appendix
+
+### 9.1 Intensity Distribution Summary (342 Off-Diagonal Pairs)
+
+| Intensity | Count | Percentage | Cumulative |
+|---|---|---|---|
+| 5 (Very Strong) | 2 | 0.6% | 0.6% |
+| 4 (Strong) | 15 | 4.4% | 5.0% |
+| 3 (Moderate) | 62 | 18.1% | 23.1% |
+| 2 (Weak) | 48 | 14.0% | 37.1% |
+| 1 (Very Weak) | 215 | 62.9% | 100.0% |
+
+**Total high-intensity links (>= 4):** 17 (5.0%) — these form the structural backbone of the contagion network.
+
+### 9.2 Complete Row/Column Sums
+
+| # | Industry | Row Sum | Col Sum | Average Intensity |
+|---|---|---|---|---|
+| 1 | Energy (Oil & Gas) | 43 | 43 | 2.39 |
+| 2 | Chemicals | 40 | 40 | 2.22 |
+| 3 | Metals & Mining | 29 | 29 | 1.61 |
+| 4 | Construction Materials | 27 | 27 | 1.50 |
+| 5 | Capital Goods | 39 | 39 | 2.17 |
+| 6 | Commercial Services | 24 | 24 | 1.33 |
+| 7 | Transportation | 38 | 38 | 2.11 |
+| 8 | Automobiles | 34 | 34 | 1.89 |
+| 9 | Consumer Durables | 27 | 27 | 1.50 |
+| 10 | Consumer Staples | 25 | 25 | 1.39 |
+| 11 | Retail | 33 | 33 | 1.83 |
+| 12 | Technology Hardware | 44 | 44 | 2.44 |
+| 13 | Software & Services | 36 | 36 | 2.00 |
+| 14 | Biotech & Pharma | 30 | 30 | 1.67 |
+| 15 | Healthcare Equipment | 28 | 28 | 1.56 |
+| 16 | Utilities (Regulated) | 30 | 30 | 1.67 |
+| 17 | Telecommunications | 25 | 25 | 1.39 |
+| 18 | Financials (Banks/Insurance) | 48 | 48 | 2.67 |
+| 19 | Sovereigns & GSEs | 42 | 42 | 2.33 |
+
+### 9.3 Version History
+
+| Version | Date | Changes | Author |
+|---|---|---|---|
+| v0.6.3-alpha | 2026-07-10 | Initial creation: 13x13 contagion matrix (China industry classification), industry clustering, escalation factor mapping, engine integration | Engine Team |
+| v0.7.0-alpha | 2026-07-10 | Systemic intelligence layer integration: engine version unified to v0.7.0-alpha, forming complete contagion framework with contagion theory | Engine Team |
+| v0.8.4-release | 2026-07-10 | **Internationalization rewrite**: replaced 13 China-specific industries with 19 GICS-based international industries; new paradigm mapping via P1-P6 framework; full 19x19 annotated matrix; derived metrics (CFC, CVC, CNER); stress escalation jump tables; harmonized with international contagion theory | Engine Team |
+
+---
+
+*This document is the operational extension of [Contagion Theory](contagion-theory.md) (v0.8.4-release). The two documents must be used together.*
