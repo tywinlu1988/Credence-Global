@@ -1,19 +1,22 @@
-"""四段链可执行编排器（v0.7.8 — 可执行编排器 + 接编码引擎）。
+"""Four-stage chain executable orchestrator (v0.7.8 — executable orchestrator + wired engines).
 
-本模块是四段链（intake → analysis → report → qa）的**薄编排器**。它把 router 产出的
-《工作路径单》解析为一份有序的阶段计划（stage plan），并仅在路径已接线（wired）时调用
-对应的**已编码引擎**；其余路径/阶段仍由 LLM 按引擎文档编排，优雅跳过。
+This module is a **thin orchestrator** for the four-stage chain (intake -> analysis -> report -> qa).
+It parses the path sheet produced by the router into an ordered stage plan, and invokes the
+corresponding **coded engine** only when the path is wired; remaining paths/stages are gracefully
+left for the LLM to orchestrate via engine documentation.
 
-设计约束（单一事实源）：
+Design constraints (single source of truth):
 
-- **阶段定义不硬编码**：四个阶段的名称、承载 skill、产物标签均从
-  `dev/engine/pipeline-contract.md` 的阶段总览表解析而来（见 load_contract）。链式边
-  （chaining_edges）同样从该契约的 yaml 块读取，供端点引用完整性校验复用。
-- **不新编码任何引擎**：引擎文档是规范源，`src/sri_calculator.py`、`src/concentration_scorer.py`、
-  `src/contagion_engine.py` 与 `src/outlook_engine.py` 是其**可执行实现**。编排器只在路径
-  已接线时调用它们（EXECUTABLE_ENGINES），不复制任何阈值/权重/档位语义。
-- **复用 path_sheet.py**：路径单校验、registry 解析、planned 判定与"待开发"提示一律
-  复用 `src/path_sheet.py`，不重复实现。
+- **Stage definitions are not hardcoded**: the four stage names, hosting skills, and artifact labels
+  are all parsed from the stage overview table in `dev/engine/pipeline-contract.md`
+  (see load_contract). Chaining edges are likewise read from that contract's yaml block for
+  endpoint cross-reference integrity validation.
+- **No new engine coding**: engine documentation is the normative source; `src/sri_calculator.py`,
+  `src/concentration_scorer.py`, `src/contagion_engine.py` and `src/outlook_engine.py` are its
+  **executable implementations**. The orchestrator only calls them when the path is wired
+  (EXECUTABLE_ENGINES) and does not duplicate any threshold/weight/level semantics.
+- **Reuses path_sheet.py**: path sheet validation, registry parsing, planned-path determination,
+  and "under development" notices all reuse `src/path_sheet.py` without reimplementation.
 """
 
 import re
@@ -44,25 +47,27 @@ from src.sri_calculator import sri, thermometer_level
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# 契约阶段总览表的数据行：`| S1 intake | 工作路径单（Path Sheet） | `credit-analysis-router` | … |`。
-# 名称（intake/analysis/…）与承载 skill 均从该行解析，绝不在此硬编码阶段名。
+# Data row from the contract stage overview table: ``| S1 intake | Path Sheet | `credit-analysis-router` | ... |``.
+# The name (intake/analysis/...) and hosting skill are parsed from this row; stage names are never hardcoded here.
 _STAGE_ROW_RE = re.compile(
     r"^\|\s*(S\d+)\s+([A-Za-z][A-Za-z0-9_-]*)\s*\|([^|]*)\|\s*`?([A-Za-z0-9_-]+)`?\s*\|",
     re.MULTILINE,
 )
 
-# 四段链的**位序语义**：intake/analysis/report/qa 的先后次序是链式契约的固定拓扑
-# （S1→S2→S3→S4）。阶段"做什么"按位序赋予，而阶段"叫什么/由谁承载"来自契约文档——
-# 故契约中重命名某阶段会反映到计划里，而链式语义保持不变。
+# Positional semantics of the four-stage chain: the intake/analysis/report/qa order is the fixed
+# topology of the chain contract (S1->S2->S3->S4). What a stage *does* is assigned by position;
+# what a stage *is called / who hosts it* comes from the contract document, so renaming a stage
+# in the contract is reflected in the plan while chain semantics remain unchanged.
 _INTAKE, _ANALYSIS, _REPORT, _QA = 0, 1, 2, 3
 
 
 @dataclass
 class Stage:
-    """四段链中的一个阶段。
+    """One stage in the four-stage chain.
 
-    ``name``/``skill`` 来自契约阶段总览表；``inputs``/``outputs`` 按位序语义从路径单与
-    registry 解析而来；``executable`` 仅当该位序为 analysis 且路径已接线编码引擎时为 True。
+    ``name``/``skill`` come from the contract stage overview table; ``inputs``/``outputs`` are
+    resolved from the path sheet and registry by positional semantics; ``executable`` is True
+    only when the position is analysis and the path has a wired coded engine.
     """
 
     name: str
@@ -84,14 +89,17 @@ class Stage:
 
 
 def load_contract(contract_md_path) -> dict:
-    """解析 pipeline-contract.md，返回阶段定义、产物 schema 与链式边。
+    """Parse pipeline-contract.md and return stage definitions, artifact schemas, and chaining edges.
 
-    返回 ``{"stages": [...], "artifacts": [...], "chaining_edges": [...]}``：
+    Returns ``{"stages": [...], "artifacts": [...], "chaining_edges": [...]}``:
 
-    - ``stages``：阶段总览表解析出的有序列表 ``[{"id","name","skill","artifact"}]``，
-      顺序即 S1→S2→S3→S4。阶段名/承载 skill 的**唯一来源**，编排器据此命名阶段。
-    - ``artifacts``：§二 四份产物 schema（含 ``path_id`` 的 ```yaml 块），按文档顺序。
-    - ``chaining_edges``：§三 链式边 yaml 块解析出的边列表（``id/from/to/trigger/…``）。
+    - ``stages``: ordered list ``[{"id","name","skill","artifact"}]`` parsed from the stage
+      overview table, in S1->S2->S3->S4 order. The **sole source** of stage name/skill;
+      the orchestrator names stages from this data.
+    - ``artifacts``: 4 artifact schemas (yaml blocks containing ``path_id``) from section 2,
+      in document order.
+    - ``chaining_edges``: edge list (``id/from/to/trigger/...``) parsed from the chaining-edges
+      yaml block in section 3.
     """
     text = Path(contract_md_path).read_text(encoding="utf-8")
 
@@ -121,12 +129,13 @@ def load_contract(contract_md_path) -> dict:
 
 
 def load_stage_plan(path_sheet: dict, registry_paths: dict, contract: dict) -> list[Stage]:
-    """把一张工作路径单解析为有序的四阶段计划。
+    """Parse a path sheet into an ordered four-stage plan.
 
-    先用 `validate_path_sheet` 校验路径单（非法枚举/未知 path_id/悬挂模板 → ValueError）；
-    再按契约的阶段总览表（位序）发射四个阶段：intake（路径单自身）、analysis（引擎文档，
-    仅当路径已接线编码引擎时 ``executable=True``）、report（registry 模板）、qa（质量门）。
-    阶段名与承载 skill 取自 ``contract["stages"]``，不在此硬编码。
+    First validates the path sheet via `validate_path_sheet` (invalid enums / unknown path_id /
+    dangling templates -> ValueError); then emits four stages by contract stage overview (positional):
+    intake (path sheet itself), analysis (engine docs, ``executable=True`` only when the path has a
+    wired coded engine), report (registry templates), qa (quality gates).
+    Stage names and hosting skills come from ``contract["stages"]``, not hardcoded here.
     """
     errors = validate_path_sheet(path_sheet, registry_paths)
     if errors:
@@ -140,15 +149,16 @@ def load_stage_plan(path_sheet: dict, registry_paths: dict, contract: dict) -> l
         raise ValueError(
             f"contract must define exactly 4 stages, got {len(contract_stages)}"
         )
-    # 位序语义依附于固定的 S1→S2→S3→S4 拓扑。若契约对阶段重排/错标，此处
-    # 响亮失败，而非静默地把 executable 语义错配到错误的阶段（review #1）。
+    # Positional semantics depend on the fixed S1->S2->S3->S4 topology. If the contract
+    # reorders or mislabels stages, this loudly fails rather than silently misassigning
+    # executable semantics to the wrong stage (review #1).
     stage_ids = [cs.get("id") for cs in contract_stages]
     if stage_ids != ["S1", "S2", "S3", "S4"]:
         raise ValueError(
             f"contract stages must be S1->S2->S3->S4 in order, got {stage_ids}"
         )
 
-    # 位序语义 → 该阶段的 inputs/outputs/executable。名称与 skill 来自契约。
+    # Positional semantics -> inputs/outputs/executable for each stage. Name and skill come from the contract.
     positional = {
         _INTAKE: {
             "inputs": [path_sheet],
@@ -189,12 +199,12 @@ def load_stage_plan(path_sheet: dict, registry_paths: dict, contract: dict) -> l
 
 
 def run_executable_stages(plan: list[Stage], inputs: dict) -> dict:
-    """执行计划中标记为可执行的阶段，返回 run manifest。
+    """Execute stages marked as executable in the plan and return a run manifest.
 
-    对 ``executable=True`` 的阶段，按 ``stage.path_id`` 在 EXECUTABLE_ENGINES 中查到已接线
-    的编码引擎并以 ``inputs`` 运行，标记 ``mode="code"``；其余阶段保持 LLM 编排，优雅跳过
-    并标记 ``mode="llm-orchestrated"``。manifest 形如
-    ``{"path_id": ..., "stages": [{"name","mode","outputs"}]}``。
+    For stages with ``executable=True``, looks up the wired coded engine via ``stage.path_id``
+    in EXECUTABLE_ENGINES and runs it with ``inputs``, marking ``mode="code"``; remaining stages
+    are left for LLM orchestration, gracefully skipped with ``mode="llm-orchestrated"``.
+    The manifest has the shape ``{"path_id": ..., "stages": [{"name","mode","outputs"}]}``.
     """
     path_id = plan[0].path_id if plan else ""
     stages_manifest = []
@@ -212,10 +222,10 @@ def run_executable_stages(plan: list[Stage], inputs: dict) -> dict:
 
 
 def planned_path_notice(path_sheet: dict, registry_paths: dict) -> str | None:
-    """指向 planned（待开发）路径的路径单返回"待开发"提示，否则 None。
+    """Return an "under development" notice for a path sheet pointing to a planned path, else None.
 
-    复用 `path_sheet.sheet_notice`/`is_planned`；编排器对 planned 路径**不做任何执行**，
-    仅如实把提示抛给上层（router 应改荐一条 active 路径）。
+    Reuses `path_sheet.sheet_notice`/`is_planned`; the orchestrator **does not execute** planned
+    paths, only passes the notice upward (the router should recommend an active path instead).
     """
     pid = str(path_sheet.get("path_id", "")).strip() if isinstance(path_sheet, dict) else ""
     if pid and is_planned(pid, registry_paths):
@@ -224,13 +234,13 @@ def planned_path_notice(path_sheet: dict, registry_paths: dict) -> str | None:
 
 
 def _run_sri(inputs: dict) -> dict:
-    """WP-M4-03 → systemic-warning-framework 的可执行实现（SRI + 温度计）。"""
+    """Executable implementation of WP-RO-03 -> systemic-warning-framework (SRI + thermometer)."""
     value = sri(inputs["industries"], inputs["weights"])
     return {"sri": value, "thermometer": thermometer_level(value)}
 
 
 def _run_concentration(inputs: dict) -> dict:
-    """WP-M4-01 → concentration-framework 的可执行实现（五维评分 + 评级调整）。"""
+    """Executable implementation of WP-RO-01 -> concentration-framework (5-dimension score + rating adjustment)."""
     metrics = inputs["metrics"]
     adj = rating_adjustment(metrics)
     return {
@@ -242,7 +252,7 @@ def _run_concentration(inputs: dict) -> dict:
 
 
 def _run_contagion(inputs: dict) -> dict:
-    """WP-M4-02 → contagion-matrix 的可执行实现（组合暴露 + 高传染链路 + 压力跳升）。"""
+    """Executable implementation of WP-RO-02 -> contagion-matrix (portfolio exposure + high-intensity links + escalation)."""
     m = load_matrix()
     factors = list(inputs.get("escalation_factors") or [])
     if factors:
@@ -265,7 +275,7 @@ def _run_contagion(inputs: dict) -> dict:
 
 
 def _run_outlook(inputs: dict) -> dict:
-    """WP-X-05 → outlook-monitoring-framework 的可执行实现（展望+名单+迁移矩阵）。"""
+    """Executable implementation of WP-X-05 -> outlook-monitoring-framework (outlook + watchlist + migration matrix)."""
     assessment = outlook_assessment(inputs["signals"])
     watchlist = watchlist_check(inputs.get("watchlist_triggers") or [])
     migration = migration_range(inputs["rating"], inputs.get("paradigm"))
@@ -278,11 +288,12 @@ def _run_outlook(inputs: dict) -> dict:
     }
 
 
-# 已接线（wired）编码引擎登记表：path_id → 运行该路径编码引擎的可调用对象。
-# 保持显式且极小——本系列接入 WP-M4-01(集中度)、WP-M4-02(传染矩阵)、WP-M4-03(SRI)、WP-X-05(展望监控)。
+# Wired coded engine registry: path_id -> callable that runs the engine for that path.
+# Kept explicit and minimal -- this series wires WP-RO-01 (concentration), WP-RO-02 (contagion),
+# WP-RO-03 (SRI), and WP-X-05 (outlook monitoring).
 EXECUTABLE_ENGINES = {
-    "WP-M4-03": _run_sri,
-    "WP-M4-01": _run_concentration,
-    "WP-M4-02": _run_contagion,
+    "WP-RO-03": _run_sri,
+    "WP-RO-01": _run_concentration,
+    "WP-RO-02": _run_contagion,
     "WP-X-05": _run_outlook,
 }
