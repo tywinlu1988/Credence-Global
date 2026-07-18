@@ -1,6 +1,6 @@
 # Data Architecture
 
-**Source**: Industry Cognitive Analysis Engine Methodology v0.1 · Mosaic Engine System Architecture Design v0.1 · SKILL.md v0.3.0  
+**Source**: Industry Cognitive Analysis Engine Methodology v0.1 · Mosaic Engine System Architecture Design v0.1 · SKILL.md v0.0.1  
 **Date**: 2026-07-08  
 **Nature**: Structured Archive — extracted and organized from existing specification and methodology documents
 

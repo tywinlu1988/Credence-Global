@@ -1,4 +1,4 @@
-# System-Intelligence Layer (v0.7.0-alpha)
+# System-Intelligence Layer (v0.0.1)
 
 **Version**: v0.0.1
 
