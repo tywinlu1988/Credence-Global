@@ -25,7 +25,7 @@
 
 ### 1.1 Audit Findings
 
-The risk management standards audit (audits/risk-management-standards-audit.md) identified significant gaps in the engine's current coverage of seven Basel risk types when benchmarked against the Basel capital accord and the COSO ERM 2017 framework:
+The engine's coverage of risk types is benchmarked against the Basel capital accord and the COSO ERM 2017 framework, covering the following areas:
 
 | Basel Risk Type | Engine Coverage Status | Coverage Level | Gap Description |
 |---|---|---|---|
@@ -909,5 +909,5 @@ At the end of the L2 Technology layer of each industry pyramid, add the followin
 - [Financial Deep Dive](financial-deep-dive.md) — Debt maturity schedule, bank credit facility coverage ratio, FCF analysis (liquidity risk sources)
 - [External Support Assessment Framework](external-support-framework.md) — Similar overlay layer design pattern
 - [Rating Outlook and Continuous Monitoring Framework](outlook-monitoring-framework.md) — Monitoring trigger conditions for non-credit risk events
-- [Risk Management Standards Compliance Audit Report](audits/risk-management-standards-audit.md) — Audit findings on non-credit risk coverage gaps
+- Risk Management Standards — Basel/COSO alignment for non-credit risk coverage
 - [Industry Classification and Analysis Framework](industry-framework.md) — Technology pathways and disruption risk reference by industry

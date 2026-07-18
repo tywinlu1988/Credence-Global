@@ -384,7 +384,7 @@ Expected loss rate = 0.50% of principal (1.0% PD x 50% LGD)
 
 ## 9. Risk Mitigation Recommendation Framework
 
-> **Source**: [Risk Management Standards Audit](audits/risk-management-standards-audit.md) (G1 -- Absence of Risk Mitigation Recommendations)
+> **Note**: Risk mitigation recommendations are an integral part of the dual-track output; refer to the risk mitigation section below.
 > **Note**: The existing engine output stops at "risk identification" and "risk assessment," lacking specific "what to do" guidance. This framework does not provide investment advice ("should we buy or sell"), but helps select the most appropriate mitigation path on the premise that the user has decided to reduce risk.
 
 ### 9.1 Design Principles

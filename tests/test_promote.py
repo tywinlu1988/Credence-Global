@@ -19,8 +19,8 @@ def _load_promote():
     return module
 
 
-OLD = "v0.8.1-release"
-NEW = "v0.0.1"
+OLD = "v0.0.1"
+NEW = "v0.0.2"
 
 
 def _fake_tree(tmp_path: Path) -> None:
@@ -31,7 +31,7 @@ def _fake_tree(tmp_path: Path) -> None:
         "| **Engine Version** | Core Methodology Document | v0.0.1 | Description |\n"
         '| Independent system; header declares "Corresponding Engine Version: v0.0.1" |\n'
         "| engine-overview.md | v0.0.1 | Engine Architecture Overview |\n"
-        "| **0.8.0-release** | **2026-07-16** | historical row stays untouched |\n",
+        "| **v1.0.0** | **2026-07-16** | historical row stays untouched |\n",
         encoding="utf-8",
     )
     (tmp_path / "dev" / "engine" / "industry-framework.md").write_text(
@@ -64,8 +64,8 @@ def _fake_tree(tmp_path: Path) -> None:
         "**Version** `v0.0.1`\nRelease package at `version/v0.0.1/`.\n",
         encoding="utf-8",
     )
-    (tmp_path / "pyproject.toml").write_text('version = "0.8.1"\n', encoding="utf-8")
-    (tmp_path / "package.json").write_text('{"version": "0.8.1"}\n', encoding="utf-8")
+    (tmp_path / "pyproject.toml").write_text('version = "0.0.1"\n', encoding="utf-8")
+    (tmp_path / "package.json").write_text('{"version": "0.0.1"}\n', encoding="utf-8")
     (tmp_path / "scripts").mkdir(exist_ok=True)
     (tmp_path / "scripts" / "consistency_check.py").write_text(
         'EXPECTED_VERSION = "v0.0.1"\n', encoding="utf-8"
@@ -108,42 +108,42 @@ def test_apply_rules_rewrites_all_declaration_points(tmp_path):
     changes = pm.apply_rules(tmp_path, OLD, NEW, apply=True)
     assert changes, "no changes reported"
     overview = _read(tmp_path / "dev" / "engine" / "engine-overview.md")
-    assert "**Version**: v0.0.1" in overview
-    assert "| engine-overview.md | v0.0.1 |" in overview
-    assert "**Engine Version** | Core Methodology Document | v0.0.1" in overview
+    assert "**Version**: v0.0.2" in overview
+    assert "| engine-overview.md | v0.0.2 |" in overview
+    assert "**Engine Version** | Core Methodology Document | v0.0.2" in overview
     industry = _read(tmp_path / "dev" / "engine" / "industry-framework.md")
-    assert industry.startswith("**Version**: v0.0.1")
-    assert "Paradigm mapping defined per Contagion Theory Foundation (v0.0.1)" in industry, "cross-document reference not rewritten"
-    assert "is not quantitatively consumed in the current v0.0.1 computation" in industry, "current version narrative not rewritten"
-    assert "# Fixed Income Credit Analysis Engine v0.0.1" in _read(
+    assert industry.startswith("**Version**: v0.0.2")
+    assert "Paradigm mapping defined per Contagion Theory Foundation (v0.0.2)" in industry, "cross-document reference not rewritten"
+    assert "is not quantitatively consumed in the current v0.0.2 computation" in industry, "current version narrative not rewritten"
+    assert "# Fixed Income Credit Analysis Engine v0.0.2" in _read(
         tmp_path / "dev" / ".claude" / "skills" / "fixed-income-credit-analysis" / "SKILL.md"
     )
-    assert "**Version**: v0.0.1" in _read(
+    assert "**Version**: v0.0.2" in _read(
         tmp_path / "dev" / ".claude" / "skills" / "fixed-income-credit-analysis" / "references" / "ref.md"
     )
-    assert "**Corresponding Engine Version**: v0.0.1" in _read(
+    assert "**Corresponding Engine Version**: v0.0.2" in _read(
         tmp_path / "dev" / ".claude" / "skills" / "credit-qa-verifier" / "SKILL.md"
     )
-    assert _read(tmp_path / "dev" / "README.md").startswith("**Version**: v0.0.1")
-    assert "**Engine Version**：v0.0.1" in _read(tmp_path / "AGENTS.md")
+    assert _read(tmp_path / "dev" / "README.md").startswith("**Version**: v0.0.2")
+    assert "**Engine Version**：v0.0.2" in _read(tmp_path / "AGENTS.md")
     readme = _read(tmp_path / "README.md")
-    assert "`v0.0.1`" in readme and "version/v0.0.1/" in readme
-    assert 'version = "0.0.1"' in _read(tmp_path / "pyproject.toml")
-    assert '{"version": "0.0.1"}' in _read(tmp_path / "package.json")
-    assert 'EXPECTED_VERSION = "v0.0.1"' in _read(
+    assert "`v0.0.2`" in readme and "version/v0.0.2/" in readme
+    assert 'version = "0.0.2"' in _read(tmp_path / "pyproject.toml")
+    assert '{"version": "0.0.2"}' in _read(tmp_path / "package.json")
+    assert 'EXPECTED_VERSION = "v0.0.2"' in _read(
         tmp_path / "scripts" / "consistency_check.py"
     )
-    assert 'else "v0.0.1"' in _read(tmp_path / "scripts" / "build_dist.py")
-    assert "!version/v0.0.1/" in _read(tmp_path / ".gitignore")
-    assert "Only current installable package version/v0.0.1/ is committed" in _read(tmp_path / ".gitignore")
+    assert 'else "v0.0.2"' in _read(tmp_path / "scripts" / "build_dist.py")
+    assert "!version/v0.0.2/" in _read(tmp_path / ".gitignore")
+    assert "Only current installable package version/v0.0.2/ is committed" in _read(tmp_path / ".gitignore")
     templates = _read(tmp_path / "dev" / "templates" / "template-type13.html")
-    assert "@engine-version: v0.0.1" in templates
-    assert "Report Version: v0.0.1" in templates
-    assert "**Engine Version**：v0.0.1" in _read(tmp_path / "docs" / "adapters" / "codex.md")
+    assert "@engine-version: v0.0.2" in templates
+    assert "Report Version: v0.0.2" in templates
+    assert "**Engine Version**：v0.0.2" in _read(tmp_path / "docs" / "adapters" / "codex.md")
     vm = _read(tmp_path / "docs" / "VERSION-MANAGEMENT.md")
-    assert "**Corresponding Engine Version**: v0.0.1" in vm
-    assert "`version/v0.0.1/`" in vm
-    assert "(now at `v0.0.1`)" in vm
+    assert "**Corresponding Engine Version**: v0.0.2" in vm
+    assert "`version/v0.0.2/`" in vm
+    assert "(now at `v0.0.2`)" in vm
 
 
 def test_apply_rules_preserves_historical_references(tmp_path):
@@ -151,7 +151,7 @@ def test_apply_rules_preserves_historical_references(tmp_path):
     _fake_tree(tmp_path)
     pm.apply_rules(tmp_path, OLD, NEW, apply=True)
     overview = _read(tmp_path / "dev" / "engine" / "engine-overview.md")
-    assert "| **0.8.0-release** |" in overview, "historical table row wrongfully altered"
+    assert "| **v1.0.0** |" in overview, "historical table row wrongfully altered"
     assert "Corresponding Engine Version: v0.0.1" in overview, "audits convention example wrongfully altered"
     industry = _read(tmp_path / "dev" / "engine" / "industry-framework.md")
     assert "**Paradigm Version**: v1.0.0" in industry, "paradigm version wrongfully altered"
@@ -177,7 +177,7 @@ def test_semver_derivation_and_validation():
     pm = _load_promote()
     assert pm.derive_semver("v0.0.1") == "0.0.1"
     assert pm.derive_semver("v1.0.0-alpha") == "1.0.0"
-    for bad in ("0.0.1", "v0.8", "v0.0.1-RELEASE", ""):
+    for bad in ("0.0.1", "v0.8", "v0.0.2-RELEASE", ""):
         assert pm.derive_semver(bad) is None, bad
 
 

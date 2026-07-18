@@ -23,7 +23,7 @@ Credit quality across many markets is not solely determined by an issuer's stand
 
 ### 1.2 Current Engine Gaps
 
-In the rating agency benchmark audit (audits/rating-agency-benchmark-audit.md), external support was identified as a critical gap:
+External support assessment was identified as a critical component of credit analysis:
 
 | Gap ID | Gap Description | Severity | Specific Issue |
 |--------|----------------|----------|---------------|
@@ -804,4 +804,4 @@ This is the module's most important limitation to acknowledge honestly:
 - [Qualitative Analysis Methodology](qualitative-analysis.md) — Source grading, policy interpretation, mosaic assembly
 - [Dual-Track Methodology](dual-track-methodology.md) — Track A + Track B, cross-validation, rating mapping
 - [Mosaic Engine](mosaic-engine.md) — Signal extraction, mosaic assembly, completeness assessment
-- [Rating Agency Benchmark Audit](audits/rating-agency-benchmark-audit.md) — External support G3/G4 gap analysis
+- External support G3/G4 gap analysis — see industry-framework.md for paradigm-specific support evaluation

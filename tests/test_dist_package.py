@@ -148,7 +148,7 @@ def test_t12_5_pointers_scrubbed_neighbors_intact(dist):
 
     es = (dist / "engine" / "external-support-framework.md").read_text(encoding="utf-8")
     # inline bracket fragments stripped, sentence retained
-    assert "external support was identified as a critical gap" in es.lower()
+    assert "external support assessment was identified as a critical component" in es.lower()
     assert "rating-agency-benchmark-audit" not in es
 
     nc = (dist / "engine" / "non-credit-risk-overlay.md").read_text(encoding="utf-8")
