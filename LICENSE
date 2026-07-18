@@ -1,44 +1,199 @@
-Credence 固收信贷智能分析引擎 — 源码可见 · 限商用许可
-（Source-Available · Non-Commercial License）
+CREDENCE CREDIT FIXED-INCOME INTELLIGENCE ANALYSIS ENGINE
+Source-Available · Commercial-Certification License
+Version 1.0 — Effective Date: 2026-07-18
 
-版权所有 (c) 2026 Credence 项目作者（tywinlu1988）
+Copyright (c) 2026, Credence Project Authors (tywinlu1988).
+All rights reserved.
 
-本许可适用于本仓库的全部内容，包括方法论文档、Agent 技能（SKILL.md 及其
-references）、报告模板、源代码与测试（以下统称"本作品"）。
+This license applies to all works in this repository, including but not
+limited to methodology documentation, Agent skills (SKILL.md and related
+references), report templates, source code, test fixtures, configuration
+files, and any accompanying materials (collectively, the "Work").
 
-────────────────────────────────────────────
-一、授权（非商业使用，免费）
-────────────────────────────────────────────
-在遵守本许可的前提下，授予你免费的、非排他的、不可转让的许可，用于：
-  1. 查看、阅读、学习本作品；
-  2. 为内部评估、研究、教学或其他非商业目的，使用、复制、修改本作品；
-  3. 在非商业前提下转发本作品，但须完整保留本许可文本与上述版权声明。
+────────────────────────────────────────────────────────────────────────
 
-────────────────────────────────────────────
-二、限制（商业使用，须另行书面许可）
-────────────────────────────────────────────
-未经版权人事先书面许可，你不得将本作品（或其任何实质性部分或衍生作品）用于
-任何商业目的，包括但不限于：
-  · 将本作品整合进任何收费产品、服务或据此获利的内部生产系统；
-  · 以本作品为基础提供有偿的分析、咨询或 SaaS 服务；
-  · 转售、再许可或以其他方式向公众有偿分发本作品。
-如需商业使用，请联系版权人洽谈商业许可（联系方式见仓库）。
+1.  DEFINITIONS
 
-────────────────────────────────────────────
-三、方法论内容与代码的适用
-────────────────────────────────────────────
-  · 方法论文档、技能、报告模板与一般文档（dev/、docs/、version/ 下的
-    Markdown / HTML 等内容），同时适用"知识共享 署名—非商业性使用 4.0 国际"
-    （CC BY-NC 4.0，全文见 https://creativecommons.org/licenses/by-nc/4.0/legalcode ）。
-  · 源代码与测试（src/、scripts/、tests/）在本许可"非商业"条款下提供。
-  · 各条款之间如有冲突，以更有利于保护版权人商业权利者为准。
+    "Non-Commercial Use" means use solely for internal evaluation,
+    research, education, or personal learning, where no fee, revenue,
+    or other commercial advantage is derived from the Work or any
+    derivative thereof.
 
-────────────────────────────────────────────
-四、无担保与免责
-────────────────────────────────────────────
-本作品按"现状"提供，不附任何明示或默示的担保。本作品的输出为方法论演示与
-研究产物，不构成投资建议；使用本作品产生的一切风险与后果由你自行承担。
+    "Commercial Use" means any use that is not Non-Commercial Use.
+    Commercial Use includes, without limitation:
 
-────────────────────────────────────────────
-附注：本许可文本为草案，正式对外发布前建议经法律专业人士审阅；亦可考虑以
-Business Source License（BSL 1.1）等成熟文本替换以获得更明确的法律效力。
+        (a) integrating the Work or any derivative into a product or
+            service that is sold, licensed, or offered for a fee;
+        (b) using the Work to provide paid analytical, advisory, or
+            SaaS services to third parties;
+        (c) deploying the Work in a production environment that
+            supports a revenue-generating activity;
+        (d) reselling, sublicensing, or otherwise distributing the
+            Work or any derivative for compensation.
+
+    "Commercial Certification" means a written authorization, granted
+    by the Copyright Holder, that permits a specific Commercial Use of
+    the Work. Such certification may be subject to additional terms
+    and, where applicable, a license fee.
+
+    "Derivative" means any work that is based on or incorporates the
+    Work, including modifications, adaptations, extensions, or any
+    work that would constitute a derivative work under applicable
+    copyright law.
+
+────────────────────────────────────────────────────────────────────────
+
+2.  GRANT OF NON-COMMERCIAL LICENSE
+
+    Subject to the terms and conditions of this License, the Copyright
+    Holder hereby grants you a worldwide, royalty-free, non-exclusive,
+    non-transferable, revocable license to:
+
+        (a) view, read, and study the Work;
+        (b) use, reproduce, and modify the Work for Non-Commercial Use
+            only, including internal evaluation, academic research,
+            and educational instruction;
+        (c) distribute copies of the Work (including modified versions)
+            for Non-Commercial Use, provided that:
+            (i)  all copies retain the above copyright notice, this
+                 License text, and any disclaimer or limitation of
+                 liability;
+            (ii) the recipient is bound by the terms of this License
+                 and no fee or other consideration is charged.
+
+    Any other use of the Work is expressly prohibited without a
+    Commercial Certification from the Copyright Holder.
+
+────────────────────────────────────────────────────────────────────────
+
+3.  COMMERCIAL USE RESTRICTIONS
+
+    3.1  No Commercial Use of the Work, or any Derivative thereof,
+         may be undertaken without prior written Commercial
+         Certification from the Copyright Holder.
+
+    3.2  Prohibited activities include, but are not limited to:
+
+         (a) incorporating the Work or any Derivative into a product,
+             service, platform, or system that is sold, leased, or
+             licensed to third parties;
+
+         (b) using the Work or any Derivative to provide professional
+             services, consulting, or advisory outputs for which
+             compensation is received;
+
+         (c) operating or deploying the Work or any Derivative as
+             part of any internal or external system that generates
+             revenue, cost savings, or other commercial benefit;
+
+         (d) redistributing the Work or any Derivative in any manner
+             that is incidental to a commercial activity, even if no
+             direct fee is charged for the Work itself.
+
+    3.3  Absent an express Commercial Certification, no implied
+         license or right of Commercial Use shall arise by estoppel,
+         course of dealing, or otherwise.
+
+────────────────────────────────────────────────────────────────────────
+
+4.  OBTAINING COMMERCIAL CERTIFICATION
+
+    To request a Commercial Certification or to inquire about
+    licensing terms and fees, contact the Copyright Holder at:
+
+        Email:  (to be specified — contact the repository maintainer)
+        GitHub: https://github.com/tywinlu1988
+
+    The Copyright Holder reserves the right to grant or deny any
+    request for Commercial Certification in its sole discretion,
+    and to condition such certification on payment of a license fee
+    or acceptance of additional terms.
+
+────────────────────────────────────────────────────────────────────────
+
+5.  DUAL LICENSING
+
+    5.1  Methodology documentation, Agent skill specifications, report
+         templates, and other documentation or tutorial content
+         (including but not limited to files under dev/, docs/,
+         version/, and any Markdown or HTML files) are additionally
+         licensed under the Creative Commons
+         Attribution-NonCommercial 4.0 International License (CC BY-NC
+         4.0), the full text of which is available at
+         https://creativecommons.org/licenses/by-nc/4.0/legalcode.
+
+    5.2  Source code, test suites, scripts, and other software
+         components (including but not limited to files under src/,
+         scripts/, and tests/) are licensed solely under the terms of
+         this License.
+
+    5.3  In the event of any inconsistency between the terms of this
+         License and the CC BY-NC 4.0, the term that provides greater
+         protection to the Copyright Holder's commercial interests
+         shall prevail.
+
+────────────────────────────────────────────────────────────────────────
+
+6.  WARRANTY DISCLAIMER
+
+    THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+    OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
+    NON-INFRINGEMENT, AND ACCURACY OF OUTPUT. THE WORK IS A RESEARCH
+    AND METHODOLOGY DEMONSTRATION TOOL.
+
+    THE OUTPUT GENERATED BY THE WORK IS FOR INFORMATIONAL AND
+    METHODOLOGICAL PURPOSES ONLY AND DOES NOT CONSTITUTE INVESTMENT,
+    FINANCIAL, LEGAL, OR TAX ADVICE. YOU ASSUME ALL RISKS AND
+    RESPONSIBILITIES ASSOCIATED WITH THE USE OF THE WORK, INCLUDING
+    ANY RELIANCE ON ITS OUTPUT FOR DECISION-MAKING.
+
+────────────────────────────────────────────────────────────────────────
+
+7.  LIMITATION OF LIABILITY
+
+    IN NO EVENT SHALL THE COPYRIGHT HOLDER OR ANY CONTRIBUTOR BE
+    LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
+    OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+    OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+    TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+    OF THE USE OF THE WORK, EVEN IF ADVISED OF THE POSSIBILITY OF
+    SUCH DAMAGE.
+
+────────────────────────────────────────────────────────────────────────
+
+8.  GOVERNING LAW
+
+    This License shall be governed by and construed in accordance with
+    the laws of the People's Republic of China, without regard to its
+    conflict-of-laws principles. Any disputes arising out of or in
+    connection with this License shall be submitted to the competent
+    courts of the place where the Copyright Holder is domiciled.
+
+────────────────────────────────────────────────────────────────────────
+
+9.  TERMINATION
+
+    Any breach of the terms of this License shall automatically
+    terminate all rights granted hereunder. Upon termination, you
+    must cease all use of the Work and destroy all copies in your
+    possession or control.
+
+────────────────────────────────────────────────────────────────────────
+
+10. MISCELLANEOUS
+
+    10.1 If any provision of this License is held to be unenforceable,
+         that provision shall be reformed to the minimum extent
+         necessary to make it enforceable, and the remaining
+         provisions shall remain in full force and effect.
+
+    10.2 The failure of the Copyright Holder to enforce any right or
+         provision of this License shall not constitute a waiver of
+         such right or provision.
+
+    10.3 This License constitutes the entire agreement between the
+         parties with respect to the Work and supersedes all prior or
+         contemporaneous understandings regarding such subject matter.
