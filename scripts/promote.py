@@ -5,7 +5,7 @@ Accepts a new version number, rewrites all version declaration points per **expl
 (28 CORE_DOCS headers, 4 SKILL.md files, references headers, README/AGENTS/dev README,
 pyproject/package.json, EXPECTED_VERSION, build_dist fallback, .gitignore anti-pattern,
 VERSION-MANAGEMENT's "currently" lines). Only matches declaration forms -- version history
-tables, "since vX" narratives, "v0.8.0 skill architecture" era descriptions, paradigm version
+tables, "since vX" narratives, "v0.0.1 skill architecture" era descriptions, paradigm version
 headers are all outside the rules and naturally immune.
 
 Default dry-run (prints file:line old_line->new_line per-item and remaining unmatched occurrences),
@@ -32,14 +32,14 @@ SKILL_NAMES = [
     "credit-qa-verifier",
 ]
 
-VERSION_RE = re.compile(r"^v(\d+\.\d+\.\d+)-[a-z0-9-]+$")
+VERSION_RE = re.compile(r"^v(\d+\.\d+\.\d+)(?:-[a-z0-9-]+)?$")
 EXPECTED_RE = re.compile(r'^EXPECTED_VERSION\s*=\s*"([^"]+)"', re.MULTILINE)
 
 Change = namedtuple("Change", ["rule_id", "path", "line_no", "old_line", "new_line"])
 
 
 def derive_semver(version: str):
-    """v0.8.1-release -> 0.8.1; returns None if invalid."""
+    """v0.0.1 -> 0.0.1; returns None if invalid."""
     m = VERSION_RE.match(version)
     return m.group(1) if m else None
 
@@ -64,25 +64,25 @@ def _rules(root: Path, old: str, new: str, semver: str, old_semver: str):
     )
     return [
         ("engine-headers", [f"dev/engine/{d}" for d in CORE_DOCS],
-         re.compile(r"(\*\*版本\*\*[:：]\s*)" + O), r"\g<1>" + new),
+         re.compile(r"(\*\*(?:版本|Version)\*\*[:：]\s*)" + O), r"\g<1>" + new),
         ("engine-crossrefs", [f"dev/engine/{d}" for d in CORE_DOCS],
          re.compile(r"([（(])" + O + r"([）)])"), r"\g<1>" + new + r"\g<2>"),
         ("engine-current", [f"dev/engine/{d}" for d in CORE_DOCS],
-         re.compile(r"(当前 )" + O), r"\g<1>" + new),
+         re.compile(r"((?:当前|current) )" + O), r"\g<1>" + new),
         ("overview-table", ["dev/engine/engine-overview.md"],
          re.compile(r"(\|\s*[\w.-]+\.md\s*\|\s*)" + O + r"(?=\s*\|)"), r"\g<1>" + new),
         ("overview-sysver", ["dev/engine/engine-overview.md"],
-         re.compile(r"(\*\*引擎版本\*\*\s*\|[^|\n]*\|\s*)" + O + r"(?=\s*\|)"), r"\g<1>" + new),
+         re.compile(r"(\*\*(?:引擎版本|Engine Version)\*\*\s*\|[^|\n]*\|\s*)" + O + r"(?=\s*\|)"), r"\g<1>" + new),
         ("skill-version", [f"dev/.claude/skills/{s}/SKILL.md" for s in SKILL_NAMES],
-         re.compile(r"(\*\*对应引擎版本\*\*[:：]\s*)" + O), r"\g<1>" + new),
+         re.compile(r"(\*\*(?:对应引擎版本|Corresponding Engine Version)\*\*[:：]\s*)" + O), r"\g<1>" + new),
         ("skill-title", ["dev/.claude/skills/fixed-income-credit-analysis/SKILL.md"],
          re.compile(r"(# Fixed Income Credit Analysis Engine\s*)" + O), r"\g<1>" + new),
         ("references-headers", refs,
-         re.compile(r"(\*\*版本\*\*[:：]\s*)" + O), r"\g<1>" + new),
+         re.compile(r"(\*\*(?:版本|Version)\*\*[:：]\s*)" + O), r"\g<1>" + new),
         ("dev-readme-header", ["dev/README.md"],
-         re.compile(r"(\*\*版本\*\*[:：]\s*)" + O), r"\g<1>" + new),
+         re.compile(r"(\*\*(?:版本|Version)\*\*[:：]\s*)" + O), r"\g<1>" + new),
         ("agents-version", ["AGENTS.md"],
-         re.compile(r"(\*\*引擎版本\*\*[:：]\s*)" + O), r"\g<1>" + new),
+         re.compile(r"(\*\*(?:引擎版本|Engine Version)\*\*[:：]\s*)" + O), r"\g<1>" + new),
         ("readme-badge", ["README.md"],
          re.compile(r"`" + O + r"`"), f"`{new}`"),
         ("readme-paths", ["README.md"],
@@ -100,9 +100,9 @@ def _rules(root: Path, old: str, new: str, semver: str, old_semver: str):
         ("templates-stamps", templates,
          re.compile(O), new),
         ("adapters-codex", ["docs/adapters/codex.md"],
-         re.compile(r"(\*\*引擎版本\*\*[:：]\s*)" + O), r"\g<1>" + new),
+         re.compile(r"(\*\*(?:引擎版本|Engine Version)\*\*[:：]\s*)" + O), r"\g<1>" + new),
         ("version-mgmt-header", ["docs/VERSION-MANAGEMENT.md"],
-         re.compile(r"(\*\*对应引擎版本\*\*[:：]\s*)" + O), r"\g<1>" + new),
+         re.compile(r"(\*\*(?:对应引擎版本|Corresponding Engine Version)\*\*[:：]\s*)" + O), r"\g<1>" + new),
         ("version-mgmt-path", ["docs/VERSION-MANAGEMENT.md"],
          re.compile(r"`version/" + O + r"/`"), f"`version/{new}/`"),
         ("version-mgmt-tag", ["docs/VERSION-MANAGEMENT.md"],

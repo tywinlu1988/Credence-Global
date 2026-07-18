@@ -1,4 +1,4 @@
-"""Dist installable package integrity tests (v0.8.0-release, T12.1-T12.7).
+"""Dist installable package integrity tests (v0.0.1, T12.1-T12.7).
 
 `scripts/build_dist.py` assembles the dev/ sources into a `dist/credence/`
 installable agent package. These tests build the artifact into ``tmp_path``

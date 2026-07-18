@@ -1,51 +1,83 @@
-# 开发交互日志
+# Development Log
 
-> 本文档记录 Credence-Global 项目改编过程中的所有关键交互、决策与变更，便于后续追溯。
+> Records all key interactions, decisions, and changes during the Credence-Global project adaptation for traceability.
 
 ---
 
-## 2026-07-17 · 项目初始化 · 仓库配置
+## 2026-07-17 · Project Initialization · Repository Configuration
 
-### GitHub 仓库
-- **地址**: https://github.com/tywinlu1988/Credence-Global.git
-- **Remote 名**: `credence`
-- **SSH Host**: `github-credence`（`~/.ssh/config`，使用 `~/.ssh/credence_global_deploy` deploy key）
+### GitHub Repository
+- **URL**: https://github.com/tywinlu1988/Credence-Global.git
+- **Remote Name**: `credence`
+- **SSH Host**: `github-credence` (`~/.ssh/config`, using `~/.ssh/credence_global_deploy` deploy key)
 
-### 环境配置
-| 组件 | 版本/状态 |
-|------|-----------|
-| gh CLI | v2.96.0 ✅ |
+### Environment Setup
+| Component | Version/Status |
+|-----------|---------------|
+| gh CLI | v2.96.0 |
 | gh Auth | tywinlu1988 (repo, read:org, workflow) |
-| SSH Deploy Key | credential_global_deploy (ED25519) |
+| SSH Deploy Key | credence_global_deploy (ED25519) |
 
-### 工作区结构
-- **`record/`** — 过程记录、测试日志、本地版本快照（不入 GitHub）
-- `record/logs/` — 测试日志、构建日志
-- `record/notes/` — 会议记录、讨论摘要
-- `record/versions/` — 本地版本快照
-- `record/scripts/` — 临时开发脚本
-- **`DEVELOPMENT.md`** — 本文件，开发交互日志
+### Workspace Structure
+- **`record/`** — Process records, test logs, local version snapshots (not pushed to GitHub)
+- `record/logs/` — Test logs, build logs
+- `record/notes/` — Meeting notes, discussion summaries
+- `record/versions/` — Local version snapshots
+- `record/scripts/` — Ad-hoc dev scripts
+- **`DEVELOPMENT.md`** — This file, development interaction log
 
 ---
 
-## 会话记录
+## 2026-07-17 ~ 2026-07-18 · International Transition · v0.0.1
 
-### 2026-07-17 #1 — 仓库初始化
-- 生成 SSH deploy key 对
-- 配置 `~/.ssh/config` Host `github-credence`
-- 安装 GitHub CLI v2.96.0
-- 完成 gh auth 认证
-- 添加 git remote `credence`
-- 验证 SSH 连接成功
-- 完成项目代码库全面审查（四层架构、16条工作路径、4个编码引擎、197项测试）
-- 建立 `record/` 工作区 + `DEVELOPMENT.md` 交互日志
+### Design Phase
+- Approved market scope: Global FI (US IG/HY, EU, EM), GICS/ICB industry classification
+- Defined six international paradigms: Cyclical / Defensive / Growth / Regulated Utility / Financial / Sovereign-Linked
+- Defined six international buy-side roles: Credit Selector / PM / Risk Officer / Trader / Advisor / Individual Investor
+- Remapped 16 work paths with new IDs (WP-CS-XX, WP-PM-XX, WP-RO-XX, etc.)
+- Design spec: `docs/superpowers/specs/2026-07-17-credence-international-transition-design.md`
+- Implementation plan: `docs/superpowers/plans/2026-07-17-credence-international-transition.md`
 
-### 2026-07-17 #2 — Phase 1 Foundation Cleanup Complete
-- **Task 1.1**: Version reset to v0.0.1 across package.json, pyproject.toml, engine-overview.md, dev/README.md, build_dist.py, consistency_check.py
-- **Task 1.2**: Cleared version/ directory; .gitkeep placeholder; .gitignore updated
-- **Task 1.3**: Purged version history tables; engine-overview.md and dev/README.md section headers translated to English
-- **Task 1.4**: Deleted lgfv-framework.md; cleaned cross-references in engine-overview.md, dimension-registry.md, dual-track-methodology.md
-- **Task 1.5**: Rewrote AGENTS.md in English with international roles and updated path references
-- **Task 1.6**: Created English canonical README + 4 translations (ZH, JA, KO, FR); updated package.json description
-- **Verification**: Consistency check — 30 issues (all expected: VERSION mismatches → Phase 2, MISSING lgfv → expected, SKILL version → Phase 3). Tests — 1 collection error (test_integration_v08 expects deleted version/ dir → Phase 3)
-- **Commits**: 8c9b69d → 9e76ee6 (6 commits)
+### Phase 1 — Foundation Cleanup ✅
+- Version reset to v0.0.1 across all config files
+- Cleared `version/` directory
+- Purged version history tables
+- Deleted `lgfv-framework.md` (China LGFV-specific)
+- Rewrote `AGENTS.md` in English
+- Created English canonical README + 4 translations (ZH, JA, KO, FR)
+- Updated `package.json` description
+
+### Phase 2 — Engine Internationalization ✅
+- All 27 engine docs rewritten in English with zero Chinese characters
+- Six international paradigms (P1-P6) with GICS industry mapping
+- Six international buy-side roles
+- S&P/Moody's/Fitch rating alignment
+- International data sources (SEC EDGAR, ECB, BIS, IMF, FRED)
+- IFRS/US GAAP financial framework
+- International bankruptcy law (Chapter 11, Scheme of Arrangement, EU Insolvency)
+- Sovereign/IMF/Multilateral external support framework
+- 19-industry international contagion matrix
+- CAMELS, TLAC/MREL, Solvency II frameworks
+
+### Phase 3 — Code & Delivery Adaptation ✅
+- All 6 Python modules rewritten in English
+- All 4 Agent Skills rewritten in English
+- All 18 HTML templates rewritten in English
+- All 3 build/check scripts translated to English
+- All skill reference files translated to English
+- Design/product/data/validation docs translated to English
+- Test suite: 183+ passing (contagion engine tests in progress)
+
+### Audit & Cleanup ✅
+- Stale v0.8.x version references removed from all production files
+- Broken links in engine docs resolved
+- Chinese characters eliminated from all production paths
+- `dist/credence/` package builds and validates successfully
+- Consistency check: 19 PARADIGM_COVERAGE warnings only (non-blocking)
+
+### Key Commits
+~30+ commits spanning version reset, engine internationalization, code rewrite, skill translation, template conversion, and audit cleanup.
+
+---
+
+*Last updated: 2026-07-18*

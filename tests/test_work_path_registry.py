@@ -1,7 +1,7 @@
 """Integrity tests for the work-path registry (v0.7.2).
 
 The registry (dev/engine/work-path-registry.md) is the routing baseline for the
-v0.8.0 skill architecture. Each of the 16 work paths is registered as a fenced
+v0.0.1 skill architecture. Each of the 16 work paths is registered as a fenced
 ```yaml block. These tests (T2.1-T2.7) validate the registry's own structure and
 internal consistency only -- they do not exercise any engine logic.
 """

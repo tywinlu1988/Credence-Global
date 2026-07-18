@@ -41,7 +41,7 @@ def test_only_links_skips_content_checks(tmp_path, monkeypatch):
     fake_engine = tmp_path / "engine"
     fake_engine.mkdir()
     (fake_engine / "systemic-warning-framework.md").write_text(
-        "**版本**: v0.7.0-alpha\n\nSRI: 38/100\n", encoding="utf-8"
+        "**Version**: v0.7.0-alpha\n\nSRI: 38/100\n", encoding="utf-8"
     )
 
     cc = _import_checker()
@@ -65,7 +65,7 @@ def test_sri_pct_pattern_detects_percentage_scale():
 
 def test_old_notch_patterns_detect_artifacts():
     cc = _import_checker()
-    sample = "旧 6 档体系（AAA/AA/A/BBB/BB/B/CCC/D）"
+    sample = "old 6-notch system (AAA/AA/A/BBB/BB/B/CCC/D)"
     assert any(p.search(sample) for p in cc.OLD_NOTCH_PATTERNS)
 
 
@@ -74,11 +74,11 @@ def test_check_rating_map_consistency_flags_deviation(tmp_path, monkeypatch):
     fake_engine = tmp_path / "engine"
     fake_engine.mkdir()
     (fake_engine / "dual-track-methodology.md").write_text(
-        "## 六、评级映射\n| 评分范围 | 新评级 |\n|---|---|\n| 9.5 - 10.0 | AAA |\n",
+        "## 6. Rating Map\n| Score Range | New Rating |\n|---|---|\n| 9.5 - 10.0 | AAA |\n",
         encoding="utf-8",
     )
     (fake_engine / "systemic-warning-framework.md").write_text(
-        "## 二、信号聚合\n| 评分区间 | 对应评级 |\n|---|---|\n| 9.0 - 10.0 | AAA |\n",
+        "## 2. Signal Aggregation\n| Score Range | Corresponding Rating |\n|---|---|\n| 9.0 - 10.0 | AAA |\n",
         encoding="utf-8",
     )
     (fake_engine / "consistency-audit-v0.5.2.md").write_text(
@@ -149,12 +149,12 @@ def test_check_skill_references_flags_stale_version(tmp_path, monkeypatch):
     fake_engine = tmp_path / "engine"
     fake_engine.mkdir()
     (fake_engine / "industry-framework.md").write_text(
-        "**版本**: v0.7.0-alpha\n", encoding="utf-8"
+        "**Version**: v0.7.0-alpha\n", encoding="utf-8"
     )
     fake_refs = tmp_path / "skills" / "some-skill" / "references"
     fake_refs.mkdir(parents=True)
     (fake_refs / "industry-pyramids.md").write_text(
-        "**版本**: v0.6.9-alpha\n", encoding="utf-8"
+        "**Version**: v0.6.9-alpha\n", encoding="utf-8"
     )
     monkeypatch.setattr(cc, "ENGINE_DIR", fake_engine)
     monkeypatch.setattr(cc, "SKILLS_DIR", tmp_path / "skills")
@@ -167,7 +167,7 @@ def test_check_skill_references_flags_missing_version(tmp_path, monkeypatch):
     fake_engine = tmp_path / "engine"
     fake_engine.mkdir()
     (fake_engine / "mosaic-engine.md").write_text(
-        "**版本**: v0.7.0-alpha\n", encoding="utf-8"
+        "**Version**: v0.7.0-alpha\n", encoding="utf-8"
     )
     fake_refs = tmp_path / "skills" / "some-skill" / "references"
     fake_refs.mkdir(parents=True)
@@ -236,9 +236,9 @@ def test_check_rating_map_consistency_accepts_legitimate_12_notch(tmp_path, monk
     fake_engine = tmp_path / "engine"
     fake_engine.mkdir()
     (fake_engine / "some-framework.md").write_text(
-        "## 评级档次\n"
-        "投资级包括 AA+/AA/AA- 和 BBB+/BBB/BBB- 等共12档。\n"
-        "| 评分范围 | 新评级 |\n"
+        "## Rating Tiers\n"
+        "Investment grade includes AA+/AA/AA- and BBB+/BBB/BBB- etc., 12 tiers total.\n"
+        "| Score Range | New Rating |\n"
         "|---|---|\n"
         "| 9.5 - 10.0 | AAA |\n",
         encoding="utf-8",
@@ -348,7 +348,7 @@ def _fake_registry(tmp_path):
         "templates:\n"
         "  - dev/templates/template-type1.html\n"
         "quality_gates:\n"
-        '  - "示例门 (dev/engine/foo.md §二)"\n'
+        '  - "Example Gate (dev/engine/foo.md §2)"\n'
         "```\n",
         encoding="utf-8",
     )
@@ -358,7 +358,7 @@ def _fake_registry(tmp_path):
 def test_check_registry_templates_flags_missing(tmp_path, monkeypatch):
     cc = _import_checker()
     _fake_registry(tmp_path)
-    (tmp_path / "dev" / "engine" / "foo.md").write_text("## 二、示例\n", encoding="utf-8")
+    (tmp_path / "dev" / "engine" / "foo.md").write_text("## 2. Example\n", encoding="utf-8")
     monkeypatch.setattr(cc, "ENGINE_DIR", tmp_path / "dev" / "engine")
     monkeypatch.setattr(cc, "ROOT", tmp_path)
     errors = cc.check_registry_templates()
@@ -390,11 +390,11 @@ def test_check_registry_quality_gates_flags_bad_section(tmp_path, monkeypatch):
     _fake_registry(tmp_path)
     (tmp_path / "dev" / "templates").mkdir(parents=True)
     (tmp_path / "dev" / "templates" / "template-type1.html").write_text("x", encoding="utf-8")
-    (tmp_path / "dev" / "engine" / "foo.md").write_text("## 三、别的\n", encoding="utf-8")
+    (tmp_path / "dev" / "engine" / "foo.md").write_text("## 3. Other\n", encoding="utf-8")
     monkeypatch.setattr(cc, "ENGINE_DIR", tmp_path / "dev" / "engine")
     monkeypatch.setattr(cc, "ROOT", tmp_path)
     errors = cc.check_registry_quality_gates()
-    assert any("§二" in e for e in errors)
+    assert any("§2" in e for e in errors)
 
 
 def test_check_migration_matrix_structure_real_tree():

@@ -19,7 +19,7 @@ def _load_promote():
     return module
 
 
-OLD = "v0.8.0-release"
+OLD = "v0.0.1"
 NEW = "v0.8.1-release"
 
 
@@ -27,73 +27,73 @@ def _fake_tree(tmp_path: Path) -> None:
     """Representative fake tree covering every rule: declaration points + historical references that must be immune."""
     (tmp_path / "dev" / "engine").mkdir(parents=True)
     (tmp_path / "dev" / "engine" / "engine-overview.md").write_text(
-        "# 总览\n\n**版本**: v0.8.0-release | **日期**: 2026-07-10\n"
-        "| **引擎版本** | 核心方法论文档 | v0.8.0-release | 说明 |\n"
-        '| 独立体系，在文件头标注"对应引擎版本: v0.8.0-release" |\n'
-        "| engine-overview.md | v0.8.0-release | 引擎架构总览 |\n"
-        "| **0.8.0-release** | **2026-07-16** | 历史行不动 |\n",
+        "# Overview\n\n**Version**: v0.0.1 | **Date**: 2026-07-10\n"
+        "| **Engine Version** | Core Methodology Document | v0.0.1 | Description |\n"
+        '| Independent system; header declares "Corresponding Engine Version: v0.0.1" |\n'
+        "| engine-overview.md | v0.0.1 | Engine Architecture Overview |\n"
+        "| **0.8.0-release** | **2026-07-16** | historical row stays untouched |\n",
         encoding="utf-8",
     )
     (tmp_path / "dev" / "engine" / "industry-framework.md").write_text(
-        "**版本**: v0.8.0-release | **范式版本**: v1.0.0 | **日期**: 2026-07-10\n"
-        "自 v0.8.0-release 起的叙述不动\n"
-        "根据《传染理论基础》(v0.8.0-release)定义的范式映射\n"
-        "confidence 在当前 v0.8.0-release 的计算中未被量化消费\n"
-        "| v0.8.0-release（当前） | 自带历史表行不动 |\n",
+        "**Version**: v0.0.1 | **Paradigm Version**: v1.0.0 | **Date**: 2026-07-10\n"
+        "Narrative from v0.0.1 stays untouched\n"
+        "Paradigm mapping defined per Contagion Theory Foundation (v0.0.1)\n"
+        "confidence is not quantitatively consumed in the current v0.0.1 computation\n"
+        "| v0.0.1 (current) | own historical table row stays untouched |\n",
         encoding="utf-8",
     )
     skills = tmp_path / "dev" / ".claude" / "skills"
     (skills / "fixed-income-credit-analysis" / "references").mkdir(parents=True)
     (skills / "fixed-income-credit-analysis" / "SKILL.md").write_text(
-        "# Fixed Income Credit Analysis Engine v0.8.0-release\n", encoding="utf-8"
+        "# Fixed Income Credit Analysis Engine v0.0.1\n", encoding="utf-8"
     )
     (skills / "fixed-income-credit-analysis" / "references" / "ref.md").write_text(
-        "**版本**: v0.8.0-release\n", encoding="utf-8"
+        "**Version**: v0.0.1\n", encoding="utf-8"
     )
     (skills / "credit-qa-verifier").mkdir(parents=True)
     (skills / "credit-qa-verifier" / "SKILL.md").write_text(
-        "**对应引擎版本**: v0.8.0-release\n", encoding="utf-8"
+        "**Corresponding Engine Version**: v0.0.1\n", encoding="utf-8"
     )
     (tmp_path / "dev").mkdir(exist_ok=True)
     (tmp_path / "dev" / "README.md").write_text(
-        "**版本**: v0.8.0-release\n| **v0.8.0-release** | **2026-07-16** | 历史行不动 |\n",
+        "**Version**: v0.0.1\n| **v0.0.1** | **2026-07-16** | historical row stays untouched |\n",
         encoding="utf-8",
     )
-    (tmp_path / "AGENTS.md").write_text("**引擎版本**：v0.8.0-release\n", encoding="utf-8")
+    (tmp_path / "AGENTS.md").write_text("**Engine Version**：v0.0.1\n", encoding="utf-8")
     (tmp_path / "README.md").write_text(
-        "**版本 Version** `v0.8.0-release`\n发行包在 `version/v0.8.0-release/`。\n",
+        "**Version** `v0.0.1`\nRelease package at `version/v0.0.1/`.\n",
         encoding="utf-8",
     )
-    (tmp_path / "pyproject.toml").write_text('version = "0.8.0"\n', encoding="utf-8")
-    (tmp_path / "package.json").write_text('{"version": "0.8.0"}\n', encoding="utf-8")
+    (tmp_path / "pyproject.toml").write_text('version = "0.0.1"\n', encoding="utf-8")
+    (tmp_path / "package.json").write_text('{"version": "0.0.1"}\n', encoding="utf-8")
     (tmp_path / "scripts").mkdir(exist_ok=True)
     (tmp_path / "scripts" / "consistency_check.py").write_text(
-        'EXPECTED_VERSION = "v0.8.0-release"\n', encoding="utf-8"
+        'EXPECTED_VERSION = "v0.0.1"\n', encoding="utf-8"
     )
     (tmp_path / "scripts" / "build_dist.py").write_text(
-        '    return m.group(1) if m else "v0.8.0-release"\n', encoding="utf-8"
+        '    return m.group(1) if m else "v0.0.1"\n', encoding="utf-8"
     )
     (tmp_path / ".gitignore").write_text(
-        "# 仅当前可安装包 version/v0.8.0-release/ 入库\nversion/*\n!version/v0.8.0-release/\n",
+        "# Only current installable package version/v0.0.1/ is committed\nversion/*\n!version/v0.0.1/\n",
         encoding="utf-8",
     )
     (tmp_path / "dev" / "templates").mkdir(exist_ok=True)
     (tmp_path / "dev" / "templates" / "template-type13.html").write_text(
-        "<!-- @engine-version: v0.8.0-release -->\n"
-        "<span>报告版本：v0.8.0-release · Type 13 传染分析</span>\n",
+        "<!-- @engine-version: v0.0.1 -->\n"
+        "<span>Report Version: v0.0.1 · Type 13 Contagion Analysis</span>\n",
         encoding="utf-8",
     )
     (tmp_path / "docs" / "adapters").mkdir(parents=True, exist_ok=True)
     (tmp_path / "docs" / "adapters" / "codex.md").write_text(
-        "**引擎版本**：v0.8.0-release · **入口**：仓库根级 `AGENTS.md`\n",
+        "**Engine Version**：v0.0.1 · **Entry**：Repository Root Level `AGENTS.md`\n",
         encoding="utf-8",
     )
     (tmp_path / "docs").mkdir(exist_ok=True)
     (tmp_path / "docs" / "VERSION-MANAGEMENT.md").write_text(
-        "**对应引擎版本**: v0.8.0-release\n"
-        "（现为 `version/v0.8.0-release/`）\n"
-        "（现为 `v0.8.0-release`）\n"
-        "自 **v0.8.0-release** 起的叙述不动\n",
+        "**Corresponding Engine Version**: v0.0.1\n"
+        "(now at `version/v0.0.1/`)\n"
+        "(now at `v0.0.1`)\n"
+        "Narrative from **v0.0.1** stays untouched\n",
         encoding="utf-8",
     )
 
@@ -108,24 +108,24 @@ def test_apply_rules_rewrites_all_declaration_points(tmp_path):
     changes = pm.apply_rules(tmp_path, OLD, NEW, apply=True)
     assert changes, "no changes reported"
     overview = _read(tmp_path / "dev" / "engine" / "engine-overview.md")
-    assert "**版本**: v0.8.1-release" in overview
+    assert "**Version**: v0.8.1-release" in overview
     assert "| engine-overview.md | v0.8.1-release |" in overview
-    assert "**引擎版本** | 核心方法论文档 | v0.8.1-release" in overview
+    assert "**Engine Version** | Core Methodology Document | v0.8.1-release" in overview
     industry = _read(tmp_path / "dev" / "engine" / "industry-framework.md")
-    assert industry.startswith("**版本**: v0.8.1-release")
-    assert "《传染理论基础》(v0.8.1-release)定义" in industry, "cross-document reference not rewritten"
-    assert "在当前 v0.8.1-release 的计算中" in industry, "current version narrative not rewritten"
+    assert industry.startswith("**Version**: v0.8.1-release")
+    assert "Paradigm mapping defined per Contagion Theory Foundation (v0.8.1-release)" in industry, "cross-document reference not rewritten"
+    assert "is not quantitatively consumed in the current v0.8.1-release computation" in industry, "current version narrative not rewritten"
     assert "# Fixed Income Credit Analysis Engine v0.8.1-release" in _read(
         tmp_path / "dev" / ".claude" / "skills" / "fixed-income-credit-analysis" / "SKILL.md"
     )
-    assert "**版本**: v0.8.1-release" in _read(
+    assert "**Version**: v0.8.1-release" in _read(
         tmp_path / "dev" / ".claude" / "skills" / "fixed-income-credit-analysis" / "references" / "ref.md"
     )
-    assert "**对应引擎版本**: v0.8.1-release" in _read(
+    assert "**Corresponding Engine Version**: v0.8.1-release" in _read(
         tmp_path / "dev" / ".claude" / "skills" / "credit-qa-verifier" / "SKILL.md"
     )
-    assert _read(tmp_path / "dev" / "README.md").startswith("**版本**: v0.8.1-release")
-    assert "**引擎版本**：v0.8.1-release" in _read(tmp_path / "AGENTS.md")
+    assert _read(tmp_path / "dev" / "README.md").startswith("**Version**: v0.8.1-release")
+    assert "**Engine Version**：v0.8.1-release" in _read(tmp_path / "AGENTS.md")
     readme = _read(tmp_path / "README.md")
     assert "`v0.8.1-release`" in readme and "version/v0.8.1-release/" in readme
     assert 'version = "0.8.1"' in _read(tmp_path / "pyproject.toml")
@@ -135,15 +135,15 @@ def test_apply_rules_rewrites_all_declaration_points(tmp_path):
     )
     assert 'else "v0.8.1-release"' in _read(tmp_path / "scripts" / "build_dist.py")
     assert "!version/v0.8.1-release/" in _read(tmp_path / ".gitignore")
-    assert "仅当前可安装包 version/v0.8.1-release/ 入库" in _read(tmp_path / ".gitignore")
+    assert "Only current installable package version/v0.8.1-release/ is committed" in _read(tmp_path / ".gitignore")
     templates = _read(tmp_path / "dev" / "templates" / "template-type13.html")
     assert "@engine-version: v0.8.1-release" in templates
-    assert "报告版本：v0.8.1-release" in templates
-    assert "**引擎版本**：v0.8.1-release" in _read(tmp_path / "docs" / "adapters" / "codex.md")
+    assert "Report Version: v0.8.1-release" in templates
+    assert "**Engine Version**：v0.8.1-release" in _read(tmp_path / "docs" / "adapters" / "codex.md")
     vm = _read(tmp_path / "docs" / "VERSION-MANAGEMENT.md")
-    assert "**对应引擎版本**: v0.8.1-release" in vm
+    assert "**Corresponding Engine Version**: v0.8.1-release" in vm
     assert "`version/v0.8.1-release/`" in vm
-    assert "（现为 `v0.8.1-release`）" in vm
+    assert "(now at `v0.8.1-release`)" in vm
 
 
 def test_apply_rules_preserves_historical_references(tmp_path):
@@ -152,15 +152,15 @@ def test_apply_rules_preserves_historical_references(tmp_path):
     pm.apply_rules(tmp_path, OLD, NEW, apply=True)
     overview = _read(tmp_path / "dev" / "engine" / "engine-overview.md")
     assert "| **0.8.0-release** |" in overview, "historical table row wrongfully altered"
-    assert "对应引擎版本: v0.8.0-release" in overview, "audits convention example wrongfully altered"
+    assert "Corresponding Engine Version: v0.0.1" in overview, "audits convention example wrongfully altered"
     industry = _read(tmp_path / "dev" / "engine" / "industry-framework.md")
-    assert "**范式版本**: v1.0.0" in industry, "paradigm version wrongfully altered"
-    assert "自 v0.8.0-release 起的叙述不动" in industry, "narrative line wrongfully altered"
-    assert "| v0.8.0-release（当前） |" in industry, "own historical table row wrongfully altered"
+    assert "**Paradigm Version**: v1.0.0" in industry, "paradigm version wrongfully altered"
+    assert "Narrative from v0.0.1 stays untouched" in industry, "narrative line wrongfully altered"
+    assert "| v0.0.1 (current) |" in industry, "own historical table row wrongfully altered"
     dev_readme = _read(tmp_path / "dev" / "README.md")
-    assert "| **v0.8.0-release** | **2026-07-16** |" in dev_readme, "dev historical table row wrongfully altered"
+    assert "| **v0.0.1** | **2026-07-16** |" in dev_readme, "dev historical table row wrongfully altered"
     vm = _read(tmp_path / "docs" / "VERSION-MANAGEMENT.md")
-    assert "自 **v0.8.0-release** 起的叙述不动" in vm, "bold historical narrative wrongfully altered"
+    assert "Narrative from **v0.0.1** stays untouched" in vm, "bold historical narrative wrongfully altered"
 
 
 def test_dry_run_reports_but_writes_nothing(tmp_path):
@@ -177,7 +177,7 @@ def test_semver_derivation_and_validation():
     pm = _load_promote()
     assert pm.derive_semver("v0.8.1-release") == "0.8.1"
     assert pm.derive_semver("v1.0.0-alpha") == "1.0.0"
-    for bad in ("0.8.1", "v0.8", "v0.8.1", "v0.8.1-RELEASE", ""):
+    for bad in ("0.8.1", "v0.8", "v0.8.1-RELEASE", ""):
         assert pm.derive_semver(bad) is None, bad
 
 

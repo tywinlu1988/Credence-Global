@@ -1,4 +1,4 @@
-"""Integrity tests for the dimension registry (v0.8.4).
+"""Integrity tests for the dimension registry (v0.0.1).
 
 The registry (dev/engine/dimension-registry.md) objectifies the analysis
 dimensions -- 6 paradigms (P1-P6) and the 6
