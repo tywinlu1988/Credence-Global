@@ -135,7 +135,7 @@ Three-Dimensional Spread Analysis
 ```
 
 
-### 2.3.1 Confidence Interval Specification for Spread Statistics [Statistical Correction v0.3.1]
+### 2.3.1 Confidence Interval Specification for Spread Statistics [Statistical Correction v0.0.1]
 
 **Bootstrap confidence interval for spread mean estimation:**
 ```
@@ -173,7 +173,7 @@ New rule: Fundamental score stable but spread widening exceeds 95% Bootstrap con
 - Annotate whether the current value falls within the confidence interval
 - 5 consecutive trading days exceeding the interval upper bound → escalate signal level
 
-### 2.3.2 Multiple Hypothesis Testing Correction (FDR) [Statistical Correction v0.3.1]
+### 2.3.2 Multiple Hypothesis Testing Correction (FDR) [Statistical Correction v0.0.1]
 
 **Problem Background:** Simultaneously monitoring N subjects × K detection rules = a large number of parallel hypothesis tests; the false positive rate inflates with the number of tests. For example, simultaneously monitoring 3 anomaly types for 100 bonds = 300 parallel tests. Even if all bonds are normal, approximately 15 false positive signals would be generated (300 × 0.05).
 
@@ -337,7 +337,7 @@ Step 4: Output
 | > 20% decline | No change/downgrade | Uncertainty narrowing — neutral or positive signal |
 
 
-### 3.4.1 Confidence Interval Specification for Volatility Statistics [Statistical Correction v0.3.1]
+### 3.4.1 Confidence Interval Specification for Volatility Statistics [Statistical Correction v0.0.1]
 
 **95% Confidence Interval for Historical Volatility (Based on Chi-Square Distribution):**
 ```
@@ -377,7 +377,7 @@ New rule: Previous HV within 95% CI, suddenly jumps to exceed 95% CI upper bound
         → Most dangerous signal — risk exposed after being underestimated
 ```
 
-### 3.4.2 Volatility Multiple Hypothesis Testing Correction (FDR) [Statistical Correction v0.3.1]
+### 3.4.2 Volatility Multiple Hypothesis Testing Correction (FDR) [Statistical Correction v0.0.1]
 
 ```
 Volatility FDR Correction (shares the same framework as Spread FDR Correction):
@@ -502,7 +502,7 @@ Model Diagnostics:
 ```
 
 
-### 4.2.1 Confidence Interval Specification for Factor Regression [Statistical Correction v0.3.1]
+### 4.2.1 Confidence Interval Specification for Factor Regression [Statistical Correction v0.0.1]
 
 **Regression Coefficient Confidence Intervals (Newey-West Robust Standard Errors):**
 ```
@@ -535,7 +535,7 @@ R² Confidence Interval (via F-distribution transformation):
 └── Prerequisite: n ≥ 30, and residuals approximately normal (otherwise use Bootstrap instead)
 ```
 
-### 4.2.2 Statistical Precondition Testing Specification [Statistical Correction v0.3.1]
+### 4.2.2 Statistical Precondition Testing Specification [Statistical Correction v0.0.1]
 
 Before conducting factor regression, the following three preconditions must be tested sequentially. If any test fails, processing must follow the prescribed rules before proceeding.
 
@@ -792,7 +792,7 @@ Input: Industry selection + time window
 ---
 
 
-### 5.5.1 Confidence Interval Specification for Correlation Statistics [Statistical Correction v0.3.1]
+### 5.5.1 Confidence Interval Specification for Correlation Statistics [Statistical Correction v0.0.1]
 
 **Confidence Interval for Pearson Correlation Coefficient (Fisher Z Transformation):**
 ```
@@ -1404,11 +1404,11 @@ Four-Level Signal Decision Rules (One-Click Mapping):
 
 | Version | Date | Changes |
 |------|------|---------|
-| v0.1.0 | 2026-07-08 | Initial release: complete eight-chapter quantitative analysis methodology |
+| v0.0.1 | 2026-07-08 | Initial release: complete eight-chapter quantitative analysis methodology |
 | — | — | Contents: Credit Spread, Volatility, Multi-Factor, Correlation, Stress Testing, Market Implied Signals, Output Standards |
 | — | — | Examples: 5 solar PV convertible bonds, Shuangliang Energy, Brilliance China Auto, LONGi 22 CB, Yongcheng Coal regional transmission |
 
-### D. Statistical Method Usage Checklist [Statistical Correction v0.3.1]
+### D. Statistical Method Usage Checklist [Statistical Correction v0.0.1]
 
 Before each quantitative analysis run, the AI Agent must confirm each of the following statistical preconditions item by item. Each confirmation result (✅ / ⚠️ / ❌) must be explicitly annotated in the output and must not be omitted.
 

@@ -1090,17 +1090,17 @@ It is prohibited to recalculate industry scores or SRI using already-adjusted in
 
 | Version | Planned Content |
 |---------|----------------|
-| v0.6.8-alpha | Initial version: Basic aggregation algorithm + thermometer + 3 historical backtests + current calculation |
-| v0.7.0-alpha | System intelligence layer integration: complete M4 portfolio risk control system with contagion matrix/concentration framework, unified engine version |
-| v0.8.0-release | Engine-level integration release: cross-CLI entry (AGENTS.md) · four-segment chain product contract · executable orchestrator · dimension registry |
-| v0.8.1-release | Gate reinforcement and promotion mechanism (no change to framework/thresholds): .gitattributes mandatory LF · CI launch · promote.py promotion script |
-| v0.8.2-release | Contagion matrix connected to encoding engine; §2.3.1 Contagion Coefficient Table and §4 weight example aligned with matrix truth values (ranking unchanged) |
-| v0.8.3-release | Reliability iteration: consistency audit and gate expansion (framework includes §2.3.2/§4.1 data center consolidation note) |
+| v0.0.1 | Initial version: Basic aggregation algorithm + thermometer + 3 historical backtests + current calculation |
+| v0.0.1 | System intelligence layer integration: complete M4 portfolio risk control system with contagion matrix/concentration framework, unified engine version |
+| v0.0.1 | Engine-level integration release: cross-CLI entry (AGENTS.md) · four-segment chain product contract · executable orchestrator · dimension registry |
+| v0.0.1 | Gate reinforcement and promotion mechanism (no change to framework/thresholds): .gitattributes mandatory LF · CI launch · promote.py promotion script |
+| v0.0.1 | Contagion matrix connected to encoding engine; §2.3.1 Contagion Coefficient Table and §4 weight example aligned with matrix truth values (ranking unchanged) |
+| v0.0.1 | Reliability iteration: consistency audit and gate expansion (framework includes §2.3.2/§4.1 data center consolidation note) |
 | v0.0.1 (Current) | Outlook monitoring activation wiring (no change to framework/thresholds) |
-| v0.9.0-beta | Add SRI time series tracking (plot SRI historical curves, identify trends and turning points) |
-| v0.9.0-beta | Introduce real-time SRI and contagion matrix escalation factor linkage (automatically adjust SRI reading when escalation factors trigger) |
-| v0.9.0-release | Add portfolio-level SRI calculation (based on actual portfolio holding weights replacing industry weights), achieving true portfolio systemic risk assessment |
-| v0.9.0-release | Introduce SRI stress testing (input hypothetical shock → output post-stress SRI thermometer), deeply integrated with M4 portfolio risk control |
+| v0.0.1 | Add SRI time series tracking (plot SRI historical curves, identify trends and turning points) |
+| v0.0.1 | Introduce real-time SRI and contagion matrix escalation factor linkage (automatically adjust SRI reading when escalation factors trigger) |
+| v0.0.1 | Add portfolio-level SRI calculation (based on actual portfolio holding weights replacing industry weights), achieving true portfolio systemic risk assessment |
+| v0.0.1 | Introduce SRI stress testing (input hypothetical shock → output post-stress SRI thermometer), deeply integrated with M4 portfolio risk control |
 | v1.0.0 | Stable release: all backtest validations passed + at least 6 months of real-time operational data validation |
 
 ---
@@ -1236,8 +1236,8 @@ Where:
 
 | Version | Date | Change Content | Author |
 |---------|------|---------------|--------|
-| v0.6.8-alpha | 2026-07-10 | Initial creation: SRI signal aggregation algorithm + four-level thermometer + 3 historical backtests + current calculation + threshold sensitivity analysis + engine integration plan | Engine Team |
-| v0.7.0-alpha | 2026-07-10 | System intelligence layer integration: engine version unified to v0.7.0-alpha, complete M4 portfolio risk control system with contagion matrix/concentration framework | Engine Team |
+| v0.0.1 | 2026-07-10 | Initial creation: SRI signal aggregation algorithm + four-level thermometer + 3 historical backtests + current calculation + threshold sensitivity analysis + engine integration plan | Engine Team |
+| v0.0.1 | 2026-07-10 | System intelligence layer integration: engine version unified to v0.0.1, complete M4 portfolio risk control system with contagion matrix/concentration framework | Engine Team |
 
 ---
 
