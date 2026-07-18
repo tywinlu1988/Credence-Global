@@ -44,10 +44,10 @@ def test_factor_matrix_counts():
 def test_watchlist_trigger_counts_in_doc():
     """SS3.1 trigger table row count drift gate (negative 21 / positive 6, doc truth source)."""
     text = _text()
-    neg = re.search(r"#### Negative Watchlist Trigger Conditions\n(.*?)(?=\n#### |\Z)", text, re.DOTALL).group(1)
-    pos = re.search(r"#### Positive Watchlist Trigger Conditions\n(.*?)(?=\n### |\Z)", text, re.DOTALL).group(1)
-    assert len(re.findall(r"^\|\s*\*\*(Event|Financial|Policy|Market)\*\*", neg, re.MULTILINE)) == 21
-    assert len(re.findall(r"^\|\s*\*\*(Event|Financial|Policy|Market)\*\*", pos, re.MULTILINE)) == 6
+    neg = re.search(r"#### Negative Watch Trigger Conditions\n(.*?)(?=\n#### |\Z)", text, re.DOTALL).group(1)
+    pos = re.search(r"#### Positive Watch Trigger Conditions\n(.*?)(?=\n### |\Z)", text, re.DOTALL).group(1)
+    assert len(re.findall(r"^\|\s*\*\*(Event-Driven|Financial Mutation|Policy Shock|Market Signal)\*\*", neg, re.MULTILINE)) == 21
+    assert len(re.findall(r"^\|\s*\*\*(Event-Driven|Financial Mutation|Policy Shock|Market Signal)\*\*", pos, re.MULTILINE)) == 6
 
 
 def test_migration_table_structure():
@@ -57,9 +57,9 @@ def test_migration_table_structure():
         assert rating in table
     assert "A / A-" in table and "BBB / BBB-" in table
     for cells in table.values():
-        assert all(cells[k] for k in ("upgrade", "stable", "downgrade", "default"))
+        assert all(cells[k] for k in ("upgrade", "maintain", "downgrade", "default"))
     text = _text()
-    assert len(adj) == len(re.findall(r"^\|\s*\*\*.+?\*\*\s*\|\s*(?:upgrade|downgrade)\+", text, re.MULTILINE))
+    assert len(adj) == len(re.findall(r"^\|\s*\*\*.+?\*\*\s*\|\s*(?:upgrade|downgrade).*?\+", text, re.MULTILINE | re.IGNORECASE))
 
 
 # ---------------- outlook scoring (SS2.3) ----------------
@@ -109,7 +109,7 @@ def test_outlook_confidence_tiers():
     low = outlook_assessment([{"layer": "L1", "direction": "positive"}])
     assert low["confidence"] == "low"
     none = outlook_assessment([])
-    assert none["confidence"] == "very_low" and none["outlook"] == "stable"
+    assert none["confidence"] == "very low" and none["outlook"] == "stable"
 
 
 def test_outlook_layer_weights_values():
@@ -126,14 +126,14 @@ def test_watchlist_negative_priority_and_windows():
         {"side": "positive", "event": "group_capital_injection"},
         {"side": "negative", "event": "regulatory_investigation"},
     ])
-    assert r["entered"] and r["side"] == "negative_watch"  # both triggered -> negative priority
+    assert r["entered"] and r["side"] == "negative watchlist"  # both triggered -> negative priority
     assert r["review"]["initial_review_days"] == 30 and r["review"]["full_review_days"] == 60
     assert r["window_days"] == 90 and r["extension_max_days"] == 60
 
 
 def test_watchlist_positive_and_empty():
     r = watchlist_check([{"side": "positive", "event": "government_bailout"}])
-    assert r["side"] == "positive_watch" and r["review"]["full_review_days"] == 60
+    assert r["side"] == "positive watchlist" and r["review"]["full_review_days"] == 60
     assert watchlist_check([])["entered"] is False
 
 
@@ -141,11 +141,11 @@ def test_watchlist_positive_and_empty():
 
 def test_migration_range_base_and_merged():
     r = migration_range("AA+")
-    assert set(("upgrade", "stable", "downgrade", "default", "paradigm_note")) <= set(r)
+    assert set(("upgrade", "maintain", "downgrade", "default", "paradigm_note")) <= set(r)
     a = migration_range("A")
     am = migration_range("A-")
     assert a["upgrade"] == am["upgrade"]  # merged row "A / A-" accepts either child
-    with pytest.raises(ValueError, match="unknown rating"):
+    with pytest.raises(ValueError, match="[Uu]nknown rating"):
         migration_range("CC")
 
 
@@ -155,5 +155,5 @@ def test_migration_range_paradigm_shift():
     assert shifted["paradigm_note"]
     # base downgrade "10%" -> Policy-Driven +5-10% -> 15-20%
     assert base["downgrade"] == "10%" and shifted["downgrade"] == "15-20%"
-    with pytest.raises(ValueError, match="unknown industry type"):
+    with pytest.raises(ValueError, match="Unknown industry paradigm"):
         migration_range("AA", paradigm="nonexistent_type")

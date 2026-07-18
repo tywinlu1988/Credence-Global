@@ -5,7 +5,7 @@ description: Intake router for vague or compound fixed-income credit-analysis re
 
 ## Purpose
 
-**Engine version**: v0.0.1
+**Engine version**: v0.8.4-release
 
 Routing layer — does no analysis. Responsibility is three steps: interpret vague/compound needs → match a work path in `work-path-registry` → output a structured Path Sheet. This skill does not replicate any engine thresholds/weights/rating mappings; rule content uses engine documents as the single source of truth. After routing, hand off to the `fixed-income-credit-analysis` skill, which executes according to the Path Sheet's `engine_reading_order`.
 
@@ -39,7 +39,7 @@ Match recommended paths by user input. `Status` column: ✅ active / 🟡 partia
 | Contagion screening | "If sector X defaults, which holdings would be affected?" | WP-RO-02 | ✅ | WP-RO-01 |
 | SRI reading | "What level is systemic risk at now?" | WP-RO-03 | ✅ | WP-TR-01 |
 | Stress testing | "How much would the portfolio lose under extreme scenarios?" | WP-RO-04 | 🟡 | WP-RO-01 |
-| Financing advisory | "Should this company issue bonds or take a loan? When to raise?" | WP-CF-01 | 🔴 | WP-CS-01 |
+| Financing advisory | "Should this company issue bonds or take a loan? When to raise?" | WP-II-01 | 🔴 | WP-CS-01 |
 | Backtest validation | "How accurate was this framework historically?" | WP-X-01 | ✅ | WP-X-02 |
 | Multi-role parallel | "Evaluate X from Credit Selector/PM/Risk Officer perspectives simultaneously." | WP-X-02 | ✅ | WP-CS-01 |
 | Industry framework building | "Help me build an analytical framework for a new industry." | WP-X-03 | ✅ | WP-CS-01 |
@@ -67,7 +67,7 @@ notes: ""
 Example (Credit Selector single target, public data only, L2 Deep Report):
 
 ```yaml
-role: Credit Selector
+role: credit-selector
 object: single-issuer
 depth: L2
 mode: A

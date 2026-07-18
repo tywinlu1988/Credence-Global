@@ -134,23 +134,23 @@ def test_t12_4_excluded_and_pointer_tokens_absent(dist):
 # T12.5 — (j) 溯源指针已清除，且邻接正文存活。
 def test_t12_5_pointers_scrubbed_neighbors_intact(dist):
     eo = (dist / "engine" / "engine-overview.md").read_text(encoding="utf-8")
-    # 审计表行已除，非审计导航行存活。
+    # audit table rows removed, non-audit nav rows survive
     assert "financial-analysis-audit" not in eo
     assert "rating-agency-benchmark-audit" not in eo
     assert "work-path-registry.md" in eo and "pipeline-contract.md" in eo
-    # 深度链接已修为 ../src（不逃逸）。
-    assert "../src/pipeline.py" in eo and "../../src/pipeline.py" not in eo
+    # no dev/ path tokens remain (rewrite rules applied)
+    assert "dev/engine/" not in eo and "dev/.claude/" not in eo
 
     es = (dist / "engine" / "external-support-framework.md").read_text(encoding="utf-8")
-    # 行内括号片段已剥，句子保留。
-    assert "在评级机构对标审计中，外部支持被列为G3/G4严重缺口" in es
+    # inline bracket fragments stripped, sentence retained
+    assert "external support was identified as a critical gap" in es.lower()
     assert "rating-agency-benchmark-audit" not in es
 
     nc = (dist / "engine" / "non-credit-risk-overlay.md").read_text(encoding="utf-8")
     assert "risk-management-standards-audit" not in nc
 
     dt = (dist / "engine" / "dual-track-methodology.md").read_text(encoding="utf-8")
-    assert "风险缓释建议" in dt  # 相邻正文存活
+    assert "Risk Mitigation Recommendation" in dt  # neighboring content survives
 
 
 # T12.6 — (k) 生成的入口/安装文件齐全且含版本戳。
@@ -158,7 +158,7 @@ def test_t12_6_generated_files_present(dist):
     for rel in GENERATED_FILES:
         assert (dist / rel).exists(), f"missing generated file {rel}"
     agents = (dist / "AGENTS.md").read_text(encoding="utf-8")
-    assert "引擎版本" in agents and ".claude/skills/" in agents
+    assert "Engine Version" in agents and ".claude/skills/" in agents
     for name in SKILL_NAMES:
         assert f"skills/{name}/SKILL.md" in agents, f"AGENTS.md does not index {name}"
 

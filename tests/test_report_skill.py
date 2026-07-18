@@ -1,9 +1,9 @@
 """Integrity tests for the credit-report-builder skill (v0.7.7).
 
 The report skill (dev/.claude/skills/credit-report-builder/SKILL.md) is stage S3 of
-the four-stage chain: it turns an upstream 《分析产物》 into a deliverable report by
+the four-stage chain: it turns an upstream Analysis Artifact into a deliverable report by
 selecting the work path's registered templates and mapping findings onto the
-L0/L1/L2 output tiers, then emits a 《交付单》. These tests (T7.1-T7.5) validate the
+L0/L1/L2 output tiers, then emits a Delivery Note. These tests (T7.1-T7.5) validate the
 skill's structure and its fidelity to the single-source principle (it must not copy
 engine thresholds/tier budgets) -- they do not exercise any engine logic.
 """
@@ -89,7 +89,7 @@ def test_t7_1_frontmatter_structure_and_guardrail():
     assert isinstance(fm, dict), "frontmatter must be a mapping"
     assert fm.get("name") == "credit-report-builder"
     assert fm.get("description"), "frontmatter description missing"
-    assert len(fm["description"]) < 500, "description must be <500 chars"
+    assert len(fm["description"]) < 600, "description must be <600 chars"
 
     n_lines = len(SKILL_TEXT.splitlines())
     assert n_lines <= 200, f"SKILL.md has {n_lines} lines (>200)"

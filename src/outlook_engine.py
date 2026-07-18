@@ -143,10 +143,10 @@ def load_migration_table(migration_md_path=None):
         raise ValueError("Section 5.3 paragraph missing")
     adj = {}
     for row in re.finditer(
-        r"^\|\s*\*\*(.+?)\*\*\s*\|\s*(upgrade|downgrade) probability\+(\d+)(?:-(\d+))?",
-        sec53.group(0), re.MULTILINE,
+        r"^\|\s*\*\*(.+?)\*\*\s*\|\s*(upgrade|downgrade) probability\s*\+\s*(\d+)(?:-(\d+))?",
+        sec53.group(0), re.MULTILINE | re.IGNORECASE,
     ):
-        adj[row.group(1).strip()] = (row.group(2), int(row.group(3)), int(row.group(4) or row.group(3)))
+        adj[row.group(1).strip()] = (row.group(2).lower(), int(row.group(3)), int(row.group(4) or row.group(3)))
     return table, adj
 
 

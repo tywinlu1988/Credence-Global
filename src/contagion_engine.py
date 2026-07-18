@@ -26,8 +26,8 @@ ESCALATION_FACTORS = ("Market Panic", "Regulatory Vacuum", "High Leverage", "Inf
 # Only encodes base intensities that match the matrix table directions (e.g., Tech HW -> Software base 4).
 _EXPLICIT_JUMPS = {
     "Market Panic": [
-        ("Technology Hardware (Semis)", "Software & Services", 4, 5, "Tech HW -> Software"),
-        ("Technology Hardware (Semis)", "Automobiles", 4, 5, "Tech HW -> Automobiles"),
+        ("Technology Hardware (Semiconductors)", "Software & Services", 4, 5, "Tech HW -> Software"),
+        ("Technology Hardware (Semiconductors)", "Automobiles", 4, 5, "Tech HW -> Automobiles"),
         ("Consumer Staples", "Retail", 3, 4, "Consumer Staples <-> Retail"),
         ("Retail", "Consumer Staples", 3, 4, "Consumer Staples <-> Retail"),
     ],
@@ -38,7 +38,7 @@ _EXPLICIT_JUMPS = {
         ("Sovereigns & GSEs", "Construction Materials", 3, 4, "Sovereigns -> Construction Materials"),
     ],
     "High Leverage": [
-        ("Financials (Banks/Insurance)", "Technology Hardware (Semis)", 3, 4, "Financials -> Tech HW"),
+        ("Financials (Banks/Insurance)", "Technology Hardware (Semiconductors)", 3, 4, "Financials -> Tech HW"),
         ("Financials (Banks/Insurance)", "Software & Services", 3, 4, "Financials -> Software"),
         ("Financials (Banks/Insurance)", "Capital Goods", 3, 4, "Financials -> Capital Goods"),
     ],

@@ -1,42 +1,42 @@
-# 质检清单（QA Checklist）
+# QA Checklist
 
-**版本**: v0.0.1
+**Version**: v0.0.1
 
-> 本清单是 `credit-qa-verifier` 的复核依据：四项强制检查 + 常见路径质量门。每条**规则名必须能在所引引擎文档中 grep 到**（与注册表质量门同一溯源口径），不得虚构规则。规则正文与数值以所引引擎文档为单一事实源，本清单不复制任何阈值、SRI 档位、分层时间预算或评级值。
+> This checklist is the review basis for `credit-qa-verifier`: four mandatory checks + common path quality gates. Every **rule name must be grep-able in the referenced engine document** (same traceability standard as the registry quality gates), and no rules may be fabricated. Rule content and values use the referenced engine documents as the single source of truth; this checklist does not copy any thresholds, SRI tiers, layered time budgets, or rating values.
 
-## 四项强制检查（mandatory_checks）
+## Four Mandatory Checks (mandatory_checks)
 
-任一不通过即判 `fail`：
+Any failure results in `fail`:
 
-| 检查项 | 规则名（grep 溯源） | 规则源（引擎文档） |
+| Check | Rule Name (grep keyword) | Rule Source |
 |---|---|---|
-| density_rule | 信号密度 | dev/engine/mosaic-engine.md §4.3 |
-| density_rule | 信息不足无法评估 | dev/engine/mosaic-engine.md §4.3 |
-| veto_ceiling | 一票否决 | dev/engine/industry-framework.md §五 |
-| veto_ceiling | 上限锁定为CCC | dev/engine/industry-framework.md §五 |
-| mode_b | Mode B | dev/engine/mosaic-engine.md §六 |
-| mode_b | 数据缺口 | dev/engine/mosaic-engine.md §六 |
-| single_source | 单一事实源 | dev/engine/work-path-registry.md |
+| density_rule | Signal Density | dev/engine/mosaic-engine.md §4.3 |
+| density_rule | Insufficient data to evaluate | dev/engine/mosaic-engine.md §4.3 |
+| veto_ceiling | Veto | dev/engine/industry-framework.md §5 |
+| veto_ceiling | locked at CCC | dev/engine/industry-framework.md §5 |
+| mode_b | Mode B | dev/engine/mosaic-engine.md §6 |
+| mode_b | data gaps | dev/engine/mosaic-engine.md §6 |
+| single_source | single source of truth | dev/engine/work-path-registry.md |
 
-## 常见路径质量门（gate_results）
+## Common Path Quality Gates (gate_results)
 
-逐门复核按路径单 `quality_gates` 执行；完整质量门清单以 `dev/engine/work-path-registry.md` 各路径 `quality_gates` 字段为单一事实源。下列为 active 路径常用的质量门规则名及其溯源：
+Gate-by-gate review follows the Path Sheet's `quality_gates` list; the complete quality gate inventory uses each path's `quality_gates` field in `dev/engine/work-path-registry.md` as the single source of truth. The following are common quality gate rule names for active paths and their traceability:
 
-| 规则名（grep 溯源） | 规则源（引擎文档） |
+| Rule Name (grep keyword) | Rule Source |
 |---|---|
-| 交叉对撞 | dev/engine/dual-track-methodology.md §四 |
-| 五维集中度 | dev/engine/concentration-framework.md §一 |
-| 温度计 | dev/engine/systemic-warning-framework.md §三 |
-| 传染矩阵 | dev/engine/contagion-matrix.md §二 |
-| 四维 | dev/engine/multi-stakeholder.md §二 |
+| Cross-Validation | dev/engine/dual-track-methodology.md §4 |
+| Five-Dimension | dev/engine/concentration-framework.md §1 |
+| Thermometer | dev/engine/systemic-warning-framework.md §3 |
+| Contagion Matrix | dev/engine/contagion-matrix.md §2 |
+| Deep-Dive Frameworks | dev/engine/multi-stakeholder.md §2 |
 
-## 判 fail 的情形（不限于）
+## Fail Conditions (not limited to)
 
-- 缺完备性报告（完备性为每次分析的必备产物，规则源 `dev/engine/mosaic-engine.md` §五）。
-- 密度低于下限的维度出了数值评分，或加权密度不足时出了最终字母评级。
-- 触发一票否决却未锁定评级上限。
-- Mode B 幻觉：用户未显式提供数据源却出现外部数据值。
-- 编造阈值/权重/评级映射；引擎未定义的量未如实标注。
-- 三份产物 `path_id` 不一致或在注册表不可解析。
+- Missing completeness report (completeness is a required output for every analysis; rule source: `dev/engine/mosaic-engine.md` §5).
+- Dimensions below the density floor outputting numeric scores, or insufficient weighted-average density yet a final letter rating is output.
+- One-shot veto triggered but rating ceiling not locked.
+- Mode B hallucination: external data values appearing when the user has not explicitly provided data sources.
+- Fabricated thresholds/weights/rating mappings; engine-undefined quantities not truthfully annotated.
+- The three artifacts' `path_id` are inconsistent or unresolvable in the registry.
 
-> 本清单如出现与所引引擎文档不一致之处，以引擎文档为准。
+> If any inconsistency arises between this checklist and the referenced engine documents, the engine documents prevail.

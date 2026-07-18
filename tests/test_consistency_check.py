@@ -202,7 +202,7 @@ def test_check_paradigm_coverage_flags_missing_industry(tmp_path, monkeypatch):
         encoding="utf-8",
     )
     (fake_engine / "industry-framework.md").write_text(
-        "## 四、七行业金字塔规格\n### 4.1 光伏/储能\n| D1 | ... |\n",
+        "## Industry Pyramid Specifications\n### 4.1 Solar/Storage\n| D1 | ... |\n",
         encoding="utf-8",
     )
     monkeypatch.setattr(cc, "ENGINE_DIR", fake_engine)

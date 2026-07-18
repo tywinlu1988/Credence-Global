@@ -257,7 +257,7 @@ def test_t9_7_invalid_sheet_rejected(contract, registry_paths):
     with pytest.raises(ValueError):
         load_stage_plan(_sheet("WP-RO-03", mode="C"), registry_paths, contract)
     # unknown path_id
-    bad = _sheet("WP-M4-03")
+    bad = _sheet("WP-RO-03")
     bad["path_id"] = "WP-M9-99"
     with pytest.raises(ValueError):
         load_stage_plan(bad, registry_paths, contract)
@@ -292,17 +292,17 @@ def test_t9_8_contagion_wired_and_runs(contract, registry_paths):
     plan = load_stage_plan(_sheet("WP-RO-02"), registry_paths, contract)
     assert plan[1].executable is True
     manifest = run_executable_stages(plan, {
-        "holdings": {"Solar/Storage": 0.4, "Semiconductor/IC": 0.35, "Food/Beverage": 0.25},
-        "escalation_factors": ["market_panic"],
+        "holdings": {"Technology Hardware (Semiconductors)": 0.4, "Consumer Staples": 0.35, "Retail": 0.25},
+        "escalation_factors": ["Market Panic"],
     })
     analysis = next(s for s in manifest["stages"] if s["name"] == "analysis")
     assert analysis["mode"] == "code"
     out = analysis["outputs"]
     assert set(out) == {"exposure", "links", "factors_applied"}
-    assert out["factors_applied"] == ["market_panic"]
+    assert out["factors_applied"] == ["Market Panic"]
     assert len(out["exposure"]) == 3 and out["links"]
-    # explicit escalation active: Semiconductor->Solar becomes 5 under stress
-    jump = [l for l in out["links"] if l["source"] == "Semiconductor/IC" and l["target"] == "Solar/Storage"]
+    # explicit escalation active: Consumer Staples -> Retail becomes 5 under stress (base 3 + explicit + generic bump)
+    jump = [l for l in out["links"] if l["source"] == "Consumer Staples" and l["target"] == "Retail"]
     assert jump and jump[0]["intensity"] == 5
 
 
@@ -317,15 +317,15 @@ def test_t9_9_outlook_wired_and_runs(contract, registry_paths):
     manifest = run_executable_stages(plan, {
         "signals": [
             {"layer": "L1", "direction": "negative"},
-            {"layer": "external_support", "direction": "negative"},
+            {"layer": "External Support", "direction": "negative"},
         ],
         "rating": "AA",
-        "paradigm": "policy_driven",
+        "paradigm": "Policy-Driven",
         "watchlist_triggers": [{"side": "negative", "event": "regulatory_investigation"}],
     })
     analysis = next(s for s in manifest["stages"] if s["name"] == "analysis")
     assert analysis["mode"] == "code"
     out = analysis["outputs"]
     assert set(out) == {"outlook", "confidence", "net_score", "watchlist", "migration"}
-    assert out["outlook"] == "negative" and out["watchlist"]["side"] == "negative_watch"
+    assert out["outlook"] == "negative" and out["watchlist"]["side"] == "negative watchlist"
     assert out["migration"]["downgrade"] == "15-20%"

@@ -79,11 +79,11 @@ Credit Quality Score = f(
 
 | Score Range | Rating Equivalent | Action |
 |-------------|-------------------|--------|
-| 8.0-10.0 | AA- and above | Book with confidence |
-| 6.0-7.9 | A- to A+ | Book with monitoring triggers |
-| 4.0-5.9 | BBB- to BBB+ | Hold at reduced size |
-| 2.0-3.9 | B to BB | Restrict — require covenant protection |
-| 0-1.9 | CCC and below | Exclude from book |
+| 8.0~10.0 | AA- and above | Book with confidence |
+| 6.0~7.9 | A- to A+ | Book with monitoring triggers |
+| 4.0~5.9 | BBB- to BBB+ | Hold at reduced size |
+| 2.0~3.9 | B to BB | Restrict — require covenant protection |
+| 0~1.9 | CCC and below | Exclude from book |
 
 ### 2.2 Portfolio Manager — Relative Value & Sector Allocation
 

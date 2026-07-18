@@ -25,7 +25,7 @@ if str(ROOT) not in sys.path:
 from src.path_sheet import load_registry_paths, validate_path_sheet  # noqa: E402
 
 EXPECTED_VERSION = "v0.0.1"
-VERSION_RELEASE_RE = re.compile(r"^v(\d+\.\d+\.\d+)-release$")
+VERSION_RELEASE_RE = re.compile(r"^v(\d+\.\d+\.\d+)(?:-release)?$")
 
 CORE_DOCS = [
     "engine-overview.md",

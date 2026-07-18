@@ -440,7 +440,7 @@ Willingness Composite Score = (signal dimension weighted avg) (0-3 scale)
 |----------------|----------------------|--------|-----------------|
 | **Very High** | Very strong (AAA/AA sovereign; AAA parent; MDB with strong preferred creditor status) | +2-3 notches | Strategic SOE in strong sovereign; AAA-rated parent wholly-owned subsidiary; explicit sovereign guarantee |
 | **High** | Strong (A/BBB sovereign; AA- parent; IMF program on track) | +1-2 notches | Major SOE in medium-rated sovereign; majority-owned subsidiary of strong parent |
-| **Medium** | Moderate (BBB/BB sovereign; BBB parent; DFI engagement) | 0-1 notch | Regional SOE; minority-owned affiliate; GSE with implicit but not explicit backing |
+| **Medium** | Moderate (BBB to BB sovereign; BBB parent; DFI engagement) | 0-1 notch | Regional SOE; minority-owned affiliate; GSE with implicit but not explicit backing |
 | **Low / None** | Weak (B and below sovereign; below-IG parent) | 0 | Non-strategic entity; no support basis |
 
 ### 6.3 Core Constraint: Supporter Ceiling Principle

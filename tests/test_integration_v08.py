@@ -171,8 +171,8 @@ def _concentration_inputs():
 
 def _contagion_inputs():
     return {
-        "holdings": {"Solar/Storage": 0.4, "Semiconductor/IC": 0.35, "Food/Beverage": 0.25},
-        "escalation_factors": ["market_panic"],
+        "holdings": {"Technology Hardware (Semiconductors)": 0.4, "Consumer Staples": 0.35, "Retail": 0.25},
+        "escalation_factors": ["Market Panic"],
     }
 
 
@@ -180,11 +180,11 @@ def _outlook_inputs():
     return {
         "signals": [
             {"layer": "L1", "direction": "negative", "signal": "industry_access_tightening"},
-            {"layer": "external_support", "direction": "negative", "signal": "supporter_downgrade"},
+            {"layer": "External Support", "direction": "negative", "signal": "supporter_downgrade"},
             {"layer": "L4", "direction": "positive", "signal": "operating_cash_flow_positive"},
         ],
         "rating": "AA",
-        "paradigm": "policy_driven",
+        "paradigm": "Policy-Driven",
         "watchlist_triggers": [{"side": "negative", "event": "regulatory_investigation"}],
     }
 

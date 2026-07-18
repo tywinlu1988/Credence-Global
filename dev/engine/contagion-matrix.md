@@ -798,7 +798,7 @@ The contagion matrix is consumed across the four-layer analysis pyramid:
 | Concentration Stress Testing | Run **portfolio contagion simulation** via matrix (see 7.2) | Input hypothetical default → matrix-driven propagation → output portfolio impact |
 | Industry Concentration Limits | Add **contagion-linked concentration** to limits management | Not only single-industry concentration but Cluster A+B+C+D total exposure cap |
 | Limit Management System | Add **contagion path limits** triggered by SRI thresholds | Additional limit deductions on high-contagion industry pairs |
-| Systemic Risk Monitoring | Reference [Systemic Warning Framework](../reference/systemic-warning-framework.md) SRI thermometer | M4 portfolio dashboard with SRI reading driving dynamic limit adjustment |
+| Systemic Risk Monitoring | Reference [Systemic Warning Framework](systemic-warning-framework.md) SRI thermometer | M4 portfolio dashboard with SRI reading driving dynamic limit adjustment |
 
 ### 7.2 M4 Concentration Stress Test Process
 

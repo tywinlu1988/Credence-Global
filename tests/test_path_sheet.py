@@ -230,7 +230,7 @@ def test_t5_2_planned_notice_is_not_an_invocation(tmp_path):
 # --------------------------------------------------------------------------
 
 def _chaining_section(text: str) -> str:
-    m = re.search(r"^## .*链式规则[^\n]*\n(.*?)(?=\n## |\Z)", text, re.DOTALL | re.MULTILINE)
+    m = re.search(r"^## .*Chaining Rules[^\n]*\n(.*?)(?=\n## |\Z)", text, re.DOTALL | re.MULTILINE)
     return m.group(1) if m else ""
 
 
@@ -239,7 +239,7 @@ def test_t5_3_chaining_rules_cross_reference_consistent():
     tier labels, without restating any numeric threshold that belongs to a source doc."""
     text = REGISTRY.read_text(encoding="utf-8")
     section = _chaining_section(text)
-    assert section, "registry is missing a 链式规则 (chaining-rules) section"
+    assert section, "registry is missing a Chaining Rules (chaining-rules) section"
 
     # references the single-source docs by document name
     assert "output-layered-framework" in section
@@ -252,7 +252,7 @@ def test_t5_3_chaining_rules_cross_reference_consistent():
     # does NOT restate source-doc numeric thresholds: tier time budgets (§2.1),
     # signal-priority gates (§6.3), and SRI thermometer bands (§3.1) live in the
     # source docs and must not be re-defined here.
-    for forbidden in ("5秒", "30秒", "分钟", ">30", ">15", "0.5", "1.0", "1.8"):
+    for forbidden in ("5 seconds", "30 seconds", ">30 sec", ">15", "0.5", "1.0", "1.8"):
         assert forbidden not in section, (
             f"chaining-rules section restates source-doc threshold {forbidden!r}"
         )
@@ -285,7 +285,7 @@ def test_load_registry_paths_parses_real_registry():
     """load_registry_paths is the single-source parser shared by validator and tests."""
     paths = load_registry_paths(REGISTRY)
     assert len(paths) == 16
-    assert paths["WP-M2-01"]["status"] == PathStatus.PLANNED.value
+    assert paths["WP-AD-01"]["status"] == PathStatus.PLANNED.value
 
 
 def test_path_sheet_dataclass_roundtrip():

@@ -717,9 +717,9 @@ Data Sources:
 
 # --- Part 4: Continuous Monitoring Checklist ---
 Monitoring Item List:
-  - [Monitoring item]: [Current status]([Last check date])
-  - [Monitoring item]: [Current status]([Last check date])
-  - [Monitoring item]: [Current status]([Last check date])
+  - [Monitoring item]: [Current status] — Last checked: [date]
+  - [Monitoring item]: [Current status] — Last checked: [date]
+  - [Monitoring item]: [Current status] — Last checked: [date]
 Upcoming Events to Watch:
   - [Date]: [Event]
   - [Date]: [Event]

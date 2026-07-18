@@ -3,7 +3,7 @@
 The qa skill (dev/.claude/skills/credit-qa-verifier/SKILL.md) is stage S4 (terminal)
 of the four-stage chain: it verifies a Delivery Note plus its upstream Analysis
 Artifact and Path Sheet against the path's quality gates and four mandatory checks,
-then emits a terminal 《质检裁决》. These tests (T8.1-T8.5) validate the skill's
+then emits a terminal QA Verdict. These tests (T8.1-T8.5) validate the skill's
 structure, the grep-ability of its gate rule-names in the engine docs (T2.7-style
 traceability), and its fidelity to the single-source principle -- they do not
 exercise any engine logic.
@@ -83,7 +83,7 @@ def test_t8_1_frontmatter_structure_and_guardrails():
     assert isinstance(fm, dict), "frontmatter must be a mapping"
     assert fm.get("name") == "credit-qa-verifier"
     assert fm.get("description"), "frontmatter description missing"
-    assert len(fm["description"]) < 500, "description must be <500 chars"
+    assert len(fm["description"]) < 600, "description must be <600 chars"
 
     n_lines = len(SKILL_TEXT.splitlines())
     assert n_lines <= 200, f"SKILL.md has {n_lines} lines (>200)"

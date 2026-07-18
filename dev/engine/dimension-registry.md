@@ -142,8 +142,8 @@ The `definition` field follows the same traceability convention as the work path
 ## Related Content
 
 - [Industry Classification and Analysis Framework](industry-framework.md) -- Six paradigm determination (§3) / Seven-industry pyramid specifications (§4) / Industry type determination (§7)
-- [Financial Analysis Paradigm](paradigm-financial.md) -- Paradigm P5 full specification (Food & Beverage, Textile & Apparel)
-- [Sovereign-Linked Analysis Paradigm](paradigm-sovereign-linked.md) -- Paradigm P6 full specification (Transportation, Retail/Trade, Media/Internet)
+- [Financial Paradigm (P5)](industry-framework.md) — Paradigm P5 full specification (Consumer Durables, Consumer Staples)
+- [Sovereign-Linked Paradigm (P6)](industry-framework.md) — Paradigm P6 full specification (Commercial Services, Retail)
 - [13-Industry Contagion Matrix](contagion-matrix.md) -- §1.2 Paradigm Mapping Table (industry to primary/secondary paradigm)
 - [Multi-Stakeholder Perspective Framework](multi-stakeholder.md) -- Role definitions (§1)
 - [Work Path Registry](work-path-registry.md) -- Each path's role and paradigm_selection
