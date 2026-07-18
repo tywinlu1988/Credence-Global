@@ -69,7 +69,7 @@
 - Test suite: 183+ passing (contagion engine tests in progress)
 
 ### Audit & Cleanup ✅
-- Stale v0.8.x version references removed from all production files
+- Stale legacy version references removed from all production files
 - Broken links in engine docs resolved
 - Chinese characters eliminated from all production paths
 - `dist/credence/` package builds and validates successfully

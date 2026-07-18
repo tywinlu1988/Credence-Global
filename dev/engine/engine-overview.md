@@ -246,9 +246,9 @@ The engine documentation system uses two parallel version numbering schemes:
 
 1. **Unified methodology document version**: All core methodology documents (non-review) uniformly carry the same engine version number
 2. **Version upgrade triggers**:
-   - New functional modules or industry coverage — increment minor version (e.g., v0.5.x)
+   - New functional modules or industry coverage — increment minor version (e.g., v0.0.2)
    - Major methodology restructuring or rating system changes — increment major version (e.g., v1.0.0)
-   - Consistency fixes, terminology unification, threshold alignment — increment patch version (e.g., v0.5.x)
+   - Consistency fixes, terminology unification, threshold alignment — increment patch version (e.g., v0.0.2)
 3. **Independent review report versioning**: Audit and self-assessment documents use an independent versioning system but must note "Corresponding engine version"
 4. **Centralized version history**: All engine version upgrade records are maintained centrally in this section (Section 6); individual documents only carry their own version number and date
 
