@@ -55,7 +55,7 @@ DEV = ROOT / "dev"
 DIST = ROOT / "dist" / "credence"
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from consistency_check import CORE_DOCS  # noqa: E402  单一事实源，不复制清单
+from consistency_check import CORE_DOCS  # noqa: E402  single source of truth, don't duplicate manifest
 
 # Ordered rewrite rules (longest prefix first). The skills rule has no trailing slash
 # to cover both `dev/.claude/skills` and `dev/.claude/skills/...` forms.
@@ -83,7 +83,7 @@ LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 
 
 # ---------------------------------------------------------------------------
-# 复制 + 重写 + 清除
+# Copy + Rewrite + Cleanse
 # ---------------------------------------------------------------------------
 
 def _apply_rewrites(text: str) -> str:
@@ -132,7 +132,7 @@ def _copy_and_transform(src: Path, dst: Path, log: list, scrub: bool) -> None:
 
 
 # ---------------------------------------------------------------------------
-# 生成的入口 / 安装文件（版本戳派生自 engine-overview.md 头，不硬编码）
+# Generated entry / installation files (version stamped from engine-overview.md header, not hardcoded)
 # ---------------------------------------------------------------------------
 
 def _version() -> str:
@@ -344,7 +344,7 @@ def _gen_adapter_codex(log: list) -> str:
 
 
 # ---------------------------------------------------------------------------
-# 校验
+# Validation
 # ---------------------------------------------------------------------------
 
 def _check_links(errors: list, base: Path) -> None:
@@ -373,7 +373,7 @@ def validate(out_dir=None) -> list:
         if f.is_dir():
             continue
         rel = f.relative_to(base)
-        # (vii) 剔除物不得出现
+        # (vii) excluded artifacts must not appear
         if "__pycache__" in f.parts or f.suffix == ".pyc" or f.name == "settings.local.json":
             errors.append(f"EXCLUDED_PRESENT: {rel}")
         if "audits" in f.parts or f.parts[0] in ("design", "product", "data", "validation"):
@@ -388,7 +388,7 @@ def validate(out_dir=None) -> list:
             if DEV_TOKEN_RE.search(text):
                 errors.append(f"DEV_TOKEN: {rel}")
 
-    # (iv) 4 skill + 严格 frontmatter
+    # (iv) 4 skills + strict frontmatter
     for name in SKILL_NAMES:
         sf = base / ".claude" / "skills" / name / "SKILL.md"
         if not sf.exists():
@@ -404,17 +404,17 @@ def validate(out_dir=None) -> list:
         if not (base / "engine" / doc).exists():
             errors.append(f"MISSING_CORE_DOC: engine/{doc}")
 
-    # (vi) src 定位 engine/templates（dist 平铺布局）
+    # (vi) src can locate engine/templates (flat dist layout)
     if not (base / "engine").is_dir() or not (base / "templates").is_dir():
         errors.append("LAYOUT: engine/ or templates/ missing at package root")
 
-    # (iii) 链接
+    # (iii) links
     _check_links(errors, base)
     return errors
 
 
 # ---------------------------------------------------------------------------
-# 构建
+# Build
 # ---------------------------------------------------------------------------
 
 def build(out_dir=None) -> list:

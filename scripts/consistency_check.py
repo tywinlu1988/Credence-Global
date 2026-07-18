@@ -174,11 +174,11 @@ def check_versions() -> list[str]:
 
 
 def check_version_alignment() -> list[str]:
-    """pyproject.toml / package.json 的 version 必须与 EXPECTED_VERSION 派生值一致。"""
+    """pyproject.toml / package.json version must align with EXPECTED_VERSION-derived value."""
     m = VERSION_RELEASE_RE.match(EXPECTED_VERSION)
     if not m:
         return [
-            f"VERSION_ALIGN: EXPECTED_VERSION {EXPECTED_VERSION!r} 不是 vX.Y.Z-release 形式"
+            f"VERSION_ALIGN: EXPECTED_VERSION {EXPECTED_VERSION!r} is not in vX.Y.Z-release form"
         ]
     want = m.group(1)
     errors = []
@@ -187,14 +187,14 @@ def check_version_alignment() -> list[str]:
     if pm is None or pm.group(1) != want:
         got = pm.group(1) if pm else None
         errors.append(
-            f"VERSION_ALIGN: pyproject.toml version={got!r}，应为 {want!r}"
-            f"（派生自 EXPECTED_VERSION={EXPECTED_VERSION}）"
+            f"VERSION_ALIGN: pyproject.toml version={got!r}, expected {want!r}"
+            f"(derived from EXPECTED_VERSION={EXPECTED_VERSION})"
         )
     pkg = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))
     if pkg.get("version") != want:
         errors.append(
-            f"VERSION_ALIGN: package.json version={pkg.get('version')!r}，应为 {want!r}"
-            f"（派生自 EXPECTED_VERSION={EXPECTED_VERSION}）"
+            f"VERSION_ALIGN: package.json version={pkg.get('version')!r}, expected {want!r}"
+            f"(derived from EXPECTED_VERSION={EXPECTED_VERSION})"
         )
     return errors
 
@@ -243,7 +243,7 @@ def check_audit_versions() -> list[str]:
         r"\*\*(?:对应引擎版本|Engine Version)\*\*\s*:\s*" + re.escape(EXPECTED_VERSION) + r"\b"
     )
     for path in ENGINE_DIR.rglob("*.md"):
-        # audits/ holds frozen historical reports. Their 对应引擎版本 records the
+        # audits/ holds frozen historical reports. Their corresponding engine version records the
         # engine era under review (e.g. v0.7.0-alpha/v0.5.4-alpha) on an independent
         # report-version scheme (v1.0/v1.1), so it must not track EXPECTED_VERSION.
         # The audit-version requirement applies only to current (non-archived) docs.
@@ -254,7 +254,7 @@ def check_audit_versions() -> list[str]:
             continue
         text = path.read_text(encoding="utf-8")
         if not pattern.search(text):
-            errors.append(f"AUDIT_VERSION: {path.relative_to(ENGINE_DIR)} does not declare 对应引擎版本: {EXPECTED_VERSION}")
+            errors.append(f"AUDIT_VERSION: {path.relative_to(ENGINE_DIR)} does not declare corresponding engine version: {EXPECTED_VERSION}")
     return errors
 
 
@@ -289,7 +289,7 @@ MIGRATION_RATINGS = [
 
 
 def check_registry_templates() -> list[str]:
-    """registry 每条路径的 templates 字段：文件存在或合法标记（planned / L0-spec: <doc> §节）。"""
+    """Each registry path's templates field: file exists or valid marker (planned / L0-spec: <doc> §section)."""
     registry_file = ENGINE_DIR / "work-path-registry.md"
     if not registry_file.exists():
         return []
@@ -301,15 +301,15 @@ def check_registry_templates() -> list[str]:
             m = TEMPLATE_MARKER_RE.match(tpl)
             if m:
                 if not (ROOT / m.group(1)).is_file():
-                    errors.append(f"REGISTRY_TEMPLATE: {pid} L0-spec 文档缺失 {m.group(1)}")
+                    errors.append(f"REGISTRY_TEMPLATE: {pid} L0-spec document missing {m.group(1)}")
                 continue
             if not (ROOT / tpl).is_file():
-                errors.append(f"REGISTRY_TEMPLATE: {pid} 模板文件缺失 {tpl}")
+                errors.append(f"REGISTRY_TEMPLATE: {pid} template file missing {tpl}")
     return errors
 
 
 def check_registry_quality_gates() -> list[str]:
-    """quality_gates 的 '规则名 (文档路径 §节)' 引用：文档存在 + §节可定位。"""
+    """quality_gates 'rule name (doc path §section)' references: doc must exist + §section must be locatable."""
     registry_file = ENGINE_DIR / "work-path-registry.md"
     if not registry_file.exists():
         return []
@@ -319,23 +319,23 @@ def check_registry_quality_gates() -> list[str]:
             for doc_rel, sec in QG_REF_RE.findall(gate):
                 doc = ROOT / doc_rel
                 if not doc.is_file():
-                    errors.append(f"REGISTRY_GATE: {pid} 质量门文档缺失 {doc_rel}")
+                    errors.append(f"REGISTRY_GATE: {pid} quality gate document missing {doc_rel}")
                     continue
                 text = doc.read_text(encoding="utf-8")
                 if not re.search(r"^#+\s*" + re.escape(sec) + r"[、.\s]", text, re.MULTILINE):
-                    errors.append(f"REGISTRY_GATE: {pid} 质量门节号不可定位 {doc_rel} §{sec}")
+                    errors.append(f"REGISTRY_GATE: {pid} quality gate section not locatable {doc_rel} §{sec}")
     return errors
 
 
 def check_migration_matrix_structure() -> list[str]:
-    """outlook-monitoring §5.1 迁移矩阵：12 个评级行齐全且每行 4 概率列非空。"""
+    """outlook-monitoring §5.1 migration matrix: 12 rating rows present and each row's 4 probability columns non-empty."""
     path = ENGINE_DIR / "outlook-monitoring-framework.md"
     if not path.exists():
         return []
     text = path.read_text(encoding="utf-8")
     sec = re.search(r"### 5\.1 .*?(?=\n### |\Z)", text, re.DOTALL)
     if not sec:
-        return ["MIGRATION_MATRIX: §5.1 段落缺失"]
+        return ["MIGRATION_MATRIX: §5.1 section missing"]
     body = sec.group(0)
     errors = []
     for rating in MIGRATION_RATINGS:
@@ -344,9 +344,9 @@ def check_migration_matrix_structure() -> list[str]:
             body, re.MULTILINE,
         )
         if not row:
-            errors.append(f"MIGRATION_MATRIX: 缺评级行 {rating}")
+            errors.append(f"MIGRATION_MATRIX: missing rating row {rating}")
         elif any(not cell.strip() or cell.strip() == "-" for cell in row.groups()):
-            errors.append(f"MIGRATION_MATRIX: {rating} 行存在空概率列")
+            errors.append(f"MIGRATION_MATRIX: {rating} row has empty probability column(s)")
     return errors
 
 
@@ -429,7 +429,7 @@ def check_skill_template_drift() -> list[str]:
 def check_path_sheets() -> list[str]:
     """Validate the router's concrete work-path sheet(s) against the registry (v0.7.5).
 
-    The router emits a 《工作路径单》 whose path_id must resolve to a registered work
+    The router emits a "Work Path Sheet" whose path_id must resolve to a registered work
     path and whose active-path templates must exist on disk. We parse the registry and
     validate every concrete example sheet in the router's Path Sheet Output section
     (the blank template, whose path_id is empty, is skipped). A real violation — an
@@ -562,7 +562,7 @@ def _parse_contagion_industries(path: Path) -> list[str]:
 def _industry_covered(industry: str, text: str) -> bool:
     if industry in text:
         return True
-    # Allow heading matches using the first slash-separated segment, e.g. "高端装备/工业母机" -> "高端装备"
+    # Allow heading matches using the first slash-separated segment, e.g. "high-end equipment/machine tools" -> "high-end equipment"
     parts = re.split(r"[/(（]", industry)
     for part in parts:
         part = part.strip().strip(")）")

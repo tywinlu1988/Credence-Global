@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-"""Credence 版本晋升脚本（建议4：版本声明单源化）。
+"""Credence version promotion script (Recommendation 4: single source of truth for version declarations).
 
-输入新版本号，按**显式规则表**改写全部版本声明点（28 份 CORE_DOCS 头、4 份
-SKILL.md、references 头、README/AGENTS/dev README、pyproject/package.json、
-EXPECTED_VERSION、build_dist fallback、.gitignore 反例行、VERSION-MANAGEMENT 的
-"现为"行）。只匹配声明形态——版本历史表、"自 vX 起"叙述、"v0.8.0 skill 架构"
-时代描述、`**范式版本**` 均不在规则内，天然免疫。
+Accepts a new version number, rewrites all version declaration points per **explicit rule table**
+(28 CORE_DOCS headers, 4 SKILL.md files, references headers, README/AGENTS/dev README,
+pyproject/package.json, EXPECTED_VERSION, build_dist fallback, .gitignore anti-pattern,
+VERSION-MANAGEMENT's "currently" lines). Only matches declaration forms -- version history
+tables, "since vX" narratives, "v0.8.0 skill architecture" era descriptions, paradigm version
+headers are all outside the rules and naturally immune.
 
-默认 dry-run（逐条打印 文件:行号 旧行→新行 与规则未覆盖的剩余出现处），
---apply 才落盘。落盘前要求工作区无已跟踪改动（?? 未跟踪放行）。
+Default dry-run (prints file:line old_line->new_line per-item and remaining unmatched occurrences),
+--apply writes to disk. Requires no tracked modifications in the working tree before applying
+(?? untracked are allowed).
 """
 
 import argparse
@@ -21,7 +23,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from consistency_check import CORE_DOCS  # noqa: E402  单一事实源，不复制清单
+from consistency_check import CORE_DOCS  # noqa: E402  single source of truth, don't duplicate manifest
 
 SKILL_NAMES = [
     "credit-analysis-router",
@@ -37,7 +39,7 @@ Change = namedtuple("Change", ["rule_id", "path", "line_no", "old_line", "new_li
 
 
 def derive_semver(version: str):
-    """v0.8.1-release -> 0.8.1；不合法返回 None。"""
+    """v0.8.1-release -> 0.8.1; returns None if invalid."""
     m = VERSION_RE.match(version)
     return m.group(1) if m else None
 
@@ -49,7 +51,7 @@ def detect_old_version(root: Path):
 
 
 def _rules(root: Path, old: str, new: str, semver: str, old_semver: str):
-    """规则表：(rule_id, [相对路径], 编译后正则, 替换串)。只匹配声明形态。"""
+    """Rule table: (rule_id, [relative paths], compiled regex, replacement string). Only matches declaration forms."""
     O = re.escape(old)
     OS = re.escape(old_semver)
     refs = sorted(
@@ -109,17 +111,17 @@ def _rules(root: Path, old: str, new: str, semver: str, old_semver: str):
 
 
 def apply_rules(root: Path, old: str, new: str, apply: bool) -> list:
-    """按规则表改写声明点；apply=False 只报告不落盘。返回 Change 列表。"""
+    """Rewrite declaration points per rule table; apply=False reports only without writing to disk. Returns list of Changes."""
     semver = derive_semver(new)
     old_semver = derive_semver(old)
     if semver is None or old_semver is None:
-        raise ValueError(f"版本号形式不合法: old={old!r} new={new!r}")
+        raise ValueError(f"Invalid version format: old={old!r} new={new!r}")
     changes = []
     for rule_id, files, pattern, repl in _rules(root, old, new, semver, old_semver):
         for rel in files:
             path = root / rel
             if not path.is_file():
-                continue  # 假树/部分树：缺失文件跳过（真树完整性由 check_versions 保证）
+                continue  # sparse/partial tree: skip missing files (full tree integrity guaranteed by check_versions)
             lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
             touched = False
             for i, line in enumerate(lines):
@@ -156,26 +158,26 @@ def _working_tree_clean(root: Path) -> bool:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Credence 版本晋升（dry-run 默认）")
+    parser = argparse.ArgumentParser(description="Credence version promotion (dry-run by default)")
     parser.add_argument("new_version")
-    parser.add_argument("--old", default=None, help="旧版本（默认从 consistency_check 检测）")
+    parser.add_argument("--old", default=None, help="old version (default: auto-detect from consistency_check)")
     parser.add_argument("--apply", action="store_true")
     args = parser.parse_args()
 
     if derive_semver(args.new_version) is None:
-        print(f"新版本号形式不合法: {args.new_version!r}（需 vX.Y.Z-<stage>）")
+        print(f"Invalid new version format: {args.new_version!r} (must be vX.Y.Z-<stage>)")
         return 1
     old = args.old or detect_old_version(ROOT)
     if old is None:
-        print("无法从 consistency_check.py 检测旧版本，请用 --old 指定")
+        print("Cannot detect old version from consistency_check.py, specify with --old")
         return 1
     if args.apply and not _working_tree_clean(ROOT):
-        print("工作区有已跟踪改动，--apply 拒绝执行（先提交或stash）")
+        print("Working tree has tracked changes, --apply refused (commit or stash first)")
         return 1
 
     changes = apply_rules(ROOT, old, args.new_version, apply=args.apply)
     mode = "APPLY" if args.apply else "DRY-RUN"
-    print(f"[{mode}] {old} -> {args.new_version}: {len(changes)} 处声明改写")
+    print(f"[{mode}] {old} -> {args.new_version}: {len(changes)} declaration rewrite(s)")
     for c in changes:
         print(f"  [{c.rule_id}] {c.path}:{c.line_no}")
         print(f"    - {c.old_line.strip()[:100]}")
@@ -183,11 +185,11 @@ def main() -> int:
 
     changed_keys = {(c.path, str(c.line_no)) for c in changes}
     leftovers = sorted(_git_grep(ROOT, old) - changed_keys)
-    print(f"\n规则未覆盖的旧版本出现处（{len(leftovers)}，应全部为历史引用，请人工核对）:")
+    print(f"\nUncovered old version occurrences ({len(leftovers)}, should be all historical references, please verify manually):")
     for path, line_no in leftovers:
         print(f"  {path}:{line_no}")
     if not args.apply:
-        print("\n（dry-run，未落盘；确认后加 --apply）")
+        print("\n(dry-run, not written to disk; add --apply to confirm)")
     return 0
 
 
