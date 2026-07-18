@@ -1,94 +1,94 @@
-# 商业化模型
+# Commercial Model
 
-**版本**: v0.1
-**状态**: 设计阶段
+**Version**: v0.1
+**Status**: Design Phase
 
 ---
 
-## 一、买方画像与模拟
+## 1. Buyer Personas and Simulation
 
-### 六个潜在买方
+### Six Potential Buyers
 
-| 买方 | 真实痛点 | 预算 | 付费逻辑 |
+| Buyer | Real Pain Point | Budget | Payment Logic |
 |---|---|---|---|
-| **A：城商行对公业务部总** | 总行让投新质生产力（新能源/半导体/生物医药），手下没人懂 | 50-100万/年 | "让团队敢做新行业" |
-| **B：股份行省分行风险总监** | 需要一个独立的"第二意见"来交叉验证内部评级 | 30-80万/年 | "不依赖单一信息源" |
-| **C：中小券商固收部信评主管** | 团队3-5人覆盖全市场，需要AI补人力 | 20-50万/年 | "用AI补人的不足" |
-| **D：银行理财子信用研究员** | 持仓上万只券，初筛都做不完 | 50-150万/年 | "先扫一遍再看重点" |
-| **E：保险资管固收投资经理** | 资产荒，需要发现新的可投行业 | 30-80万/年 | "帮我发现我还没看的行业" |
-| **F：债券私募/对冲基金** | 需要不受评级绑架的独立信用判断 | 10-30万/年 | "不拿评级机构钱的裁判" |
+| **A: City Commercial Bank Corporate Banking Department Head** | Head office wants to invest in new quality productive forces (new energy/semiconductor/biomedicine), team has no domain knowledge | 500K-1M RMB/year | "Empower the team to venture into new industries" |
+| **B: Joint-Stock Bank Provincial Branch Risk Director** | Needs an independent "second opinion" to cross-validate internal ratings | 300K-800K RMB/year | "Don't rely on a single information source" |
+| **C: Small/Medium Broker Fixed Income Credit Research Head** | Team of 3-5 covering the entire market, needs AI to supplement headcount | 200K-500K RMB/year | "Use AI to compensate for headcount shortage" |
+| **D: Bank Wealth Management Subsidiary Credit Researcher** | Holding tens of thousands of bonds, can't even finish initial screening | 500K-1.5M RMB/year | "Scan first, then focus" |
+| **E: Insurance Asset Management Fixed Income Investment Manager** | Asset shortage, needs to discover new investable industries | 300K-800K RMB/year | "Help me discover industries I haven't looked at yet" |
+| **F: Bond Private Equity/Hedge Fund** | Needs independent credit judgment not beholden to rating agencies | 100K-300K RMB/year | "A referee that doesn't take money from rating agencies" |
 
-### 优先级排序
+### Priority Ranking
 
-**最优先：C（中小券商）+ A（城商行）+ F（私募）**
+**Highest priority: C (small/medium broker) + A (city commercial bank) + F (private equity)**
 
-三者共同特征：人不够、行业太多、需要独立判断、付费决策链最短。
-
----
-
-## 二、销售逻辑
-
-### 不是卖软件，是卖"超越预期的认知供给"
-
-传统B2B软件销售：演示功能 → 证明ROI → 比价 → 签合同
-
-AI原生工具的销售逻辑完全不同——用户不知道AI能做什么，无法提前评估ROI。
-
-**替代路径**：
-
-1. **免费POC → 不可替代性展示**：选一个用户自己的持仓/客户（如一只光伏可转债），用引擎做一份多维分析。不向他推销——只给他看结果。让他自己发现"这个角度我没想到"。
-
-2. **"先体验、后定价"**：前3个月免费使用ChatBot入口。当用户习惯了"输入企业名→得到多维拼图"之后，付费壁垒自然降低。
-
-3. **定价锚定替代成本**：不是"这个工具值多少钱"而是"你不用这个工具已经在花多少钱"——一个行业分析师年薪50-80万、一个信评研究员年薪30-50万。20-50万/年的工具费是"0.3个人"的成本。
-
-### 三个买方的话术锚点
-
-**给城商行（A）**："你不用再花80万年薪去挖一个半导体行业专家——你的现有团队+这个引擎=敢做新能源/半导体/生物医药的贷款。"
-
-**给中小券商（C）**："你团队3个人。你用0.5个人的预算覆盖7个行业的深度分析。"
-
-**给私募（F）**："AAA评级的永煤和紫光，违约前评级20多个月没动过。如果你的对手还在用评级报告做判断，而你有一个独立的裁判——这就是超额收益的来源。"
+Common characteristics of the three: insufficient headcount, too many industries, need for independent judgment, shortest payment decision chain.
 
 ---
 
-## 三、定价模型
+## 2. Sales Logic
 
-| 层级 | 产品形态 | 定价 | 目标用户 |
+### Not Selling Software, Selling "Cognitive Supply Beyond Expectations"
+
+Traditional B2B software sales: Demonstrate features -> Prove ROI -> Compare prices -> Sign contract
+
+AI-native tools have a completely different sales logic — users don't know what AI can do and cannot evaluate ROI in advance.
+
+**Alternative Path**:
+
+1. **Free POC -> Indispensability Demonstration**: Pick one of the user's own portfolio holdings/clients (e.g., a solar convertible bond), do a multi-dimensional analysis with the engine. Don't pitch to them — just show them the result. Let them discover on their own "I never thought of this angle."
+
+2. **"Try First, Price Later"**: Free access to the ChatBot entry for the first 3 months. Once users get used to "enter company name -> receive multi-dimensional mosaic," the payment barrier naturally lowers.
+
+3. **Price Anchor to Replacement Cost**: Not "how much is this tool worth" but "how much are you already spending without this tool" — an industry analyst costs 500K-800K RMB/year, a credit analyst costs 300K-500K RMB/year. A 200K-500K RMB/year tool cost is "0.3 person" in cost.
+
+### Key Messaging Anchors for Three Buyers
+
+**To city commercial banks (A)**: "You don't need to spend 800K a year to recruit a semiconductor industry expert — your existing team + this engine = confidently making loans in new energy/semiconductor/biomedicine."
+
+**To small/medium brokers (C)**: "Your team has 3 people. Use 0.5 person's budget to cover deep analysis across 7 industries."
+
+**To private equity (F)**: "AAA-rated Yongmei and Ziguang — their ratings didn't move for over 20 months before default. If your competitors are still using rating reports to make decisions, and you have an independent referee — that's the source of excess returns."
+
+---
+
+## 3. Pricing Model
+
+| Tier | Product Form | Pricing | Target Users |
 |---|---|---|---|
-| **免费层** | ChatBot入口 · 简版分析 | 免费 | 所有用户（获客） |
-| **按份付费** | 单家企业深度分析报告 | 2,000-5,000元/份 | 偶发深度需求 |
-| **个人订阅** | 个人年度许可 | 10-20万/年 | 独立研究者/私募 |
-| **团队订阅** | 团队年度许可（≤10人） | 20-50万/年 | 中小券商/城商行 |
-| **机构订阅** | 机构年度许可 + API | 50-100万/年 | 理财子/保险资管 |
-| **定制服务** | 新增行业金字塔 | 按项目报价 | 有特殊行业需求的机构 |
+| **Free Tier** | ChatBot entry · Simplified analysis | Free | All users (customer acquisition) |
+| **Per-Report** | Single enterprise deep analysis report | 2,000-5,000 RMB/report | Occasional deep analysis needs |
+| **Individual Subscription** | Individual annual license | 100K-200K RMB/year | Independent researchers/private equity |
+| **Team Subscription** | Team annual license (≤10 people) | 200K-500K RMB/year | Small/medium brokers, city commercial banks |
+| **Institutional Subscription** | Institutional annual license + API | 500K-1M RMB/year | Wealth management subsidiaries, insurance asset management |
+| **Custom Service** | New industry pyramid | Project-based quote | Institutions with specialized industry needs |
 
 ---
 
-## 四、GTM路径
+## 4. GTM Path
 
-| 阶段 | 时间 | 目标 | 方式 |
+| Phase | Time | Goal | Method |
 |---|---|---|---|
-| **验证期** | 0-6个月 | 找到前3个付费用户 | 直接触达+免费POC |
-| **破冰期** | 6-18个月 | 5-10家付费客户 · 形成案例 | 行业会议+口碑传播 |
-| **放量期** | 18个月+ | 通过省联社/金科子公司渠道覆盖农商行 | 渠道合作 |
+| **Validation** | 0-6 months | Find first 3 paying users | Direct outreach + free POC |
+| **Breakthrough** | 6-18 months | 5-10 paying clients · Build case studies | Industry conferences + word of mouth |
+| **Scale** | 18+ months | Cover rural commercial banks through provincial credit unions/fintech subsidiary channels | Channel partnerships |
 
-### 保险策略
+### Insurance Strategy
 
-如果直销路径太慢，可探索**嵌入式合作**：
-- 作为Wind/同花顺/东方财富的增值模块
-- 嵌入O32/恒生等投资管理系统的分析层
-- 与金融数据终端合作（我们有分析引擎，他们有分发渠道）
+If the direct sales path is too slow, explore **embedded partnerships**:
+- As a value-added module within Wind/Flush/East Money
+- Embedded in the analysis layer of O32/Hundsun and other investment management systems
+- Partner with financial data terminals (we have the analysis engine, they have distribution channels)
 
 ---
 
-## 五、竞争定位
+## 5. Competitive Positioning
 
-| 竞争者 | 他们卖什么 | 我们差异化在哪 |
+| Competitor | What They Sell | Our Differentiation |
 |---|---|---|
-| Wind/同花顺 | 原始数据+基础图表 | 我们不卖数据——我们卖"数据的拼图和解读" |
-| 评级机构（中诚信/联合） | 评级报告 | 我们不拿发行人钱——我们的判断独立于利益冲突 |
-| 咨询公司（麦肯锡/BCG） | 战略咨询（千万级） | 我们的分析引擎可规模化——10万级/年，边际成本接近零 |
-| 银行自研系统 | 内部风控 | 我们不抢内部系统的位置——我们是"外部独立认知层" |
+| Wind/Flush | Raw data + basic charts | We don't sell data — we sell "mosaic and interpretation of data" |
+| Rating agencies (Chengxin/Lianhe) | Rating reports | We don't take money from issuers — our judgment is independent of conflicts of interest |
+| Consulting firms (McKinsey/BCG) | Strategic consulting (tens of millions) | Our analysis engine is scalable — hundreds of thousands/year, marginal cost near zero |
+| Bank in-house systems | Internal risk control | We don't replace internal systems — we are an "external independent cognitive layer" |
 
-**核心定位**：在"原始数据终端"和"战略咨询"之间，存在一个"认知工具化"的空白——这正是我们的位置。
+**Core Positioning**: Between "raw data terminals" and "strategic consulting," there exists a "cognitive tooling" gap — this is precisely our position.

@@ -1,331 +1,331 @@
-# 数据架构
+# Data Architecture
 
-**来源**: 行业认知分析引擎方法论 v0.1 · 马赛克引擎系统架构设计 v0.1 · SKILL.md v0.3.0  
-**日期**: 2026-07-08  
-**性质**: 结构化归档——从已有规格文档和方法论文档中提取整理
-
----
-
-## 一、设计总则
-
-### 1.1 硬约束（POC阶段）
-
-| 约束 | 描述 |
-|---|---|
-| **零银行内部数据** | 不碰银行核心系统、不碰客户流水、不碰内部评级 |
-| **零非公开数据** | 不使用任何需要特殊权限获取的信息 |
-| **零付费数据源** | 验证期全部使用免费公开数据（Wind/Choice等付费终端仅在模式B中作为外部接入选项） |
-
-### 1.2 数据哲学
-
-| 原则 | 含义 |
-|---|---|
-| **马赛克理论** | 单个公开数据碎片无意义，拼在一起构成完整画像 |
-| **信息完备性理论** | 数据缺口不是缺陷——"我们没有这个数据"本身就是风险信号 |
-| **替代优先原则** | 精确数据不可获取时，使用公开可获取的代理指标，但必须标注 |
+**Source**: Industry Cognitive Analysis Engine Methodology v0.1 · Mosaic Engine System Architecture Design v0.1 · SKILL.md v0.3.0  
+**Date**: 2026-07-08  
+**Nature**: Structured Archive — extracted and organized from existing specification and methodology documents
 
 ---
 
-## 二、数据源分层
+## 1. Design Principles
 
-### 2.1 六层数据源架构
+### 1.1 Hard Constraints (POC Phase)
 
-| 数据层 | 来源 | 获取方式 | 可信度 | 数据类型 | 更新频率 |
+| Constraint | Description |
+|---|---|
+| **Zero Bank Internal Data** | No access to bank core systems, customer transaction records, or internal ratings |
+| **Zero Non-Public Data** | No use of any information requiring special permissions |
+| **Zero Paid Data Sources** | Validation phase uses only free public data (paid terminals like Wind/Choice are only available as external access options in Mode B) |
+
+### 1.2 Data Philosophy
+
+| Principle | Meaning |
+|---|---|
+| **Mosaic Theory** | Individual public data fragments are meaningless on their own; pieced together they form a complete picture |
+| **Information Completeness Theory** | Data gaps are not flaws — "we don't have this data" is itself a risk signal |
+| **Substitution Priority Principle** | When precise data is unavailable, use publicly available proxy indicators, but must annotate accordingly |
+
+---
+
+## 2. Data Source Layering
+
+### 2.1 Six-Layer Data Source Architecture
+
+| Data Layer | Source | Acquisition Method | Reliability | Data Type | Update Frequency |
 |---|---|---|---|---|---|
-| **L1 宏观政策** | 国务院/发改委/工信部/能源局等官网 | WebSearch + LLM解析 | **高**（官方发布） | 政策文件、通知公告、产业指导目录 | 不定（政策密集期周度） |
-| **L2 行业数据** | 行业协会（CPIA/SEMI等）、券商研报摘要、上市公司年报 | WebSearch + 公开数据库 | **中高**（协会有时滞后） | 行业统计、产能数据、价格指数 | 月度/季度 |
-| **L3 产业链价格** | PVInfoLink/TrendForce/SMM等免费数据 | WebSearch | **中**（免费版有延迟） | 周度/日度价格、供需数据 | 周度 |
-| **L4 企业公开信息** | 国家企业信用信息公示系统、裁判文书网、执行信息公开网、巨潮资讯网 | WebSearch + 指定网站查询 | **高**（官方数据） | 财报、司法记录、执行信息、公告 | 持续更新 |
-| **L5 招投标** | 各地公共资源交易中心、央企采购平台 | WebSearch | **高**（中标公告公开） | 集采中标结果、投标报价 | 集中采购期（季度） |
-| **L6 区域经济** | 各地统计局年鉴、产业园区管委会公告 | WebSearch | **中高** | 经济数据、园区政策、就业数据 | 年度/半年度 |
+| **L1 Macro Policy** | State Council/NDRC/MIIT/NEA official websites | WebSearch + LLM Parsing | **High** (official releases) | Policy documents, notices, industry guidance catalogues | Irregular (weekly during policy-intensive periods) |
+| **L2 Industry Data** | Industry associations (CPIA/SEMI, etc.), broker research abstracts, listed company annual reports | WebSearch + Public databases | **Medium-High** (associations sometimes lag) | Industry statistics, capacity data, price indices | Monthly/Quarterly |
+| **L3 Supply Chain Pricing** | PVInfoLink/TrendForce/SMM free data | WebSearch | **Medium** (free version has delays) | Weekly/daily prices, supply-demand data | Weekly |
+| **L4 Corporate Public Information** | National Enterprise Credit Information Publicity System, China Judgments Online, Enforcement Information Publicity Network, Cninfo | WebSearch + Designated website queries | **High** (official data) | Financial reports, judicial records, enforcement information, announcements | Continuous updates |
+| **L5 Bidding & Tendering** | Local public resource trading centers, central enterprise procurement platforms | WebSearch | **High** (bid-winning announcements are public) | Centralized procurement results, bid quotes | Centralized procurement periods (quarterly) |
+| **L6 Regional Economy** | Local statistics bureau yearbooks, industrial park management committee announcements | WebSearch | **Medium-High** | Economic data, park policies, employment data | Annual/Semi-annual |
 
-### 2.2 各层详细数据来源
+### 2.2 Detailed Data Sources by Layer
 
-#### L1 宏观政策
+#### L1 Macro Policy
 
-| 子类 | 具体来源 | 获取难度 | 覆盖范围 |
+| Subcategory | Specific Source | Acquisition Difficulty | Coverage |
 |---|---|---|---|
-| 产业政策 | 工信部（miit.gov.cn）、发改委（ndrc.gov.cn） | 易 | 行业准入、技术路线引导、产能调控 |
-| 能源政策 | 国家能源局（nea.gov.cn） | 易 | 电价政策、可再生能源、碳排放 |
-| 贸易政策 | 财政部（mof.gov.cn）、商务部（mofcom.gov.cn） | 易 | 进出口关税、出口退税、反倾销 |
-| 货币政策 | 人民银行（pbc.gov.cn） | 易 | LPR/MLF/降准降息、公开市场操作 |
-| 区域政策 | 各省市政府网站 | 中 | 地方补贴、产业基金、园区政策 |
+| Industrial Policy | MIIT (miit.gov.cn), NDRC (ndrc.gov.cn) | Easy | Industry access, technology roadmap guidance, capacity regulation |
+| Energy Policy | National Energy Administration (nea.gov.cn) | Easy | Electricity pricing policy, renewable energy, carbon emissions |
+| Trade Policy | Ministry of Finance (mof.gov.cn), Ministry of Commerce (mofcom.gov.cn) | Easy | Import/export tariffs, export tax rebates, anti-dumping |
+| Monetary Policy | People's Bank of China (pbc.gov.cn) | Easy | LPR/MLF, reserve requirement ratio changes, open market operations |
+| Regional Policy | Provincial and municipal government websites | Medium | Local subsidies, industry funds, park policies |
 
-#### L2 行业数据
+#### L2 Industry Data
 
-| 子类 | 具体来源 | 获取难度 | 覆盖范围 |
+| Subcategory | Specific Source | Acquisition Difficulty | Coverage |
 |---|---|---|---|
-| 行业统计 | CPIA（光伏）、SEMI（半导体）、CAAM（汽车） | 中 | 产能产量、出货量、市场份额 |
-| 券商研报 | 公开研报摘要（免费平台） | 中 | 行业趋势、公司分析、价格预测 |
-| 上市公司年报 | 巨潮资讯网（cninfo.com.cn） | 易 | 财务数据、业务分部、管理层讨论 |
-| 行业价格指数 | 各行业价格跟踪平台 | 中 | 产品价格走势、成本变化 |
+| Industry Statistics | CPIA (solar), SEMI (semiconductor), CAAM (automotive) | Medium | Capacity production, shipment volume, market share |
+| Broker Research | Public research abstracts (free platforms) | Medium | Industry trends, company analysis, price forecasts |
+| Listed Company Annual Reports | Cninfo (cninfo.com.cn) | Easy | Financial data, business segments, management discussion |
+| Industry Price Indices | Various industry price tracking platforms | Medium | Product price trends, cost changes |
 
-#### L3 产业链价格
+#### L3 Supply Chain Pricing
 
-| 子类 | 具体来源 | 数据延迟 | 覆盖范围 |
+| Subcategory | Specific Source | Data Latency | Coverage |
 |---|---|---|---|
-| 光伏产业链 | PVInfoLink（免费版） | 1-2周 | 硅料/硅片/电池/组件周度报价 |
-| 半导体材料 | TrendForce（免费版） | 1-2周 | 存储芯片/晶圆代工价格 |
-| 金属/原材料 | SMM（上海有色网）免费版 | 1-2周 | 锂/钴/镍/铜等金属价格 |
-| 组件集采价格 | 央企采购平台中标公告 | 即时 | 实际成交价、降幅趋势 |
+| Solar Supply Chain | PVInfoLink (free version) | 1-2 weeks | Polysilicon/wafer/cell/module weekly quotes |
+| Semiconductor Materials | TrendForce (free version) | 1-2 weeks | Memory chip/wafer foundry pricing |
+| Metals/Raw Materials | SMM (Shanghai Metals Market) free version | 1-2 weeks | Lithium/cobalt/nickel/copper metal prices |
+| Module Procurement Pricing | Central enterprise procurement platform bid announcements | Real-time | Actual transaction prices, price decline trends |
 
-#### L4 企业公开信息
+#### L4 Corporate Public Information
 
-| 子类 | 具体来源 | 获取难度 | 覆盖范围 |
+| Subcategory | Specific Source | Acquisition Difficulty | Coverage |
 |---|---|---|---|
-| 工商信息 | 国家企业信用信息公示系统（gsxt.gov.cn） | 易 | 基本信息、股东、变更、行政处罚 |
-| 司法记录 | 裁判文书网（wenshu.court.gov.cn） | 易 | 诉讼、执行、破产案件 |
-| 执行信息 | 执行信息公开网（zxgk.court.gov.cn） | 易 | 被执行人、失信被执行人、限制高消费 |
-| 上市公司公告 | 巨潮资讯网（cninfo.com.cn） | 易 | 年报/季报、重大事项、募集说明书 |
-| 债券信息 | 中国货币网（chinamoney.com.cn）、上交所/深交所 | 易 | 发行公告、利率、评级变动 |
-| 破产重整 | 全国企业破产重整案件信息网（pccz.court.gov.cn） | 易 | 破产申请、管理人指定、债权人会议 |
+| Business Registration | National Enterprise Credit Information Publicity System (gsxt.gov.cn) | Easy | Basic info, shareholders, changes, administrative penalties |
+| Judicial Records | China Judgments Online (wenshu.court.gov.cn) | Easy | Litigation, enforcement, bankruptcy cases |
+| Enforcement Information | Enforcement Information Publicity Network (zxgk.court.gov.cn) | Easy | Judgment debtors, dishonest persons subject to enforcement, consumption restrictions |
+| Listed Company Announcements | Cninfo (cninfo.com.cn) | Easy | Annual/quarterly reports, material events, prospectus |
+| Bond Information | ChinaMoney (chinamoney.com.cn), SSE/SZSE | Easy | Issuance announcements, interest rates, rating changes |
+| Bankruptcy Restructuring | National Enterprise Bankruptcy Restructuring Case Information Network (pccz.court.gov.cn) | Easy | Bankruptcy applications, administrator appointments, creditors' meetings |
 
-#### L5 招投标
+#### L5 Bidding & Tendering
 
-| 子类 | 具体来源 | 获取难度 | 覆盖范围 |
+| Subcategory | Specific Source | Acquisition Difficulty | Coverage |
 |---|---|---|---|
-| 央企集采 | 各央企电子采购平台（华能/华电/国家电投/三峡/中核/中广核/国能/中煤等） | 易 | 光伏组件/逆变器、风电设备、储能系统 |
-| 公共资源交易 | 各省市公共资源交易中心 | 中 | 政府工程、基础设施、公共服务采购 |
-| 中标公告 | 中国招标投标公共服务平台（cebpubservice.com） | 中 | 各类招标结果 |
+| Central Enterprise Procurement | Various central enterprise e-procurement platforms (Huaneng/Huadian/SPIC/Sanhe/CNNC/CGN/CHN Energy/ChinaCoal, etc.) | Easy | Solar modules/inverters, wind power equipment, energy storage systems |
+| Public Resource Trading | Provincial and municipal public resource trading centers | Medium | Government projects, infrastructure, public service procurement |
+| Bid Award Announcements | China Bidding and Tendering Public Service Platform (cebpubservice.com) | Medium | Various bidding results |
 
-#### L6 区域经济
+#### L6 Regional Economy
 
-| 子类 | 具体来源 | 获取难度 | 覆盖范围 |
+| Subcategory | Specific Source | Acquisition Difficulty | Coverage |
 |---|---|---|---|
-| 地方统计 | 各省市统计局官网、统计年鉴 | 中 | 区域GDP、产业结构、财政收支 |
-| 产业园区 | 各经开区/高新区管委会公告 | 中高 | 园区政策、入驻企业、产值数据 |
+| Local Statistics | Provincial and municipal statistics bureau websites, statistical yearbooks | Medium | Regional GDP, industrial structure, fiscal revenue/expenditure |
+| Industrial Parks | Various economic development zones/high-tech zones management committee announcements | Medium-High | Park policies, resident enterprises, output data |
 
 ---
 
-## 三、数据可达性验证流程
+## 3. Data Accessibility Verification Process
 
-### 3.1 四类数据实测验证（光伏行业，2026年7月）
+### 3.1 Four-Category Data Field Verification (Solar Industry, July 2026)
 
-在POC阶段，对四类关键数据进行实际抓取验证：
+During the POC phase, four key data categories were actually captured and verified:
 
-| 数据类型 | 测试内容 | 结果 | 样本 |
+| Data Type | Test Content | Result | Sample |
 |---|---|---|---|
-| **产业政策** | 光伏政策 2025-2026 | ✅ 搜到6+份完整政策文件 | 136号电价市场化文件、688号绿电直连通知、出口退税取消公告 |
-| **企业风险** | 光伏企业被执行/失信/破产 | ✅ 搜到13家被执行企业 | 一道新能被执行>15亿；爱康科技被执行>5.8亿；泉为科技预重整 |
-| **招投标** | 央企组件集采中标 | ✅ 搜到6家央企集采结果 | 三峡2026年集采10GW+；隆基入围50.3GW（85.3%） |
-| **产业链价格** | 硅料/硅片/电池/组件周度报价 | ✅ 搜到2026年7月第1周数据 | TOPCon电池0.275元/W，周跌5.17% |
+| **Industrial Policy** | Solar policies 2025-2026 | ✅ Retrieved 6+ complete policy documents | Document No. 136 on electricity marketization pricing, Document No. 688 on green electricity direct connection notice, export tax rebate cancellation announcement |
+| **Enterprise Risk** | Solar enterprise enforcement/dishonest/ bankruptcy records | ✅ Found 13 enterprises subject to enforcement | Yidao New Energy enforced over 1.5 billion; Aikang Technology enforced over 580 million; Quanwei Technology pre-restructuring |
+| **Bidding & Tendering** | Central enterprise module procurement awards | ✅ Retrieved results from 6 central enterprises | Sanhe 2026 centralized procurement 10GW+; Longi shortlisted 50.3GW (85.3%) |
+| **Supply Chain Pricing** | Polysilicon/wafer/cell/module weekly quotes | ✅ Retrieved July 2026 Week 1 data | TOPCon cell 0.275 RMB/W, weekly decline 5.17% |
 
-### 3.2 数据可达性验证流程
+### 3.2 Data Accessibility Verification Process
 
-在任何行业正式分析前，执行四步验证：
+Before formal analysis of any industry, execute a four-step verification:
 
 ```
-Step 1: 产业政策可达性
-  ├── 搜索近2年该行业相关国家级政策文件 ≥3份
-  └── 结论：政策数据可达 / 政策数据不足（标记为数据缺口）
+Step 1: Policy Data Accessibility
+  ├── Search for the latest 2 years of national-level policy documents for the industry >= 3
+  └── Conclusion: Policy data accessible / Policy data insufficient (marked as data gap)
 
-Step 2: 企业风险数据可达性
-  ├── 搜索该行业主要企业的被执行/失信/破产记录
-  └── 结论：风险数据可达 / 风险数据不足
+Step 2: Enterprise Risk Data Accessibility
+  ├── Search for enforcement/dishonest/bankruptcy records of major enterprises in the industry
+  └── Conclusion: Risk data accessible / Risk data insufficient
 
-Step 3: 行业供需数据可达性
-  ├── 搜索该行业的价格指数/产能数据/需求数据
-  └── 结论：供需数据可达 / 仅部分可达
+Step 3: Industry Supply-Demand Data Accessibility
+  ├── Search for price indices/capacity data/demand data for the industry
+  └── Conclusion: Supply-demand data accessible / Only partially accessible
 
-Step 4: 招投标数据可达性
-  ├── 搜索该行业的央企/政府招标结果
-  └── 结论：招标数据可达 / 招标数据不足
+Step 4: Bidding & Tendering Data Accessibility
+  ├── Search for central enterprise/government bidding results in the industry
+  └── Conclusion: Bidding data accessible / Bidding data insufficient
 ```
 
-### 3.3 验证结论
+### 3.3 Verification Conclusion
 
-> **POC阶段零数据采购成本完全可行。** 2026年7月对光伏行业的四类数据实测验证全部通过。六个数据层的公开数据覆盖率已足够支撑结构化信用分析。
+> **Zero data procurement cost in the POC phase is entirely feasible.** In July 2026, field verification of four data categories for the solar industry passed all tests. The public data coverage across six data layers is sufficient to support structured credit analysis.
 
 ---
 
-## 四、公开数据的局限性——数据缺口类型
+## 4. Limitations of Public Data — Data Gap Types
 
-### 4.1 六大类常见数据缺口
+### 4.1 Six Major Categories of Common Data Gaps
 
-| 缺口类型 | 典型缺失数据 | 出现频率 | 影响程度 |
+| Gap Type | Typical Missing Data | Frequency | Impact Level |
 |---|---|---|---|
-| **竞争数据缺口** | 各企业精确成本对比、良率数据、非硅成本 | 高 | 高——无法精确判断成本竞争力 |
-| **财务数据缺口** | 非上市企业无公开财报、母公司单体报表不完整 | 高 | 高——完全无法评估财务健康 |
-| **市场定价缺口** | 非上市企业无股价/债券、Z-spread/OAS不可获取 | 中高 | 中高——Track B完全不可用 |
-| **条款数据缺口** | 修正久期/凸性（需Wind终端）、募集说明书关键条款不透明 | 中 | 中——可使用YTM和期限结构替代 |
-| **流动性数据缺口** | Bid-ask spread（中国交易所不披露）、做市商名单、最优报价深度 | **极高**（市场结构限制） | 中——日均成交量+换手率可近似 |
-| **治理数据缺口** | 母子公司资金归集协议、关联交易细节、股权质押详情 | 中高 | 高——治理缺陷是常见违约原因 |
+| **Competitive Data Gap** | Precise cost comparisons across enterprises, yield data, non-silicon costs | High | High — unable to precisely assess cost competitiveness |
+| **Financial Data Gap** | Non-listed enterprises without public financial reports, incomplete parent company standalone statements | High | High — completely unable to assess financial health |
+| **Market Pricing Gap** | Non-listed enterprises without stock/bond prices, Z-spread/OAS unavailable | Medium-High | Medium-High — Track B completely unavailable |
+| **Covenant Data Gap** | Modified duration/convexity (requires Wind terminal), non-transparent key prospectus terms | Medium | Medium — YTM and term structure can be used as substitutes |
+| **Liquidity Data Gap** | Bid-ask spread (not disclosed by Chinese exchanges), market maker list, best bid-offer depth | **Very High** (market structure limitation) | Medium — average daily volume + turnover rate can approximate |
+| **Governance Data Gap** | Parent-subsidiary fund pooling agreements, related party transaction details, equity pledge specifics | Medium-High | High — governance deficiencies are a common cause of default |
 
-### 4.2 中国市场特有的数据基础设施缺失
+### 4.2 Chinese Market-Specific Data Infrastructure Deficiencies
 
-| 缺失项 | 对应成熟市场 | 影响 | 替代方案 |
+| Missing Item | Corresponding Mature Market | Impact | Alternative Solution |
 |---|---|---|---|
-| Bid-ask spread不披露 | 美国TRACE系统 | 无法评估真实交易成本 | 日均成交量+换手率 |
-| CDS/CRMW产品匮乏 | 美国CDS市场 | 无法对冲信用风险 | 无有效替代（持有=承担裸露信用风险） |
-| 做市商报价不透明 | 欧洲MiFID II | 无法判断市场深度 | 成交活跃度间接推断 |
-| 个券成交价（非报价）获取限 | 美国FINRA实时数据 | 无法做精确利差分解 | 发行利率+趋势判断 |
+| Bid-ask spread not disclosed | US TRACE system | Unable to assess real transaction costs | Average daily volume + turnover rate |
+| CDS/CRMW product scarcity | US CDS market | Unable to hedge credit risk | No effective substitute (holding = bearing naked credit risk) |
+| Market maker quotes not transparent | European MiFID II | Unable to judge market depth | Indirect inference from trading activity |
+| Individual bond transaction price (not quote) access limited | US FINRA real-time data | Unable to do precise spread decomposition | Issuance rate + trend judgment |
 
-### 4.3 缺口类型与对应行业
+### 4.3 Gap Types and Corresponding Industries
 
-| 缺口类型 | 受影响最严重的行业 | 具体影响 |
+| Gap Type | Most Affected Industries | Specific Impact |
 |---|---|---|
-| 竞争数据缺口 | 光伏、半导体、新能源车 | 无法精确判断技术路线成本优势 |
-| 财务数据缺口 | 生物医药（未盈利Biotech）、高端装备（非上市） | 无法使用L4财务验证层 |
-| 市场定价缺口 | 非上市企业、私募债 | 轨道B完全不可用 |
-| 条款数据缺口 | 所有信用债 | 无法精细做利率风险分析 |
-| 流动性数据缺口 | 所有信用债（中国市场普遍） | 无法评估真实交易成本 |
-| 治理数据缺口 | 国企（多层股权结构）、民企（关联交易） | 无法识别"子强母弱"等治理缺陷 |
+| Competitive Data Gap | Solar, semiconductor, new energy vehicles | Unable to precisely judge technology roadmap cost advantages |
+| Financial Data Gap | Biomedical (unprofitable biotech), high-end equipment (non-listed) | Unable to use L4 financial verification layer |
+| Market Pricing Gap | Non-listed enterprises, private bonds | Track B completely unavailable |
+| Covenant Data Gap | All credit bonds | Unable to perform detailed interest rate risk analysis |
+| Liquidity Data Gap | All credit bonds (common in Chinese market) | Unable to assess real transaction costs |
+| Governance Data Gap | SOEs (multi-layer equity structure), private enterprises (related party transactions) | Unable to identify governance deficiencies like "subsidiary strong, parent weak" |
 
 ---
 
-## 五、缺口→风险映射表
+## 5. Gap to Risk Mapping Table
 
-### 5.1 通用映射表
+### 5.1 General Mapping Table
 
-| 缺口类型 | 典型缺失数据 | 对应的信息风险 | 替代信号 | 替代效果 |
+| Gap Type | Typical Missing Data | Corresponding Information Risk | Substitute Signal | Substitute Effectiveness |
 |---|---|---|---|---|
-| **竞争数据缺口** | 各企业精确成本对比 | 高估或低估成本优势 | 央企集采中标价（反映市场接受的溢价） | 中高——可用于相对排序 |
-| **财务数据缺口** | 非上市企业无公开财报 | 完全无法评估财务健康 | 被执行记录、司法纠纷、招聘动态、招股书（如有） | 中——需多源交叉验证 |
-| **市场定价缺口** | 非上市企业无股价/债券，Z-spread | 无法进行Track B分析 | 公开融资事件、股权转让价格、同评级利差 | 中——精度下降但方向正确 |
-| **条款数据缺口** | 修正久期/Z-spread（无Wind） | 无法做精细利率风险分析 | YTM近似、同评级利差对比 | 中——无法分解但可排序 |
-| **流动性数据缺口** | Bid-ask spread不披露 | 无法评估真实交易成本 | 日均成交量、换手率、异常成交事件 | 中——活跃度可评估，成本不可评估 |
-| **治理数据缺口** | 资金归集协议、关联交易详情 | 无法识别隐性债务风险 | 其他应收款附注分析、历史分红记录、母公司单体报表 | 中高——附注往往揭示关键信息 |
+| **Competitive Data Gap** | Precise cost comparison across enterprises | Overestimate or underestimate cost advantage | Central enterprise centralized procurement bid-winning prices (reflects market-accepted premium) | Medium-High — can be used for relative ranking |
+| **Financial Data Gap** | Non-listed enterprises without public financial reports | Completely unable to assess financial health | Enforcement records, judicial disputes, recruitment dynamics, prospectus (if available) | Medium — requires multi-source cross-validation |
+| **Market Pricing Gap** | Non-listed enterprises without stock/bond prices, Z-spread | Unable to perform Track B analysis | Public financing events, equity transfer prices, same-rating credit spreads | Medium — precision decreases but direction is correct |
+| **Covenant Data Gap** | Modified duration/Z-spread (no Wind) | Unable to do detailed interest rate risk analysis | YTM approximation, same-rating credit spread comparison | Medium — cannot decompose but can rank |
+| **Liquidity Data Gap** | Bid-ask spread not disclosed | Unable to assess real transaction costs | Average daily volume, turnover rate, abnormal trading events | Medium — activity can be assessed, costs cannot |
+| **Governance Data Gap** | Fund pooling agreements, related party transaction details | Unable to identify hidden debt risks | Other receivables notes analysis, historical dividend records, parent company standalone statements | Medium-High — notes often reveal key information |
 
-### 5.2 光伏行业定制映射表
+### 5.2 Solar Industry Custom Mapping Table
 
-| 缺口类型 | 典型缺失数据 | 替代信号 | 替代效果 |
+| Gap Type | Typical Missing Data | Substitute Signal | Substitute Effectiveness |
 |---|---|---|---|
-| 技术数据 | 各企业良率数据（不单独披露） | 组件量产效率+央企集采入围率（间接推断） | 中——效率差距>1.5pct构成足够区分信号 |
-| 成本数据 | 各技术路线非硅成本精确对比 | 央企集采中标价+一体化布局（间接推断） | 中——无法精确量化但可定性判断 |
-| 产能数据 | 各企业产能利用率（仅行业估算） | 开工率+产品价格趋势（反向推断） | 中——估算值，评分±1.5区间 |
-| 分布式数据 | BC vs TOPCon在分布式场景实际发电量对比 | 第三方测试数据（有限，正在积累中） | 低——尚无可靠替代 |
+| Technology Data | Yield data by enterprise (not separately disclosed) | Module mass production efficiency + central enterprise centralized procurement shortlisting rate (indirect inference) | Medium — efficiency gap >1.5pct constitutes a sufficient distinguishing signal |
+| Cost Data | Precise non-silicon cost comparison across technology routes | Central enterprise centralized procurement bid-winning price + integrated layout (indirect inference) | Medium — cannot precisely quantify but can qualitatively judge |
+| Capacity Data | Capacity utilization by enterprise (industry estimates only) | Operating rate + product price trends (reverse inference) | Medium — estimated value, ±1.5 score range |
+| Distributed Data | BC vs TOPCon actual power generation comparison in distributed scenarios | Third-party test data (limited, currently accumulating) | Low — no reliable substitute yet |
 
-### 5.3 缺口优先级评定
+### 5.3 Gap Priority Assessment
 
-| 优先级 | 缺口类型 | 判定标准 | 处理方式 |
+| Priority | Gap Type | Criteria | Handling Method |
 |---|---|---|---|
-| **P0 必须解决** | 财务数据缺口 | 完全无法进行L4验证 | 使用替代信号，置信度降至"中"以下 |
-| **P1 显著影响** | 竞争/治理/市场定价缺口 | 关键维度评分±1.5以上 | 标注不确定区间 |
-| **P2 有替代方案** | 条款/流动性缺口 | 替代信号效果中等以上 | 使用替代方案，标注来源 |
-| **P3 市场限制** | Bid-ask/CDS等中国市场基础设施缺失 | 不可归因于本系统 | 标注"中国市场基础设施缺失" |
+| **P0 Must Resolve** | Financial Data Gap | Completely unable to perform L4 verification | Use substitute signals, confidence level reduced to "Medium" or below |
+| **P1 Significant Impact** | Competition/Governance/Market Pricing Gap | Key dimension score ±1.5 or more | Mark uncertainty interval |
+| **P2 Has Substitute Solution** | Covenant/Liquidity Gap | Substitute signal effectiveness medium or above | Use substitute solution, annotate source |
+| **P3 Market Limitation** | Bid-ask/CDS and other Chinese market infrastructure deficiencies | Not attributable to this system | Mark "Chinese market infrastructure deficiency" |
 
 ---
 
-## 六、模式B外部数据源接口契约
+## 6. Mode B External Data Source Interface Contract
 
-### 6.1 架构设计（占位——暂不实现）
+### 6.1 Architecture Design (Placeholder — Not Yet Implemented)
 
-模式B是马赛克引擎的可扩展数据适配层，允许用户接入付费数据终端或内部数据源来填补模式A的缺口。
+Mode B is the extensible data adaptation layer of the Mosaic Engine, allowing users to connect paid data terminals or internal data sources to fill Mode A gaps.
 
-**架构**：
+**Architecture**:
 ```
-用户提供API Key / MCP Endpoint
+User Provides API Key / MCP Endpoint
          │
     ┌────┴────┐
-    │ 数据适配层│  ← 标准化接口定义
-    │ 认证/限流/缓存 │
+    │ Data Adapter Layer│  ← Standardized interface definition
+    │ Auth/Rate Limit/Cache │
     └────┬────┘
          │
     ┌────┴────┐
-    │ 信号增强层│  ← 外部数据→信号→与模式A的信号融合
-    │ 补全缺口  │  ← 外部数据填补的缺口自动标记为"已补全"
+    │ Signal Enhancement Layer│  ← External data -> Signal -> Fusion with Mode A signals
+    │ Gap Filling  │  ← Gaps filled by external data are automatically marked as "filled"
     └────┬────┘
          │
-         ↓ 汇入马赛克拼图层
+         ↓ Merged into Mosaic Mosaic Layer
 ```
 
-### 6.2 标准化接口定义
+### 6.2 Standardized Interface Definition
 
 ```yaml
 DataSourceAdapter:
-  # 生命周期
+  # Lifecycle
   init(config):
-    # 认证、限流配置
+    # Authentication, rate limiting configuration
     # config.auth_type: "api_key" | "oauth" | "basic"
     # config.rate_limit: requests/minute
     # config.cache_ttl: seconds
 
   health_check():
-    # 返回可用性状态
-    # 返回值: { status: "ok" | "degraded" | "down", latency_ms: int }
+    # Returns availability status
+    # Return value: { status: "ok" | "degraded" | "down", latency_ms: int }
 
-  # 核心查询接口
+  # Core Query Interfaces
 
   query_bond_analytics(bond_code, fields):
-    # bond_code: str — 债券代码（如"113044.SH"）
+    # bond_code: str — Bond code (e.g., "113044.SH")
     # fields: list — ["ytm", "duration", "convexity", "z_spread", "oas", "bid_ask"]
-    # 返回: { field: value, data_timestamp: "YYYY-MM-DD" }
+    # Returns: { field: value, data_timestamp: "YYYY-MM-DD" }
 
   query_market_data(instrument_code, data_type, date_range):
-    # instrument_code: str — 标的代码
+    # instrument_code: str — Instrument code
     # data_type: "price_history" | "volume" | "volatility" | "fund_flow"
     # date_range: { start: "YYYY-MM-DD", end: "YYYY-MM-DD" }
-    # 返回: [{ date, value, source }, ...]
+    # Returns: [{ date, value, source }, ...]
 
   query_industry_benchmark(industry, metric, date):
-    # industry: str — 行业名称（如"光伏"）
+    # industry: str — Industry name (e.g., "solar")
     # metric: "credit_spread" | "default_rate" | "rating_migration"
     # date: "YYYY-MM-DD"
-    # 返回: { value: float, benchmark_source: str, date: "YYYY-MM-DD" }
+    # Returns: { value: float, benchmark_source: str, date: "YYYY-MM-DD" }
 
-  # 信号融合
+  # Signal Fusion
 
   to_signals():
-    # 将外部数据转换为统一的信号对象格式
-    # 返回: signal object list（格式等同于模式A的信号对象）
+    # Converts external data into unified signal object format
+    # Returns: signal object list (format equivalent to Mode A signal objects)
 ```
 
-### 6.3 支持的数据类型与字段
+### 6.3 Supported Data Types and Fields
 
-| 数据类型 | 字段 | 用途 |
+| Data Type | Fields | Purpose |
 |---|---|---|
-| **债券分析** | YTM, 修正久期, 凸性, Z-spread, OAS | 填补条款数据缺口（M1.1相对价值） |
-| **市场深度** | Bid-ask spread, 做市商报价, 最优买卖档位 | 填补流动性数据缺口（M1.3流动性） |
-| **市场数据** | 价格历史, 成交量, 波动率, 资金流向 | 增强Track B市场定价信号 |
-| **行业基准** | 信用利差曲线, 行业违约率, 评级迁移矩阵 | 增强M1.1相对价值对比 |
+| **Bond Analytics** | YTM, Modified Duration, Convexity, Z-spread, OAS | Fill covenant data gap (M1.1 Relative Value) |
+| **Market Depth** | Bid-ask spread, market maker quotes, best bid-offer levels | Fill liquidity data gap (M1.3 Liquidity) |
+| **Market Data** | Price history, volume, volatility, fund flows | Enhance Track B market pricing signals |
+| **Industry Benchmark** | Credit spread curve, industry default rate, rating migration matrix | Enhance M1.1 Relative Value comparison |
 
-### 6.4 支持的接入方式（规划）
+### 6.4 Supported Access Methods (Planned)
 
-| 接入方式 | 适用场景 | 优先级 | 实现复杂度 |
+| Access Method | Applicable Scenario | Priority | Implementation Complexity |
 |---|---|---|---|
-| CSV/Excel上传 | 一次性分析，用户手动导出数据 | **P1** | 低 |
-| REST API | Wind/Choice/同花顺等金融终端API | **P1** | 中 |
-| MCP Server | 用户自建的数据服务 | **P2** | 高 |
-| 数据库直连 | 用户内部数据仓库 | **P3** | 高 |
+| CSV/Excel Upload | One-off analysis, user manually exports data | **P1** | Low |
+| REST API | Wind/Choice/Flush and other financial terminal APIs | **P1** | Medium |
+| MCP Server | User-built data service | **P2** | High |
+| Direct Database Connection | User internal data warehouse | **P3** | High |
 
 ---
 
-## 七、数据合规边界
+## 7. Data Compliance Boundaries
 
-### 7.1 三类数据：能用、需授权、不能用
+### 7.1 Three Data Categories: Permitted, Requires Authorization, Prohibited
 
-| 类别 | 范围 | 合规要求 | 示例 |
+| Category | Scope | Compliance Requirements | Examples |
 |---|---|---|---|
-| **✅ 可自由使用** | 政府公开发布信息、上市公司/发债企业公告、交易所公开数据、司法机关公开文书 | 无需授权，标注来源即可 | 工信部政策文件、巨潮资讯网公告、裁判文书网判决书 |
-| **⚠️ 需授权** | 金融终端API数据、付费研究报告、行业协会内部数据 | 需签署数据使用协议或购买订阅 | Wind/Choice数据终端、CPIA会员数据、券商深度研报 |
-| **❌ 不可使用** | 银行内部数据、企业非公开财务数据、个人隐私信息、通过非正当途径获取的数据 | 绝对禁止 | 内部评级、客户流水、高管个人征信、未经授权的爬虫数据 |
+| **✅ Freely Usable** | Government publicly released information, listed company/bond issuer announcements, exchange public data, judicial authority public documents | No authorization required, just annotate source | MIIT policy documents, Cninfo announcements, China Judgments Online rulings |
+| **⚠️ Requires Authorization** | Financial terminal API data, paid research reports, industry association internal data | Must sign data usage agreement or purchase subscription | Wind/Choice data terminals, CPIA member data, broker in-depth research reports |
+| **❌ Not Permitted** | Bank internal data, corporate non-public financial data, personal privacy information, data obtained through improper means | Absolutely prohibited | Internal ratings, customer transaction records, executive personal credit reports, unauthorized crawler data |
 
-### 7.2 使用的边界场景
+### 7.2 Boundary Use Cases
 
-| 场景 | 是否合规 | 说明 |
+| Scenario | Compliant | Explanation |
 |---|---|---|
-| 从政府网站抓取公开政策文件 | ✅ | 政府信息属于公共领域 |
-| 从裁判文书网爬取判决书 | ✅ | 司法公开是法定原则 |
-| 从巨潮资讯网获取上市公司公告 | ✅ | 上市公司信息披露是法定义务 |
-| 从央企采购平台获取中标公告 | ✅ | 招标结果依法应当公开 |
-| 使用Wind/Choice API（已购买订阅） | ✅ | 在授权范围内使用 |
-| 从非公开渠道获取企业资产负债表 | ❌ | 未经企业授权 |
-| 爬取被robots.txt明确禁止的网站 | ⚠️ | 需遵守网站 robots.txt 协议 |
-| 使用社交媒体个人发布的企业内部信息 | ⚠️ | 涉及个人信息保护，需谨慎处理 |
+| Scraping public policy documents from government websites | ✅ | Government information is in the public domain |
+| Crawling judgments from China Judgments Online | ✅ | Judicial openness is a legal principle |
+| Obtaining listed company announcements from Cninfo | ✅ | Listed company information disclosure is a legal obligation |
+| Obtaining bid award announcements from central enterprise procurement platforms | ✅ | Bidding results must be publicly disclosed by law |
+| Using Wind/Choice API (with purchased subscription) | ✅ | Use within authorized scope |
+| Obtaining enterprise balance sheets from non-public channels | ❌ | Without enterprise authorization |
+| Scraping websites explicitly prohibited by robots.txt | ⚠️ | Must comply with website robots.txt agreement |
+| Using internally disclosed corporate information posted by individuals on social media | ⚠️ | Involves personal information protection, requires careful handling |
 
-### 7.3 数据使用免责声明要点
+### 7.3 Data Usage Disclaimer Key Points
 
-1. **不构成投资建议**：引擎输出的是结构化分析而非投资建议
-2. **公开数据依赖**：所有结论基于分析时点已公开可获取的信息
-3. **缺口不构成误导**：标注为数据缺口的维度不代表"不存在风险"
-4. **替代信号精度**：替代信号的精度低于精确数据，使用者应知晓
-5. **法律法规**：使用者需遵守数据获取所在司法管辖区的法律法规
+1. **Not Investment Advice**: Engine output is structured analysis, not investment advice
+2. **Public Data Reliance**: All conclusions are based on information publicly available at the time of analysis
+3. **Gaps Do Not Constitute Misrepresentation**: Dimensions marked as data gaps do not represent "absence of risk"
+4. **Substitute Signal Precision**: The precision of substitute signals is lower than precise data, users should be aware
+5. **Laws and Regulations**: Users must comply with laws and regulations of the jurisdiction where data is obtained
 
-### 7.4 数据来源标注规范
+### 7.4 Data Source Annotation Standards
 
-每个分析输出必须包含：
-1. 每条关键信号的数据来源URL
-2. 信息的发布时间（非抓取时间）
-3. 可信度评级（高/中高/中/中低/低）
-4. 是否为替代信号（如是，标注原始缺口）
-5. 分析时点的声明——"本分析仅基于[YYYY-MM-DD]前已公开的信息"
+Each analysis output must include:
+1. Data source URL for each key signal
+2. Publication time of the information (not scrape time)
+3. Reliability rating (High/Medium-High/Medium/Medium-Low/Low)
+4. Whether it is a substitute signal (if so, annotate the original gap)
+5. Timing disclaimer — "This analysis is based solely on information publicly available prior to [YYYY-MM-DD]"

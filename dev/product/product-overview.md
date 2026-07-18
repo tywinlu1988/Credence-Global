@@ -1,112 +1,112 @@
-# 产品愿景与设计
+# Product Vision and Design
 
-**版本**: v0.3.0
-**状态**: 设计阶段
+**Version**: v0.3.0
+**Status**: Design Phase
 
 ---
 
-## 一、产品愿景
+## 1. Product Vision
 
-### 一句话
+### In One Sentence
 
-> 输入一个企业名称。引擎为你展开一份任何单个分析师都不可能在一小时内手动构建的多维认知拼图——不是回答你的问题，而是让你看到你没想到该问的问题。
+> Enter a company name. The engine unfolds a multi-dimensional cognitive mosaic that no single analyst could manually construct in an hour — not answering your questions, but showing you the questions you didn't know to ask.
 
-### 核心体验：Magic Experience（魔法感）
+### Core Experience: Magic Experience
 
-用户不需要知道AI能做什么。他们只需要做一件最小的事。
+Users don't need to know what AI can do. They just need to do one minimal thing.
 
-**四个魔法时刻**：
+**Four Magic Moments**:
 
-| 时刻 | 用户做了什么 | 引擎回了什么 | 用户感受 |
+| Moment | What the User Did | What the Engine Returned | User Feeling |
 |---|---|---|---|
-| **输入极简→输出极丰** | 输入一家企业名称 | 不是一份标准报告，而是一份多维拼图：行业的游戏规则、企业在其中的位置、市场怎么定价、持债人面临什么条款陷阱、未来三个月哪些事件会冲击它 | "我只问了一个问题，它告诉了我十个我该问的" |
-| **看到自己看不到的** | 什么都没做——引擎知道他的辖区/行业/持仓 | 辖区内有三家光伏企业。A的毛利率受上下游挤压。B是逆变器利润最厚但已被央企集采淘汰。C的实际控制人关联企业三个月前被列为失信被执行人 | "它知道我的辖区。它知道我在找客户。它知道哪些是坑" |
-| **跨维度连接** | 查询一只可转债 | 转股溢价率74%。同行业晶能仅3.3%。发行人上次拒绝了下修。与此同时发行人在三个月前被央企集采淘汰，而竞争对手刚拿下10GW大单。另外，这只券没有交叉违约条款 | "每一条我单独看都知道，但放在一起我才看到风险" |
-| **被提醒未知未知** | 看完报告 | 数据完备性：置信度中等。以下三个关键数据当前公开不可获取。如果能通过银行内部渠道获取任一数据，可以重新评估以缩小区间 | "它说不知道的时候比说知道更值得信任" |
+| **Minimal Input -> Rich Output** | Enter a company name | Not a standard report, but a multi-dimensional mosaic: the rules of the industry game, where the company stands, how the market prices it, what covenant traps bondholders face, what events will impact it in the next three months | "I asked one question, it told me ten I should have asked" |
+| **Seeing What You Can't See** | Did nothing — the engine knows their jurisdiction/industry/portfolio | Three solar companies in the jurisdiction. A's gross margin is squeezed by upstream and downstream. B has the thickest inverter margins but has been eliminated from central enterprise procurement. C's actual controller's related company was listed as dishonest person subject to enforcement three months ago | "It knows my jurisdiction. It knows I'm looking for clients. It knows which ones are traps" |
+| **Cross-Dimensional Connection** | Query a convertible bond | Conversion premium 74%. Same industry Jingneng only 3.3%. Issuer refused downward revision last time. Meanwhile, the issuer was eliminated from central enterprise procurement three months ago, while a competitor just secured a 10GW order. Plus, this bond has no cross-default clause | "I knew each piece individually, but only together do I see the risk" |
+| **Being Reminded of Unknown Unknowns** | Finished reading the report | Data completeness: Medium confidence. The following three key data items are currently not publicly available. If any one can be obtained through internal bank channels, the assessment can be re-evaluated to narrow the range | "When it says it doesn't know, it's more trustworthy than when it says it knows" |
 
-### 魔法感的来源不是技术炫技
+### The Source of Magic is Not Technical Flashiness
 
-是四种认知架构：
+It is four cognitive architectures:
 
-| 认知架构 | 含义 |
+| Cognitive Architecture | Meaning |
 |---|---|
-| **多维度自动展开** | 引擎知道该从哪些维度扫描一家企业，无需用户指定 |
-| **空间感知** | 引擎知道用户的辖区/行业/持仓，自动定位相关信号 |
-| **信号聚合（马赛克）** | 把散落在不同数据源的碎片拼成完整画面 |
-| **完备性诚实** | 明确标注"不知道"，反向增强"知道"的可信度 |
+| **Multi-Dimensional Auto-Expansion** | The engine knows which dimensions to scan for any enterprise, no user specification needed |
+| **Spatial Awareness** | The engine knows the user's jurisdiction/industry/portfolio, automatically locating relevant signals |
+| **Signal Aggregation (Mosaic)** | Piecing together fragments scattered across different data sources into a complete picture |
+| **Completeness Honesty** | Clearly marking "don't know", inversely enhancing the credibility of "know" |
 
 ---
 
-## 二、用户画像
+## 2. User Personas
 
-### 主要用户
+### Primary Users
 
-| 画像 | 角色 | 典型场景 | 核心焦虑 |
+| Persona | Role | Typical Scenario | Core Anxiety |
 |---|---|---|---|
-| **城商行对公客户经理** | 一线信贷人员 | 总行让投新能源/半导体，手下没人懂。面对陌生行业的客户，连该问什么问题都不知道 | "我不敢碰我不懂的行业" |
-| **中小券商信评研究员** | 信用分析 | 团队3-5人，要覆盖全市场信用债。每个行业都像光伏那么复杂，根本看不过来 | "我看不过来，但我签的字要终身追责" |
-| **固收基金经理** | 投资决策 | 持仓几百只券，每只券都有行业逻辑、条款陷阱、流动性风险。没时间逐只深挖 | "我需要有人帮我看那些我默认'没问题'的券" |
-| **私募信用研究员** | 深度研究 | 需要不依赖评级的独立判断。评级滞后17个月已是行业公开的秘密 | "我不能相信评级报告，但我没有替代工具" |
+| **City Commercial Bank Relationship Manager** | Frontline credit officer | Head office wants to invest in new energy/semiconductor, team has no domain knowledge. Facing clients in unfamiliar industries, doesn't even know what questions to ask | "I dare not touch industries I don't understand" |
+| **Small/Medium Broker Credit Analyst** | Credit analysis | Team of 3-5 people covering the entire credit bond market. Every industry is as complex as solar, impossible to keep up | "I can't keep up, but my signature means lifetime accountability" |
+| **Fixed Income Fund Manager** | Investment decision-maker | Holding hundreds of bonds, each with industry logic, covenant traps, liquidity risk. No time to deep-dive each one | "I need someone to check the bonds I've default-assumed are 'fine'" |
+| **Private Credit Analyst** | Deep research | Needs independent judgment not reliant on ratings. Ratings lagging 17 months is an open secret in the industry | "I can't trust rating reports, but I have no alternative tool" |
 
-### 决策者（付费者）
+### Decision Makers (Payers)
 
-| 画像 | 采购动机 | 预算来源 |
+| Persona | Purchase Motivation | Budget Source |
 |---|---|---|
-| 城商行总行对公业务部总 | "让我的团队敢做新行业" | 科技投入/业务创新预算 |
-| 券商固收部信评主管 | "用AI补人力不足" | 部门年度预算 |
-| 基金公司固收总监 | "我需要一个独立的不拿评级机构钱的裁判" | 投研工具预算 |
+| City Commercial Bank HQ Corporate Banking Head | "Empower my team to venture into new industries" | Tech investment/business innovation budget |
+| Broker Fixed Income Department Credit Research Head | "Use AI to supplement headcount shortage" | Department annual budget |
+| Fund Company Fixed Income Director | "I need an independent referee that doesn't take money from rating agencies" | Investment research tool budget |
 
 ---
 
-## 三、产品形态
+## 3. Product Form
 
-### 三层交付架构
+### Three-Layer Delivery Architecture
 
 ```
-第一层：ChatBot（入口层·免费获客）
-  用户：客户经理/信评研究员
-  场景："分析一下XX企业"
-  输出：精简版行业认知+核心风险信号（2分钟内读完）
+Layer 1: ChatBot (Entry Layer · Free Customer Acquisition)
+  Users: Relationship managers/credit analysts
+  Scenario: "Analyze company XX"
+  Output: Condensed industry cognition + core risk signals (readable within 2 minutes)
   
-第二层：深度仪表盘（付费层·按份/年费）
-  用户：基金经理/风控总监/深度研究者
-  场景：定期组合扫描+行业深研+多身份视角
-  输出：完整多维度分析+完备性报告+跨维度连接
+Layer 2: Deep Dashboard (Paid Layer · Per-report/Annual Fee)
+  Users: Fund managers/risk control directors/deep researchers
+  Scenario: Regular portfolio scan + industry deep dive + multi-identity perspective
+  Output: Complete multi-dimensional analysis + completeness report + cross-dimensional connection
   
-第三层：API嵌入（规模化层·年度license）
-  用户：已采购Wind/O32等终端的机构
-  场景：在现有工作流中嵌入独立信用分析信号
-  输出：结构化信号+评分+缺口标注
+Layer 3: API Embedding (Scale Layer · Annual License)
+  Users: Institutions already using Wind/O32 and other terminals
+  Scenario: Embed independent credit analysis signals into existing workflows
+  Output: Structured signals + scores + gap annotations
 ```
 
-### 设计原则
+### Design Principles
 
-1. **不要问用户任何问题**——引擎自己判断行业、加载金字塔、并行拉数据
-2. **不要给用户一份"报告"**——给他一个"发现"
-3. **不要假装全知**——明确标注数据缺口和不确定区间
-4. **不要被动等待查询**——主动守护持仓/关注列表，有变化就推送
-5. **不要让用户学习新工具**——对话式交互，自然语言输入输出
+1. **Don't ask the user any questions** — the engine judges the industry, loads the pyramid, pulls data in parallel by itself
+2. **Don't give the user a "report"** — give them a "discovery"
+3. **Don't pretend to be omniscient** — clearly mark data gaps and uncertainty ranges
+4. **Don't passively wait for queries** — actively monitor portfolios/watchlists, push on changes
+5. **Don't make users learn new tools** — conversational interaction, natural language input and output
 
 ---
 
-## 四、产品开发路线图
+## 4. Product Development Roadmap
 
-### α：第一印象
-**核心体验**：只输入企业名 → 得到多维拼图
-**关键能力**：行业自动识别+金字塔加载+多源数据并行拉取+NLP信号提取+LLM报告生成
-**状态**：方法论已验证，产品形态已设计
+### Alpha: First Impression
+**Core Experience**: Enter company name -> Receive multi-dimensional mosaic
+**Key Capabilities**: Automatic industry identification + pyramid loading + multi-source parallel data pull + NLP signal extraction + LLM report generation
+**Status**: Methodology verified, product form designed
 
-### β：主动守护
-**核心体验**：持仓/关注列表自动监控 → 主动推送信号变化
-**关键能力**：定时扫描+信号变化检测+事件日历+推送引擎
-**状态**：未开始
+### Beta: Active Monitoring
+**Core Experience**: Automatic portfolio/watchlist monitoring -> Active push of signal changes
+**Key Capabilities**: Scheduled scanning + signal change detection + event calendar + push engine
+**Status**: Not started
 
-### γ：角色切换
-**核心体验**：不同身份一键切换分析视角（信贷官↔基金经理↔交易员↔风控总监）
-**关键能力**：多身份分析模板+术语适配+关注指标切换
-**状态**：方法论文档已完成，产品化未开始
+### Gamma: Role Switching
+**Core Experience**: One-click switch of analysis perspective by identity (credit officer <-> fund manager <-> trader <-> risk control director)
+**Key Capabilities**: Multi-identity analysis template + terminology adaptation + focus indicator switching
+**Status**: Methodology documents complete, productization not started
 
-### δ：记忆生长
-**核心体验**：记住用户的行业偏好、决策历史、关注维度
-**关键能力**：用户画像+偏好学习+个性化权重
-**状态**：未开始
+### Delta: Memory Growth
+**Core Experience**: Remembering user's industry preferences, decision history, focus dimensions
+**Key Capabilities**: User profile + preference learning + personalized weights
+**Status**: Not started

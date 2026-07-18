@@ -1,73 +1,73 @@
-# 报告风格与布局系统 · 设计规格
+# Report Style and Layout System · Design Specification
 
-**版本**: v1.0
-**日期**: 2026-07-08
-**状态**: 设计审批中
+**Version**: v1.0
+**Date**: 2026-07-08
+**Status**: Design Under Review
 
 ---
 
-## 一、色彩体系
+## 1. Color System
 
-### 基础色板（所有报告通用）
+### Base Palette (Common to All Reports)
 
 ```css
 :root {
-  /* 背景层 */
+  /* Background Layer */
   --bg-primary:    #0f1117;
   --bg-secondary:  #1a1d28;
   --bg-tertiary:   #212433;
   --bg-hover:      #252b38;
 
-  /* 文字层 */
+  /* Text Layer */
   --text-primary:   #e2e4ea;
   --text-secondary: #9398a9;
   --text-tertiary:  #5d6270;
 
-  /* 边框层 */
+  /* Border Layer */
   --border-default: #2a2e3c;
   --border-strong:  #3d4250;
 }
 ```
 
-### 语义色板（所有报告通用）
+### Semantic Palette (Common to All Reports)
 
 ```css
-  /* 红：风险/警告/下跌/否决 */
+  /* Red: Risk/Warning/Decline/Veto */
   --red:       #ef4444;
   --red-bg:    rgba(239,68,68,0.08);
 
-  /* 琥珀：关注/待定/波动/缓和 */
+  /* Amber: Watch/Pending/Volatility/Mitigation */
   --amber:     #f59e0b;
   --amber-bg:  rgba(245,158,11,0.08);
 
-  /* 绿：安全/通过/上涨/正面 */
+  /* Green: Safe/Passed/Increase/Positive */
   --green:     #22c55e;
   --green-bg:  rgba(34,197,94,0.08);
 
-  /* 蓝：信息/链接/中性/数据 */
+  /* Blue: Information/Link/Neutral/Data */
   --blue:      #6366f1;
   --blue-bg:   rgba(99,102,241,0.08);
 
-  /* 紫：方法论/元分析/系统/版本 */
+  /* Purple: Methodology/Meta-Analysis/System/Version */
   --purple:    #a855f7;
   --purple-bg: rgba(168,85,247,0.08);
 ```
 
-### 使用规则
+### Usage Rules
 
-| 颜色 | 文本着色 | 背景着色 | 色条/边框 | 禁止使用 |
+| Color | Text Color | Background Color | Bar/Border | Prohibited Use |
 |---|---|---|---|---|
-| 红 | `.text-red` | `.bg-red` | `.border-red` | 装饰性大面积使用 |
-| 琥珀 | `.text-amber` | `.bg-amber` | `.border-amber` | 标题（易与红混淆） |
-| 绿 | `.text-green` | `.bg-green` | `.border-green` | 警告/风险标注 |
-| 蓝 | `.text-blue` | `.bg-blue` | `.border-blue` | 正面/负面信号 |
-| 紫 | `.text-purple` | `.bg-purple` | `.border-purple` | 数据展示 |
+| Red | `.text-red` | `.bg-red` | `.border-red` | Decorative large area use |
+| Amber | `.text-amber` | `.bg-amber` | `.border-amber` | Headings (easily confused with red) |
+| Green | `.text-green` | `.bg-green` | `.border-green` | Warning/risk annotations |
+| Blue | `.text-blue` | `.bg-blue` | `.border-blue` | Positive/negative signals |
+| Purple | `.text-purple` | `.bg-purple` | `.border-purple` | Data display |
 
 ---
 
-## 二、字体与排版
+## 2. Typography and Layout
 
-### 字体栈
+### Font Stack
 
 ```css
 --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -75,69 +75,69 @@
 --font-mono: "SF Mono", "Cascadia Code", "Consolas", monospace;
 ```
 
-### 字号层级（16px根）
+### Font Size Hierarchy (16px Base)
 
-| 级别 | 选择器 | 字号 | 粗细 | 用途 |
+| Level | Selector | Size | Weight | Usage |
 |---|---|---|---|---|
-| H1 | `.report-title` | 30px | 800 | 页面主标题 |
-| H2 | `.section-title` | 19px | 700 | 区块标题 |
-| H3 | `.card-title` | 15px | 600 | 卡片内标题 |
-| H4 | `.sub-title` | 14px | 600 | 子标题 |
-| Body | `body, p, li` | 14px | 400 | 正文 |
-| Caption | `.caption` | 12px | 400 | 辅助说明 |
-| Micro | `.micro` | 10px | 400 | 脚注/水印 |
-| Table Head | `thead th` | 11px | 600 | 表头 |
-| Table Body | `tbody td` | 13px | 400 | 表体 |
-| Num Large | `.num-lg` | 26px | 800 | 评分/金额 |
-| Num XLarge | `.num-xl` | 36px | 800 | 核心结论数字 |
+| H1 | `.report-title` | 30px | 800 | Page main title |
+| H2 | `.section-title` | 19px | 700 | Section title |
+| H3 | `.card-title` | 15px | 600 | Card title |
+| H4 | `.sub-title` | 14px | 600 | Subtitle |
+| Body | `body, p, li` | 14px | 400 | Body text |
+| Caption | `.caption` | 12px | 400 | Auxiliary description |
+| Micro | `.micro` | 10px | 400 | Footnote/watermark |
+| Table Head | `thead th` | 11px | 600 | Table header |
+| Table Body | `tbody td` | 13px | 400 | Table body |
+| Num Large | `.num-lg` | 26px | 800 | Score/amount |
+| Num XLarge | `.num-xl` | 36px | 800 | Core conclusion number |
 
-### 排版规则
+### Typography Rules
 
-- 行高：body 1.6、长文本 1.8、heading 1.3
-- 段间距：1em
-- 容器最大宽度：960px（页级）
-- 全局padding：24px（桌面）/ 16px（移动端）
-- 数字列右对齐，文本列左对齐
+- Line height: body 1.6, long text 1.8, heading 1.3
+- Paragraph spacing: 1em
+- Container max width: 960px (page level)
+- Global padding: 24px (desktop) / 16px (mobile)
+- Number columns right-aligned, text columns left-aligned
 
 ---
 
-## 三、布局骨架
+## 3. Layout Skeleton
 
 ```
 ┌──────────────────────────────────────────────┐
-│  HERO 区（全宽，渐变背景）                      │
+│  HERO Area (Full Width, Gradient Background)  │
 │  .hero                                          │
-│  ├── .hero-chip  类型标签（圆角chip）            │
-│  ├── h1          主标题                          │
-│  ├── p           副标题/说明                     │
-│  └── .hero-meta  元信息标签行                    │
+│  ├── .hero-chip  Type tag (rounded chip)        │
+│  ├── h1          Main title                     │
+│  ├── p           Subtitle/description           │
+│  └── .hero-meta  Meta information tag row       │
 ├──────────────────────────────────────────────┤
-│  CONTENT 区（居中 max-width: 960px）            │
+│  CONTENT Area (Centered max-width: 960px)      │
 │  .container                                     │
-│  ├── .strip      顶栏数字条（4-6列）             │
-│  ├── .section    内容区块                        │
-│  │   ├── .section-title  区块标题                │
-│  │   ├── .card    卡片组件                       │
-│  │   ├── table    表格组件                       │
-│  │   ├── .metric-grid  指标网格（2-4列）          │
-│  │   └── .timeline    时间线组件                  │
+│  ├── .strip      Top bar number strip (4-6 cols)│
+│  ├── .section    Content section                │
+│  │   ├── .section-title  Section title          │
+│  │   ├── .card    Card component                │
+│  │   ├── table    Table component               │
+│  │   ├── .metric-grid  Metric grid (2-4 cols)   │
+│  │   └── .timeline     Timeline component       │
 │  └── ...                                        │
 ├──────────────────────────────────────────────┤
-│  FOOTER（全宽，单线分割）                        │
+│  FOOTER (Full Width, Single Line Divider)      │
 │  .footer                                        │
 └──────────────────────────────────────────────┘
 ```
 
-### 响应式断点
+### Responsive Breakpoints
 
-| 断点 | 调整 |
+| Breakpoint | Adjustment |
 |---|---|
-| ≤768px | 网格降为1列 · Hero标题24px · strip降为2列 · 全局padding 16px |
-| ≤480px | strip降为1列 · 字号等比缩小10% · 表格横向滚动 |
+| ≤768px | Grid reduces to 1 column · Hero title 24px · strip reduces to 2 columns · Global padding 16px |
+| ≤480px | strip reduces to 1 column · Font size proportionally reduced 10% · Table horizontal scroll |
 
 ---
 
-## 四、组件库
+## 4. Component Library
 
 ### 4.1 Card
 
@@ -155,12 +155,12 @@
 .card-purple{ border-left: 4px solid var(--purple); }
 ```
 
-### 4.2 Strip（顶栏数字条）
+### 4.2 Strip (Top Bar Number Strip)
 
 ```css
 .strip {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);  /* 或2/3/5/6列 */
+  grid-template-columns: repeat(4, 1fr);  /* or 2/3/5/6 columns */
   gap: 1px;
   background: var(--border-default);
   border-radius: 10px;
@@ -252,16 +252,16 @@ tbody tr:hover { background: var(--bg-hover); }
 .timeline-item.green::before { background: var(--green); }
 ```
 
-### 4.6 评分配色
+### 4.6 Score Colors
 
-| 分值区间 | 颜色 | 类名 |
+| Score Range | Color | Class Name |
 |---|---|---|
-| ≥7.5 | 绿 | `.score-good` |
-| 5.0-7.4 | 蓝 | `.score-ok` |
-| 3.0-4.9 | 琥珀 | `.score-warn` |
-| <3.0 | 红 | `.score-bad` |
+| ≥7.5 | Green | `.score-good` |
+| 5.0-7.4 | Blue | `.score-ok` |
+| 3.0-4.9 | Amber | `.score-warn` |
+| <3.0 | Red | `.score-bad` |
 
-### 4.7 信号指示灯
+### 4.7 Signal Indicator Light
 
 ```css
 .signal { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
@@ -270,7 +270,7 @@ tbody tr:hover { background: var(--bg-hover); }
 .signal-green { background: var(--green); }
 ```
 
-### 4.8 Tab导航（多行业总览页专用）
+### 4.8 Tab Navigation (Multi-Industry Overview Page Only)
 
 ```css
 .tab-bar {
@@ -297,64 +297,64 @@ tbody tr:hover { background: var(--bg-hover); }
 
 ---
 
-## 五、12种报告类型
+## 5. 12 Report Types
 
-| # | 类型 | Hero渐变方向 | 典型Strip列数 | 核心组件 |
+| # | Type | Hero Gradient Direction | Typical Strip Columns | Core Components |
 |---|---|---|---|---|
-| 1 | 单标的深度分析 | 135deg, #0f172a, #1e3a5f | 4列 | 金字塔+交叉对撞+风险清单+完备性 |
-| 2 | 双标的前瞻对比 | 135deg, #0f172a, #1e3a5f, #065f46 | 2×4列 | 逐层对比表+分差分析+框架改进 |
-| 3 | 黑天鹅回溯验证 | 135deg, #0f172a, #4a1a1a, #7c2d12 | 4列 | 时间线+双时点+叙事拆解+评级分析 |
-| 4 | 多身份并行评估 | 135deg, #0f172a, #1e3a5f, #4a1a1a | 3列 | 身份卡片+交叉矩阵+共识分歧 |
-| 5 | 债券投资仪表盘 | 135deg, #0f172a, #1e3a5f, #1a3a2a | 4列 | 四维分析+排名表+事件日历+缺口 |
-| 6 | 马赛克完备性报告 | 135deg, #0f172a, #312e81 | 4列 | 信号密度条+信号清单+缺口映射 |
-| 7 | 行业方法论页 | 135deg, #0f172a, #1e3a5f, #312e81 | 6列 | 金字塔图+指标清单+一票否决+同业对标 |
-| 8 | 债项LGD评估 | 135deg, #0f172a, #5b21b6 | 5列 | LGD分级+抵押物估值+回收路径 |
-| 9 | 外部支持专项评估 | 135deg, #0f172a, #0e7490 | 4列 | 支持能力vs意愿+上调规则+陷阱信号 |
-| 10 | ESG+治理风险扫描 | 135deg, #0f172a, #065f46 | 4列 | E/S/G三维+欺诈信号+操作风险 |
-| 11 | 压力测试报告 | 135deg, #0f172a, #991b1b | 4列 | Severe场景+临界点+二阶效应 |
-| 12 | 引擎验证统计 | 135deg, #0f172a, #6366f1 | 6列 | 混淆矩阵+FNR/FPR+迁移矩阵+置信度 |
+| 1 | Single Entity Deep Analysis | 135deg, #0f172a, #1e3a5f | 4 columns | Pyramid + Cross Collision + Risk List + Completeness |
+| 2 | Dual Entity Forward-Looking Comparison | 135deg, #0f172a, #1e3a5f, #065f46 | 2x4 columns | Layer-by-layer comparison table + Score gap analysis + Framework improvement |
+| 3 | Black Swan Retrospective Verification | 135deg, #0f172a, #4a1a1a, #7c2d12 | 4 columns | Timeline + Dual time points + Narrative decomposition + Rating analysis |
+| 4 | Multi-Identity Parallel Assessment | 135deg, #0f172a, #1e3a5f, #4a1a1a | 3 columns | Identity cards + Cross matrix + Consensus/Divergence |
+| 5 | Bond Investment Dashboard | 135deg, #0f172a, #1e3a5f, #1a3a2a | 4 columns | Four-dimensional analysis + Ranking table + Event calendar + Gaps |
+| 6 | Mosaic Completeness Report | 135deg, #0f172a, #312e81 | 4 columns | Signal density bar + Signal list + Gap mapping |
+| 7 | Industry Methodology Page | 135deg, #0f172a, #1e3a5f, #312e81 | 6 columns | Pyramid diagram + Indicator list + Veto + Peer benchmarking |
+| 8 | Bond LGD Assessment | 135deg, #0f172a, #5b21b6 | 5 columns | LGD classification + Collateral valuation + Recovery path |
+| 9 | External Support Special Assessment | 135deg, #0f172a, #0e7490 | 4 columns | Support capacity vs willingness + Upgrade rules + Trap signals |
+| 10 | ESG + Governance Risk Scan | 135deg, #0f172a, #065f46 | 4 columns | E/S/G three dimensions + Fraud signals + Operational risk |
+| 11 | Stress Test Report | 135deg, #0f172a, #991b1b | 4 columns | Severe scenario + Critical point + Second-order effects |
+| 12 | Engine Validation Statistics | 135deg, #0f172a, #6366f1 | 6 columns | Confusion matrix + FNR/FPR + Migration matrix + Confidence |
 
 ---
 
-## 六、代码组织
+## 6. Code Organization
 
-> v0.7.1 起，模板作为单一事实源集中存放于顶层 `dev/templates/`；`design/` 仅保留本设计规格。
+> Since v0.7.1, templates are centrally stored as a single source of truth in the top-level `dev/templates/` directory; `design/` only retains this design specification.
 
 ```
 dev/
 ├── design/
-│   └── report-style-system.md   ← 本文件（设计规格）
-└── templates/                   ← 模板单一事实源（v0.7.1 起）
-    ├── template-base.css        基础色板+字体+布局（15种类型共享）
-    ├── template-type1.html      单标的深度分析
-    ├── template-type2.html      双标的前瞻对比
-    ├── template-type3.html      黑天鹅回溯验证
-    ├── template-type4.html      多身份并行评估
-    ├── template-type5.html      债券投资仪表盘
-    ├── template-type6.html      马赛克完备性报告
-    ├── template-type7.html      行业方法论页
-    ├── template-type8.html      债项LGD评估
-    ├── template-type9.html      外部支持专项评估
-    ├── template-type10.html     ESG+治理风险扫描
-    ├── template-type11.html     压力测试报告
-    ├── template-type12.html     引擎验证统计
-    ├── template-type13.html     传染分析报告
-    ├── template-type14.html     组合集中度报告
-    └── template-type15.html     系统性风险警报
+│   └── report-style-system.md   ← This file (design specification)
+└── templates/                   ← Template single source of truth (since v0.7.1)
+    ├── template-base.css        Base palette + font + layout (shared by 15 types)
+    ├── template-type1.html      Single entity deep analysis
+    ├── template-type2.html      Dual entity forward-looking comparison
+    ├── template-type3.html      Black swan retrospective verification
+    ├── template-type4.html      Multi-identity parallel assessment
+    ├── template-type5.html      Bond investment dashboard
+    ├── template-type6.html      Mosaic completeness report
+    ├── template-type7.html      Industry methodology page
+    ├── template-type8.html      Bond LGD assessment
+    ├── template-type9.html      External support special assessment
+    ├── template-type10.html     ESG + governance risk scan
+    ├── template-type11.html     Stress test report
+    ├── template-type12.html     Engine validation statistics
+    ├── template-type13.html     Contagion analysis report
+    ├── template-type14.html     Portfolio concentration report
+    └── template-type15.html     Systemic risk alert
 ```
 
-### 文件使用方式
+### File Usage
 
-- `template-base.css` 被各模板引用（`<link rel="stylesheet">`，同目录相对路径 `template-base.css`）
-- 每个 `.html` 模板仅包含：特定于此类型的Hero渐变+Strip列数调整+特定内容结构
-- 实例报告位于 `validation/reports/<子目录>/`，通过 `../../../dev/templates/template-base.css` 引用样式
-- 语义色变量和字体变量继承自 `template-base.css`
+- `template-base.css` is referenced by each template (`<link rel="stylesheet">`, same directory relative path `template-base.css`)
+- Each `.html` template only contains: type-specific Hero gradient + Strip column count adjustment + specific content structure
+- Example reports are located in `validation/reports/<subdirectory>/`, referencing styles via `../../../dev/templates/template-base.css`
+- Semantic color variables and font variables are inherited from `template-base.css`
 
 ---
 
-## 七、版本历史
+## 7. Version History
 
-| 版本 | 日期 | 变更 |
+| Version | Date | Changes |
 |---|---|---|
-| v1.0 | 2026-07-08 | 初始设计：色彩体系、字体排版、布局骨架、6组件、12报告类型 |
-| v1.1 | 2026-07-15 | 代码组织章节同步 v0.7.1 结构：模板迁至 `dev/templates/`（15 种类型），移除不存在的 components/ 目录 |
+| v1.0 | 2026-07-08 | Initial design: Color system, typography, layout skeleton, 6 components, 12 report types |
+| v1.1 | 2026-07-15 | Code organization chapter synced with v0.7.1 structure: templates moved to `dev/templates/` (15 types), removed non-existent components/ directory |
