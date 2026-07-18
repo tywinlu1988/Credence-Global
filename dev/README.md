@@ -48,7 +48,6 @@ dev/
 |   |-- dimension-registry.md                       Dimension registry (6 paradigms + LGFV, M0-M5 roles, addressable index)
 |   |-- work-path-registry.md                       Work path registry (analysis route selection, pipeline routing)
 |   |-- pipeline-contract.md                        Pipeline contract (work path order, analysis output, delivery order, QA ruling)
-|   +-- audits/                                     15 historical review/audit archives
 |
 |-- templates/                                      Report template single source of truth (17 files)
 |   |-- template-base.css                           Shared style base
@@ -56,7 +55,6 @@ dev/
 |
 |-- design/                                         Report design system
 |   |-- report-style-system.md                      Report style system
-|   +-- archive/                                    4 historical planning/audit documents (v0.6/v0.7 roadmaps, phase2, report audit)
 |
 |-- data/                                           Data architecture
 |   |-- data-architecture.md                        Data source stratification, accessibility validation, gap mapping
