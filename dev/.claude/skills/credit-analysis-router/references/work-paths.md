@@ -1,26 +1,26 @@
-# 工作路径路由视图
+# Work Path Routing View
 
-**版本**: v0.0.1
+**Version**: v0.0.1
 
-> 本表是 `dev/engine/work-path-registry.md` 的精简路由视图，供 `credit-analysis-router` 匹配用。只列路径 ID / 名称 / 角色 / 状态 / 一句话触发特征，不含任何引擎阈值、权重或评级映射——规则正文以注册表 `engine_sequence` 指向的引擎文档为单一事实源。
+> This table is a condensed routing view of `dev/engine/work-path-registry.md`, for `credit-analysis-router` matching. It only lists path ID / name / role / status / one-liner trigger pattern. It contains no engine thresholds, weights, or rating mappings — the canonical rules are defined by the engine documents referenced via the registry's `engine_sequence`.
 
-| 路径 ID | 名称 | 角色 | 状态 | 触发特征（一句话） |
+| Path ID | Name | Role | Status | Trigger Pattern (One-Liner) |
 |---|---|---|---|---|
-| WP-CS-01 | 信贷审批单标的评级 | M0 审贷 | ✅ active | 对单一发行人做信贷审批评级 |
-| WP-CS-02 | 审贷专项附加包（LGD+外部支持） | M0 审贷 | 🟡 partial | 主体评级之上追加 LGD/回收率/外部支持 |
-| WP-PM-01 | 债券投资仪表盘 | M1 投资 | ✅ active | 单券相对价值/条款/流动性/事件四维评估 |
-| WP-PM-02 | 双标的前瞻对比 | M1 投资 | 🟡 partial | 两个发行人前瞻对比、二选一 |
-| WP-AD-01 | 承销可行性评估 | M2 承销 | 🔴 planned | 发行窗口/投资人匹配/可比定价（待开发） |
-| WP-TR-01 | 交易盯市信号卡 | M3 交易 | 🟡 partial | 单券 L0 速览信号联动系统性温度计 |
-| WP-RO-01 | 组合集中度评估 | M4 风控 | ✅ active | 组合五维集中度（行业/区域/评级/期限/渠道） |
-| WP-RO-02 | 跨行业传染分析 | M4 风控 | ✅ active | 组合内跨行业传导与高传染链路 |
-| WP-RO-03 | 系统性风险读数 | M4 风控 | ✅ active | 全市场系统性风险指数与温度计档位 |
-| WP-RO-04 | 组合压力测试 | M4 风控 | 🟡 partial | 极端情景下组合损失评估 |
-| WP-II-01 | 企业融资顾问 | M5 融资 | 🔴 planned | 融资渠道对比与时机（待开发） |
-| WP-X-01 | 黑天鹅回溯验证 | 元·验证 | ✅ active | 历史违约双时点回溯检验框架有效性 |
-| WP-X-02 | 多身份并行评估 | 元·对比 | ✅ active | 单标的多身份并行与共识/分歧矩阵 |
-| WP-X-03 | 行业分析框架建设 | 元·建设 | ✅ active | 新行业金字塔与十维评分建框架 |
-| WP-X-04 | ESG/治理风险扫描 | 专项 | 🟡 partial | ESG 叠加与治理/欺诈红旗扫描 |
-| WP-X-05 | 展望与持续监控 | 专项 | 🟡 partial | 评级展望/观察名单/持续监控（模板待开发） |
+| WP-CS-01 | Credit Approval Single-Issuer Rating | M0 Credit Approval | ✅ active | Single issuer credit approval rating |
+| WP-CS-02 | Credit Approval Add-On Package (LGD+External Support) | M0 Credit Approval | 🟡 partial | LGD/recovery rate/external support on top of issuer rating |
+| WP-PM-01 | Bond Investment Dashboard | M1 Investment | ✅ active | Single-bond relative value / terms / liquidity / event four-dimensional assessment |
+| WP-PM-02 | Dual-Issuer Forward Comparison | M1 Investment | 🟡 partial | Forward comparison of two issuers, pick one |
+| WP-AD-01 | Underwriting Feasibility Assessment | M2 Underwriting | 🔴 planned | Issuance window / investor matching / comparable pricing (pending) |
+| WP-TR-01 | Trading Market-Watch Signal Card | M3 Trading | 🟡 partial | Single-bond L0 quick-scan signal linked to systemic thermometer |
+| WP-RO-01 | Portfolio Concentration Assessment | M4 Risk Control | ✅ active | Portfolio five-dimensional concentration (industry/region/rating/tenor/channel) |
+| WP-RO-02 | Cross-Industry Contagion Analysis | M4 Risk Control | ✅ active | Cross-industry transmission within portfolio and high-contagion chains |
+| WP-RO-03 | Systemic Risk Reading | M4 Risk Control | ✅ active | Market-wide systemic risk index and thermometer level |
+| WP-RO-04 | Portfolio Stress Test | M4 Risk Control | 🟡 partial | Portfolio loss assessment under extreme scenarios |
+| WP-II-01 | Corporate Financing Advisor | M5 Financing | 🔴 planned | Financing channel comparison and timing (pending) |
+| WP-X-01 | Black Swan Backtest Validation | Meta Validation | ✅ active | Historical default dual-timepoint backtest to validate framework effectiveness |
+| WP-X-02 | Multi-Role Parallel Assessment | Meta Comparison | ✅ active | Single-subject multi-role parallel assessment with consensus/divergence matrix |
+| WP-X-03 | Industry Analysis Framework Builder | Meta Builder | ✅ active | New industry pyramid and ten-dimension scoring framework building |
+| WP-X-04 | ESG/Governance Risk Scan | Special | 🟡 partial | ESG overlay and governance/fraud red-flag scanning |
+| WP-X-05 | Outlook & Continuous Monitoring | Special | 🟡 partial | Rating outlook/watchlist/continuous monitoring (template pending) |
 
-> 状态分布：✅ active 8 · 🟡 partial 6 · 🔴 planned 2。推荐到 🔴 planned 路径（WP-AD-01、WP-II-01）时须如实告知"该路径待开发"，并给出可替代的 active 路径，不得伪造能力。
+> Status distribution: 8 active, 6 partial, 2 planned. When recommending planned paths (WP-AD-01, WP-II-01), honestly state "this path is pending development" and provide alternative active paths. Do not fabricate capabilities.

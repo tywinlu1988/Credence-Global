@@ -1,8 +1,8 @@
 # Mosaic Engine Architecture (Mode A — Primary)
 
-**版本**: v0.0.1
+**Version**: v0.0.1
 
-> 本文自 `fixed-income-credit-analysis` SKILL.md 下沉而来，组织马赛克引擎（Mode A）的详述参考。阈值/规则的单一事实源为 `dev/engine/mosaic-engine.md`；本文件仅作导航与组织，不引入新数值。
+> This document is derived from `fixed-income-credit-analysis` SKILL.md, organizing detailed references for the Mosaic Engine (Mode A). The single source of truth for thresholds/rules is `dev/engine/mosaic-engine.md`; this file is for navigation and organization only and introduces no new values.
 
 ## Signal Confidence Levels
 
@@ -27,9 +27,9 @@ For each analysis dimension, compute signal density = obtained signals / expecte
 
 ## Mandatory Density Rules
 
-- If **any critical dimension** (L1 for the industry type, or any dimension the user explicitly asks about) has signal density **<20%**, you MUST NOT output a numeric score for that dimension. State `信息不足无法评估` and list the missing signals.
+- If **any critical dimension** (L1 for the industry type, or any dimension the user explicitly asks about) has signal density **<20%**, you MUST NOT output a numeric score for that dimension. State `insufficient data, cannot assess` and list the missing signals.
 - If the **weighted-average signal density across all scored dimensions** is **<50%**, you MUST NOT output a final letter rating. Output a qualitative directional assessment plus a prioritized gap list instead.
-- If density is 50-80%, you MAY output a rating but MUST label it as `中置信度` and widen the implied interval by ±1 notch.
+- If density is 50-80%, you MAY output a rating but MUST label it as `medium confidence` and widen the implied interval by ±1 notch.
 - The completeness report is mandatory for every analysis; omitting it is a protocol violation.
 
 Before finalizing any numeric rating, verify:

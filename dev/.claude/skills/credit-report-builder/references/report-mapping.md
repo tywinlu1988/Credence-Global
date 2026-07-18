@@ -1,8 +1,8 @@
-# 路径 → 模板 → 分层 映射视图
+# Path → Template → Tier Mapping View
 
-**版本**: v0.0.1
+**Version**: v0.0.1
 
-> 本表是 `credit-report-builder` 的装配映射视图：给定 `path_id`，列出应选模板与主分层。模板清单的单一事实源为 `dev/engine/work-path-registry.md`（各路径 `templates` 字段）；分层语义的单一事实源为 `dev/engine/output-layered-framework.md` §二/§三/§五。本表不含任何阈值、分层时间预算或评级值——凡数值判断以所引引擎文档为准。本表如出现与该两份文档不一致之处，以其为准。
+> This table is an assembly mapping view for `credit-report-builder`: given a `path_id`, it lists the templates and primary tier to use. The single source of truth for the template list is `dev/engine/work-path-registry.md` (the `templates` field of each path); the single source of truth for tier semantics is `dev/engine/output-layered-framework.md` §§2/3/5. This table contains no thresholds, tier time budgets, or rating values — all numeric judgments are subject to the referenced engine documents. In case of any inconsistency between this table and those two documents, the latter take precedence.
 
 ## Assembly Mapping
 
@@ -25,17 +25,17 @@
 | WP-X-04 | ESG/Governance Risk Scan | Special | Special (template-defined) | template-type10 |
 | WP-X-05 | Outlook & Continuous Monitoring | Special | Special (template-defined) | template-type18 |
 
-## 分层指针（单一事实源）
+## Tier Pointers (Single Source of Truth)
 
-- 三层输出总览与导航关系：`dev/engine/output-layered-framework.md` §二
-- L0 信号卡（版面/元素/温度计卡片）：`dev/engine/output-layered-framework.md` §三
-- L1 快照（四维雷达/关键异常/评级对比/排名）：`dev/engine/output-layered-framework.md` §四
-- L2 深度报告（四屏结构/导航规则）：`dev/engine/output-layered-framework.md` §五
-- 完备性灯号呈现：`dev/engine/output-layered-framework.md` §8.4
+- Three-layer output overview and navigation relationship: `dev/engine/output-layered-framework.md` §2
+- L0 Signal Card (layout/elements/thermometer card): `dev/engine/output-layered-framework.md` §3
+- L1 Snapshot (four-dimensional radar/key anomalies/rating comparison/ranking): `dev/engine/output-layered-framework.md` §4
+- L2 Deep Report (four-panel structure/navigation rules): `dev/engine/output-layered-framework.md` §5
+- Completeness indicator presentation: `dev/engine/output-layered-framework.md` §8.4
 
-## 模板标记值（与 registry §schema 一致）
+## Template Marker Values (Consistent with Registry §schema)
 
-- `planned`：模板待开发（无文件），如实告知"待开发"，不伪造渲染产物。
-- `L0-spec`：无独立模板文件，规范定义于所引引擎文档（L0 信号卡规范见 `dev/engine/output-layered-framework.md` §三）。
+- `planned`: Template pending development (no file exists); honestly state "pending development," do not fabricate rendered output.
+- `L0-spec`: No standalone template file; specification is defined in the referenced engine document (L0 signal card specification see `dev/engine/output-layered-framework.md` §3).
 
-> 深度档 `L0/L1/L2` 决定主分层；`专项` 路径的交付物由所选模板定义，分层语义仍以上述引擎文档为准。
+> Depth tier `L0/L1/L2` determines the primary tier; deliverables for `Special` paths are defined by the selected template, with tier semantics still governed by the aforementioned engine documents.

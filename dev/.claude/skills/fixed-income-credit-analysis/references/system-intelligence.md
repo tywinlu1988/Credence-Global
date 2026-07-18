@@ -1,8 +1,8 @@
 # System-Intelligence Layer (v0.7.0-alpha)
 
-**版本**: v0.0.1
+**Version**: v0.0.1
 
-> 本文自 `fixed-income-credit-analysis` SKILL.md 下沉而来，组织系统智能层（跨行业传染 / 五维集中度 / 系统性风险指数）内容。算法与阈值的单一事实源为 `dev/engine/systemic-warning-framework.md`、`dev/engine/contagion-matrix.md`、`dev/engine/concentration-framework.md`；本文件仅作导航与组织，不引入新数值。
+> This document is derived from `fixed-income-credit-analysis` SKILL.md, organizing the system-intelligence layer (cross-industry contagion / five-dimensional concentration / systemic risk index) content. The single sources of truth for algorithms and thresholds are `dev/engine/systemic-warning-framework.md`, `dev/engine/contagion-matrix.md`, and `dev/engine/concentration-framework.md`; this file is for navigation and organization only and introduces no new values.
 
 The system-intelligence layer aggregates individual issuer assessments into portfolio- and market-level signals.
 

@@ -1,8 +1,8 @@
 # Industry Scoring (Track A)
 
-**版本**: v0.0.1
+**Version**: v0.0.1
 
-> 本文自 `fixed-income-credit-analysis` SKILL.md 下沉而来，组织 Track A 行业评分相关内容（行业金字塔 / 六范式 / 十维评分 / 行业筛选）。阈值、权重与一票否决条件的单一事实源为 `dev/engine/industry-framework.md`；本文件仅作导航与组织，不引入新数值。
+> This document is derived from `fixed-income-credit-analysis` SKILL.md, organizing Track A industry scoring content (industry pyramids / six paradigms / ten-dimension scoring / industry selection). The single source of truth for thresholds, weights, and one-shot veto conditions is `dev/engine/industry-framework.md`; this file is for navigation and organization only and introduces no new values.
 
 ## Track A: Industry Analysis Pyramids
 
@@ -23,9 +23,9 @@ Each layer scores 0-10. Each layer has one-shot veto conditions (see `dev/engine
 
 ## Six Analytical Paradigms + LGFV Special Category
 
-本节介绍 **6 个分析范式 + 1 个特殊类别（LGFV）**：六个通用范式用于描述普通行业的信用传染结构，LGFV 因政府信用绑定机制特殊而单列，不强行归入六范式，但在传染矩阵中仍参与行业聚类分析。
+This section introduces **6 analytical paradigms + 1 special category (LGFV)**: the six general paradigms describe the credit contagion structure of ordinary industries. LGFV is listed separately due to its unique government credit binding mechanism, and is not forced into the six paradigms, but still participates in industry clustering analysis within the contagion matrix.
 
-> **注意**：6 个分析范式是用于传染聚类和行业分组的概念工具；它们不同于 `industry-framework.md` 中定义的 4 个行业类型（用于设置金字塔权重）。一个行业可能同时满足多个范式特征，此时以 `industry-framework.md` 的行业类型作为金字塔权重依据，以范式作为传染分析依据。存在冲突时，使用 `industry-framework.md` §3.1 的优先级规则。
+> **Note**: The 6 analytical paradigms are conceptual tools for contagion clustering and industry grouping; they differ from the 4 industry types defined in `industry-framework.md` (used for setting pyramid weights). An industry may simultaneously satisfy characteristics of multiple paradigms. In such cases, the industry type from `industry-framework.md` serves as the basis for pyramid weights, while the paradigms serve as the basis for contagion analysis. When conflicts arise, use the priority rules from `industry-framework.md` §3.1.
 
 | Paradigm | Primary Industries | Secondary Attributes | Heaviest Factor | Key Contagion Path |
 |---|---|---|---|---|
@@ -39,7 +39,7 @@ Each layer scores 0-10. Each layer has one-shot veto conditions (see `dev/engine
 
 See `dev/engine/industry-framework.md`, `dev/engine/paradigm-brand-channel.md`, and `dev/engine/paradigm-network-traffic.md` for detailed specs.
 
-六个范式 + LGFV 特殊类别与 M0–M5 角色的**可寻址维度索引**见 `dev/engine/dimension-registry.md`（每个维度的 id、定义指针、适用行业与消费路径）；本文件不复制其定义或阈值。
+The **addressable dimension index** of the six paradigms + LGFV special category for M0–M5 roles is found in `dev/engine/dimension-registry.md` (each dimension's id, definition pointer, applicable industries, and consumption paths); this file does not duplicate its definitions or thresholds.
 
 ## Ten-Dimension Industry Scoring (D1-D10)
 
