@@ -47,7 +47,7 @@ def _valid_sheet() -> dict:
         "mode": "A",
         "path_id": "WP-M0-01",
         "engine_reading_order": ["dev/engine/industry-framework.md"],
-        "quality_gates": ["信号密度 (dev/engine/mosaic-engine.md §4.3)"],
+        "quality_gates": ["signal_density (dev/engine/mosaic-engine.md §4.3)"],
         "notes": "",
     }
 
@@ -56,7 +56,7 @@ def _active_registry(template: str = "dev/templates/template-type1.html") -> dic
     return {
         "WP-M0-01": {
             "id": "WP-M0-01",
-            "name": "信贷审批单标的评级",
+            "name": "Credit Approval Single-Issuer Rating",
             "status": "active",
             "templates": [template],
         }
@@ -67,7 +67,7 @@ def _planned_registry() -> dict:
     return {
         "WP-M2-01": {
             "id": "WP-M2-01",
-            "name": "承销可行性评估",
+            "name": "Underwriting Feasibility Assessment",
             "status": "planned",
             "templates": ["planned"],
         }

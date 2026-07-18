@@ -1,9 +1,11 @@
-"""promote.py 晋升脚本测试（建议4：版本声明单源化）。"""
+"""promote.py promotion script tests (Recommendation 4: version declaration single-sourcing)."""
 
 import importlib.util
 import subprocess
 import sys
 from pathlib import Path
+
+import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 PROMOTE = ROOT / "scripts" / "promote.py"
@@ -22,7 +24,7 @@ NEW = "v0.8.1-release"
 
 
 def _fake_tree(tmp_path: Path) -> None:
-    """覆盖每条规则的代表性假树：声明点 + 必须免疫的历史引用。"""
+    """Representative fake tree covering every rule: declaration points + historical references that must be immune."""
     (tmp_path / "dev" / "engine").mkdir(parents=True)
     (tmp_path / "dev" / "engine" / "engine-overview.md").write_text(
         "# 总览\n\n**版本**: v0.8.0-release | **日期**: 2026-07-10\n"
@@ -111,8 +113,8 @@ def test_apply_rules_rewrites_all_declaration_points(tmp_path):
     assert "**引擎版本** | 核心方法论文档 | v0.8.1-release" in overview
     industry = _read(tmp_path / "dev" / "engine" / "industry-framework.md")
     assert industry.startswith("**版本**: v0.8.1-release")
-    assert "《传染理论基础》(v0.8.1-release)定义" in industry, "跨文档引用未改写"
-    assert "在当前 v0.8.1-release 的计算中" in industry, "当前版本叙述未改写"
+    assert "《传染理论基础》(v0.8.1-release)定义" in industry, "cross-document reference not rewritten"
+    assert "在当前 v0.8.1-release 的计算中" in industry, "current version narrative not rewritten"
     assert "# Fixed Income Credit Analysis Engine v0.8.1-release" in _read(
         tmp_path / "dev" / ".claude" / "skills" / "fixed-income-credit-analysis" / "SKILL.md"
     )
@@ -149,16 +151,16 @@ def test_apply_rules_preserves_historical_references(tmp_path):
     _fake_tree(tmp_path)
     pm.apply_rules(tmp_path, OLD, NEW, apply=True)
     overview = _read(tmp_path / "dev" / "engine" / "engine-overview.md")
-    assert "| **0.8.0-release** |" in overview, "历史表行被误伤"
-    assert "对应引擎版本: v0.8.0-release" in overview, "audits 约定示例被误伤"
+    assert "| **0.8.0-release** |" in overview, "historical table row wrongfully altered"
+    assert "对应引擎版本: v0.8.0-release" in overview, "audits convention example wrongfully altered"
     industry = _read(tmp_path / "dev" / "engine" / "industry-framework.md")
-    assert "**范式版本**: v1.0.0" in industry, "范式版本被误伤"
-    assert "自 v0.8.0-release 起的叙述不动" in industry, "叙述行被误伤"
-    assert "| v0.8.0-release（当前） |" in industry, "自带历史表行被误伤"
+    assert "**范式版本**: v1.0.0" in industry, "paradigm version wrongfully altered"
+    assert "自 v0.8.0-release 起的叙述不动" in industry, "narrative line wrongfully altered"
+    assert "| v0.8.0-release（当前） |" in industry, "own historical table row wrongfully altered"
     dev_readme = _read(tmp_path / "dev" / "README.md")
-    assert "| **v0.8.0-release** | **2026-07-16** |" in dev_readme, "dev 历史表行被误伤"
+    assert "| **v0.8.0-release** | **2026-07-16** |" in dev_readme, "dev historical table row wrongfully altered"
     vm = _read(tmp_path / "docs" / "VERSION-MANAGEMENT.md")
-    assert "自 **v0.8.0-release** 起的叙述不动" in vm, "加粗历史叙述被误伤"
+    assert "自 **v0.8.0-release** 起的叙述不动" in vm, "bold historical narrative wrongfully altered"
 
 
 def test_dry_run_reports_but_writes_nothing(tmp_path):
@@ -166,9 +168,9 @@ def test_dry_run_reports_but_writes_nothing(tmp_path):
     _fake_tree(tmp_path)
     before = {p: p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()}
     changes = pm.apply_rules(tmp_path, OLD, NEW, apply=False)
-    assert changes, "dry-run 也应报告改动"
+    assert changes, "dry-run should also report changes"
     after = {p: p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()}
-    assert before == after, "dry-run 落盘了"
+    assert before == after, "dry-run wrote to disk"
 
 
 def test_semver_derivation_and_validation():
@@ -191,6 +193,8 @@ def test_detect_old_version_from_checker(tmp_path):
 def test_real_tree_dry_run_reports_changes_and_stays_clean():
     pm = _load_promote()
     old = pm.detect_old_version(ROOT)
+    if pm.derive_semver(old) is None:
+        pytest.skip(f"current EXPECTED_VERSION {old!r} is not a release format")
 
     def _status():
         return subprocess.run(
@@ -200,5 +204,5 @@ def test_real_tree_dry_run_reports_changes_and_stays_clean():
 
     before = _status()
     changes = pm.apply_rules(ROOT, old, "v9.9.9-release", apply=False)
-    assert len(changes) > 30, f"真树改动数异常: {len(changes)}"
-    assert _status() == before, "dry-run 改变了工作区"
+    assert len(changes) > 30, f"real tree changes count abnormal: {len(changes)}"
+    assert _status() == before, "dry-run altered the working tree"

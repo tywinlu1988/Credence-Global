@@ -2,7 +2,7 @@
 
 **Version**: v0.0.1 | **Date**: 2026-07-18
 
-This registry is the design baseline for the v0.8.0 skill architecture refactoring (requirement understanding -> path routing -> engine invocation -> report delivery, all fully controllable). It makes all 16 work paths explicit and machine-readable, serving as the single source of truth for the Intake Router (v0.7.3) routing and execution-layer skill decomposition (v0.7.4).
+This registry is the design baseline for the v0.0.1 skill architecture refactoring (requirement understanding -> path routing -> engine invocation -> report delivery, all fully controllable). It makes all 16 work paths explicit and machine-readable, serving as the single source of truth for the Intake Router (v0.7.3) routing and execution-layer skill decomposition (v0.7.4).
 
 **Single Source of Truth Principle**: This registry only records "which engine documents a path uses, which templates it employs, and which quality gates it must pass." It does NOT copy any thresholds, weights, or rule text -- the rule text always resides in the engine documents referenced by `engine_sequence`.
 
@@ -246,7 +246,7 @@ templates:
   - dev/templates/template-type14.html
 outputs: [five-dimension concentration score, concentration adjustment recommendations]
 quality_gates:
-  - "Five-Dimension Concentration (dev/engine/concentration-framework.md §1)"
+  - "Five-Dimensional Concentration (dev/engine/concentration-framework.md §1)"
   - "Threshold System (dev/engine/concentration-framework.md §2.2)"
 ```
 
@@ -297,7 +297,7 @@ templates:
 outputs: [SRI reading, thermometer tier]
 quality_gates:
   - "Signal Aggregation (dev/engine/systemic-warning-framework.md §2)"
-  - "Four-Tier Thermometer (dev/engine/systemic-warning-framework.md §3)"
+  - "Four-Level Thermometer (dev/engine/systemic-warning-framework.md §3)"
 ```
 
 ### WP-RO-04 Risk Officer Portfolio Stress Test (🟡 partial)
@@ -366,8 +366,8 @@ templates:
   - dev/templates/template-type3.html
 outputs: [validation conclusion, framework improvement recommendations]
 quality_gates:
-  - "Black Swan Backtest (dev/engine/validation-methodology.md §1)"
-  - "Dual-Timeline (dev/engine/validation-methodology.md §3)"
+  - "Black Swan Back-Testing (dev/engine/validation-methodology.md §1)"
+  - "Dual-Timepoint (dev/engine/validation-methodology.md §3)"
 ```
 
 ### WP-X-02 Multi-Role Parallel Assessment (✅ active)
@@ -391,7 +391,7 @@ templates:
 outputs: [multi-role score matrix, consensus/divergence report]
 quality_gates:
   - "Multi-Role Parallel (dev/engine/multi-stakeholder.md §4)"
-  - "Cross-Comparison Matrix (dev/engine/multi-stakeholder.md §3.2)"
+  - "Cross-Role Comparison (dev/engine/multi-stakeholder.md §3.2)"
 ```
 
 ### WP-X-03 Industry Framework Builder (✅ active)
@@ -467,7 +467,7 @@ outputs: [rating outlook, watchlist]
 quality_gates:
   - "Rating Outlook (dev/engine/outlook-monitoring-framework.md §2)"
   - "Watchlist (dev/engine/outlook-monitoring-framework.md §3)"
-  - "Migration Matrix (dev/engine/outlook-monitoring-framework.md §5)"
+  - "Rating Migration Matrices (dev/engine/outlook-monitoring-framework.md §5)"
 ```
 
 ## 5. Chaining Rules (L0->L1->L2 Escalation and Monitoring Triggers)

@@ -1,4 +1,4 @@
-"""双源对账桥 — coded scorers ↔ normative engine docs parity (v0.7.8).
+"""Dual-source reconciliation bridge -- coded scorers vs normative engine docs parity (v0.7.8).
 
 The engine docs are the NORMATIVE source; ``src/sri_calculator.py`` and
 ``src/concentration_scorer.py`` are their EXECUTABLE implementations. These tests assert
@@ -58,11 +58,11 @@ def _all_green_metrics():
 
 
 # --------------------------------------------------------------------------
-# SRI thermometer bands (systemic-warning-framework §三)
+# SRI thermometer bands (systemic-warning-framework SS3.1-SS3.4)
 # --------------------------------------------------------------------------
 
 def test_doc_states_thermometer_band_edges():
-    """§3.1 四级定义 states the 0.5 / 1.0 / 1.8 band edges."""
+    """Section 3.1 four-tier definition states the 0.5 / 1.0 / 1.8 band edges."""
     for token in ("SRI < 0.5", "0.5 ≤ SRI < 1.0", "1.0 ≤ SRI < 1.8", "SRI ≥ 1.8"):
         assert token in SRI_DOC, f"doc missing thermometer band edge {token!r}"
 
@@ -81,7 +81,7 @@ def test_code_thermometer_boundaries_match_doc():
 
 def test_doc_states_track_a_base_and_track_b_penalties():
     """§2.2 states the Track-A base bands and the red/orange/yellow penalty magnitudes."""
-    # Track-A base: worst band (<3.0) → 3分, best band (≥6.0) → 0分
+    # Track-A base: worst band (<3.0) → 3 points, best band (≥6.0) → 0 points
     assert "Track A < 3.0" in SRI_DOC
     assert re.search(r"→\s+3\s+points", SRI_DOC), "doc missing Track-A worst-band '→ 3 points'"
     # Track-B penalty magnitudes by colour (yellow/orange/red)
@@ -104,7 +104,7 @@ def test_code_track_b_penalty_ordering_matches_doc():
 
 
 def test_code_track_a_base_matches_doc():
-    """Track-A base: <3.0 → 3分; ≥6.0 (green/stable) → 0分."""
+    """Track-A base: <3.0 → 3 points; >=6.0 (green/stable) → 0 points."""
     assert industry_risk_score(_green(score=2.0)) == 3.0  # CCC/B band → base 3
     assert industry_risk_score(_green(score=7.0)) == 0.0  # A-and-above band → base 0
 
@@ -160,7 +160,7 @@ def test_code_stacking_all_green_is_zero():
 
 
 def test_code_stacking_two_reds_is_minus_2_5():
-    """Documented multi-red case (2维🔴) → adjustment -2.5 (§7.2); BB-cap not yet tripped."""
+    """Documented multi-red case (2 dims red) → adjustment -2.5 (§7.2); BB-cap not yet tripped."""
     metrics = ConcentrationMetrics(
         hhi=2600, cr3=0.55, cr5=0.65, max1=0.30,          # industry red via HHI
         single_province_share=0.50, weak_region_share=0.02,  # region red via province
@@ -175,7 +175,7 @@ def test_code_stacking_two_reds_is_minus_2_5():
 
 
 def test_code_bb_cap_triggers_on_documented_condition():
-    """§7.3: ≥3 red dimensions triggers the 组合极端集中上限 (BB-cap)."""
+    """Section 7.3: >=3 red dimensions triggers the combination extreme concentration cap (BB-cap)."""
     metrics = ConcentrationMetrics(
         hhi=2600, cr3=0.55, cr5=0.65, max1=0.30,
         single_province_share=0.50, weak_region_share=0.02,

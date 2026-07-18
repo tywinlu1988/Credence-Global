@@ -3,7 +3,7 @@
 T9.1-T9.7 cover the thin orchestrator: stage-plan construction from the contract doc,
 end-to-end execution of the wired coded engines (WP-M4-01 concentration, WP-M4-02 contagion,
 WP-M4-03 SRI, WP-X-05 outlook), graceful LLM-orchestrated skipping for unwired paths,
-planned-path 待开发 notices, contract-sourced stage names, and invalid-sheet rejection.
+planned-path to-be-developed notices, contract-sourced stage names, and invalid-sheet rejection.
 Deliverable 3 (chaining-edge endpoint referential integrity) is also covered here.
 """
 

@@ -1,7 +1,8 @@
-"""P0 换行符门禁：被跟踪文本文件在工作区必须为 LF。
+"""P0 line-ending gate: tracked text files must be LF in the working tree.
 
-`.gitattributes`（`* text=auto eol=lf`）是强制机制，本测试是绊线——任何因非标准
-机器配置混入检出/提交的 CRLF 都会在此失败，而不是悄悄进入发布 zip。
+`.gitattributes` (`* text=auto eol=lf`) is the enforcement mechanism; this test is
+a tripwire -- any CRLF introduced by checkout/commit due to non-standard machine
+config will be caught here, instead of silently entering the release zip.
 """
 
 import subprocess
@@ -26,7 +27,7 @@ def test_tracked_files_have_no_crlf():
     offenders = []
     for rel in _tracked_files():
         data = (ROOT / rel).read_bytes()
-        if b"\0" in data:  # 二进制启发式（与 git 相同）：跳过；二进制经 .gitattributes 标 binary
+        if b"\0" in data:  # binary heuristic (same as git): skip; binary marked via .gitattributes
             continue
         if b"\r\n" in data:
             offenders.append(rel)

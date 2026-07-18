@@ -87,7 +87,7 @@ Credit Quality Score = f(
 
 ### 2.2 Portfolio Manager — Relative Value & Sector Allocation
 
-The Portfolio Manager determines whether a credit offers the best risk-adjusted return relative to alternatives. This role operates at the intersection of single-issuer analysis and portfolio construction.
+The Portfolio Manager determines whether a credit offers the best risk-adjusted return relative to alternatives. This role operates at the intersection of single-issuer analysis and portfolio construction. The PM Four-Dimension framework evaluates Relative Value, Sector Allocation Fit, Curve Positioning, and Event & Calendar factors.
 
 **Decision Logic**: Compare each credit against its peer group on yield, spread, and risk metrics, then allocate capital to the best risk/reward opportunities within sector and duration constraints.
 

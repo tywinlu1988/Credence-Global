@@ -24,7 +24,7 @@ CHECKER = ROOT / "scripts" / "consistency_check.py"
 
 YAML_BLOCK_RE = re.compile(r"```yaml\s*\n(.*?)```", re.DOTALL)
 
-# definition pointer of the form: 关键字 (dev/engine/<doc>.md §节)
+# definition pointer of the form: keyword (dev/engine/<doc>.md section_number)
 # The keyword (before " (") must be grep-able in the referenced doc (T10.2).
 DEF_RE = re.compile(r"^(?P<kw>.+?)\s*\((?P<doc>dev/engine/\S+?\.md)\s*§(?P<sec>[^)]+)\)\s*$")
 
@@ -182,7 +182,7 @@ def test_t10_3_industry_mapping_consistent_with_contagion_matrix():
         dim = by_letter.get(letter)
         assert dim is not None, f"no dimension for letter {letter!r} (industry {industry})"
         assert industry in dim["industries"], (
-            f"{industry} (范式{letter}) not listed in {dim['id']}.industries"
+            f"{industry} (paradigm {letter}) not listed in {dim['id']}.industries"
         )
 
     # registry -> contagion: every registered industry is its dimension's main paradigm.

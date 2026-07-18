@@ -65,7 +65,7 @@ def _is_template_marker(entry: object) -> bool:
 
 
 def _gate_rule_name(gate: object) -> str:
-    """Extract the rule name from a quality-gate string of the form '规则名 (文档 §节)'."""
+    """Extract the rule name from a quality-gate string of the form 'rule_name (doc §section)'."""
     s = str(gate)
     idx = s.find(" (")
     return s[:idx].strip() if idx != -1 else s.strip()
@@ -103,7 +103,7 @@ def test_t2_3_templates_exist_or_allowed_marker():
     """T2.3: every templates reference is a real file or an allowed marker.
 
     Allowed non-file markers (defined in registry §schema): 'planned' and
-    'L0-spec: <doc> §节'. No dangling template paths are permitted.
+    'L0-spec: <doc> §section_number'. No dangling template paths are permitted.
     """
     for p in PATHS:
         tmpls = p["templates"] or []

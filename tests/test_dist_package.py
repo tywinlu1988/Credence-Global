@@ -1,10 +1,14 @@
-"""Dist 可安装包完整性测试（v0.8.0-release，T12.1–T12.7）。
+"""Dist installable package integrity tests (v0.8.0-release, T12.1-T12.7).
 
-`scripts/build_dist.py` 把 dev/ 源组装为 `dist/credence/` 可安装 agent 包。这些测试把
-构建产物构建到 ``tmp_path``（不碰工作树），逐条断言布局契约：无绝对路径、无 `dev/` 残留、
-链接可解析、技能为 spec 严格子集、引擎文档齐全、src 在 dist 布局可定位、剔除物不出现、
-无父级逃逸、溯源指针已清且正文存活、生成文件齐全、构建可复现。构建器自带的 ``validate``
-覆盖 (a)(b)(c)(d)(e) 与布局/剔除，本文件补充其外的 (f)–(l)。
+`scripts/build_dist.py` assembles the dev/ sources into a `dist/credence/`
+installable agent package. These tests build the artifact into ``tmp_path``
+(without touching the working tree), asserting layout contracts one by one:
+no absolute paths, no residual `dev/` references, links resolvable, skills
+are a strict subset of the spec, engine docs complete, src locatable in dist
+layout, excluded items absent, no parent-directory escape, provenance pointers
+scrubbed and neighboring content intact, generated files complete, and builds
+deterministic. The builder's own ``validate`` covers (a)(b)(c)(d)(e) plus
+layout/exclusions; this file supplements the remaining (f)-(l).
 """
 
 import importlib.util
@@ -60,7 +64,7 @@ def builder():
 
 
 def test_validate_flags_crlf_in_dist(builder, tmp_path):
-    """P0: dist 产物混入 CRLF 时 validate 必须响亮报错（防 _write_text 回归）。"""
+    """P0: validate must loudly complain when dist output contains CRLF (guard against _write_text regression)."""
     out = tmp_path / "credence"
     builder.build(out_dir=out)
     target = out / "engine" / "engine-overview.md"
@@ -82,14 +86,14 @@ def _texts(base):
             yield f, f.read_text(encoding="utf-8")
 
 
-# T12.1 — 构建器自带校验全绿（覆盖 a 零绝对路径 / b 零 dev token / c 链接可解析 /
-#          d 4 skill+严格 frontmatter / e 28 CORE_DOCS / 布局 / 剔除物缺席）
+# T12.1 — builder's own validate passes all checks (covers a: zero absolute paths / b: zero dev tokens / c: links resolvable /
+#          d: 4 skills + strict frontmatter / e: 28 CORE_DOCS / layout / excluded items absent)
 def test_t12_1_builder_validate_passes(builder, dist):
     assert builder.validate(dist) == []
 
 
-# T12.2 — (f) src 在 dist 布局可定位：engine_dir/templates_dir 命中平铺目录，
-#          且对 dist 根 validate_path_sheet 全 active 路径通过（模板真实落盘）。
+# T12.2 — (f) src locatable in dist layout: engine_dir/templates_dir hit the flattened directories,
+#          and for the dist root, validate_path_sheet passes for all active paths (templates actually on disk).
 def test_t12_2_src_resolves_in_dist(dist):
     assert engine_dir(dist) == dist / "engine"
     assert templates_dir(dist) == dist / "templates"
@@ -111,13 +115,14 @@ def test_t12_2_src_resolves_in_dist(dist):
         assert validate_path_sheet(sheet, reg, root=dist) == [], pid
 
 
-# T12.3 — (h) 无父级逃逸：dist 内任何 .md 不含 `](../../`（engine/ 平铺后两级链接即逃逸包根）。
+# T12.3 — (h) no parent-directory escape: any .md in dist must not contain `](../../` (two levels up from
+#           flattened engine/ escapes the package root).
 def test_t12_3_no_parent_escape(dist):
     for f, text in _texts(dist):
         assert "](../../" not in text, f"{f.relative_to(dist)} contains a ../../ escape link"
 
 
-# T12.4 — (g)+(i) 剔除物缺席且无 audits//validation/ 引用。
+# T12.4 — (g)+(i) excluded items absent and no audits//validation/ references.
 def test_t12_4_excluded_and_pointer_tokens_absent(dist):
     for f in sorted(dist.rglob("*")):
         if f.is_dir():
@@ -131,7 +136,7 @@ def test_t12_4_excluded_and_pointer_tokens_absent(dist):
         assert "validation/" not in text, f"{f.name} still references validation/"
 
 
-# T12.5 — (j) 溯源指针已清除，且邻接正文存活。
+# T12.5 — (j) provenance pointers scrubbed, neighboring content intact.
 def test_t12_5_pointers_scrubbed_neighbors_intact(dist):
     eo = (dist / "engine" / "engine-overview.md").read_text(encoding="utf-8")
     # audit table rows removed, non-audit nav rows survive
@@ -153,7 +158,7 @@ def test_t12_5_pointers_scrubbed_neighbors_intact(dist):
     assert "Risk Mitigation Recommendation" in dt  # neighboring content survives
 
 
-# T12.6 — (k) 生成的入口/安装文件齐全且含版本戳。
+# T12.6 — (k) generated entry/install files complete and carry version stamps.
 def test_t12_6_generated_files_present(dist):
     for rel in GENERATED_FILES:
         assert (dist / rel).exists(), f"missing generated file {rel}"
@@ -163,7 +168,7 @@ def test_t12_6_generated_files_present(dist):
         assert f"skills/{name}/SKILL.md" in agents, f"AGENTS.md does not index {name}"
 
 
-# T12.7 — (l) 构建可复现：两次构建字节一致。
+# T12.7 — (l) deterministic rebuild: two builds produce identical bytes.
 def test_t12_7_deterministic_rebuild(builder, tmp_path):
     a = tmp_path / "a" / "credence"
     b = tmp_path / "b" / "credence"

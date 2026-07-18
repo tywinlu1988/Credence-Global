@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parent.parent
 ENGINE_DIR = ROOT / "dev" / "engine"
 SKILL_FILE = ROOT / "dev" / ".claude" / "skills" / "fixed-income-credit-analysis" / "SKILL.md"
 
-# Authoritative 12-notch rating map from dual-track-methodology.md §六.
+# Authoritative 12-notch rating map from dual-track-methodology.md section 6.
 # Each tuple is (low_score, high_score, rating_label).
 CANONICAL_RATING_INTERVALS = [
     (9.5, 10.0, "AAA"),

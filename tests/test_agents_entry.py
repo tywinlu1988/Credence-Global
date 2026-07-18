@@ -101,7 +101,7 @@ def test_t6_5_codex_adapter_references_registry_and_four_questions_no_thresholds
     assert CODEX_ADAPTER.exists(), "docs/adapters/codex.md is missing"
     text = CODEX_ADAPTER.read_text(encoding="utf-8")
     assert "work-path-registry" in text, "codex adapter must reference the work-path registry"
-    assert ("四问" in text) or ("four-question" in text.lower()) or ("Q1" in text), (
+    assert ("four-question" in text.lower()) or ("Q1" in text), (
         "codex adapter must reference the router's four-question protocol"
     )
     _assert_no_thresholds(text, "docs/adapters/codex.md")

@@ -303,7 +303,7 @@ def test_check_skill_template_drift_absent_is_clean(tmp_path, monkeypatch):
 
 
 def _expected_semver(cc):
-    """从 checker 的 EXPECTED_VERSION 派生 X.Y.Z，测试随晋升自动适配。"""
+    """Derive X.Y.Z from checker's EXPECTED_VERSION; test auto-adapts on promotion."""
     return cc.VERSION_RELEASE_RE.match(cc.EXPECTED_VERSION).group(1)
 
 
@@ -339,7 +339,7 @@ def test_check_version_alignment_flags_package_json_mismatch(tmp_path, monkeypat
 
 
 def _fake_registry(tmp_path):
-    """最小合法 registry：1 条路径，templates/quality_gates 可配。"""
+    """Minimum valid registry: 1 path with configurable templates/quality_gates."""
     (tmp_path / "dev" / "engine").mkdir(parents=True)
     registry = tmp_path / "dev" / "engine" / "work-path-registry.md"
     registry.write_text(
