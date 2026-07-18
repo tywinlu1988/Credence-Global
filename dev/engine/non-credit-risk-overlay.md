@@ -80,7 +80,7 @@ Order of application: External support upgrade is applied first, followed by the
 ### 2.3 Position of the Overlay in the Engine Architecture
 
 ```
-Engine Architecture (Full Version v0.4.0+):
+Engine Architecture (Full Version v0.0.1+):
                                                                         ┌───────────────────────────┐
                                                                         │ Non-Credit Risk Overlay   │
 Input -> Mosaic Engine -> Track A Pyramid Scoring -> External Support ->│ ★ This Document           │-> Cross-Collision -> Composite Output

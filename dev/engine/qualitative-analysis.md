@@ -1155,6 +1155,6 @@ Track A (Fundamental Pyramid Scoring)
 
 | Version | Date | Changes |
 |---------|------|---------|
-| v0.1.0 | 2026-07-08 | Initial release: Seven-chapter qualitative analysis methodology |
+| v0.0.1 | 2026-07-08 | Initial release: Seven-chapter qualitative analysis methodology |
 | — | — | Coverage: Positioning, source classification, policy interpretation, industry knowledge, mosaic assembly, timeliness, output standards |
 | — | — | Examples: Electricity tariff Document No. 136 policy transmission, Tongwei multi-fragment mosaic, policy signal vs. noise differentiation, SOE narrative separation |

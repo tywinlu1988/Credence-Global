@@ -862,8 +862,8 @@ Use the following table to quickly estimate the composite risk score:
 
 | Version | Date | Change Content | Author |
 |---------|------|---------------|--------|
-| v0.6.5-alpha | 2026-07-10 | Initial creation: Five-dimensional concentration analysis framework · Threshold system · Weighted scoring · Stress test integration | Engine Team |
-| v0.7.0-alpha | 2026-07-10 | System intelligence layer integration: engine version unified to v0.7.0-alpha, forming complete M4 portfolio risk control system with contagion matrix and warning framework | Engine Team |
+| v0.0.1 | 2026-07-10 | Initial creation: Five-dimensional concentration analysis framework · Threshold system · Weighted scoring · Stress test integration | Engine Team |
+| v0.0.1 | 2026-07-10 | System intelligence layer integration: engine version unified to v0.0.1, forming complete M4 portfolio risk control system with contagion matrix and warning framework | Engine Team |
 
 ---
 

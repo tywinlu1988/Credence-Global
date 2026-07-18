@@ -1,4 +1,4 @@
-"""Work path sheet schema and validator (v0.7.5 -- pipeline foundation).
+"""Work path sheet schema and validator (v0.0.1 -- pipeline foundation).
 
 The credit-analysis-router skill produces a work-path sheet after the four-question
 protocol converges, routing the "role x object x depth x data mode" to a registered

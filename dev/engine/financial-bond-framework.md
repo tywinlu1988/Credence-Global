@@ -695,7 +695,7 @@ When corporate credit analysis needs to assess external support from banks/secur
 
 ## 12. Version History and To-Do Items
 
-### v0.1.0 (2026-07-09) -- Initial Release
+### v0.0.1 (2026-07-09) -- Initial Release
 
 - Financial industry analysis track design (parallel to corporate bond pyramid)
 - CAMELS bank sub-framework (C/A/M/E/L/S six dimensions, with market-specific adjustments)

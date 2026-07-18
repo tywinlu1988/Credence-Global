@@ -2,7 +2,7 @@
 
 **Version**: v0.0.1 | **Date**: 2026-07-18
 
-This registry objectifies the engine's **analysis dimensions** into addressable, machine-readable entries: **6 analysis paradigms (P1-P6)**, and **6 stakeholder role types**. It serves as the unified index layer for "route-by-dimension / search-by-dimension" in the v0.8.0 skill architecture.
+This registry objectifies the engine's **analysis dimensions** into addressable, machine-readable entries: **6 analysis paradigms (P1-P6)**, and **6 stakeholder role types**. It serves as the unified index layer for "route-by-dimension / search-by-dimension" in the v0.0.1 skill architecture.
 
 **Single Source of Truth Principle**: This registry is a **pointer layer** -- it only registers each dimension as an addressable entry (id + pointer to the defining document + applicable industries + which work paths consume it). It does **not copy** any definition text, thresholds, or weights. The judging criteria, pyramid weights, veto rules, etc., for each dimension are always ultimately governed by the corresponding section of the engine document referenced by `definition`. If any inconsistency arises between this registry and those engine documents, the engine documents prevail.
 

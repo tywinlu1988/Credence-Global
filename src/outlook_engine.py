@@ -2,7 +2,7 @@
 
 Single source of truth: Section 2.2 trigger factor matrix, Section 5.1 migration matrix, Section 5.3
 industry adjustment parsed from the engine document at runtime; Section 2.3 scoring logic (layer weight
-values v0.8.4 approved and written into the document), confidence tiers, Section 3.2 watchlist management
+values v0.0.1 approved and written into the document), confidence tiers, Section 3.2 watchlist management
 rules encoded as code logic (following sri_calculator / contagion_engine precedent).
 
 Disambiguation notes (coding decisions where the document overlaps or is not explicit):

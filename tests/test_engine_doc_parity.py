@@ -1,4 +1,4 @@
-"""Dual-source reconciliation bridge -- coded scorers vs normative engine docs parity (v0.7.8).
+"""Dual-source reconciliation bridge -- coded scorers vs normative engine docs parity (v0.0.1).
 
 The engine docs are the NORMATIVE source; ``src/sri_calculator.py`` and
 ``src/concentration_scorer.py`` are their EXECUTABLE implementations. These tests assert

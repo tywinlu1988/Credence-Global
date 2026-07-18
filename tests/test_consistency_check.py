@@ -81,7 +81,7 @@ def test_check_rating_map_consistency_flags_deviation(tmp_path, monkeypatch):
         "## 2. Signal Aggregation\n| Score Range | Corresponding Rating |\n|---|---|\n| 9.0 - 10.0 | AAA |\n",
         encoding="utf-8",
     )
-    (fake_engine / "consistency-audit-v0.5.2.md").write_text(
+    (fake_engine / "consistency-audit-v0.0.1.md").write_text(
         "| 9.0 - 10.0 | AAA |\n", encoding="utf-8"
     )
     monkeypatch.setattr(cc, "ENGINE_DIR", fake_engine)

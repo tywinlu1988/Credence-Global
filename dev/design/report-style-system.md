@@ -318,13 +318,13 @@ tbody tr:hover { background: var(--bg-hover); }
 
 ## 6. Code Organization
 
-> Since v0.7.1, templates are centrally stored as a single source of truth in the top-level `dev/templates/` directory; `design/` only retains this design specification.
+> Since v0.0.1, templates are centrally stored as a single source of truth in the top-level `dev/templates/` directory; `design/` only retains this design specification.
 
 ```
 dev/
 ├── design/
 │   └── report-style-system.md   ← This file (design specification)
-└── templates/                   ← Template single source of truth (since v0.7.1)
+└── templates/                   ← Template single source of truth (since v0.0.1)
     ├── template-base.css        Base palette + font + layout (shared by 15 types)
     ├── template-type1.html      Single entity deep analysis
     ├── template-type2.html      Dual entity forward-looking comparison
@@ -357,4 +357,4 @@ dev/
 | Version | Date | Changes |
 |---|---|---|
 | v1.0 | 2026-07-08 | Initial design: Color system, typography, layout skeleton, 6 components, 12 report types |
-| v1.1 | 2026-07-15 | Code organization chapter synced with v0.7.1 structure: templates moved to `dev/templates/` (15 types), removed non-existent components/ directory |
+| v1.1 | 2026-07-15 | Code organization chapter synced with v0.0.1 structure: templates moved to `dev/templates/` (15 types), removed non-existent components/ directory |

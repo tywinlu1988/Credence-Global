@@ -1,6 +1,6 @@
 # Product Vision and Design
 
-**Version**: v0.3.0
+**Version**: v0.0.1
 **Status**: Design Phase
 
 ---

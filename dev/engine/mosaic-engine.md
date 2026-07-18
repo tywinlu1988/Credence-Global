@@ -17,7 +17,7 @@
 ### 1.2 Mosaic Engine Position in Overall Architecture
 
 ```
-Skill Pack v0.3.0
+Skill Pack v0.0.1
   +-- Industry Classification (10-dimension scoring)
   +-- Track A: Fundamental Analysis (Pyramid Framework)
   +-- Track B: Market Pricing (4-Level Signals)

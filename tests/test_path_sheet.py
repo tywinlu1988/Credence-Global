@@ -1,4 +1,4 @@
-"""Unit tests for the work-path sheet schema + validator (v0.7.5 -- pipeline foundation).
+"""Unit tests for the work-path sheet schema + validator (v0.0.1 -- pipeline foundation).
 
 src/path_sheet.py is the machine-readable single source for the work-path sheet emitted
 by the credit-analysis-router skill. These tests (T5.1-T5.4) cover the validator's

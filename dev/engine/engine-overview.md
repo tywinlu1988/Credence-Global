@@ -114,10 +114,10 @@ Pyramid)       signals)
 
 | Layer | Name | Function | Status |
 |---|---|---|---|
-| **Layer 1** | Mosaic Engine (Mode A) | Extract signals from unstructured public data, assemble, assess completeness | Implemented (v0.3.0) |
-| **Layer 2** | Dual-Track Analysis (Track A + B) | Fundamental pyramid scoring + market pricing signal cross-validation | Implemented (v0.1.0) |
+| **Layer 1** | Mosaic Engine (Mode A) | Extract signals from unstructured public data, assemble, assess completeness | Implemented (v0.0.1) |
+| **Layer 2** | Dual-Track Analysis (Track A + B) | Fundamental pyramid scoring + market pricing signal cross-validation | Implemented (v0.0.1) |
 | **Layer 3** | Multi-Stakeholder Perspective (M0-M6) | Coverage across credit approval, bond investment, underwriting, trading, portfolio risk management roles | M0-M5 implemented, M6 planned |
-| **Layer 4** | System Intelligence Layer (Aggregation) *NEW | Contagion mapping, concentration dashboard, early warning thermometer; cross-industry and cross-issuer systemic risk perception | Implemented (v0.7.0) |
+| **Layer 4** | System Intelligence Layer (Aggregation) *NEW | Contagion mapping, concentration dashboard, early warning thermometer; cross-industry and cross-issuer systemic risk perception | Implemented (v0.0.1) |
 
 ### Dual-Track Parallel Structure
 
@@ -206,7 +206,7 @@ The engine documentation system uses two parallel version numbering schemes:
 | Version Scheme | Scope | Example | Description |
 |---|---|---|---|
 | **Engine Version** | Core methodology documents | v0.0.1 | Reflects the overall iteration stage of engine methodology; all core methodology documents are uniformly labeled with this version |
-| **Review Report Version** | Audit, self-assessment, final review documents | v1.0, v1.1 | Independent versioning for review reports; document headers note "Corresponding engine version: v0.8.0-release" |
+| **Review Report Version** | Audit, self-assessment, final review documents | v1.0, v1.1 | Independent versioning for review reports; document headers note "Corresponding engine version: v0.0.1" |
 
 ### 7.2 Core Methodology Document Version Mapping
 

@@ -1,4 +1,4 @@
-"""Four-stage chain executable orchestrator (v0.7.8 — executable orchestrator + wired engines).
+"""Four-stage chain executable orchestrator (v0.0.1 — executable orchestrator + wired engines).
 
 This module is a **thin orchestrator** for the four-stage chain (intake -> analysis -> report -> qa).
 It parses the path sheet produced by the router into an ordered stage plan, and invokes the

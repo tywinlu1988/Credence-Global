@@ -903,6 +903,6 @@ Contagion theory has the following inherent limitations:
 
 | Version | Date | Changes | Author |
 |---|---|---|---|
-| v0.6.1-alpha | 2026-07-10 | Initial creation: Four contagion types / Seven pathways / Six-paradigm mapping / Escalation factors (China market focused) | Engine Team |
-| v0.7.0-alpha | 2026-07-10 | Systemic intelligence layer integration: engine version unified to v0.7.0-alpha, forming complete contagion framework with contagion matrix | Engine Team |
+| v0.0.1 | 2026-07-10 | Initial creation: Four contagion types / Seven pathways / Six-paradigm mapping / Escalation factors (China market focused) | Engine Team |
+| v0.0.1 | 2026-07-10 | Systemic intelligence layer integration: engine version unified to v0.0.1, forming complete contagion framework with contagion matrix | Engine Team |
 | v0.0.1 | 2026-07-10 | Internationalization: replaced China-specific examples with global systemic events (GFC 2008, Eurozone 2011-12, COVID 2020); converted six paradigms to international P1-P6 framework; harmonized seven pathways to global financial transmission channels | Engine Team |

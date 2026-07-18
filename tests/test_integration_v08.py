@@ -1,6 +1,6 @@
 """Integration tests for the v0.8 release line (T11.1-T11.5).
 
-These tests assert the *integration* of the v0.7.6-v0.7.9 staircase into a coherent
+These tests assert the *integration* of the v0.0.1-v0.0.1 staircase into a coherent
 release, not any single component:
 
 - T11.1: every one of the 9 active work paths yields a valid 4-stage plan (S1..S4,
@@ -41,7 +41,7 @@ CONTRACT = ROOT / "dev" / "engine" / "pipeline-contract.md"
 REGISTRY = ROOT / "dev" / "engine" / "work-path-registry.md"
 ENGINE_DIR = ROOT / "dev" / "engine"
 SKILLS_DIR = ROOT / "dev" / ".claude" / "skills"
-WALKTHROUGH = ROOT / "validation" / "docs" / "v0.8.0-end-to-end-walkthroughs.md"
+WALKTHROUGH = ROOT / "validation" / "docs" / "v0.0.1-to-end-walkthroughs.md"
 def _current_snapshot_dir() -> Path | None:
     """The single *-release directory tracked by git under version/, or None."""
     import subprocess

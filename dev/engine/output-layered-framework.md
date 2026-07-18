@@ -183,7 +183,7 @@ T+120s: L2 full report ready
 
 L0 -> L1 -> L2 become ready progressively. Users can decide within 5 seconds after seeing L0 whether to wait for L1.
 
-### 3.6 Systemic Risk Thermometer Card (New in v0.7.0)
+### 3.6 Systemic Risk Thermometer Card (New in v0.0.1)
 
 When the system intelligence layer's thermometer (SRI) changes color, an **aggregate thermometer card** is inserted at the top of the L0 signal card list, pushing systemic risk level changes to all position-holding users. This card is not specific to any single bond but reflects portfolio-level systemic risk.
 

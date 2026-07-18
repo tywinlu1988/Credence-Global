@@ -244,7 +244,7 @@ def check_audit_versions() -> list[str]:
     )
     for path in ENGINE_DIR.rglob("*.md"):
         # audits/ holds frozen historical reports. Their corresponding engine version records the
-        # engine era under review (e.g. v0.7.0-alpha/v0.5.4-alpha) on an independent
+        # engine era under review (e.g. v0.0.1/v0.0.1) on an independent
         # report-version scheme (v1.0/v1.1), so it must not track EXPECTED_VERSION.
         # The audit-version requirement applies only to current (non-archived) docs.
         if "audits" in path.relative_to(ENGINE_DIR).parts:
@@ -373,7 +373,7 @@ def check_sri_track_b_consistency() -> list[str]:
 def _skill_reference_files() -> list[Path]:
     """Every ``references/*.md`` across all on-disk skills (discovery by convention).
 
-    Generalized in v0.7.7 from a single hardcoded skill dir to every skill under
+    Generalized in v0.0.1 from a single hardcoded skill dir to every skill under
     ``dev/.claude/skills/``, so new stage skills (credit-report-builder,
     credit-qa-verifier) get the same version-header-vs-engine check with no
     per-skill checker edits.
@@ -427,7 +427,7 @@ def check_skill_template_drift() -> list[str]:
 
 
 def check_path_sheets() -> list[str]:
-    """Validate the router's concrete work-path sheet(s) against the registry (v0.7.5).
+    """Validate the router's concrete work-path sheet(s) against the registry (v0.0.1).
 
     The router emits a "Work Path Sheet" whose path_id must resolve to a registered work
     path and whose active-path templates must exist on disk. We parse the registry and
@@ -474,7 +474,7 @@ def _skill_markdown_files() -> list[Path]:
 
 
 def check_artifact_path_ids() -> list[str]:
-    """Join-key referential integrity for the four-stage chain artifacts (v0.7.7).
+    """Join-key referential integrity for the four-stage chain artifacts (v0.0.1).
 
     Every yaml block in any skill's SKILL.md or references/*.md that carries a
     non-empty ``path_id`` must resolve to a registered work path. This covers the
@@ -511,7 +511,7 @@ def check_artifact_path_ids() -> list[str]:
 
 
 def check_agents_entry() -> list[str]:
-    """Orphan-skill guard for the cross-CLI universal entry (v0.7.6).
+    """Orphan-skill guard for the cross-CLI universal entry (v0.0.1).
 
     The repo-root AGENTS.md is the universal entry any agent CLI reads to discover
     the skills. It must exist, and every skill present on disk under

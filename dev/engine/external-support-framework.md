@@ -789,11 +789,11 @@ This is the module's most important limitation to acknowledge honestly:
 
 | Version | Update Content | Target Date |
 |---------|---------------|-------------|
-| v0.1.0 | Initial release: Framework definition + methodology + assessment matrix | Current |
-| v0.2.0 | Quantitative scorecard: Capacity and willingness scoring templates | Next iteration |
-| v0.3.0 | Case validation: Back-test external support assessment on 5-10 historical cases | Next iteration |
-| v0.4.0 | Data interface: Connect to fiscal data APIs / market data feeds | Next iteration |
-| v0.5.0 | Trap signal automated monitoring: Embed external support signal monitoring in mosaic engine | Next iteration |
+| v0.0.1 | Initial release: Framework definition + methodology + assessment matrix | Current |
+| v0.0.1 | Quantitative scorecard: Capacity and willingness scoring templates | Next iteration |
+| v0.0.1 | Case validation: Back-test external support assessment on 5-10 historical cases | Next iteration |
+| v0.0.1 | Data interface: Connect to fiscal data APIs / market data feeds | Next iteration |
+| v0.0.1 | Trap signal automated monitoring: Embed external support signal monitoring in mosaic engine | Next iteration |
 
 ---
 

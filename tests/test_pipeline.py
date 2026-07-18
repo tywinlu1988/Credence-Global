@@ -1,4 +1,4 @@
-"""Tests for the v0.7.8 executable orchestrator (src/pipeline.py).
+"""Tests for the v0.0.1 executable orchestrator (src/pipeline.py).
 
 T9.1-T9.7 cover the thin orchestrator: stage-plan construction from the contract doc,
 end-to-end execution of the wired coded engines (WP-M4-01 concentration, WP-M4-02 contagion,
@@ -264,7 +264,7 @@ def test_t9_7_invalid_sheet_rejected(contract, registry_paths):
 
 
 # --------------------------------------------------------------------------
-# Deliverable 3 — chaining-edge endpoint referential integrity (v0.7.7 carryover)
+# Deliverable 3 — chaining-edge endpoint referential integrity (v0.0.1 carryover)
 # --------------------------------------------------------------------------
 
 def test_chaining_edge_endpoints_resolve(contract, registry_paths):

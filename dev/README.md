@@ -126,7 +126,7 @@ To commence after methodology and product design are fully documented.
 | Cross-CLI entry point (Claude Code, Codex, Cursor, Gemini, OpenCode) | `../AGENTS.md` |
 | 4-chain pipeline contracts (work path order, analysis output, delivery order, QA ruling) | `engine/pipeline-contract.md` |
 | Dimension registry (6 paradigms + LGFV, M0-M5 roles, addressable pointer layer) | `engine/dimension-registry.md` |
-| Executable orchestrator (v0.7.8: code-driven 4-chain, WP-M4-01/-02/-03 coding engines) | `../src/pipeline.py` |
+| Executable orchestrator (v0.0.1: code-driven 4-chain, WP-M4-01/-02/-03 coding engines) | `../src/pipeline.py` |
 | AI Agent methodology (4-chain: routing, analysis, report, QA) | `.claude/skills/` |
 | Version management strategy and release process | `../docs/VERSION-MANAGEMENT.md` |
 

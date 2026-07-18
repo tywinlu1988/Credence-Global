@@ -1,4 +1,4 @@
-"""Integrity tests for the work-path registry (v0.7.2).
+"""Integrity tests for the work-path registry (v0.0.1).
 
 The registry (dev/engine/work-path-registry.md) is the routing baseline for the
 v0.0.1 skill architecture. Each of the 16 work paths is registered as a fenced

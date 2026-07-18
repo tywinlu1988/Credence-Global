@@ -950,8 +950,8 @@ Each industry methodology document should include a "Contagion Exposure" chapter
 
 | Version | Date | Changes | Author |
 |---|---|---|---|
-| v0.6.3-alpha | 2026-07-10 | Initial creation: 13x13 contagion matrix (China industry classification), industry clustering, escalation factor mapping, engine integration | Engine Team |
-| v0.7.0-alpha | 2026-07-10 | Systemic intelligence layer integration: engine version unified to v0.7.0-alpha, forming complete contagion framework with contagion theory | Engine Team |
+| v0.0.1 | 2026-07-10 | Initial creation: 13x13 contagion matrix (China industry classification), industry clustering, escalation factor mapping, engine integration | Engine Team |
+| v0.0.1 | 2026-07-10 | Systemic intelligence layer integration: engine version unified to v0.0.1, forming complete contagion framework with contagion theory | Engine Team |
 | v0.0.1 | 2026-07-10 | **Internationalization rewrite**: replaced 13 China-specific industries with 19 GICS-based international industries; new paradigm mapping via P1-P6 framework; full 19x19 annotated matrix; derived metrics (CFC, CVC, CNER); stress escalation jump tables; harmonized with international contagion theory | Engine Team |
 
 ---

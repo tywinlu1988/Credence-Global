@@ -65,7 +65,7 @@ EXPECTED_ROLE_NAMES = {
     "Individual Investor",
 }
 
-# No-copied-thresholds guard (T10.4): whitelist version tokens (v0.7.1-release)
+# No-copied-thresholds guard (T10.4): whitelist version tokens (v0.0.1)
 # and section refs (§x.y); path ids and dates carry no decimal point.
 DECIMAL_RE = re.compile(r"\d+\.\d+")
 DECIMAL_WHITELIST_PREV = ("v", "V", "§")
@@ -201,7 +201,7 @@ def test_t10_4_no_copied_numeric_thresholds():
         prev = text[m.start() - 1] if m.start() > 0 else ""
         assert prev in DECIMAL_WHITELIST_PREV, (
             f"numeric-threshold-like decimal {m.group()!r} at offset {m.start()}. "
-            "Whitelist: version tokens (v0.7.1-release) and section refs (§x.y)."
+            "Whitelist: version tokens (v0.0.1) and section refs (§x.y)."
         )
 
 

@@ -2,7 +2,7 @@
 
 **Version**: v0.0.1 | **Date**: 2026-07-18
 
-This contract is the **single source of truth** for the v0.8.0 skill architecture four-stage pipeline (intake -> analysis -> report -> qa). It defines the structure of four artifacts passed between the four stages, as well as the chaining edges that drive stage transitions and re-runs. The four artifacts are carried by four skills respectively:
+This contract is the **single source of truth** for the v0.0.1 skill architecture four-stage pipeline (intake -> analysis -> report -> qa). It defines the structure of four artifacts passed between the four stages, as well as the chaining edges that drive stage transitions and re-runs. The four artifacts are carried by four skills respectively:
 
 | Stage | Artifact | Carrying Skill | Upstream | Downstream |
 |---|---|---|---|---|

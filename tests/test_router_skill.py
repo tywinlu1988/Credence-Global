@@ -1,4 +1,4 @@
-"""Integrity tests for the credit-analysis-router skill (v0.7.3).
+"""Integrity tests for the credit-analysis-router skill (v0.0.1).
 
 The router skill (dev/.claude/skills/credit-analysis-router/SKILL.md) performs
 progressive requirement elicitation (four questions) and emits a structured
@@ -113,7 +113,7 @@ def test_t3_1_routing_table_coverage():
 #
 # The router must not reproduce any engine threshold/weight/rating number. We
 # scan for decimal-number patterns (\d+\.\d+) and allow only a small whitelist:
-#   - version tokens such as 'v0.7.1-release'  (decimal preceded by 'v'/'V')
+#   - version tokens such as 'v0.0.1'  (decimal preceded by 'v'/'V')
 #   - section references such as '§4.3'         (decimal preceded by '§')
 # Path ids (WP-M0-01) and ISO dates (2026-07-15) contain no decimal point, so
 # they never match the pattern and need no whitelist entry. Any other decimal
@@ -127,7 +127,7 @@ def _assert_no_thresholds(text: str, label: str) -> None:
         prev = text[m.start() - 1] if m.start() > 0 else ""
         assert prev in DECIMAL_WHITELIST_PREV, (
             f"{label}: numeric-threshold-like decimal {m.group()!r} at offset {m.start()}. "
-            "Whitelist: version tokens (v0.7.1-release) and section refs (§x.y); "
+            "Whitelist: version tokens (v0.0.1) and section refs (§x.y); "
             "path ids and dates carry no decimal point."
         )
 

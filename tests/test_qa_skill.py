@@ -1,4 +1,4 @@
-"""Integrity tests for the credit-qa-verifier skill (v0.7.7).
+"""Integrity tests for the credit-qa-verifier skill (v0.0.1).
 
 The qa skill (dev/.claude/skills/credit-qa-verifier/SKILL.md) is stage S4 (terminal)
 of the four-stage chain: it verifies a Delivery Note plus its upstream Analysis
@@ -38,7 +38,7 @@ def _assert_no_thresholds(text: str, label: str) -> None:
         prev = text[m.start() - 1] if m.start() > 0 else ""
         assert prev in DECIMAL_WHITELIST_PREV, (
             f"{label}: numeric-threshold-like decimal {m.group()!r} at offset {m.start()}. "
-            "Whitelist: version tokens (v0.7.1-release) and section refs (§x.y)."
+            "Whitelist: version tokens (v0.0.1) and section refs (§x.y)."
         )
 
 

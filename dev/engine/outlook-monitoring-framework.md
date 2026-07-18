@@ -8,7 +8,7 @@
 
 ### 1.1 The Current Engine Gap
 
-The current engine (v0.3.0) outputs a **static snapshot rating** (AAA through D) that only reflects the credit quality assessment at the time of analysis. Beyond static ratings, professional rating agencies consistently maintain **three time dimensions**:
+The current engine (v0.0.1) outputs a **static snapshot rating** (AAA through D) that only reflects the credit quality assessment at the time of analysis. Beyond static ratings, professional rating agencies consistently maintain **three time dimensions**:
 
 | Time Dimension | Traditional Rating Output | Engine Current State | Gap |
 |---|---|---|---|
@@ -28,11 +28,11 @@ The current engine (v0.3.0) outputs a **static snapshot rating** (AAA through D)
 ### 1.3 Position of Outlook and Watchlist in the Overall Architecture
 
 ```
-Engine Output (before v0.3.0)
+Engine Output (before v0.0.1)
   ├── Rating (AAA ~ D)                         ← Static Snapshot
   └── Signal Completeness Report
 
-Engine Output (v0.3.0 + this module)
+Engine Output (v0.0.1 + this module)
   ├── Rating (AAA ~ D)                         ← Current credit quality assessment
   ├── Outlook: Positive / Stable / Negative               ← 12-24 month directional assessment  ★New
   ├── Watchlist: Positive Watch / Negative Watch / None    ← Potential rating action within 90 days  ★New
@@ -497,11 +497,11 @@ This module is not an independent document -- corresponding modifications need t
 **Rating Output Specification Changes**:
 
 ```
-# Current (v0.3.0)
+# Current (v0.0.1)
 Composite Output
 Rating + Signals + Completeness Report
 
-# Revised (v0.3.1)
+# Revised (v0.0.1)
 Composite Output
 Rating + Outlook + Watchlist + Continuous Monitoring Checklist + Signal Completeness Report
 ```

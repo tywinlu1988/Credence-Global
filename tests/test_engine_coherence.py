@@ -1,4 +1,4 @@
-"""Regression tests for cross-document coherence of the v0.7.0-alpha engine."""
+"""Regression tests for cross-document coherence of the v0.0.1 engine."""
 
 import re
 from pathlib import Path

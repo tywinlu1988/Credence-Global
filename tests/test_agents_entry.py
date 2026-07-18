@@ -1,6 +1,6 @@
-"""Integrity tests for the cross-CLI universal entry (v0.7.6).
+"""Integrity tests for the cross-CLI universal entry (v0.0.1).
 
-v0.7.6 adds a repo-root AGENTS.md that any agent CLI can read to discover and
+v0.0.1 adds a repo-root AGENTS.md that any agent CLI can read to discover and
 use the Credence skills, plus a Codex deep-adapter (docs/adapters/codex.md).
 These tests (T6.1-T6.5) guard the single-source rule (no copied thresholds),
 platform neutrality (no CLAUDE.md write instruction; >=2 non-Claude CLIs named),
@@ -21,7 +21,7 @@ SKILLS_DIR = ROOT / "dev" / ".claude" / "skills"
 AGENTS_TEXT = AGENTS_MD.read_text(encoding="utf-8") if AGENTS_MD.exists() else ""
 
 # Reuse the T3.2 no-numeric-threshold guard: any decimal number (\d+\.\d+) is a
-# leaked threshold unless whitelisted -- version tokens (v0.7.1-release, decimal
+# leaked threshold unless whitelisted -- version tokens (v0.0.1, decimal
 # preceded by 'v'/'V') and section refs (§x.y, decimal preceded by '§'). Path ids
 # and ISO dates carry no decimal point, so they never match and need no entry.
 DECIMAL_RE = re.compile(r"\d+\.\d+")
@@ -41,7 +41,7 @@ def _assert_no_thresholds(text: str, label: str) -> None:
         prev = text[m.start() - 1] if m.start() > 0 else ""
         assert prev in DECIMAL_WHITELIST_PREV, (
             f"{label}: numeric-threshold-like decimal {m.group()!r} at offset {m.start()}. "
-            "Whitelist: version tokens (v0.7.1-release) and section refs (§x.y); "
+            "Whitelist: version tokens (v0.0.1) and section refs (§x.y); "
             "path ids and dates carry no decimal point."
         )
 

@@ -1,4 +1,4 @@
-"""Integrity tests for the credit-report-builder skill (v0.7.7).
+"""Integrity tests for the credit-report-builder skill (v0.0.1).
 
 The report skill (dev/.claude/skills/credit-report-builder/SKILL.md) is stage S3 of
 the four-stage chain: it turns an upstream Analysis Artifact into a deliverable report by
@@ -31,7 +31,7 @@ YAML_BLOCK_RE = re.compile(r"```yaml\s*\n(.*?)```", re.DOTALL)
 TEMPLATE_RE = re.compile(r"template-type\d+")
 
 # --- no-copied-thresholds guard (same pattern as test_router_skill T3.2) ---------
-# Allow only version tokens (v0.7.1-release, preceded by v/V) and section refs
+# Allow only version tokens (v0.0.1, preceded by v/V) and section refs
 # (§x.y, preceded by §). Path ids, Type N labels, and ISO dates carry no decimal.
 DECIMAL_RE = re.compile(r"\d+\.\d+")
 DECIMAL_WHITELIST_PREV = ("v", "V", "§")
@@ -49,7 +49,7 @@ def _assert_no_thresholds(text: str, label: str) -> None:
         prev = text[m.start() - 1] if m.start() > 0 else ""
         assert prev in DECIMAL_WHITELIST_PREV, (
             f"{label}: numeric-threshold-like decimal {m.group()!r} at offset {m.start()}. "
-            "Whitelist: version tokens (v0.7.1-release) and section refs (§x.y)."
+            "Whitelist: version tokens (v0.0.1) and section refs (§x.y)."
         )
 
 
