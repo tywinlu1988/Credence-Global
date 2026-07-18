@@ -26,21 +26,21 @@ ESCALATION_FACTORS = ("Market Panic", "Regulatory Vacuum", "High Leverage", "Inf
 # Only encodes base intensities that match the matrix table directions (e.g., Tech HW -> Software base 4).
 _EXPLICIT_JUMPS = {
     "Market Panic": [
-        ("Technology Hardware (Semiconductors)", "Software & Services", 4, 5, "Tech HW -> Software"),
-        ("Technology Hardware (Semiconductors)", "Automobiles", 4, 5, "Tech HW -> Automobiles"),
-        ("Consumer Staples", "Retail", 3, 4, "Consumer Staples <-> Retail"),
-        ("Retail", "Consumer Staples", 3, 4, "Consumer Staples <-> Retail"),
+        ("Technology Hardware (Semiconductors)", "Software & Services", 4, 5, "Technology Hardware → Software"),
+        ("Technology Hardware (Semiconductors)", "Automobiles", 4, 5, "Technology Hardware → Automobiles"),
+        ("Consumer Staples", "Retail", 3, 4, "Consumer Staples ↔ Retail"),
+        ("Retail", "Consumer Staples", 3, 4, "Consumer Staples ↔ Retail"),
     ],
     "Regulatory Vacuum": [
-        ("Sovereigns & GSEs", "Utilities (Regulated)", 3, 4, "Sovereigns -> Utilities"),
-        ("Sovereigns & GSEs", "Energy (Oil & Gas)", 3, 4, "Sovereigns -> Energy"),
-        ("Sovereigns & GSEs", "Metals & Mining", 3, 4, "Sovereigns -> Metals & Mining"),
-        ("Sovereigns & GSEs", "Construction Materials", 3, 4, "Sovereigns -> Construction Materials"),
+        ("Sovereigns & GSEs", "Utilities (Regulated)", 3, 4, "Sovereigns → Utilities"),
+        ("Sovereigns & GSEs", "Energy (Oil & Gas)", 3, 4, "Sovereigns → Energy"),
+        ("Sovereigns & GSEs", "Metals & Mining", 3, 4, "Sovereigns → Metals & Mining"),
+        ("Sovereigns & GSEs", "Construction Materials", 3, 4, "Sovereigns → Construction Materials"),
     ],
     "High Leverage": [
-        ("Financials (Banks/Insurance)", "Technology Hardware (Semiconductors)", 3, 4, "Financials -> Tech HW"),
-        ("Financials (Banks/Insurance)", "Software & Services", 3, 4, "Financials -> Software"),
-        ("Financials (Banks/Insurance)", "Capital Goods", 3, 4, "Financials -> Capital Goods"),
+        ("Financials (Banks/Insurance)", "Technology Hardware (Semiconductors)", 3, 4, "Financials → Technology Hardware"),
+        ("Financials (Banks/Insurance)", "Software & Services", 3, 4, "Financials → Software & Services"),
+        ("Financials (Banks/Insurance)", "Capital Goods", 3, 4, "Financials → Capital Goods"),
     ],
     "Information Asymmetry": [],
     "Year-End Effect": [],
