@@ -45,9 +45,11 @@ relative link resolves within dist; (iv) 4 SKILL.md with frontmatter exactly nam
 """
 
 import argparse
+import hashlib
 import re
 import shutil
 import sys
+import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -414,6 +416,42 @@ def validate(out_dir=None) -> list:
 
 
 # ---------------------------------------------------------------------------
+# Release zip (single distribution artifact; ships via GitHub Releases, never committed)
+# ---------------------------------------------------------------------------
+
+def build_release_zip(out_dir=None, version_dir=None):
+    """Zip the built dist tree into ``<version_dir>/<v>-release.zip`` + ``.sha256`` sidecar.
+
+    Layout: single top-level ``credence/`` root (what bin/install.js extracts and what
+    Quick Start promises users). Deterministic: sorted entries, fixed timestamps and
+    permissions, so identical inputs produce byte-identical zips.
+    Returns ``(zip_path, sha256_path)``.
+    """
+    base = Path(out_dir) if out_dir is not None else DIST
+    vdir = Path(version_dir) if version_dir is not None else ROOT / "version"
+    if not base.is_dir():
+        raise FileNotFoundError(f"dist tree missing: {base} (run build first)")
+    vdir.mkdir(parents=True, exist_ok=True)
+
+    v = _version()
+    zip_path = vdir / f"{v}-release.zip"
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+        for f in sorted(base.rglob("*")):
+            if not f.is_file():
+                continue
+            arc = str(Path("credence") / f.relative_to(base)).replace("\\", "/")
+            info = zipfile.ZipInfo(arc, date_time=(1980, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = 0o644 << 16
+            zf.writestr(info, f.read_bytes())
+
+    digest = hashlib.sha256(zip_path.read_bytes()).hexdigest()
+    sha_path = vdir / f"{v}-release.zip.sha256"
+    sha_path.write_text(f"{digest}  {zip_path.name}\n", encoding="utf-8", newline="\n")
+    return zip_path, sha_path
+
+
+# ---------------------------------------------------------------------------
 # Build
 # ---------------------------------------------------------------------------
 
@@ -456,6 +494,8 @@ def build(out_dir=None) -> list:
 def main() -> int:
     ap = argparse.ArgumentParser(description="Assemble the Credence installable agent package.")
     ap.add_argument("--check", action="store_true", help="validate an existing dist/ only")
+    ap.add_argument("--zip", action="store_true",
+                    help="after a passing build, also write version/<v>-release.zip + .sha256")
     ap.add_argument("--verbose", action="store_true", help="print the transform log")
     args = ap.parse_args()
 
@@ -473,6 +513,11 @@ def main() -> int:
             print("  ", e)
         return 1
     print("dist validation PASSED")
+
+    if args.zip:
+        zip_path, sha_path = build_release_zip()
+        print(f"release zip: {zip_path}")
+        print(f"sha256 sidecar: {sha_path}")
     return 0
 
 

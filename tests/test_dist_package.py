@@ -11,9 +11,11 @@ deterministic. The builder's own ``validate`` covers (a)(b)(c)(d)(e) plus
 layout/exclusions; this file supplements the remaining (f)-(l).
 """
 
+import hashlib
 import importlib.util
 import re
 import sys
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -179,3 +181,31 @@ def test_t12_7_deterministic_rebuild(builder, tmp_path):
     assert files_a.keys() == files_b.keys()
     diff = [str(k) for k in files_a if files_a[k] != files_b[k]]
     assert not diff, f"non-deterministic outputs: {diff[:5]}"
+
+
+# T12.8 — release zip: single credence/ root, named <v>-release.zip, sha256 sidecar
+#          matches the actual digest, and zip output is byte-deterministic.
+def test_t12_8_release_zip(builder, tmp_path):
+    out = tmp_path / "dist" / "credence"
+    builder.build(out)
+    assert builder.validate(out) == []
+    zip_path, sha_path = builder.build_release_zip(out, tmp_path / "version")
+
+    v = builder._version()
+    assert zip_path.name == f"{v}-release.zip"
+    assert sha_path.name == f"{v}-release.zip.sha256"
+
+    with zipfile.ZipFile(zip_path) as zf:
+        names = zf.namelist()
+    assert names, "empty release zip"
+    assert all(n.startswith("credence/") for n in names), "zip must have a single credence/ root"
+    assert "credence/AGENTS.md" in names
+    assert "credence/engine/pipeline-contract.md" in names
+    assert "credence/templates/template-base.css" in names
+    assert "credence/src/pipeline.py" in names
+
+    digest = hashlib.sha256(zip_path.read_bytes()).hexdigest()
+    assert sha_path.read_text(encoding="utf-8").split()[0] == digest
+
+    zip2, _ = builder.build_release_zip(out, tmp_path / "version2")
+    assert zip2.read_bytes() == zip_path.read_bytes(), "release zip is not deterministic"

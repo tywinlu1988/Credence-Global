@@ -61,7 +61,7 @@ def _fake_tree(tmp_path: Path) -> None:
     )
     (tmp_path / "AGENTS.md").write_text("**Engine Version**：v0.0.1\n", encoding="utf-8")
     (tmp_path / "README.md").write_text(
-        "**Version** `v0.0.1`\nRelease package at `version/v0.0.1/`.\n",
+        "**Version** `v0.0.1`\nRelease zip attached to the GitHub Releases page.\n",
         encoding="utf-8",
     )
     (tmp_path / "pyproject.toml").write_text('version = "0.0.1"\n', encoding="utf-8")
@@ -74,7 +74,7 @@ def _fake_tree(tmp_path: Path) -> None:
         '    return m.group(1) if m else "v0.0.1"\n', encoding="utf-8"
     )
     (tmp_path / ".gitignore").write_text(
-        "# Only current installable package version/v0.0.1/ is committed\nversion/*\n!version/v0.0.1/\n",
+        "# version/ holds only .gitkeep; release zips are gitignored and ship via Releases\nversion/*\n!version/.gitkeep\n",
         encoding="utf-8",
     )
     (tmp_path / "dev" / "templates").mkdir(exist_ok=True)
@@ -127,15 +127,17 @@ def test_apply_rules_rewrites_all_declaration_points(tmp_path):
     assert _read(tmp_path / "dev" / "README.md").startswith("**Version**: v0.0.2")
     assert "**Engine Version**：v0.0.2" in _read(tmp_path / "AGENTS.md")
     readme = _read(tmp_path / "README.md")
-    assert "`v0.0.2`" in readme and "version/v0.0.2/" in readme
+    assert "`v0.0.2`" in readme
     assert 'version = "0.0.2"' in _read(tmp_path / "pyproject.toml")
     assert '{"version": "0.0.2"}' in _read(tmp_path / "package.json")
     assert 'EXPECTED_VERSION = "v0.0.2"' in _read(
         tmp_path / "scripts" / "consistency_check.py"
     )
     assert 'else "v0.0.2"' in _read(tmp_path / "scripts" / "build_dist.py")
-    assert "!version/v0.0.2/" in _read(tmp_path / ".gitignore")
-    assert "Only current installable package version/v0.0.2/ is committed" in _read(tmp_path / ".gitignore")
+    # release convention: .gitignore has no per-version lines, promotion must not touch it
+    assert _read(tmp_path / ".gitignore") == (
+        "# version/ holds only .gitkeep; release zips are gitignored and ship via Releases\nversion/*\n!version/.gitkeep\n"
+    )
     templates = _read(tmp_path / "dev" / "templates" / "template-type13.html")
     assert "@engine-version: v0.0.2" in templates
     assert "Report Version: v0.0.2" in templates

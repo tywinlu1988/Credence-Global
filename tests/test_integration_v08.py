@@ -12,9 +12,9 @@ release, not any single component:
 - T11.4: version promotion is consistent (EXPECTED_VERSION well-formed and aligned with
   pyproject/package.json; every CORE_DOCS doc + skill declares it), mirroring
   consistency_check.check_versions / check_version_alignment.
-- T11.5: the current snapshot (the single version/*-release dir, named == EXPECTED_VERSION)
-  exists as the installable agent package (skills @ .claude/skills, flattened engine/,
-  generated entry/install docs) with no dead links.
+- T11.5: the release zip produced by build_release_zip (single credence/ root, named
+  <EXPECTED_VERSION>-release.zip, sha256 sidecar) contains the complete installable
+  agent package (skills @ .claude/skills, flattened engine/, generated entry/install docs).
 
 Single-source rule: the tests assert structure/versions only. They never restate engine
 thresholds/weights -- the only numbers here are the *fixture inputs* and the *real engine
@@ -42,20 +42,6 @@ REGISTRY = ROOT / "dev" / "engine" / "work-path-registry.md"
 ENGINE_DIR = ROOT / "dev" / "engine"
 SKILLS_DIR = ROOT / "dev" / ".claude" / "skills"
 WALKTHROUGH = ROOT / "validation" / "docs" / "v0.0.1-to-end-walkthroughs.md"
-def _current_snapshot_dir() -> Path | None:
-    """The single *-release directory tracked by git under version/, or None."""
-    import subprocess
-
-    out = subprocess.run(
-        ["git", "ls-files", "version/"], cwd=ROOT,
-        capture_output=True, text=True, encoding="utf-8", errors="replace", check=True,
-    ).stdout
-    dirs = {line.split("/")[1] for line in out.splitlines() if line.count("/") >= 2}
-    releases = sorted(d for d in dirs if d.endswith("-release"))
-    if len(releases) != 1:
-        return None
-    return ROOT / "version" / releases[0]
-
 
 CONSISTENCY_CHECK = ROOT / "scripts" / "consistency_check.py"
 BUILD_DIST = ROOT / "scripts" / "build_dist.py"
@@ -73,8 +59,6 @@ FOUR_SKILLS = (
     "credit-report-builder",
     "credit-qa-verifier",
 )
-
-SNAPSHOT = _current_snapshot_dir()
 
 
 # --------------------------------------------------------------------------
@@ -302,68 +286,70 @@ def test_t11_4_version_promotion_consistent(cc):
 
 
 # --------------------------------------------------------------------------
-# T11.5 — snapshot integrity: installable agent package (no dead links)
+# T11.5 — release zip integrity: installable agent package in a single credence/ root
 # --------------------------------------------------------------------------
 
-def test_t11_5_snapshot_integrity(cc, bd, tmp_path):
-    if SNAPSHOT is None:
-        pytest.skip("no version/*-release snapshot directory available")
-    assert SNAPSHOT.is_dir(), f"snapshot missing: {SNAPSHOT}"
-    assert SNAPSHOT.name == cc.EXPECTED_VERSION, (
-        f"snapshot directory {SNAPSHOT.name} != EXPECTED_VERSION {cc.EXPECTED_VERSION}"
-    )
+def test_t11_5_release_zip_integrity(cc, bd, tmp_path):
+    import hashlib
+    import zipfile
+
+    out = tmp_path / "dist" / "credence"
+    bd.build(out)
+    assert bd.validate(out) == []
+    zip_path, sha_path = bd.build_release_zip(out, tmp_path / "version")
+
+    assert zip_path.name == f"{cc.EXPECTED_VERSION}-release.zip"
+    digest = hashlib.sha256(zip_path.read_bytes()).hexdigest()
+    assert sha_path.read_text(encoding="utf-8").split()[0] == digest
+
+    with zipfile.ZipFile(zip_path) as zf:
+        names = set(zf.namelist())
+    root = "credence/"
+    assert names and all(n.startswith(root) for n in names)
 
     # generated entry/install docs (single universal package, per-tool entries)
     for entry in ("AGENTS.md", "CLAUDE.md", "GEMINI.md", "INSTALL.md", "README.md"):
-        assert (SNAPSHOT / entry).is_file(), f"snapshot missing entry {entry}"
-    assert (SNAPSHOT / ".claude-plugin" / "plugin.json").is_file(), "missing plugin.json"
-    assert (SNAPSHOT / "adapters" / "codex.md").is_file(), "missing adapters/codex.md"
+        assert root + entry in names, f"zip missing entry {entry}"
+    assert root + ".claude-plugin/plugin.json" in names, "missing plugin.json"
+    assert root + "adapters/codex.md" in names, "missing adapters/codex.md"
 
     # skills in .claude/skills/ (Claude Code native + Cursor/Gemini/OpenCode compat)
     for skill in FOUR_SKILLS:
-        assert (SNAPSHOT / ".claude" / "skills" / skill / "SKILL.md").is_file(), skill
+        assert f"{root}.claude/skills/{skill}/SKILL.md" in names, skill
 
     # engine: 27 CORE_DOCS + report templates + executable orchestrator
     for doc in cc.CORE_DOCS:
-        assert (SNAPSHOT / "engine" / doc).is_file(), f"snapshot missing engine/{doc}"
-    assert (SNAPSHOT / "templates").is_dir(), "snapshot missing templates/"
-    assert (SNAPSHOT / "src" / "pipeline.py").is_file(), "snapshot missing src/pipeline.py"
+        assert f"{root}engine/{doc}" in names, f"zip missing engine/{doc}"
+    assert root + "templates/template-base.css" in names, "zip missing templates/"
+    assert root + "src/pipeline.py" in names, "zip missing src/pipeline.py"
 
-    # the snapshot carries the promoted entry version
-    assert cc.EXPECTED_VERSION in (SNAPSHOT / "AGENTS.md").read_text(encoding="utf-8")
+    # extract and verify the unpacked package (what install.js delivers to users)
+    import zipfile as _zipfile
+    unpacked = tmp_path / "unpacked"
+    with _zipfile.ZipFile(zip_path) as zf:
+        zf.extractall(unpacked)
+    pkg = unpacked / "credence"
+
+    # the package carries the promoted entry version
+    assert cc.EXPECTED_VERSION in (pkg / "AGENTS.md").read_text(encoding="utf-8")
 
     # no excluded artifacts leaked (settings.local.json / audits / design / product /
     # data / validation / dev source / bytecode cache)
     leaked = [
-        p for p in SNAPSHOT.rglob("*")
+        p for p in pkg.rglob("*")
         if (p.is_dir() and p.name in (
             ".git", "__pycache__", "audits", "design", "product", "data", "validation"))
         or (p.is_file() and (p.suffix == ".pyc" or p.name == "settings.local.json"))
     ]
-    assert not leaked, f"excluded artifacts in snapshot: {leaked}"
+    assert not leaked, f"excluded artifacts in release zip: {leaked}"
 
     # no dead links: no absolute paths, no residual dev/ path tokens
     dead = []
-    for f in SNAPSHOT.rglob("*"):
+    for f in pkg.rglob("*"):
         if f.is_file() and f.suffix in bd.TEXT_EXTS:
             text = f.read_text(encoding="utf-8")
             if bd.ABS_PATH_RE.search(text):
-                dead.append(f"{f.relative_to(SNAPSHOT)}: absolute path")
+                dead.append(f"{f.relative_to(pkg)}: absolute path")
             if bd.DEV_TOKEN_RE.search(text):
-                dead.append(f"{f.relative_to(SNAPSHOT)}: dev/ token")
-    assert not dead, f"dead links in snapshot: {dead[:20]}"
-
-    # distribution packaging: the snapshot dir can be zipped into the release artifact
-    # (top-level <v>-release/). The zip itself is NOT committed (*.zip is gitignored)
-    # -- it is built on demand and attached to GitHub Releases, so we build it into a
-    # tmp dir here to verify the packaging path works on any clean clone.
-    import zipfile
-    tmp_zip = tmp_path / "release.zip"
-    files = sorted(p for p in SNAPSHOT.rglob("*") if p.is_file())
-    with zipfile.ZipFile(tmp_zip, "w", zipfile.ZIP_DEFLATED) as z:
-        for p in files:
-            z.write(p, f"{SNAPSHOT.name}/{p.relative_to(SNAPSHOT).as_posix()}")
-    with zipfile.ZipFile(tmp_zip) as z:
-        names = z.namelist()
-    assert names and all(n.startswith(f"{SNAPSHOT.name}/") for n in names)
-    assert sum(n.endswith("SKILL.md") for n in names) == len(FOUR_SKILLS)
+                dead.append(f"{f.relative_to(pkg)}: dev/ token")
+    assert not dead, f"dead links in release zip: {dead[:20]}"

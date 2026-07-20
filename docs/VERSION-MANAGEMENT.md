@@ -1,16 +1,21 @@
 # Version Management Strategy
 
 **Corresponding Engine Version**: v0.0.1
-**Last Updated**: 2026-07-16
+**Last Updated**: 2026-07-20
 
 ## Directory Structure Convention
 
 - `dev/` — Current active development workspace. All in-progress methodology documents, reports, templates, and skills are placed here.
-- `version/<version>/` — Read-only archive snapshot of that version. **After GitHub cleanup: the main repository git only tracks the current one release snapshot (currently `version/v0.0.1/`); historical snapshots have been removed from git tracking but can still be retrieved from the maintainer's local disk and git commit history (all release commits are within the master commit graph, check out by SHA).** Once a snapshot is created, only patch branches are allowed to fix obvious errors; feature iteration is not permitted.
-- `version/<version>.zip` — Compressed archive of that version, **distributed externally as a GitHub Releases attachment** (not committed to the repository; `*.zip` is gitignored).
-- `validation/` — Engine capability verification artifacts (test outputs and evidence archives), **not part of the project core**, never enter `version/` snapshots.
+- `version/` — **Local build output only.** Holds the release zip produced by `scripts/build_dist.py --zip` (`version/<v>-release.zip` + `version/<v>-release.zip.sha256`). Git tracks only `version/.gitkeep`; every zip/sidecar is gitignored and **distributed externally as a GitHub Releases attachment**, never committed.
+- `validation/` — Engine capability verification artifacts (test outputs and evidence archives), **not part of the project core**.
 
-**Snapshot Boundary**: Since **v0.0.1**, `version/<version>/` = **installable agent package output by `scripts/build_dist.py`** (= contents of `dist/credence/`): skills placed in `.claude/skills/`, `engine/` flattened, `templates/`, `src/`, `adapters/`, plus generated `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`/`INSTALL.md`/`README.md`/`.claude-plugin/plugin.json`. This package has removed dead links and root directory assumptions (removed `settings.local.json` absolute paths, `engine/audits/`, `design/`, `product/`, `data/`, `validation/`, and pattern-removed 16 audits/validation trace pointers). **Exception**: `v0.0.1` used the old mirrored three-root layout (`dev/` + `AGENTS.md` + `src/`), an integration pre-release that was not made installable. `validation/` artifacts never enter snapshots; `version/` (historical snapshots), `scripts/`, `tests/`, `docs/`, and any `.git`/`__pycache__`/`*.pyc` also do not enter snapshots.
+**Release artifact**: a single zip per version, produced by `python scripts/build_dist.py --zip`:
+
+- Name: `version/<v>-release.zip` (e.g. `version/v0.0.1-release.zip`), plus a `<v>-release.zip.sha256` sidecar (`<hex>  <filename>`).
+- Internal layout: one top-level `credence/` directory containing the installable agent package (contents of `dist/credence/`): skills at `.claude/skills/`, flattened `engine/`, `templates/`, `src/`, `adapters/`, plus generated `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`/`INSTALL.md`/`README.md`/`.claude-plugin/plugin.json`. The package has dead links and root-directory assumptions removed (no `settings.local.json` absolute paths, no `audits/`, `design/`, `product/`, `data/`, `validation/`).
+- Deterministic: sorted entries, fixed timestamps and permissions — identical inputs produce byte-identical zips (verified by tests).
+
+**Install path**: `bin/install.js` (invoked via `npx github:tywinlu1988/credence-global`) resolves the release tag (latest GitHub Release, or `--tag vX.Y.Z` / `CREDENCE_TAG`), downloads `<tag>-release.zip` + `.sha256` from the GitHub Releases page, verifies the checksum (mismatch aborts), and unpacks into `./credence/` (or a user-supplied directory). The git tree is **not** the distribution channel — no release directories are tracked in git.
 
 ## Version Numbering System
 
@@ -27,47 +32,27 @@
 ### Review Report Version
 
 - Format: `v<major>.<minor>` (e.g., v1.0, v1.1)
-- Scope: `dev/engine/*-audit.md`, `dev/engine/*-review-*.md`, `dev/engine/self-assessment-*.md`
+- Scope: historical `dev/engine/*-audit.md`, `dev/engine/*-review-*.md`, `dev/engine/self-assessment-*.md` — the audits/ archive was removed in the v0.0.1 cleanup; this scheme applies again only if review reports are reintroduced.
 - Must annotate in file header: `**Corresponding Engine Version**: vX.Y.Z-<stage>`
 
 ## Release Checklist
 
-Before creating a new `version/<version>/` snapshot, the following checks must be completed:
+Before cutting a new release, the following checks must be completed:
 
 - [ ] `python scripts/promote.py vX.Y.Z-<stage>` (dry-run preview) -> `--apply` to commit, and verify that all printed "rules not covered remaining" are historical references after manual review; both version history tables (engine-overview Section 6, dev/README.md) have been manually updated with new rows.
 - [ ] All core methodology documents' `**Version**:` headers are unified to the current engine version.
 - [ ] Claude Skill package (`dev/.claude/skills/fixed-income-credit-analysis/`) has been synced and upgraded to the current engine version.
-- [ ] Skill package has been placed in `version/<version>/.claude/skills/` via build (since v0.0.1 at package root `.claude/skills/`, generated by `scripts/build_dist.py`).
 - [ ] `scripts/consistency_check.py` runs successfully (no broken links, consistent version numbers, SRI examples within valid range).
-- [ ] `python scripts/build_dist.py` build + built-in validation passes (zero absolute paths, zero dev/ tokens, all links resolvable, 4 skills with strict frontmatter, 28 CORE_DOCS complete).
+- [ ] `python scripts/build_dist.py --zip` build + built-in validation passes (zero absolute paths, zero dev/ tokens, all links resolvable, 4 skills with strict frontmatter, 27 CORE_DOCS complete) and produces `version/<v>-release.zip` + `.sha256`.
 - [ ] All templates and reports have version numbers aligned with the engine version.
 - [ ] `dev/README.md` version history and directory structure description have been updated.
-- [ ] Compressed archive `version/<version>.zip` has been generated.
 
-## Snapshot Creation Process
+## Release Process
 
 1. Complete all changes in `dev/` and pass regression gates (`scripts/consistency_check.py` and `pytest` all green).
-2. Run `python scripts/build_dist.py`: deterministically assemble `dev/` sources into `dist/credence/` installable package (copy + reference rewrite + trace pointer removal + entry/install document generation), and pass its built-in validation (zero absolute paths, zero dev/ tokens, all links resolvable).
-3. Copy the contents of `dist/credence/` to `version/<version>/` (**since v0.0.1**; `dist/` itself is a gitignored build artifact, the committed snapshot is in `version/`).
-4. Generate `version/<version>.zip` (top level is `version/<version>/` single root directory, cross-platform), upload and distribute as **GitHub Releases attachment** (**not committed to the repository**; `*.zip` is gitignored).
-5. **git tracking convention**: The main repository only tracks the **current one release**'s `version/<version>/` directory. When releasing a new version, `git rm -r` the old release directory (**without `--cached`** — to avoid the trap of accidentally deleting workspace files when merging with merge), `git add` the new release directory, and change the `!version/<old>/` negation rule in `.gitignore` to `!version/<new>/`. Historical snapshots are retained on local disk and in git commit history. **git tag convention (since 2026-07-17)**: Tags and Releases **are retained and no longer cleaned up** — historical versions can be checked out/downloaded directly by tag, and also support `npx github:tywinlu1988/fixedincome#<tag>` for pinned version installation; GitHub's Latest badge always points to the latest Release. The main repository git still only tracks the current one release snapshot directory. (Previous convention was "remote only retains the current release tag"; v0.0.1 and earlier historical tags have been deleted, corresponding commits can be found from master history by SHA.)
-6. Update version history in `dev/README.md` and `dev/engine/engine-overview.md`.
+2. Run `python scripts/build_dist.py --zip`: deterministically assemble `dev/` sources into `dist/credence/`, validate, then emit `version/<v>-release.zip` + `version/<v>-release.zip.sha256`.
+3. Create the git tag `vX.Y.Z` and push it. Tags and Releases **are retained and no longer cleaned up** — historical versions can be checked out/downloaded directly by tag, and `npx github:tywinlu1988/credence-global#<tag>` supports pinned-version installation.
+4. Create the GitHub Release for that tag and attach **both** `version/<v>-release.zip` and `version/<v>-release.zip.sha256` (the sidecar is what `bin/install.js` verifies against).
+5. Update version history in `dev/README.md` and `dev/engine/engine-overview.md`.
 
-> **v0.0.1-alpha Exception**: That snapshot used the old mirrored three-root layout — manually full-copied `dev/`, `src/` + root-level `AGENTS.md` to `version/v0.0.1-alpha/`, not made installable by `build_dist.py`. Since v0.0.1, all follow the above build_dist process.
-
-## Snapshot Internal Layout
-
-Since **v0.0.1**, the snapshot is a **self-contained installable agent package** (contents of `dist/credence/` output by `scripts/build_dist.py`) — skills placed at package root `.claude/skills/` (natively discovered by Claude Code + compatible reading by Cursor/Gemini/OpenCode), methodology documents flattened into `engine/`, and generated entry/install files for each agent CLI:
-
-```
-version/<version>/
-├── AGENTS.md / CLAUDE.md / GEMINI.md / INSTALL.md / README.md   ← Generated cross-CLI entry and installation instructions
-├── .claude-plugin/plugin.json        ← Claude Code marketplace manifest
-├── .claude/skills/<4 skills>/        ← Four-chain skills (intake/analysis/report/qa)
-├── engine/          ← 28 methodology documents (audits/ removed, trace pointers cleared)
-├── templates/       ← Type 1-15 report templates
-├── src/             ← Executable orchestrator + encoded engine (pipeline.py path_sheet.py sri_calculator.py concentration_scorer.py …)
-└── adapters/codex.md ← Codex deep adaptation
-```
-
-> **Historical Snapshot Differences**: Snapshots ≤ v0.0.1 were flat copies of `dev/` single-root (`version/<v>/` top-level equals `dev/` contents); `v0.0.1-alpha` was a **mirrored three-root** layout (`dev/` + `src/` + `AGENTS.md`, not installable); since **v0.0.1**, the layout has changed to the installable package format above.
+> Historical note: pre-v0.0.1 snapshots experimented with committing a `version/<v>/` directory (flat copy, mirrored three-root, installable package) to git. That convention is retired: the git tree is no longer the distribution channel, and `bin/install.js` no longer reads `version/` from the npm tarball.
