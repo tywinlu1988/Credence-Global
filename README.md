@@ -421,8 +421,6 @@ npx github:tywinlu1988/credence-global
 
 Downloads the latest release zip from GitHub Releases, verifies its SHA-256 checksum, and unpacks it into `./credence/`; open that folder with your agent CLI. Pin a specific version with `--tag vX.Y.Z`.
 
-> **Network-restricted environments** (e.g. mainland China): set `CREDENCE_RELEASES_BASE` to a mirror prefix before running, e.g. `CREDENCE_RELEASES_BASE=https://gh-proxy.com/https://github.com/tywinlu1988/Credence-Global/releases/download`.
-
 ### B. GitHub Release
 
 Download the latest `vX.Y.Z-release.zip` from the [Releases page](https://github.com/tywinlu1988/Credence-Global/releases), verify it against the attached `vX.Y.Z-release.zip.sha256`, unzip, and open the package root as a project.

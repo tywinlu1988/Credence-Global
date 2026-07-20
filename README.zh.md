@@ -422,8 +422,6 @@ npx github:tywinlu1988/credence-global
 
 从 GitHub Releases 下载最新发布 zip，校验 SHA-256 后解压到 `./credence/`；用你的 agent CLI 打开该文件夹。可用 `--tag vX.Y.Z` 固定版本。
 
-> **网络受限环境**（如中国大陆）：先设置镜像前缀再运行，例如 `CREDENCE_RELEASES_BASE=https://gh-proxy.com/https://github.com/tywinlu1988/Credence-Global/releases/download`。
-
 ### B. GitHub Release
 
 从 [Releases 页面](https://github.com/tywinlu1988/Credence-Global/releases) 下载最新的 `vX.Y.Z-release.zip`，对照附带的 `vX.Y.Z-release.zip.sha256` 校验，解压后打开包根目录作为项目。
