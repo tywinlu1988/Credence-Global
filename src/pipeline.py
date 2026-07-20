@@ -25,7 +25,11 @@ from pathlib import Path
 
 import yaml
 
-from src.concentration_scorer import concentration_risk_score, rating_adjustment
+from src.concentration_scorer import (
+    ConcentrationMetrics,
+    concentration_risk_score,
+    rating_adjustment,
+)
 from src.contagion_engine import (
     apply_escalation,
     high_intensity_links,
@@ -43,7 +47,7 @@ from src.path_sheet import (
     sheet_notice,
     validate_path_sheet,
 )
-from src.sri_calculator import sri, thermometer_level
+from src.sri_calculator import IndustryInput, Outlook, TrackBLevel, sri, thermometer_level
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -233,15 +237,49 @@ def planned_path_notice(path_sheet: dict, registry_paths: dict) -> str | None:
     return None
 
 
+def _coerce_industry(item) -> IndustryInput:
+    """Coerce a YAML/JSON-supplied mapping into an ``IndustryInput``.
+
+    Enum fields are validated strictly: an unknown Track B level or outlook raises
+    ``ValueError`` instead of silently scoring a zero penalty downstream.
+    """
+    if isinstance(item, IndustryInput):
+        return item
+    if not isinstance(item, dict):
+        raise ValueError(f"industry input must be a mapping, got {type(item).__name__}")
+    data = dict(item)
+    try:
+        if "track_b_level" in data:
+            data["track_b_level"] = TrackBLevel(data["track_b_level"])
+        if "outlook" in data:
+            data["outlook"] = Outlook(data["outlook"])
+        return IndustryInput(**data)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"invalid industry input {item!r}: {exc}") from exc
+
+
+def _coerce_metrics(item) -> ConcentrationMetrics:
+    """Coerce a YAML/JSON-supplied mapping into ``ConcentrationMetrics``."""
+    if isinstance(item, ConcentrationMetrics):
+        return item
+    if not isinstance(item, dict):
+        raise ValueError(f"concentration metrics must be a mapping, got {type(item).__name__}")
+    try:
+        return ConcentrationMetrics(**item)
+    except TypeError as exc:
+        raise ValueError(f"invalid concentration metrics: {exc}") from exc
+
+
 def _run_sri(inputs: dict) -> dict:
     """Executable implementation of WP-RO-03 -> systemic-warning-framework (SRI + thermometer)."""
-    value = sri(inputs["industries"], inputs["weights"])
+    industries = [_coerce_industry(ind) for ind in inputs["industries"]]
+    value = sri(industries, inputs["weights"])
     return {"sri": value, "thermometer": thermometer_level(value)}
 
 
 def _run_concentration(inputs: dict) -> dict:
     """Executable implementation of WP-RO-01 -> concentration-framework (5-dimension score + rating adjustment)."""
-    metrics = inputs["metrics"]
+    metrics = _coerce_metrics(inputs["metrics"])
     adj = rating_adjustment(metrics)
     return {
         "score": concentration_risk_score(metrics),

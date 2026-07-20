@@ -150,7 +150,12 @@ def test_m2_background_downgrade():
 
 
 def test_m4_weight_adjustment():
-    assert m4_concentration_weight_adjustment(0.3) == 0.9
-    assert m4_concentration_weight_adjustment(0.7) == 1.0
-    assert m4_concentration_weight_adjustment(1.2) == 1.1
-    assert m4_concentration_weight_adjustment(2.0) == 1.2
+    # systemic-warning-framework.md §10.1 M4: composite score × (1 + factor),
+    # factor = 🟢 0% / 🟡 +5% / 🟠 +15% / 🔴 +30%.
+    assert m4_concentration_weight_adjustment(0.3) == 1.00
+    assert m4_concentration_weight_adjustment(0.5) == 1.05
+    assert m4_concentration_weight_adjustment(0.7) == 1.05
+    assert m4_concentration_weight_adjustment(1.0) == 1.15
+    assert m4_concentration_weight_adjustment(1.2) == 1.15
+    assert m4_concentration_weight_adjustment(1.8) == 1.30
+    assert m4_concentration_weight_adjustment(2.0) == 1.30

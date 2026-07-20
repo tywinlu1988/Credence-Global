@@ -32,9 +32,10 @@ def _clamp(value: float, low: float, high: float) -> float:
 def _rating_band(value: float, normal_max: float, watch_max: float, alert_max: float) -> int:
     """Map a share to a representative 1-10 risk score using document-specific bands.
 
-    Bands are the upper bounds of each documented risk level:
+    Bands are the upper bounds of each documented risk level
+    (concentration-framework.md §1.3: 1-3 normal / 4-5 watch / 6-7 alert / 8-10 danger):
       - value < normal_max            → 2 (normal / 1-3)
-      - normal_max ≤ value < watch_max → 3 (watch / 4-5)
+      - normal_max ≤ value < watch_max → 4 (watch / 4-5)
       - watch_max ≤ value < alert_max  → 7 (alert / 6-7)
       - value ≥ alert_max              → 9 (danger / 8-10)
     """
@@ -43,7 +44,7 @@ def _rating_band(value: float, normal_max: float, watch_max: float, alert_max: f
     if value >= watch_max:
         return 7
     if value >= normal_max:
-        return 3
+        return 4
     return 2
 
 

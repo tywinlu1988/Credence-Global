@@ -329,3 +329,67 @@ def test_t9_9_outlook_wired_and_runs(contract, registry_paths):
     assert set(out) == {"outlook", "confidence", "net_score", "watchlist", "migration"}
     assert out["outlook"] == "negative" and out["watchlist"]["side"] == "negative watchlist"
     assert out["migration"]["downgrade"] == "15-20%"
+
+
+# --------------------------------------------------------------------------
+# T9.10 — dict-driven inputs (YAML/JSON orchestration) are coerced to dataclasses
+# --------------------------------------------------------------------------
+
+def test_t9_10_sri_accepts_dict_industries(contract, registry_paths):
+    plan = load_stage_plan(_sheet("WP-RO-03"), registry_paths, contract)
+    inputs = {
+        "industries": [
+            {"name": "PV", "track_a_score": 5.0, "track_b_level": "yellow", "outlook": "negative"},
+            {"name": "Retail", "track_a_score": 7.0, "track_b_level": "green", "outlook": "stable"},
+        ],
+        "weights": [0.5, 0.5],
+    }
+    manifest = run_executable_stages(plan, inputs)
+    analysis = next(s for s in manifest["stages"] if s["name"] == "analysis")
+    assert analysis["mode"] == "code"
+    # PV: base 1.0 + outlook 0.5 + track_b 0.5 = 2.0; Retail: 0.0 -> weighted 1.0
+    assert analysis["outputs"]["sri"] == pytest.approx(1.0)
+    assert analysis["outputs"]["thermometer"] == "alert"
+
+
+def test_t9_10_concentration_accepts_dict_metrics(contract, registry_paths):
+    plan = load_stage_plan(_sheet("WP-RO-01"), registry_paths, contract)
+    inputs = {
+        "metrics": {
+            "hhi": 500, "cr3": 0.30, "cr5": 0.50, "max1": 0.15,
+            "single_province_share": 0.10, "weak_region_share": 0.02,
+            "aaa_share": 0.20, "pseudo_high_rating_share": 0.01,
+            "maturity_12m_share": 0.20, "single_month_peak": 0.05,
+            "top_channel_share": 0.30,
+        }
+    }
+    manifest = run_executable_stages(plan, inputs)
+    analysis = next(s for s in manifest["stages"] if s["name"] == "analysis")
+    assert analysis["mode"] == "code"
+    out = analysis["outputs"]
+    assert out["score"] == pytest.approx(2.0)
+    assert out["adjustment"] == 0.0
+    assert out["bb_cap_triggered"] is False
+
+
+def test_t9_10_invalid_enum_string_raises_value_error(contract, registry_paths):
+    # An unknown Track B level must fail loudly, not silently score zero penalty.
+    plan = load_stage_plan(_sheet("WP-RO-03"), registry_paths, contract)
+    inputs = {
+        "industries": [
+            {"name": "PV", "track_a_score": 5.0, "track_b_level": "crimson", "outlook": "negative"},
+        ],
+        "weights": [1.0],
+    }
+    with pytest.raises(ValueError):
+        run_executable_stages(plan, inputs)
+
+
+def test_t9_10_missing_field_raises_value_error(contract, registry_paths):
+    plan = load_stage_plan(_sheet("WP-RO-03"), registry_paths, contract)
+    inputs = {
+        "industries": [{"name": "PV", "track_a_score": 5.0}],
+        "weights": [1.0],
+    }
+    with pytest.raises(ValueError):
+        run_executable_stages(plan, inputs)

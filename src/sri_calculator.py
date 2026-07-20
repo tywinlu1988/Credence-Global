@@ -80,11 +80,16 @@ def m2_background_downgrade(sri: float) -> float:
 
 
 def m4_concentration_weight_adjustment(sri: float) -> float:
-    """Return multiplicative adjustment for concentration score weights based on SRI."""
+    """Return the SRI adjustment multiplier for the concentration composite score.
+
+    Per systemic-warning-framework.md §10.1 M4:
+      Composite Score = Original Score × (1 + SRI Adjustment Factor)
+      🟢 Normal: 0% (×1.00) | 🟡 Watch: +5% (×1.05) | 🟠 Alert: +15% (×1.15) | 🔴 Danger: +30% (×1.30)
+    """
     if sri >= 1.8:
-        return 1.2
+        return 1.30
     if sri >= 1.0:
-        return 1.1
+        return 1.15
     if sri >= 0.5:
-        return 1.0
-    return 0.9
+        return 1.05
+    return 1.00

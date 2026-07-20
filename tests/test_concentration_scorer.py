@@ -292,6 +292,44 @@ def test_bb_cap_channel_freeze_threshold():
     assert adj["bb_cap_triggered"] is True
 
 
+def _base_metrics(**overrides) -> ConcentrationMetrics:
+    values = dict(
+        hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
+        single_province_share=0.10, weak_region_share=0.02,
+        aaa_share=0.20, pseudo_high_rating_share=0.01,
+        maturity_12m_share=0.20, single_month_peak=0.05,
+        top_channel_share=0.30,
+    )
+    values.update(overrides)
+    return ConcentrationMetrics(**values)
+
+
+def test_region_watch_band_scores_four():
+    # 25% single-province share is in the documented watch band (20-35%) -> 4-5 score.
+    assert region_score(_base_metrics(single_province_share=0.25)) == 4
+
+
+def test_rating_watch_band_scores_four():
+    # 40% AAA share is in the documented watch band (30-50%) -> 4-5 score.
+    assert rating_score(_base_metrics(aaa_share=0.40)) == 4
+
+
+def test_maturity_watch_band_scores_four():
+    # 40% 12-month maturity share is in the documented watch band (30-50%) -> 4-5 score.
+    assert maturity_score(_base_metrics(maturity_12m_share=0.40)) == 4
+
+
+def test_channel_watch_band_scores_four():
+    # 60% top-channel share is in the documented watch band (50-70%) -> 4-5 score.
+    assert channel_score(_base_metrics(top_channel_share=0.60)) == 4
+
+
+def test_watch_band_dimension_maps_to_yellow_level():
+    # A watch-band dimension must surface as yellow, not green (concentration-framework.md §1.3).
+    adj = rating_adjustment(_base_metrics(single_province_share=0.25))
+    assert adj["levels"]["region"] == "yellow"
+
+
 def test_risk_level_boundaries():
     from src.concentration_scorer import _risk_level
     assert _risk_level(2) == "green"
