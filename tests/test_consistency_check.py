@@ -29,6 +29,37 @@ def run_checker(*args):
     )
 
 
+def test_readme_methodology_check_flags_invented_values(tmp_path, monkeypatch):
+    cc = _import_checker()
+    (tmp_path / "README.md").write_text(
+        "| Internal Score | S&P Equivalent |\n| 1.0-1.5 | AAA |\n"
+        "| **Green** (Normal) | 0-25 | Systemic risk within normal bounds |\n"
+        "| Industry Concentration | CR3, HHI | Single-industry >30% flagged, >50% action |\n",
+        encoding="utf-8",
+    )
+    compliant = (
+        "Numbers live in the engine docs: dev/engine/dual-track-methodology.md, "
+        "dev/engine/systemic-warning-framework.md, dev/engine/concentration-framework.md.\n"
+    )
+    for name in ("README.zh.md", "README.ja.md", "README.ko.md", "README.fr.md"):
+        (tmp_path / name).write_text(compliant, encoding="utf-8")
+    monkeypatch.setattr(cc, "ROOT", tmp_path)
+
+    errors = cc.check_readme_methodology()
+    assert any("README_RATING_MAP" in e and "README.md" in e for e in errors)
+    assert any("README_SRI_PCT" in e and "README.md" in e for e in errors)
+    assert any("README_CONC_THRESHOLD" in e and "README.md" in e for e in errors)
+    # the offending README also lacks the single-source-of-truth pointers
+    assert any("README_SOT_POINTER" in e and "README.md" in e for e in errors)
+    # compliant translations produce no findings
+    assert not any("README.zh.md" in e for e in errors)
+
+
+def test_readme_methodology_check_passes_real_tree():
+    cc = _import_checker()
+    assert cc.check_readme_methodology() == []
+
+
 def test_checker_runs():
     result = run_checker()
     print(result.stdout)

@@ -5,7 +5,7 @@
 <p align="center">
   <strong>Version <code>v0.0.1</code></strong> ·
   <strong>License</strong> Source-Available · Non-Commercial ·
-  <strong>196 tests</strong> · CI on Python 3.11 &amp; 3.12 ·
+  <strong>Tests</strong> pytest regression suite + consistency gates · CI on Python 3.11 &amp; 3.12 ·
   <strong>27 methodology documents</strong>
 </p>
 
@@ -167,18 +167,7 @@ On conflict, **Track A (auditable public financial facts) takes priority** over 
 
 #### Rating Mapping
 
-The engine aligns its internal rating scale with the three major international rating agencies:
-
-| Internal Score | S&P Equivalent | Moody's Equivalent | Fitch Equivalent |
-|---|---|---|---|
-| 1.0-1.5 | AAA | Aaa | AAA |
-| 1.6-2.5 | AA+/AA/AA- | Aa1/Aa2/Aa3 | AA+/AA/AA- |
-| 2.6-3.5 | A+/A/A- | A1/A2/A3 | A+/A/A- |
-| 3.6-5.5 | BBB+/BBB/BBB- | Baa1/Baa2/Baa3 | BBB+/BBB/BBB- |
-| 5.6-6.5 | BB+/BB/BB- | Ba1/Ba2/Ba3 | BB+/BB/BB- |
-| 6.6-7.5 | B+/B/B- | B1/B2/B3 | B+/B/B- |
-| 7.6-8.5 | CCC+/CCC/CCC- | Caa1/Caa2/Caa3 | CCC+/CCC/CCC- |
-| 8.6-10.0 | CC/C | Ca/C | CC/C |
+The engine's internal 0-10 composite score maps to the three major international rating agencies on an 18-notch scale — **higher score means higher rating** (9.5-10.0 = AAA at the top, 0-0.9 = D at the bottom), with a one-vote veto locking the composite ceiling at CCC. The full tier-by-tier alignment with S&P / Moody's / Fitch is single-sourced in `dev/engine/dual-track-methodology.md` §6 and is not duplicated here.
 
 **Financial framework**: IFRS (International Financial Reporting Standards) and US GAAP (Generally Accepted Accounting Principles) are both supported, with automatic detection of reporting standards from issuer filings and adjustments for key differences (operating lease capitalization, R&D capitalization, deferred tax recognition).
 
@@ -253,28 +242,28 @@ Key derived metrics include the Contagion Forward Coefficient (CFC), Contagion V
 
 Evaluates portfolio concentration risk across five independent dimensions:
 
-| Dimension | Assessment | Threshold System |
-|---|---|---|
-| Industry Concentration | CR3, HHI by GICS industry | Single-industry >30% flagged, >50% action |
-| Regional Concentration | Geographic exposure concentration | Single-region >40% flagged |
-| Rating Concentration | Distribution across rating tiers | Below-investment-grade >35% flagged |
-| Tenor Concentration | Maturity bucket distribution | Single-bucket >40% flagged |
-| Funding Channel Concentration | Funding source diversification | Single-channel >50% flagged |
+| Dimension | Assessment |
+|---|---|
+| Industry Concentration | CR3 / CR5 / HHI / MAX1 by GICS industry |
+| Regional Concentration | Single country/region share + weak-region share |
+| Rating Concentration | External AAA share + pseudo-high-rating share |
+| Tenor Concentration | 12-month maturity share + single-month peak |
+| Funding Channel Concentration | Top funding-channel share + contraction status |
 
-Each dimension includes a rating adjustment mapping table that quantifies the notch impact of concentration findings on portfolio-wide credit assessments.
+Thresholds, traffic-light bands, and the notch-impact mapping for each dimension are single-sourced in `dev/engine/concentration-framework.md` and are not duplicated here.
 
 #### Systemic Risk Index (SRI) with Four-Tier Thermometer
 
 The SRI aggregates multi-source signals into a single systemic risk reading, visualized as a four-tier thermometer:
 
-| Thermometer Tier | SRI Range | Signal | Action |
-|---|---|---|---|
-| **Green** (Normal) | 0-25 | Systemic risk within normal bounds | Standard monitoring, monthly SRI check |
-| **Yellow** (Elevated) | 26-50 | Elevated risk in specific sectors | Re-run concentration and contagion for exposed industries |
-| **Orange** (High) | 51-75 | Broad-based risk accumulation | Portfolio-wide stress test, exposure reduction review |
-| **Red** (Critical) | 76-100 | Systemic stress imminent | Emergency position review, hedge activation, senior management notification |
+| Thermometer Tier | SRI Range (0-3+ scale) | Meaning |
+|---|---|---|
+| 🟢 Normal | below 0.5 | Systemic risk within normal bounds |
+| 🟡 Watch | 0.5 - 1.0 | Elevated risk in specific sectors |
+| 🟠 Alert | 1.0 - 1.8 | Broad-based risk accumulation |
+| 🔴 Danger | 1.8 and above | Systemic stress imminent |
 
-The SRI calculation engine (`src/sri_calculator.py`) implements the full aggregation algorithm with historical backtesting support. The thermometer level feeds into the L0 signal card and triggers escalation across the four-stage pipeline.
+The SRI uses a continuous 0-3+ scale — never a percentage system. Tier definitions and mandated actions are single-sourced in `dev/engine/systemic-warning-framework.md` §3. The SRI calculation engine (`src/sri_calculator.py`) implements the aggregation algorithm, and the thermometer level feeds into the L0 signal card and triggers escalation across the four-stage pipeline.
 
 #### Outlook Monitoring Engine
 
@@ -430,11 +419,11 @@ Each work path maps to one or more HTML report templates:
 npx github:tywinlu1988/credence-global
 ```
 
-Lays the current release package into `./credence/`; open that folder with your agent CLI.
+Downloads the latest release zip from GitHub Releases, verifies its SHA-256 checksum, and unpacks it into `./credence/`; open that folder with your agent CLI. Pin a specific version with `--tag vX.Y.Z`.
 
 ### B. GitHub Release
 
-Download the latest `vX.Y.Z-release.zip` from the [Releases page](https://github.com/tywinlu1988/Credence-Global/releases), unzip, and open the package root as a project.
+Download the latest `vX.Y.Z-release.zip` from the [Releases page](https://github.com/tywinlu1988/Credence-Global/releases), verify it against the attached `vX.Y.Z-release.zip.sha256`, unzip, and open the package root as a project.
 
 ### C. Clone the Source
 
@@ -447,7 +436,7 @@ pip install -e .
 ### D. Running Tests
 
 ```bash
-python -m pytest tests/ -q          # 196 tests
+python -m pytest tests/ -q          # full regression suite
 python scripts/consistency_check.py  # Cross-document consistency validation
 ```
 
@@ -513,7 +502,6 @@ credence-global/
 |   |   |-- dimension-registry.md       # Addressable index of 6 paradigms + M0-M5 roles
 |   |   |-- work-path-registry.md       # 16 work paths, routing, pipeline integration
 |   |   |-- pipeline-contract.md        # 4-stage pipeline I/O contracts, chain edges
-|   |   |-- audits/                     # Historical review/audit archives (15 documents)
 |   |
 |   |-- templates/                      # Report template source of truth (16 HTML files)
 |   |   |-- template-base.css           # Shared style base
@@ -537,15 +525,15 @@ credence-global/
 |   |-- contagion_engine.py             # Contagion matrix & escalation engine
 |   |-- outlook_engine.py              # Outlook & monitoring assessment engine
 |
-|-- tests/                              # 196 regression tests
+|-- tests/                              # Regression test suite (pytest)
 |-- scripts/                            # Build & validation tools
 |   |-- build_dist.py                   # dev/ -> release-package assembler
 |   |-- consistency_check.py            # Cross-document consistency validation
 |   |-- promote.py                      # Version promotion utility
 |
 |-- docs/                               # Cross-CLI adapters & version management
-|-- validation/                         # Capability evidence (72+ test reports)
-|-- version/                            # Installable release packages
+|-- validation/                         # Capability evidence (2 public methodology reference reports)
+|-- version/                            # Locally built release zips (gitignored; shipped via GitHub Releases)
 |-- AGENTS.md                           # Cross-CLI universal entry point
 |-- DEVELOPMENT.md                      # Development guide
 |-- LICENSE                             # Source-available, non-commercial license
@@ -585,9 +573,9 @@ Cyclical (P1), Defensive (P2), Growth (P3), Regulated Utility (P4), Financial (P
 
 It is the topmost aggregation layer that goes beyond single-issuer analysis to detect systemic patterns: cross-industry contagion (19x19 matrix), portfolio concentration (5 dimensions), and the Systemic Risk Index (SRI) with a four-tier thermometer. Together, these modules answer "what is happening across the entire portfolio/market" rather than "is this single issuer risky."
 
-### Q8: How many tests are there? What is the CI setup?
+### Q8: What is the test and CI setup?
 
-196 tests with 1 skipped. CI runs on Python 3.11 and 3.12 via GitHub Actions. Run locally with `python -m pytest tests/ -q`. Cross-document consistency is validated separately with `python scripts/consistency_check.py`.
+The pytest regression suite covers the coded engines, the pipeline orchestrator, the document registries, the consistency checker, and the release-package builder. CI runs it on Python 3.11 and 3.12 via GitHub Actions. Run locally with `python -m pytest tests/ -q`. Cross-document consistency is validated separately with `python scripts/consistency_check.py`.
 
 ### Q9: What financial reporting standards are supported?
 
@@ -619,7 +607,7 @@ This repository is **source-available** under the Credence Source-Available Non-
 
 See the full [LICENSE](LICENSE) file for complete terms.
 
-**Commercial certification**: This engine has undergone internal methodology validation against 3 historical default cases (Yongmei, Ziguang, Brilliance Auto), with 72+ capability test reports archived in the `validation/` directory. The methodology has been backtested across 6 industry paradigms and 19 GICS-based industry classifications.
+**Methodology validation**: The engine's methodology has been exercised against five documented historical default/distress cases — Lehman Brothers, Wirecard, Valeant, Credit Suisse, and the Greece sovereign restructuring (see `dev/engine/validation-methodology.md` §6). Two public methodology reference reports ship in the `validation/` directory; the full test archive is maintained privately and available on request.
 
 ---
 

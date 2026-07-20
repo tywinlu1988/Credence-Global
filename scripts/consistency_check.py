@@ -18,6 +18,18 @@ ROUTER_SKILL_FILE = ROOT / "dev" / ".claude" / "skills" / "credit-analysis-route
 SKILLS_DIR = ROOT / "dev" / ".claude" / "skills"
 AGENTS_MD = ROOT / "AGENTS.md"
 
+# Public READMEs (all language variants) must not restate methodology numbers; they point
+# to the engine documents instead. Patterns below are the known invented-value shapes.
+README_FILES = ["README.md", "README.zh.md", "README.ja.md", "README.ko.md", "README.fr.md"]
+README_RATING_MAP_RE = re.compile(r"\|\s*1\.0\s*-\s*1\.5\s*\|\s*AAA")  # inverted map: SoT is 9.5-10.0 = AAA
+README_SRI_PCT_RE = re.compile(r"\|\s*(?:0-25|26-50|51-75|76-100)\s*\|")  # 0-100 SRI scale is prohibited
+README_CONC_THRESHOLD_RE = re.compile(r">\s*(?:30|35|40|50)%\s+flagged", re.IGNORECASE)
+README_SOT_DOCS = [
+    "dev/engine/dual-track-methodology.md",
+    "dev/engine/systemic-warning-framework.md",
+    "dev/engine/concentration-framework.md",
+]
+
 # Make `src` importable when this script is run directly (python scripts/consistency_check.py),
 # where sys.path[0] is the scripts/ dir rather than the repo root.
 if str(ROOT) not in sys.path:
@@ -573,6 +585,33 @@ def _industry_covered(industry: str, text: str) -> bool:
     return False
 
 
+def check_readme_methodology() -> list[str]:
+    """Public READMEs must not carry invented methodology values.
+
+    Guards the three historical drift shapes: inverted rating map (SoT:
+    dual-track-methodology.md §6, higher score = higher rating), the prohibited 0-100
+    SRI scale (SoT: systemic-warning-framework.md §3, continuous 0-3+), and invented
+    concentration thresholds (SoT: concentration-framework.md). Each README must point
+    to the SoT docs instead of restating numbers.
+    """
+    errors = []
+    for name in README_FILES:
+        path = ROOT / name
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8")
+        if README_RATING_MAP_RE.search(text):
+            errors.append(f"README_RATING_MAP: {name} contains inverted rating map (1.0-1.5 = AAA)")
+        if README_SRI_PCT_RE.search(text):
+            errors.append(f"README_SRI_PCT: {name} contains prohibited 0-100 SRI scale")
+        if README_CONC_THRESHOLD_RE.search(text):
+            errors.append(f"README_CONC_THRESHOLD: {name} contains invented concentration thresholds")
+        missing = [doc for doc in README_SOT_DOCS if doc not in text]
+        if missing:
+            errors.append(f"README_SOT_POINTER: {name} does not point to {missing}")
+    return errors
+
+
 def check_paradigm_coverage() -> list[str]:
     """Ensure every industry in contagion-matrix §1.2 appears in industry-framework.md."""
     contagion_path = ENGINE_DIR / "contagion-matrix.md"
@@ -607,6 +646,7 @@ def collect_errors(only_links: bool = False) -> list[str]:
     errors.extend(check_registry_templates())
     errors.extend(check_registry_quality_gates())
     errors.extend(check_migration_matrix_structure())
+    errors.extend(check_readme_methodology())
     return errors
 
 

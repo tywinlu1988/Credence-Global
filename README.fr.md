@@ -5,7 +5,7 @@
 <p align="center">
   <strong>Version <code>v0.0.1</code></strong> ·
   <strong>Licence</strong> Source visible · Non commercial ·
-  <strong>196 tests</strong> · CI Python 3.11 &amp; 3.12 ·
+  <strong>Tests</strong> suite de regression pytest + portes de coherence · CI Python 3.11 &amp; 3.12 ·
   <strong>27 documents méthodologiques</strong>
 </p>
 
@@ -169,18 +169,7 @@ En cas de conflit, **la Voie A (faits financiers publics auditables) a priorite*
 
 #### Correspondance des Notations
 
-Le moteur aligne son echelle de notation interne avec les trois grandes agences internationales :
-
-| Score Interne | Equivalent S&P | Equivalent Moody's | Equivalent Fitch |
-|---|---|---|---|
-| 1.0-1.5 | AAA | Aaa | AAA |
-| 1.6-2.5 | AA+/AA/AA- | Aa1/Aa2/Aa3 | AA+/AA/AA- |
-| 2.6-3.5 | A+/A/A- | A1/A2/A3 | A+/A/A- |
-| 3.6-5.5 | BBB+/BBB/BBB- | Baa1/Baa2/Baa3 | BBB+/BBB/BBB- |
-| 5.6-6.5 | BB+/BB/BB- | Ba1/Ba2/Ba3 | BB+/BB/BB- |
-| 6.6-7.5 | B+/B/B- | B1/B2/B3 | B+/B/B- |
-| 7.6-8.5 | CCC+/CCC/CCC- | Caa1/Caa2/Caa3 | CCC+/CCC/CCC- |
-| 8.6-10.0 | CC/C | Ca/C | CC/C |
+Le score composite interne de 0 a 10 est aligne sur les trois grandes agences internationales selon une echelle de 18 crans -- **un score plus eleve signifie une meilleure notation** (9.5-10.0 = AAA en haut, 0-0.9 = D en bas) ; un veto en une voix plafonne la notation composite a CCC. L'alignement cran par cran avec S&P / Moody's / Fitch a pour source unique `dev/engine/dual-track-methodology.md` §6 et n'est pas duplique ici.
 
 **Cadre financier** : Les normes IFRS (International Financial Reporting Standards) et US GAAP (Generally Accepted Accounting Principles) sont toutes deux supportees, avec detection automatique du referentiel a partir des depots de l'emetteur et ajustement pour les differences cles (capitalisation des credits-bails, capitalisation de la R&D, reconnaissance des impots differes).
 
@@ -255,28 +244,28 @@ Les mesures derivees cles incluent le Coefficient de Contagion Directe (CFC), le
 
 Evalue le risque de concentration du portefeuille sur cinq dimensions independantes :
 
-| Dimension | Evaluation | Systeme de Seuils |
-|---|---|---|
-| Concentration Sectorielle | CR3, HHI par secteur GICS | Un seul secteur >30% signale, >50% action |
-| Concentration Regionale | Concentration de l'exposition geographique | Une seule region >40% signalee |
-| Concentration de Notation | Distribution entre les niveaux de notation | Sous-investment grade >35% signale |
-| Concentration d'Echeance | Distribution par tranche de maturite | Une seule tranche >40% signalee |
-| Concentration des Canaux de Financement | Diversification des sources de financement | Un seul canal >50% signale |
+| Dimension | Evaluation |
+|---|---|
+| Concentration Sectorielle | CR3 / CR5 / HHI / MAX1 par secteur GICS |
+| Concentration Regionale | Part d'un seul pays/region + part des regions fragiles |
+| Concentration de Notation | Part des AAA externes + part des pseudo-hautes notations |
+| Concentration d'Echeance | Part des echeances a 12 mois + pic sur un mois |
+| Concentration des Canaux de Financement | Part du premier canal + statut de contraction |
 
-Chaque dimension comprend un tableau de correspondance d'ajustement de notation qui quantifie l'impact en crans des constats de concentration sur les evaluations de credit a l'echelle du portefeuille.
+Les seuils, les bandes de feux tricolores et l'impact en crans de chaque dimension ont pour source unique `dev/engine/concentration-framework.md` et ne sont pas dupliques ici.
 
 #### Indice de Risque Systemique (SRI) avec Thermometre a Quatre Niveaux
 
 Le SRI agrege des signaux multi-sources en une seule lecture de risque systemique, visualisee sous forme de thermometre a quatre niveaux :
 
-| Niveau du Thermometre | Plage SRI | Signal | Action |
-|---|---|---|---|
-| **Vert** (Normal) | 0-25 | Risque systemique dans les limites normales | Surveillance standard, verification SRI mensuelle |
-| **Jaune** (Eleve) | 26-50 | Risque eleve dans des secteurs specifiques | Relancer la concentration et la contagion pour les industries exposees |
-| **Orange** (Haut) | 51-75 | Accumulation de risque generalisee | Test de resistance du portefeuille, examen de reduction d'exposition |
-| **Rouge** (Critique) | 76-100 | Stress systemique imminent | Examen d'urgence des positions, activation des couvertures, notification a la direction |
+| Niveau du Thermometre | Plage SRI (echelle 0-3+) | Signification |
+|---|---|---|
+| 🟢 Normal | inferieure a 0.5 | Risque systemique dans les limites normales |
+| 🟡 Veille | 0.5 - 1.0 | Risque eleve dans certains secteurs |
+| 🟠 Alerte | 1.0 - 1.8 | Accumulation generalisee du risque |
+| 🔴 Danger | 1.8 et plus | Stress systemique imminent |
 
-Le moteur de calcul du SRI (`src/sri_calculator.py`) implemente l'algorithme d'agregation complet avec support de backtest historique. Le niveau du thermometre alimente la carte de signaux L0 et declenche l'escalade dans l'ensemble du pipeline en quatre etapes.
+Le SRI utilise une echelle continue de 0 a 3+ -- jamais un systeme en pourcentage. Les definitions des niveaux et les actions prescrites ont pour source unique `dev/engine/systemic-warning-framework.md` §3. Le moteur de calcul du SRI (`src/sri_calculator.py`) implemente l'algorithme d'agregation ; le niveau du thermometre alimente la carte de signaux L0 et declenche l'escalade dans l'ensemble du pipeline en quatre etapes.
 
 #### Moteur de Surveillance des Perspectives
 
@@ -432,11 +421,11 @@ Chaque chemin de travail correspond a un ou plusieurs templates de rapport HTML 
 npx github:tywinlu1988/credence-global
 ```
 
-Place le package de version actuelle dans `./credence/` ; ouvrez ce dossier avec votre CLI agent.
+Telecharge la derniere archive zip depuis GitHub Releases, verifie sa somme de controle SHA-256, puis la decompresse dans `./credence/` ; ouvrez ce dossier avec votre CLI agent. Epinglez une version precise avec `--tag vX.Y.Z`.
 
 ### B. GitHub Release
 
-Telechargez le dernier `vX.Y.Z-release.zip` depuis la [page Releases](https://github.com/tywinlu1988/Credence-Global/releases), dezippez, et ouvrez la racine du package comme projet.
+Telechargez le dernier `vX.Y.Z-release.zip` depuis la [page Releases](https://github.com/tywinlu1988/Credence-Global/releases), verifiez-le avec le fichier `vX.Y.Z-release.zip.sha256` joint, dezippez, et ouvrez la racine du package comme projet.
 
 ### C. Cloner la Source
 
@@ -449,7 +438,7 @@ pip install -e .
 ### D. Execution des Tests
 
 ```bash
-python -m pytest tests/ -q          # 196 tests
+python -m pytest tests/ -q          # suite de regression complete
 python scripts/consistency_check.py  # Validation de coherence inter-documents
 ```
 
@@ -515,7 +504,6 @@ credence-global/
 |   |   |-- dimension-registry.md       # Index adressable des 6 paradigmes + roles M0-M5
 |   |   |-- work-path-registry.md       # 16 chemins de travail, routage, integration pipeline
 |   |   |-- pipeline-contract.md        # Contrats I/O du pipeline 4 etapes, aretes de chainage
-|   |   |-- audits/                     # Archives de revue/audit historique (15 documents)
 |   |
 |   |-- templates/                      # Source unique de verite des templates de rapport (16 fichiers HTML)
 |   |   |-- template-base.css           # Base de style partagee
@@ -539,15 +527,15 @@ credence-global/
 |   |-- contagion_engine.py             # Moteur de matrice de contagion et d'escalade
 |   |-- outlook_engine.py              # Moteur d'evaluation des perspectives et de surveillance
 |
-|-- tests/                              # 196 tests de regression
+|-- tests/                              # Suite de tests de regression (pytest)
 |-- scripts/                            # Outils de construction et de validation
 |   |-- build_dist.py                   # Assembleur de package de release dev/ ->
 |   |-- consistency_check.py            # Validation de coherence inter-documents
 |   |-- promote.py                      # Utilitaire de promotion de version
 |
 |-- docs/                               # Adaptateurs inter-CLI et gestion de versions
-|-- validation/                         # Preuves de capacite (72+ rapports de test)
-|-- version/                            # Packages de release installables
+|-- validation/                         # Preuves de capacite (2 rapports methodologiques publics de reference)
+|-- version/                            # Archives zip de release construites localement (ignorees par git ; distribuees via GitHub Releases)
 |-- AGENTS.md                           # Point d'entree universel inter-CLI
 |-- DEVELOPMENT.md                      # Guide de developpement
 |-- LICENSE                             # Licence source visible, non commerciale
@@ -587,9 +575,9 @@ Cyclique (P1), Defensif (P2), Croissance (P3), Service Public Reglemente (P4), F
 
 C'est la couche d'agregation la plus elevee qui va au-dela de l'analyse d'un emetteur unique pour detecter des schemas systemiques : contagion inter-sectorielle (matrice 19x19), concentration de portefeuille (5 dimensions) et Indice de Risque Systemique (SRI) avec un thermometre a quatre niveaux. Ensemble, ces modules repondent a "que se passe-t-il dans l'ensemble du portefeuille/marche" plutot qu'a "cet emetteur unique est-il risqué."
 
-### Q8 : Combien de tests ? Quelle est la configuration CI ?
+### Q8 : Quelle est la configuration des tests et de la CI ?
 
-196 tests avec 1 ignore. La CI s'execute sur Python 3.11 et 3.12 via GitHub Actions. Execution locale avec `python -m pytest tests/ -q`. La coherence inter-documents est validee separement avec `python scripts/consistency_check.py`.
+La suite de regression pytest couvre les moteurs codes, l'orchestrateur de pipeline, les registres de documents, le verificateur de coherence et le constructeur du package de release. La CI s'execute sur Python 3.11 et 3.12 via GitHub Actions. Execution locale avec `python -m pytest tests/ -q`. La coherence inter-documents est validee separement avec `python scripts/consistency_check.py`.
 
 ### Q9 : Quelles normes d'information financiere sont supportees ?
 
@@ -621,7 +609,7 @@ Ce depot est fourni sous **Licence Non Commerciale Source Visible Credence**. Vo
 
 Voir le fichier [LICENSE](LICENSE) pour les conditions completes.
 
-**Certification commerciale** : Ce moteur a subi une validation methodologique interne sur 3 cas de defaut historiques (Yongmei, Ziguang, Brilliance Auto), avec 72+ rapports de test de capacite archives dans le repertoire `validation/`. La methodologie a ete testee sur 6 paradigmes sectoriels et 19 classifications industrielles basees sur le GICS.
+**Validation methodologique** : La methodologie du moteur a ete eprouvee sur cinq cas historiques documentes de defaut/detresse -- Lehman Brothers, Wirecard, Valeant, Credit Suisse et la restructuration souveraine grecque (voir `dev/engine/validation-methodology.md` §6). Deux rapports methodologiques publics de reference sont fournis dans le repertoire `validation/` ; l'archive complete des tests est maintenue en prive et disponible sur demande.
 
 ---
 
