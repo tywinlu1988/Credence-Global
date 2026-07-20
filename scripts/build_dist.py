@@ -200,7 +200,7 @@ The engine decomposes each credit analysis into a four-stage chained contract, w
 
 Four-stage artifacts (Path Sheet / Analysis Artifact / Delivery Note / QA Verdict) field shapes and chaining edges are single-sourced in `engine/pipeline-contract.md`.
 
-**Executable Orchestrator**: `src/pipeline.py` drives the four-stage chain as code, reading stage definitions from `pipeline-contract.md`. It calls coded engines only for wired paths -- **WP-RO-03 -> SRI (`src/sri_calculator.py`), WP-RO-01 -> Concentration (`src/concentration_scorer.py`)**; remaining paths are LLM-orchestrated via engine documents.
+**Executable Orchestrator**: `src/pipeline.py` drives the four-stage chain as code, reading stage definitions from `pipeline-contract.md`. It calls coded engines only for wired paths -- **WP-RO-01 -> Concentration (`src/concentration_scorer.py`), WP-RO-02 -> Contagion (`src/contagion_engine.py`), WP-RO-03 -> SRI (`src/sri_calculator.py`), WP-X-05 -> Outlook (`src/outlook_engine.py`)**; remaining paths are LLM-orchestrated via engine documents.
 
 ## Single Source of Truth Rule
 
@@ -258,6 +258,10 @@ cd credence                   # use package root as project root
 # Claude Code: claude   .   Codex: codex   .   Others: open the folder
 ```
 
+**Python dependency**: the executable orchestrator (`src/pipeline.py`) and its wired coded
+engines require Python 3.11+ with PyYAML (`pip install pyyaml`). The LLM-orchestrated
+skills need no Python setup at all.
+
 ## Model B -- Integrate Into Your Existing Project
 
 Copy the **entire runtime core** to your project root (not just the skills folder):
@@ -310,7 +314,7 @@ Entry point: **`AGENTS.md`**.
 - `.claude/skills/` -- Four-stage chain skills (intake router -> analysis -> report -> qa)
 - `engine/` -- 27 methodology documents (thresholds/weights/rating maps: single source of truth)
 - `templates/` -- Type 1-15 report templates
-- `src/` -- Executable orchestrator and 2 coded engines (SRI, Concentration)
+- `src/` -- Executable orchestrator and 4 coded engines (Concentration, Contagion, SRI, Outlook)
 - `adapters/` -- Tool-specific deep adapter guidance
 """
 
