@@ -1,6 +1,6 @@
 # Network and Throughput (P4) Paradigm: Network-Effect and Traffic/Throughput Analysis
 
-**Version**: v0.0.1 | **Paradigm Version**: v1.0.0 | **Date**: 2026-07-18 | **Status**: Initial international release
+**Version**: v0.0.2 | **Paradigm Version**: v1.0.0 | **Date**: 2026-07-18 | **Status**: Initial international release
 
 ---
 

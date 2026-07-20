@@ -74,7 +74,7 @@ def _rules(root: Path, old: str, new: str, semver: str, old_semver: str):
         ("overview-sysver", ["dev/engine/engine-overview.md"],
          re.compile(r"(\*\*(?:引擎版本|Engine Version)\*\*\s*\|[^|\n]*\|\s*)" + O + r"(?=\s*\|)"), r"\g<1>" + new),
         ("skill-version", [f"dev/.claude/skills/{s}/SKILL.md" for s in SKILL_NAMES],
-         re.compile(r"(\*\*(?:对应引擎版本|Corresponding Engine Version)\*\*[:：]\s*)" + O), r"\g<1>" + new),
+         re.compile(r"(\*\*(?:对应引擎版本|Corresponding Engine Version|Engine version)\*\*[:：]\s*)" + O), r"\g<1>" + new),
         ("skill-title", ["dev/.claude/skills/fixed-income-credit-analysis/SKILL.md"],
          re.compile(r"(# Fixed Income Credit Analysis Engine\s*)" + O), r"\g<1>" + new),
         ("references-headers", refs,

@@ -1,6 +1,6 @@
 # Industry Scoring (Track A)
 
-**Version**: v0.0.1
+**Version**: v0.0.2
 
 > This document is derived from `fixed-income-credit-analysis` SKILL.md, organizing Track A industry scoring content (industry pyramids / six paradigms / ten-dimension scoring / industry selection). The single source of truth for thresholds, weights, and one-shot veto conditions is `dev/engine/industry-framework.md`; this file is for navigation and organization only and introduces no new values.
 

@@ -3,7 +3,7 @@
 > **方法論優先のグローバル固定利付クレジット分析エンジン** — **Agent Skills**（`SKILL.md`）として提供。Claude Code、Codex、Cursor、Gemini、OpenCode にインストール可能。従来の財務指標を超えた、厳密で再現可能かつ透明性の高いクレジット分析を必要とするクレジットプロフェッショナル向け。
 
 <p align="center">
-  <strong>バージョン <code>v0.0.1</code></strong> ·
+  <strong>バージョン <code>v0.0.2</code></strong> ·
   <strong>ライセンス</strong> ソース閲覧可能 · 非商用 ·
   <strong>テスト</strong> pytest 回帰スイート + 一貫性ゲート · Python 3.11 &amp; 3.12 CI ·
   <strong>27 方法論ドキュメント</strong>
@@ -614,6 +614,6 @@ IFRS（國際財務報告基準）とUS GAAP（米国一般会計原則）。エ
 ---
 
 <p align="center">
-  <strong>Credence</strong> · 固定利付債券クレジット分析エンジン · v0.0.1<br>
+  <strong>Credence</strong> · 固定利付債券クレジット分析エンジン · v0.0.2<br>
   厳密で透明性が高く再現可能なクレジット分析のために構築されました。
 </p>

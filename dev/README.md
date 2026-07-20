@@ -1,7 +1,7 @@
 # Fixed Income Credit Intelligent Analysis Engine
 
 **Project Codename**: Credence
-**Version**: v0.0.1
+**Version**: v0.0.2
 **Status**: Methodology documentation phase -- Product design complete -- International industry coverage -- System intelligence layer online -- Documentation structure reorganized
 
 ---
@@ -136,6 +136,7 @@ To commence after methodology and product design are fully documented.
 
 | Version | Date | Milestone |
 |---|---|---|
+| v0.0.2 | 2026-07-20 | Consistency fixes: engine scoring corrections, zip-based release distribution with verified installer, README methodology corrections in 5 languages |
 | v0.0.1 | 2026-07-18 | Initial release: international fixed-income credit analysis engine |
 
 ---

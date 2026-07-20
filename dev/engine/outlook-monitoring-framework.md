@@ -1,6 +1,6 @@
 # Rating Outlook and Continuous Monitoring Framework
 
-**Version**: v0.0.1 | **Date**: 2026-07-10 | **Positioning**: On top of dual-track static ratings, add forward-looking direction and continuous monitoring mechanisms
+**Version**: v0.0.2 | **Date**: 2026-07-10 | **Positioning**: On top of dual-track static ratings, add forward-looking direction and continuous monitoring mechanisms
 
 ---
 
@@ -8,7 +8,7 @@
 
 ### 1.1 The Current Engine Gap
 
-The current engine (v0.0.1) outputs a **static snapshot rating** (AAA through D) that only reflects the credit quality assessment at the time of analysis. Beyond static ratings, professional rating agencies consistently maintain **three time dimensions**:
+The current engine (v0.0.2) outputs a **static snapshot rating** (AAA through D) that only reflects the credit quality assessment at the time of analysis. Beyond static ratings, professional rating agencies consistently maintain **three time dimensions**:
 
 | Time Dimension | Traditional Rating Output | Engine Current State | Gap |
 |---|---|---|---|
@@ -497,11 +497,11 @@ This module is not an independent document -- corresponding modifications need t
 **Rating Output Specification Changes**:
 
 ```
-# Current (v0.0.1)
+# Current (v0.0.2)
 Composite Output
 Rating + Signals + Completeness Report
 
-# Revised (v0.0.1)
+# Revised (v0.0.2)
 Composite Output
 Rating + Outlook + Watchlist + Continuous Monitoring Checklist + Signal Completeness Report
 ```

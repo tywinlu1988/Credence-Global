@@ -1,6 +1,6 @@
 # Dimension Registry
 
-**Version**: v0.0.1 | **Date**: 2026-07-18
+**Version**: v0.0.2 | **Date**: 2026-07-18
 
 This registry objectifies the engine's **analysis dimensions** into addressable, machine-readable entries: **6 analysis paradigms (P1-P6)**, and **6 stakeholder role types**. It serves as the unified index layer for "route-by-dimension / search-by-dimension" in the v0.0.1 skill architecture.
 

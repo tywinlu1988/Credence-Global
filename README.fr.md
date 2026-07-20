@@ -3,7 +3,7 @@
 > **Un moteur d'analyse de crédit axé sur la méthodologie pour les marchés obligataires mondiaux** — livré sous forme de **Agent Skills** (`SKILL.md`), installable dans Claude Code, Codex, Cursor, Gemini et OpenCode. Conçu pour les professionnels du crédit qui ont besoin d'une analyse de crédit rigoureuse, reproductible et transparente au-dela des mesures financières traditionnelles.
 
 <p align="center">
-  <strong>Version <code>v0.0.1</code></strong> ·
+  <strong>Version <code>v0.0.2</code></strong> ·
   <strong>Licence</strong> Source visible · Non commercial ·
   <strong>Tests</strong> suite de regression pytest + portes de coherence · CI Python 3.11 &amp; 3.12 ·
   <strong>27 documents méthodologiques</strong>
@@ -614,6 +614,6 @@ Voir le fichier [LICENSE](LICENSE) pour les conditions completes.
 ---
 
 <p align="center">
-  <strong>Credence</strong> · Moteur d'Analyse de Credit Obligataire · v0.0.1<br>
+  <strong>Credence</strong> · Moteur d'Analyse de Credit Obligataire · v0.0.2<br>
   Construit pour une analyse de credit rigoureuse, transparente et reproductible.
 </p>

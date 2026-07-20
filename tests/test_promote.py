@@ -54,6 +54,10 @@ def _fake_tree(tmp_path: Path) -> None:
     (skills / "credit-qa-verifier" / "SKILL.md").write_text(
         "**Corresponding Engine Version**: v0.0.1\n", encoding="utf-8"
     )
+    (skills / "credit-analysis-router").mkdir(parents=True)
+    (skills / "credit-analysis-router" / "SKILL.md").write_text(
+        "**Engine version**: v0.0.1\n", encoding="utf-8"
+    )
     (tmp_path / "dev").mkdir(exist_ok=True)
     (tmp_path / "dev" / "README.md").write_text(
         "**Version**: v0.0.1\n| **v0.0.1** | **2026-07-16** | historical row stays untouched |\n",
@@ -123,6 +127,9 @@ def test_apply_rules_rewrites_all_declaration_points(tmp_path):
     )
     assert "**Corresponding Engine Version**: v0.0.2" in _read(
         tmp_path / "dev" / ".claude" / "skills" / "credit-qa-verifier" / "SKILL.md"
+    )
+    assert "**Engine version**: v0.0.2" in _read(
+        tmp_path / "dev" / ".claude" / "skills" / "credit-analysis-router" / "SKILL.md"
     )
     assert _read(tmp_path / "dev" / "README.md").startswith("**Version**: v0.0.2")
     assert "**Engine Version**：v0.0.2" in _read(tmp_path / "AGENTS.md")

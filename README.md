@@ -3,7 +3,7 @@
 > **A methodology-first credit analysis engine for global fixed-income markets** — delivered as **Agent Skills** (`SKILL.md`), installable into Claude Code, Codex, Cursor, Gemini, and OpenCode. Built for credit professionals who need rigorous, reproducible, and transparent credit analysis that goes beyond traditional financial metrics.
 
 <p align="center">
-  <strong>Version <code>v0.0.1</code></strong> ·
+  <strong>Version <code>v0.0.2</code></strong> ·
   <strong>License</strong> Source-Available · Non-Commercial ·
   <strong>Tests</strong> pytest regression suite + consistency gates · CI on Python 3.11 &amp; 3.12 ·
   <strong>27 methodology documents</strong>
@@ -612,6 +612,6 @@ See the full [LICENSE](LICENSE) file for complete terms.
 ---
 
 <p align="center">
-  <strong>Credence</strong> · Fixed-Income Credit Analysis Engine · v0.0.1<br>
+  <strong>Credence</strong> · Fixed-Income Credit Analysis Engine · v0.0.2<br>
   Built for rigorous, transparent, and reproducible credit analysis.
 </p>
