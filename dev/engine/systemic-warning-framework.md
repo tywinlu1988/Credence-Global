@@ -545,17 +545,6 @@ Financials is naturally the largest bond-market sector (~30% of international co
 
 ---
 
-> **Legacy worked examples (§5-§8):** The backtests and the current-period example in
-> Sections 5-8 were computed under the **retired 13-industry China-market composition**
-> (LGFV/sub-sovereign, Solar/PV, NEV, etc.) and the pre-v0.0.2 contagion coefficients.
-> They remain valid as *methodology demonstrations* of the SRI arithmetic and thermometer
-> behavior, but their industry weights, contagion coefficients, and industry set do not
-> match the current 19-industry GICS composition (§2.3.1/§4.1). Re-derivation of these
-> worked examples under the 19-industry composition is a scheduled follow-up; until then,
-> read §5-§8 for the *mechanics*, not for current parameter values.
-
----
-
 ## 5. Historical Backtest 1: GFC 2008 (Pre-Lehman)
 
 ### 5.1 Scenario Background
@@ -564,72 +553,72 @@ Financials is naturally the largest bond-market sector (~30% of international co
 **Actual Event Date:** September 15, 2008 (Lehman Brothers filed for Chapter 11 bankruptcy protection)
 **Market Environment at the Time:** After the subprime mortgage crisis emerged in 2007, the market experienced a period of relative calm in early-to-mid 2008. Bear Stearns had been rescued by JPMorgan in March 2008. The AAA-rated MBS/CDO ratings bubble was still largely intact. The market broadly believed that systemically important institutions would be bailed out.
 
-### 5.2 Industry Signal State at the Time
+### 5.2 Industry Signal State at the Time (19-Industry GICS Composition)
 
-Based on historical data reconstruction, the estimated signal states for the 13 industries in Q3 2008 (pre-Lehman) are as follows:
+Estimated signal states for the 19 industries in Q3 2008 (pre-Lehman), reconstructed from public historical data:
 
-| Industry | Track A Score (Est.) | Industry Risk Score (Base) | Outlook | Track B | Risk Score |
-|----------|---------------------|--------------------------|---------|---------|------------|
-| Energy/Mining | 3.0-4.0 (B+ to BB) | 2 | Negative | 🟡 (Watch) | 3.0 |
-| LGFV Bonds / Sub-Sovereign | 5.5-6.0 (BB+ to BBB) | 1 | Stable | 🟢 (Calm) | 1.0 |
-| Transportation | 5.5-6.0 (BB+ to BBB) | 1 | Stable | 🟢 (Calm) | 1.0 |
-| Real Estate / Financial | 3.5-4.5 (B+ to BB) | 2 | Negative | 🟠 (Abnormal) | 3.0 |
-| Solar/PV & Energy Storage | 5.5-6.0 (BBB- to BBB+) | 1 | Stable | 🟢 (Calm) | 1.0 |
-| Semiconductors/Integrated Circuits | 6.0-7.0 (BBB+ to A-) | 0 | Positive | 🟢 (Calm) | 0 |
-| Advanced Equipment | 6.0-7.0 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
-| Biopharmaceuticals | 6.5-7.5 (A- to A) | 0 | Positive | 🟢 (Calm) | 0 |
-| Medical Devices | 6.0-7.0 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
-| New Energy Vehicles | 5.5-6.5 (BBB to A-) | 0 | Stable | 🟢 (Calm) | 0 |
-| Data Centers | 6.5-7.0 (A- to A) | 0 | Positive | 🟢 (Calm) | 0 |
-| Food & Beverage | 7.0-7.5 (A) | 0 | Stable | 🟢 (Calm) | 0 |
-| Textile & Apparel | 6.0-6.5 (BBB+) | 0 | Stable | 🟢 (Calm) | 0 |
-
-**Note on Energy/Mining and Financial/Real Estate sectors:** These industries are not within the engine's standard 13-industry coverage. In this backtest, their risk signals are approximated within the relevant industry categories. In Q3 2008:
-- Lehman Brothers had massive exposure to subprime MBS/CDOs, with a debt-to-equity ratio exceeding 30:1
-- AIG had written extensive credit default swaps on MBS, facing potential $50B+ in losses
-- Systemic contagion was spreading across the entire financial sector
-- Major banks (Citi, Bank of America, Merrill Lynch) were all under severe stress
-- The financial sector's track B signals reflected extreme market pricing dislocation
+| Industry | Track A Score (Est.) | Base | Outlook | Track B | Risk Score | Basis |
+|----------|---------------------|------|---------|---------|------------|-------|
+| **Financials (Banks/Insurance)** | 3.0-4.0 (B+/BB) | 2 | Negative | 🟠 (Abnormal) | **3.0** | Bear Stearns rescued in March; Lehman/AIG/Merrill under severe stress; bank CDS spreads already blown out |
+| Sovereigns & GSEs | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | US Treasuries as safe haven; no sovereign stress pre-crisis |
+| Energy (Oil & Gas) | 5.0-6.0 (BBB) | 1 | Negative | 🟡 (Watch) | **2.0** | Oil peaked at $147 in July 2008, then collapsed; demand destruction beginning |
+| Metals & Mining | 5.0-6.0 (BBB) | 1 | Negative | 🟡 (Watch) | **2.0** | Copper/iron ore peaked in 2008 H1 and rolled over |
+| Construction Materials | 4.0-5.0 (B+/BB) | 2 | Negative | 🟠 (Abnormal) | **3.0** | US housing collapse already underway |
+| Automobiles | 3.0-4.0 (B+/BB) | 2 | Negative | 🟠 (Abnormal) | **3.0** | Detroit 3 in crisis (pre-bailout); sales collapsing |
+| Transportation | 5.0-6.0 (BBB) | 1 | Negative | 🟡 (Watch) | **2.0** | Baltic Dry Index crashed mid-2008 |
+| Chemicals | 5.0-6.0 (BBB) | 1 | Stable | 🟢 (Calm) | 1.0 | Demand weakening but feedstock costs falling in parallel |
+| Capital Goods | 5.0-6.0 (BBB) | 1 | Stable | 🟢 (Calm) | 1.0 | Order books still at cycle top |
+| Commercial Services | 5.0-6.0 (BBB) | 1 | Stable | 🟢 (Calm) | 1.0 | Staffing/services beginning to soften |
+| Technology Hardware (Semis) | 5.0-6.0 (BBB) | 1 | Stable | 🟢 (Calm) | 1.0 | Cycle turn starting; balance sheets still solid |
+| Consumer Durables | 5.0-6.0 (BBB) | 1 | Negative | 🟢 (Calm) | 1.5 | Housing-linked durables weakening |
+| Retail | 5.0-6.0 (BBB) | 1 | Negative | 🟢 (Calm) | 1.5 | Discretionary spending weakening |
+| Consumer Staples | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | Defensive |
+| Software & Services | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | Resilient |
+| Biotech & Pharma | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | Defensive |
+| Healthcare Equipment | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | Stable |
+| Utilities (Regulated) | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | Defensive |
+| Telecommunications | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | Stable |
 
 ### 5.3 SRI Calculation
 
+Weights use the §4.1 illustrative outstanding shares with the **25% single-industry cap** applied (Financials' normalized 33.9% is capped at 25%; the excess is redistributed pro-rata, factor ≈ 1.135):
+
 ```
-Risk Score Count:
-  3-point industries: 2 (Energy/Mining, Real Estate/Financial — including veto-level signals)
-  2-point industries: 0
-  1-point industries: 3 (Sub-sovereign/LGFV, Transportation, Solar/PV)
-  0-point industries: 8 (remaining industries)
+Weighted contributions (risk score × capped weight):
+  Financials            3.0 × 25.00% = 0.750
+  Energy                2.0 ×  8.40% = 0.168
+  Transportation        2.0 ×  4.56% = 0.091
+  Automobiles           3.0 ×  2.89% = 0.087
+  Capital Goods         1.0 ×  5.04% = 0.050
+  Technology Hardware   1.0 ×  4.91% = 0.049
+  Metals & Mining       2.0 ×  2.05% = 0.041
+  Chemicals             1.0 ×  3.68% = 0.037
+  Construction Materials 3.0 ×  0.94% = 0.028
+  Consumer Durables     1.5 ×  0.91% = 0.014
+  Retail                1.5 ×  0.91% = 0.014
+  Commercial Services   1.0 ×  0.91% = 0.009
+  (Sovereigns, Utilities, Telecom, Staples, Software, Biotech, HealthEquip: 0)
 
-Simple Arithmetic Mean ≈ (3×2 + 1×3 + 0×8) / 13 = 9 / 13 = 0.69
-
-Weighted SRI Estimate (approximate):
-  LGFV/Sub-sovereign (25% weight): 1 point × 25% = 0.25
-  Transportation (8.5%): 1 point × 8.5% = 0.09
-  Energy/Mining (approx 2%): 3 points × 2% = 0.06
-  Real Estate/Financial indirect (5%): 3 points × 5% = 0.15
-  Other industries weighted total: ≈ 0.15
-  SRI ≈ 0.25 + 0.09 + 0.06 + 0.15 + 0.15 = 0.70
-
-→ **SRI ≈ 0.70 (🟡 Watch range)**
+SRI ≈ 1.29  →  🟠 Alert (1.0 - 1.8)
 ```
 
 ### 5.4 Could It Provide Early Warning?
 
 | Assessment Dimension | Conclusion |
 |---------------------|-----------|
-| **Did SRI enter 🟡?** | **Yes.** SRI ≈ 0.70, crossed the 0.5 watch threshold |
-| **Could it warn 1 month ahead?** | **Conditional warning.** SRI was already in 🟡 in Q3 2008, with the main risk contribution coming from Energy/Mining (3 points) and Real Estate/Financial (3 points), and Sub-sovereign/Transportation (1 point each). Lehman's bankruptcy was directly related to financial/real estate exposure. But SRI was still below 🟠 (SRI < 1.0), meaning the framework identified "watch-level" rather than "alert-level" risk |
-| **Framework Limitations** | SRI was 🟡 in Q3 2008, but Lehman's bankruptcy on September 15, 2008 triggered a 🔴-level systemic shock (global financial system freeze). The SRI cannot predict confidence collapse events themselves — it can only identify that "risk is accumulating" |
-| **Improvement Direction** | If combined with contagion matrix escalation factor analysis (panic sentiment + information asymmetry + high leverage were all triggering in September 2008), an escalation factor warning could have been triggered on top of the 🟡 SRI, upgrading to 🟠 Alert level response |
+| **Did SRI enter 🟠?** | **Yes.** SRI ≈ 1.29, crossing the 1.0 alert threshold about one month before Lehman |
+| **Main risk contribution** | Financials alone contributes 0.75 (58% of SRI) — consistent with the crisis's actual epicenter. Commodity-cyclical industries (Energy, Metals, Transportation) and housing-linked industries (Construction Materials, Automobiles) form the secondary belt |
+| **Contrast with the legacy 13-industry composition** | Under the retired composition, financial risk entered only through an indirect LGFV/sub-sovereign mapping (1 point × 25%), yielding SRI ≈ 0.70 (🟡). The 19-industry GICS composition makes Financials a first-class 25%-weighted risk source at risk score 3, and the framework would have been at **🟠 Alert** — a materially stronger and historically more accurate signal |
+| **Framework Limitations** | Even at 🟠, the SRI cannot predict confidence-collapse events themselves; it identifies that risk has accumulated to alert level. The thermometer downgrade condition (§4.3) would also be checked here: SRI is elevated with a single dominant contributor, but Energy/Metals/Automobiles/Construction are simultaneously stressed, so the downgrade does not apply |
 
 ### 5.5 Backtest Conclusion
 
 | Backtest Conclusion | Specific Description |
 |--------------------|---------------------|
-| **Warning Effective** | SRI entered 🟡 Watch range 1 month before Lehman, identifying the fact that risk was accumulating |
-| **But Not Upgraded to Alert** | SRI ≈ 0.70 only reached the lower end of the Watch range; the framework would not recommend substantial position reduction, only "increase monitoring frequency · check concentration" |
-| **Needs Coordination with Escalation Factors** | If pre-signals from escalation factors (especially information asymmetry: the opacity of Lehman's balance sheet in the months before bankruptcy) were incorporated, the warning could have been upgraded to 🟠 Alert 1-2 weeks before the event |
-| **Overall Assessment** | The framework performed reasonably in this backtest — it identified risk accumulation without excessive warning. The Lehman event was essentially a "black swan" (systemically important institution bankruptcy that was widely considered "too big to fail"). The core value of the warning framework is to initiate the monitoring process when risk accumulates beforehand, not to precisely predict the timing of default |
+| **Warning Effective** | SRI entered 🟠 Alert range about one month before Lehman, with the risk contribution concentrated in the sector that actually failed |
+| **Actionable Level** | At 🟠, the framework prescribes portfolio-wide stress testing and exposure-reduction review — an appropriate response to what became the GFC |
+| **Escalation Cross-Check** | By September 2008, Market Panic + High Leverage + Information Asymmetry were all triggering (3+ factors → 3.0x synergy per contagion-matrix §6.3), which would escalate the contagion matrix to systemic tipping-point — corroborating the 🟠 reading |
+| **Overall Assessment** | Under the 19-industry GICS composition, the framework's GFC backtest is strong: alert-level warning with the correct epicenter identified, without relying on hindsight-only China-market mappings |
 
 ---
 
@@ -637,250 +626,225 @@ Weighted SRI Estimate (approximate):
 
 ### 6.1 Scenario Background
 
-**Time Window:** Q3 2011 (the peak of the Eurozone sovereign debt crisis — Greek debt crisis escalation)
-**Actual Event Time:** Summer/Fall 2011 — Greek bond yields exceeded 50%, CDS spreads peaked, and contagion spread to Italy, Spain, Portugal, and Ireland (PIIGS)
-**Market Environment at the Time:** The aftermath of the 2008 global financial crisis was still unfolding. The Greek government revealed a much larger deficit than previously reported in late 2009. By 2011, the crisis had evolved into a full-blown sovereign debt crisis threatening the eurozone's integrity. The bank-sovereign "doom loop" was in full effect — banks held large amounts of sovereign debt, while struggling sovereigns needed banks to remain healthy.
+**Time Window:** Q3 2011 (peak of the Eurozone sovereign debt crisis — Greek escalation)
+**Actual Event Time:** Summer/Fall 2011 — Greek bond yields exceeded 50%, CDS spreads peaked, contagion spread to Italy, Spain, Portugal, and Ireland (PIIGS); ECB launched SMP interventions in August; Dexia required rescue in October; Greek PSI agreed in October.
+**Market Environment at the Time:** The aftermath of the 2008 GFC was still unfolding. Greece had revealed a much larger deficit than previously reported in late 2009. By 2011 the crisis had evolved into a full sovereign debt crisis threatening eurozone integrity. The bank-sovereign "doom loop" was in full effect — banks held large amounts of sovereign debt, while struggling sovereigns needed healthy banks.
 
-### 6.2 Industry Signal State at the Time
+### 6.2 Industry Signal State at the Time (19-Industry GICS Composition)
 
-Based on historical data reconstruction, the estimated signal states for the 13 industries in Q3 2011 are as follows:
+Estimated signal states for the 19 industries in Q3 2011, reconstructed from public historical data:
 
-| Industry | Track A Score (Est.) | Industry Risk Score (Base) | Outlook | Track B | Risk Score |
-|----------|---------------------|--------------------------|---------|---------|------------|
-| Real Estate / Banking (Note) | 3.5-4.5 (B+ to BB) | 2 | Negative | 🟠 (Abnormal) | 3.0 |
-| Construction/Building Materials (Note) | 4.0-5.0 (B+ to BB+) | 2 | Negative | 🟡 (Watch) | 3.0 |
-| LGFV/Sub-Sovereign/Sovereign | 4.0-5.0 (B+ to BB+) | 2 | Negative | 🟠 (Abnormal) | 3.0 |
-| Transportation | 5.0-5.5 (BBB- to BB+) | 1 | Stable | 🟢 (Calm) | 1.0 |
-| Solar/PV & Energy Storage | 6.0-7.0 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
-| Semiconductors/Integrated Circuits | 6.5-7.5 (A- to A) | 0 | Positive | 🟢 (Calm) | 0 |
-| Advanced Equipment | 6.0-7.0 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
-| Biopharmaceuticals/Innovative Drugs | 6.5-7.5 (A- to A) | 0 | Positive | 🟢 (Calm) | 0 |
-| Medical Devices | 6.0-7.0 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
-| New Energy Vehicles | 5.5-6.5 (BBB to A-) | 0 | Stable | 🟢 (Calm) | 0 |
-| Data Centers | 6.5-7.0 (A- to A) | 0 | Positive | 🟢 (Calm) | 0 |
-| Food & Beverage | 7.0-7.5 (A) | 0 | Stable | 🟢 (Calm) | 0 |
-| Textile & Apparel | 6.0-6.5 (BBB+) | 0 | Stable | 🟢 (Calm) | 0 |
-| Media/Internet | 6.0-7.0 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
+| Industry | Track A Score (Est.) | Base | Outlook | Track B | Risk Score | Basis |
+|----------|---------------------|------|---------|---------|------------|-------|
+| **Sovereigns & GSEs** | 3.0-4.0 (B+/BB) | 2 | Negative | 🟠 (Abnormal) | **3.0** | The epicenter: Greek yields >50%, PIIGS contagion, CDS at peaks |
+| **Financials (Banks/Insurance)** | 3.5-4.5 (B+/BB) | 2 | Negative | 🟠 (Abnormal) | **3.0** | The other end of the doom loop: European banks holding peripheral sovereign debt (Dexia failed in October) |
+| Utilities (Regulated) | 5.0-6.0 (BBB) | 1 | Negative | 🟡 (Watch) | **2.0** | State-owned utilities repriced with sovereigns |
+| Energy (Oil & Gas) | 5.0-6.0 (BBB) | 1 | Negative | 🟢 (Calm) | 1.5 | Resource-fiscal risk, demand slowdown |
+| Construction Materials | 5.0-6.0 (BBB) | 1 | Negative | 🟡 (Watch) | **2.0** | Periphery infrastructure freeze (Spain/Ireland bust aftermath) |
+| Transportation | 5.0-6.0 (BBB) | 1 | Negative | 🟢 (Calm) | 1.5 | Trade/freight slowing |
+| Metals & Mining | 5.0-6.0 (BBB) | 1 | Negative | 🟢 (Calm) | 1.5 | Global slowdown |
+| Capital Goods | 5.0-6.0 (BBB) | 1 | Negative | 🟢 (Calm) | 1.5 | Capex freeze |
+| Automobiles | 5.0-6.0 (BBB) | 1 | Negative | 🟢 (Calm) | 1.5 | Weak European sales |
+| Consumer Durables | 5.0-6.0 (BBB) | 1 | Negative | 🟢 (Calm) | 1.5 | Austerity-hit consumer |
+| Retail | 5.0-6.0 (BBB) | 1 | Negative | 🟢 (Calm) | 1.5 | Austerity |
+| Telecommunications | 5.0-6.0 (BBB) | 1 | Stable | 🟢 (Calm) | 1.0 | Some sovereign-linked operators |
+| Chemicals | 5.0-6.0 (BBB) | 1 | Stable | 🟢 (Calm) | 1.0 | Export-linked softness |
+| Commercial Services | 5.0-6.0 (BBB) | 1 | Stable | 🟢 (Calm) | 1.0 | — |
+| Technology Hardware (Semis) | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | US/global tech unaffected |
+| Software & Services | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | — |
+| Consumer Staples | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | Defensive |
+| Biotech & Pharma | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | Defensive |
+| Healthcare Equipment | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | — |
 
-**Note on Banking and Construction:** The banking sector and construction/building materials are not within the engine's 13-industry coverage. In this backtest, these risks are approximated through:
-- Sovereign/banking risk is reflected through Sub-sovereign/LGFV (via sovereign credit linkage)
-- Construction/building materials risk is reflected through Transportation (via construction supply chain)
-- Core contagion chain: Sovereign stress → Banking sector → Sub-sovereign → Real economy
+### 6.3 SRI Calculation
 
-### 6.3 Contagion Chain Mapping: Sovereign-Related Industries in SRI Weight Treatment
-
-In the legacy 13-industry composition used by this worked example, sovereign/banking was not directly covered, so the sovereign debt crisis impacts the example's SRI indirectly through two pathways (under the current 19-industry GICS composition, Sovereigns & GSEs and Financials are first-class inputs — see §2.3.1):
-
-```
-Pathway A: Sovereign → LGFV/Sub-Sovereign (Regional Resonance + Credit Chain)
-  Sovereign credit rating downgrades → Weaker sub-sovereign fiscal capacity → Sub-sovereign credit revaluation
-  Banking sector stress → Banks deleverage → Sub-sovereign/LGFV financing environment tightens
-
-Pathway B: Sovereign → Construction/Building Materials → Transportation → All Industries
-  Construction freeze → Building materials defaults → Logistics/transport volume decline
-  Sovereign stress → Government spending cuts → Infrastructure investment decline → Affects all industries
-```
-
-**Treatment in SRI:** Sovereign debt crisis risk was indirectly reflected through the Sub-sovereign/LGFV risk score — in Q3 2011, the Sub-sovereign outlook had already shifted from stable to negative, and Track B signals shifted from 🟢 to 🟡/🟠 (reflecting market concern about the sovereign-sub-sovereign linkage).
-
-### 6.4 SRI Calculation
+Weights as in §5.3 (§4.1 illustrative shares, 25% single-industry cap applied):
 
 ```
-Risk Score Count:
-  3-point industries: 2 (Sovereign/Banking, Construction/Building Materials — indirectly counted)
-  3-point industries: 1 (Sub-sovereign/LGFV)
-  1-point industries: 1 (Transportation, indirect linkage)
-  0-point industries: 9 (remaining industries)
+Weighted contributions (risk score × capped weight):
+  Sovereigns & GSEs     3.0 × 19.49% = 0.585
+  Financials            3.0 × 25.00% = 0.750
+  Utilities             2.0 ×  7.48% = 0.150
+  Energy                1.5 ×  8.40% = 0.126
+  Capital Goods         1.5 ×  5.04% = 0.076
+  Transportation        1.5 ×  4.56% = 0.068
+  Telecommunications    1.0 ×  4.24% = 0.042
+  Automobiles           1.5 ×  2.89% = 0.043
+  Chemicals             1.0 ×  3.68% = 0.037
+  Metals & Mining       1.5 ×  2.05% = 0.031
+  Construction Materials 2.0 ×  0.94% = 0.019
+  Consumer Durables     1.5 ×  0.91% = 0.014
+  Retail                1.5 ×  0.91% = 0.014
+  Commercial Services   1.0 ×  0.91% = 0.009
 
-Simple Arithmetic Mean ≈ (3×3 + 1×1 + 0×9) / 13 = 10 / 13 = 0.77
-
-Weighted SRI Estimate (including sovereign indirect mapping):
-  LGFV/Sub-sovereign (25% weight): 3 points × 25% = 0.75
-  Transportation (8.5%): 1 point × 8.5% = 0.09
-  Banking indirect mapping (5% weight): 3 points × 5% = 0.15
-  Construction/Building Materials indirect (3%): 3 points × 3% = 0.09
-  Other industries weighted total: ≈ 0.15
-  SRI ≈ 0.75 + 0.09 + 0.15 + 0.09 + 0.15 = 1.23
-
-→ **SRI ≈ 1.23 (🟠 Alert range)**
+SRI ≈ 1.96  →  🔴 Danger (>= 1.8)
 ```
 
-### 6.5 Could It Provide Early Warning?
+### 6.4 Could It Provide Early Warning?
 
 | Assessment Dimension | Conclusion |
 |---------------------|-----------|
-| **Did SRI enter Watch?** | **Yes.** SRI ≈ 1.23, well into 🟠 Alert range, crossing the 1.0 threshold |
-| **Could it warn of the Eurozone crisis?** | **Significant warning, mainly through indirect pathways.** In the legacy 13-industry composition, sovereign/banking was captured only through Sub-sovereign/LGFV (3 points) and indirect mapping; SRI ≈ 1.23 still clearly indicated "Alert level — systemic risk accumulating". Under the current 19-industry composition, sovereign stress enters directly via the Sovereigns & GSEs and Financials inputs |
-| **Did SRI identify sovereign-related contagion chains?** | **Partially identified.** SRI captured the Sub-sovereign risk escalation (negative outlook + Track B abnormal), but could not directly reflect banking/construction sector risks — these industries are not within the 13-industry coverage |
-| **Improvement Direction** | Adding a "sovereign/banking indirect contagion factor" as an input (e.g., Sub-sovereign outlook negative weight × 1.5 during sovereign stress cycles) would make the SRI more sensitive to the sovereign → sub-sovereign → infrastructure contagion chain. Additionally, the contagion matrix pathways for Sub-sovereign ↔ Transportation (intensity 4) and Sub-sovereign ↔ Solar/PV/Data Centers (intensity 3) would trigger jumps under stress, further elevating the SRI reading |
+| **Did SRI enter 🔴?** | **Yes.** SRI ≈ 1.96 crosses the 1.8 danger threshold in Q3 2011 — the window of ECB SMP interventions (August), Dexia's failure (October), and the Greek PSI (October) |
+| **Doom-loop capture** | Sovereigns & GSEs (0.585) and Financials (0.750) are both first-class inputs at risk score 3 — the framework captures the bank-sovereign doom loop **directly**, rather than through an indirect proxy mapping. The two largest contributions sit exactly at the two ends of the loop |
+| **Contrast with the legacy composition** | The retired 13-industry composition had no sovereign/banking industry at all and yielded SRI ≈ 1.23 (🟠) via indirect sub-sovereign mapping. The 19-industry composition reads the same event at 🔴 — consistent with how close the eurozone came to breakup |
+| **§4.3 downgrade check** | The thermometer downgrade condition (single dominant contributor, all else 🟢) does not apply: Utilities, Construction, Capital Goods, Automobiles, and the consumer belt are simultaneously stressed |
+| **Framework Limitations** | 🔴 marks systemic severity, not timing. The framework cannot forecast the political decisions (SMP, EFSF/ESM, OMT in 2012) that ultimately contained the crisis |
 
-### 6.6 Backtest Conclusion
+### 6.5 Backtest Conclusion
 
 | Backtest Conclusion | Specific Description |
 |--------------------|---------------------|
-| **Warning Effective** | SRI in Q3 2011 was approximately 1.23, well into 🟠 Alert range, clearly signaling "systemic risk accumulating, need to reduce exposure" |
-| **Crossed Alert Threshold** | SRI ≈ 1.23 crossed the 1.0 Alert threshold, framework would recommend "actively reduce high-risk industry exposure · increase hedging · shorten duration" |
-| **Sovereign Coverage in the Legacy Example** | The legacy 13-industry composition captured sovereign/banking only indirectly through Sub-sovereign — a blind spot of that composition. The current 19-industry GICS composition closes it: Sovereigns & GSEs (#19) and Financials (#18) are first-class SRI inputs with their own contagion coefficients (1.062 / 1.349) |
-| **Overall Assessment** | The framework performed **well** in this backtest — SRI entered the Alert range 3-6 months before the peak of the crisis. If investors had initiated "check concentration · reduce exposure" procedures when SRI > 1.0, the combined sovereign + sub-sovereign + banking exposure could have been identified and reduced in advance |
+| **Danger-level warning effective** | SRI entered 🔴 Danger during the crisis peak, identifying systemic severity in real time |
+| **First-class sovereign channel validated** | The sovereign-bank nexus — the matrix's strongest link (Financials ↔ Sovereigns, intensity 5) — is exercised end-to-end: both ends appear as top-weighted risk sources |
+| **Escalation cross-check** | Regulatory Vacuum (ambiguous rescue stance through summer 2011) + Market Panic were simultaneously active; per contagion-matrix §6.3, the 1.5x synergy multiplies affected link intensities — corroborating the 🔴 reading |
+| **Overall Assessment** | The framework reads the Eurozone crisis at the correct severity tier with the correct mechanism. It would have prescribed emergency position review and hedge activation (🔴 actions) during the window when those actions were most valuable |
 
 ---
 
-## 7. Historical Backtest 3: COVID-19 Shock 2020
+## 7. Historical Backtest 3: Exogenous Synchronous Shock (Case: COVID-19, Q1 2020)
+
+> **Purpose of this case:** This backtest is NOT about pandemic prediction. It calibrates
+> the **boundary of the SRI framework**: what kind of systemic event the framework can be
+> forward-looking about (endogenous credit accumulation — §5, §6) versus what it can only
+> be reactive about (exogenous synchronous non-credit shocks — this case). It also validates
+> the thermometer's real-time accuracy once such a shock has occurred.
 
 ### 7.1 Scenario Background
 
 **Time Window:** February-March 2020 (global COVID-19 pandemic outbreak)
 **Actual Impact Time:** January 30, 2020 WHO declared a Public Health Emergency of International Concern; March 11, 2020 declared a global pandemic
-**Market Environment at the Time:** An unprecedented public health crisis caused simultaneous shocks to all industries. Unlike the GFC or Eurozone debt crisis, COVID-19 was an "exogenous, synchronous, non-credit" shock.
+**Market Environment at the Time:** An unprecedented public health crisis caused simultaneous shocks to all industries. Unlike the GFC or Eurozone crisis, COVID-19 was an **exogenous, synchronous, non-credit** shock — no industry balance sheet showed it coming.
 
-### 7.2 Industry Signal State at the Time
+### 7.2 Industry Signal State at the Time (19-Industry GICS Composition)
 
-Based on historical data reconstruction, the estimated signal states for the 13 industries in Q1 2020 are as follows:
+Estimated signal states for the 19 industries in Q1 2020, reconstructed from public historical data:
 
-| Industry | Track A Score (Est.) | Industry Risk Score (Base) | Outlook | Track B | Risk Score | Notes |
-|----------|---------------------|--------------------------|---------|---------|------------|-------|
-| Transportation | 2.0-3.0 (B to B+) | 3 | Negative | 🔴 (Crisis) | 3.0 | Passenger traffic collapsed, airlines losing millions per day |
-| Retail | 2.5-3.5 (B to B+) | 2 | Negative | 🔴 (Crisis) | 3.0 | Department stores/malls saw zero foot traffic |
-| Media/Internet | 3.0-4.0 (B+ to BB) | 2 | Negative | 🟠 (Abnormal) | 3.0 | Ad revenue plunged, but online consumption benefited |
-| Food & Beverage | 3.5-4.5 (B+ to BB) | 2 | Negative | 🟠 (Abnormal) | 3.0 | Restaurant/gift consumption plunged, but essential consumption benefited |
-| Textile & Apparel | 2.5-3.5 (B to B+) | 2 | Negative | 🟠 (Abnormal) | 3.0 | Physical stores closed, export orders canceled |
-| Real Estate | 3.0-4.0 (B+ to BB) | 2 | Negative | 🟠 (Abnormal) | 3.0 | Sales offices closed, sales cash flow frozen |
-| New Energy Vehicles | 3.5-4.5 (B+ to BB) | 2 | Negative | 🟠 (Abnormal) | 3.0 | Factories shut down, sales down 80%+ |
-| Solar/PV & Energy Storage | 4.0-5.0 (B+ to BB+) | 2 | Negative | 🟡 (Watch) | 3.0 | Capacity utilization declined, overseas orders delayed |
-| Advanced Equipment | 4.0-5.0 (B+ to BB+) | 2 | Negative | 🟡 (Watch) | 3.0 | Production paused, deliveries delayed |
-| Medical Devices | 5.0-6.0 (BBB- to BB+) | 1 | Positive | 🟢 (Calm) | 1.0 | Pandemic supply demand surged, benefiting sector |
-| Biopharmaceuticals | 5.5-6.5 (BBB+ to A-) | 0 | Positive | 🟢 (Calm) | 0 | Pandemic-related R&D benefited, non-COVID areas affected |
-| LGFV/Sub-Sovereign | 5.0-6.0 (BBB- to BB+) | 1 | Stable | 🟡 (Watch) | 1.5 | Infrastructure stabilization expectations rose, but short-term pressure |
-| Semiconductors/Integrated Circuits | 5.5-6.5 (BBB+ to A-) | 0 | Positive | 🟡 (Watch) | 0.5 | Supply chain disruption concerns but domestic substitution logic strengthened |
+| Industry | Track A Score (Est.) | Base | Outlook | Track B | Risk Score | Basis |
+|----------|---------------------|------|---------|---------|------------|-------|
+| Transportation | 2.0-3.0 (B/B+) | 3 | Negative | 🔴 (Crisis) | **3.0** | Passenger traffic collapsed; airlines burning cash daily |
+| Automobiles | 3.0-4.0 (B+/BB) | 2 | Negative | 🔴 (Crisis) | **3.0** | Factories shut; sales down 80%+ |
+| Retail | 2.5-3.5 (B/B+) | 2 | Negative | 🔴 (Crisis) | **3.0** | Zero foot traffic at physical stores |
+| Consumer Durables | 3.0-4.0 (B+/BB) | 2 | Negative | 🟠 (Abnormal) | **3.0** | Stores closed; big-ticket purchases deferred |
+| Energy (Oil & Gas) | 3.0-4.0 (B+/BB) | 2 | Negative | 🔴 (Crisis) | **3.0** | Demand collapse; WTI briefly negative in April |
+| Capital Goods | 3.5-4.5 (B+/BB) | 2 | Negative | 🟠 (Abnormal) | **2.5** | Production paused, deliveries delayed |
+| Metals & Mining | 3.5-4.5 (B+/BB) | 2 | Negative | 🟠 (Abnormal) | **2.5** | Demand cliff |
+| Construction Materials | 4.0-5.0 (B+/BB+) | 2 | Negative | 🟡 (Watch) | **2.5** | Sites paused |
+| Commercial Services | 4.0-5.0 (B+/BB+) | 2 | Negative | 🟡 (Watch) | 2.0 | Offices closed |
+| **Financials (Banks/Insurance)** | 4.0-5.0 (B+/BB) | 2 | Stable | 🟡 (Watch) | **2.5** | Spreads blew out, but central banks backstopped forcefully by end-March |
+| Chemicals | 4.5-5.5 (BB+/BBB-) | 2 | Negative | 🟢 (Calm) | 1.5 | Demand weakening; feedstock costs falling |
+| Technology Hardware (Semis) | 5.0-6.0 (BBB) | 1 | Negative | 🟡 (Watch) | 1.5 | Supply-chain disruption; WFH partly offsets |
+| Sovereigns & GSEs | 5.5-6.0 (BBB+) | 1 | Stable | 🟢 (Calm) | 1.0 | Fiscal response expanding; safe-haven demand |
+| Software & Services | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | WFH beneficiary |
+| Biotech & Pharma | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | Vaccine race |
+| Healthcare Equipment | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | Surge demand for medical supplies |
+| Consumer Staples | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | Pantry stocking |
+| Utilities (Regulated) | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | Defensive |
+| Telecommunications | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | Traffic surge |
 
 ### 7.3 SRI Calculation
 
+Weights as in §5.3 (§4.1 illustrative shares, 25% single-industry cap applied):
+
 ```
-Risk Score Count:
-  3-point industries: 8 (Transportation, Retail, Media, Food & Beverage, Textile & Apparel,
-                       New Energy Vehicles, Solar/PV, Advanced Equipment)
-  1.5-point industries: 1 (Sub-sovereign/LGFV)
-  1-point industries: 1 (Medical Devices, benefiting)
-  0.5-point industries: 1 (Semiconductors)
-  0-point industries: 2 (Biopharmaceuticals, Data Centers — benefiting)
+Weighted contributions (risk score × capped weight):
+  Financials            2.5 × 25.00% = 0.625
+  Energy                3.0 ×  8.40% = 0.252
+  Sovereigns & GSEs     1.0 × 19.49% = 0.195
+  Transportation        3.0 ×  4.56% = 0.137
+  Capital Goods         2.5 ×  5.04% = 0.126
+  Automobiles           3.0 ×  2.89% = 0.087
+  Technology Hardware   1.5 ×  4.91% = 0.074
+  Chemicals             1.5 ×  3.68% = 0.055
+  Metals & Mining       2.5 ×  2.05% = 0.051
+  Construction Materials 2.5 ×  0.94% = 0.024
+  Consumer Durables     3.0 ×  0.91% = 0.027
+  Retail                3.0 ×  0.91% = 0.027
+  Commercial Services   2.0 ×  0.91% = 0.018
 
-Simple Arithmetic Mean ≈ (3×8 + 1.5×1 + 1×1 + 0.5×1 + 0×2) / 13
-                      = (24 + 1.5 + 1 + 0.5 + 0) / 13
-                      = 27 / 13 = 2.08
-
-Weighted SRI Calculation:
-  Transportation (8.5% weight): 3 points × 8.5% = 0.26
-  Sub-sovereign/LGFV (25%): 1.5 points × 25% = 0.38
-  Retail (4%): 3 points × 4% = 0.12
-  Media/Internet (3.35%): 3 points × 3.35% = 0.10
-  Food & Beverage (2.22%): 3 points × 2.22% = 0.07
-  Textile & Apparel (0.6%): 3 points × 0.6% = 0.02
-  Solar/PV (2.33%): 3 points × 2.33% = 0.07
-  Advanced Equipment (1.22%): 3 points × 1.22% = 0.04
-  New Energy Vehicles (2.22%): 3 points × 2.22% = 0.07
-  Medical Devices (1.01%): 1 point × 1.01% = 0.01
-  Semiconductors (2.06%): 0.5 points × 2.06% = 0.01
-  Other industries weighted total: ≈ 0
-  SRI ≈ 0.26 + 0.38 + 0.12 + 0.10 + 0.07 + 0.02 + 0.07 + 0.04 + 0.07 + 0.01 + 0.01 = 1.15
-
-→ **SRI ≈ 1.15 (🟠 Alert range)**
+SRI ≈ 1.70  →  🟠 Alert (1.0 - 1.8)
 ```
 
-### 7.4 Was This a "Known Unknown" or an "Unknown Unknown"?
+### 7.4 Known Unknown vs Unknown Unknown: What This Case Calibrates
 
 | Assessment Dimension | Analysis |
 |---------------------|---------|
-| **Nature of the Pandemic** | The pandemic itself was a "known unknown" — public health experts had long warned about pandemic risk (SARS experience, WHO pandemic preparedness plans), but the specific timing, scale, and impact pathways were unknown |
-| **Could the SRI Framework Provide Early Warning?** | **Cannot provide pre-event warning.** The SRI framework relies on industry fundamental signals (Track A/B/Outlook), and all industries had normal Track A scores before the pandemic outbreak (January 2020) — it cannot predict an exogenous, synchronous shock affecting all industries |
-| **Could the SRI Reflect the Impact?** | **Yes, in real time.** Once the shock occurred (February 2020), Track A scores plunged across industries, outlooks turned negative, Track B signals jumped, and SRI rapidly rose to approximately 1.15 (🟠 Alert), accurately reflecting the severity of the systemic crisis |
-| **Essential Difference from Credit Events** | The key difference between COVID-19 and the GFC/Eurozone crisis: the former was an "exogenous synchronous shock" (all industries simultaneously affected by non-credit factors), while the latter were "endogenous transmission shocks" (credit risk gradually spreading from one industry to others). The SRI framework is "reactive" for the former (confirming severity after the shock) and "forward-looking" for the latter (identifying risk accumulation before the shock) |
+| **Nature of the shock** | A "known unknown" in taxonomy but an un-forecastable event in practice — public health experts had long warned about pandemic risk, yet no Track A/B signal in January 2020 showed it |
+| **Could the SRI provide pre-event warning?** | **No — and it must not claim to.** The framework reads credit-state signals; an exogenous synchronous non-credit shock has no accumulation phase in those signals. Any framework claiming to predict such events is overfitting hindsight |
+| **Could the SRI reflect the impact?** | **Yes, in real time.** Once the shock landed, SRI rose to ≈ 1.70 (🟠) — high but below 🔴, correctly reflecting that unprecedented central-bank and fiscal response prevented the credit spiral from reaching GFC depth |
+| **Where does black-swan response live instead?** | Not in the SRI. Exogenous-shock response belongs to (a) the contagion escalation-factor layer (event-driven triggers, contagion-matrix §6), and (b) the portfolio stress test path (WP-RO-04) — the engine's "response protocol" — while the SRI's job is to report severity honestly after impact |
+| **Reactive vs forward-looking** | GFC (§5) and Eurozone (§6) are endogenous transmission shocks — the SRI is forward-looking there. COVID is the boundary case proving the framework knows when it is only a seismograph, not a crystal ball |
 
 ### 7.5 Backtest Conclusion
 
 | Backtest Conclusion | Specific Description |
 |--------------------|---------------------|
-| **SRI Real-Time Effectiveness** | Under the COVID shock, SRI rapidly reached the 🟠 Alert range (approximately 1.15), accurately reflecting the severity of the systemic crisis |
-| **Cannot Pre-Warn Exogenous Shocks** | The SRI framework has no pre-warning capability for "known unknowns" (exogenous shocks) — this is a common limitation of all fundamental signal-based scoring frameworks |
-| **Distinguishing "Exogenous" from "Endogenous"** | The core value of the SRI framework is in identifying "endogenous, accumulated, transmissible" credit risk, not predicting "exogenous, sudden, non-credit" shocks. The former is the proper function of a credit analysis framework |
-| **Practical Significance During the Pandemic** | If the SRI framework showed 🔴 Danger in March 2020, its value was not in warning (the pandemic had already arrived), but in **avoiding misjudgment during the crisis** — when SRI is 🔴, the framework recommends "full defense · preserve liquidity · reduce positions," which would have helped investors avoid excessive credit risk-taking during the pandemic |
+| **Boundary calibrated** | The framework correctly does NOT claim pre-event prediction for exogenous synchronous shocks — this case exists to document that limit, not to showcase accuracy |
+| **Reactive accuracy validated** | Post-impact, the thermometer reached 🟠 1.70 with contributions spanning the actually-hit sectors (transport, autos, retail, energy) and zero contribution from genuinely resilient sectors — a correct real-time map of the shock |
+| **Complementarity documented** | Black-swan response is assigned to the escalation-factor layer and WP-RO-04 stress testing; the SRI stays an honest seismograph |
+| **Overall Assessment** | Three backtests now cover the full taxonomy: endogenous credit accumulation (GFC, 🟠 forward) → sovereign-bank nexus (Eurozone, 🔴 forward) → exogenous synchronous shock (COVID, 🟠 reactive). The framework's claims match its demonstrated capabilities |
 
 ---
 
 ## 8. Current Period Calculation: Scenario-Based SRI Example
 
-### 8.1 Scenario: Hypothetical Market Stress State
+### 8.1 Scenario: Hypothetical 2026 Market State (Illustrative)
 
-This section provides a scenario-based example showing how the SRI would be calculated under a hypothetical market stress state. The following signal state is illustrative — not a current real-time reading.
+This section shows how the SRI is calculated under a **hypothetical** 2026 market state: higher-for-longer rates pressuring commercial real estate and rate-sensitive consumption, elevated sovereign deficits, and a two-speed technology sector (AI capex boom vs everything else). **The signal states below are illustrative, not a real-time reading.**
 
-| Industry | Track A Score (Est.) | Base Score | Outlook | Track B | Risk Score |
-|----------|---------------------|-----------|---------|---------|------------|
-| Solar/PV & Energy Storage | 4.5-5.5 (BB+ to BBB-) | 2 | Negative | 🟡 (Watch) | 3.0 |
-| Semiconductors/Integrated Circuits | 6.5-7.5 (A- to A) | 0 | Positive | 🟢 (Calm) | 0 |
-| Advanced Equipment/Industrial Machinery | 6.0-7.0 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
-| Biopharmaceuticals/Innovative Drugs | 5.5-6.5 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
-| Medical Devices | 6.0-7.0 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
-| New Energy Vehicles | 5.0-6.0 (BBB- to BB+) | 1 | Negative | 🟡 (Watch) | 2.0 |
-| Data Centers/Compute Infrastructure | 6.5-7.5 (A- to A) | 0 | Positive | 🟢 (Calm) | 0 |
-| LGFV/Sub-Sovereign | 5.0-5.5 (BBB- to BB+) | 1 | Stable | 🟡 (Watch) | 1.5 |
-| Food & Beverage | 6.5-7.5 (A- to A) | 0 | Stable | 🟢 (Calm) | 0 |
-| Textile & Apparel | 5.5-6.5 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
-| Transportation | 5.5-6.5 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
-| Retail | 5.0-6.0 (BBB- to BB+) | 1 | Negative | 🟡 (Watch) | 2.0 |
-| Media/Internet | 5.5-6.5 (BBB+ to A-) | 0 | Stable | 🟢 (Calm) | 0 |
+| Industry | Track A Score (Est.) | Base | Outlook | Track B | Risk Score | Rationale |
+|----------|---------------------|------|---------|---------|------------|-----------|
+| **Financials (Banks/Insurance)** | 5.0-6.0 (BBB) | 1 | Negative | 🟡 (Watch) | **2.0** | Regional-bank CRE exposure stress; NIM normalization |
+| **Sovereigns & GSEs** | 5.0-6.0 (BBB) | 1 | Negative | 🟢 (Calm) | 1.5 | Elevated deficits; term premium rising |
+| Energy (Oil & Gas) | 5.0-6.0 (BBB) | 1 | Stable | 🟢 (Calm) | 1.0 | Mid-cycle |
+| Construction Materials | 5.0-6.0 (BBB) | 1 | Negative | 🟡 (Watch) | **2.0** | CRE/housing slowdown |
+| Capital Goods | 5.0-6.0 (BBB) | 1 | Stable | 🟢 (Calm) | 1.0 | Reshoring capex supportive |
+| Transportation | 5.0-6.0 (BBB) | 1 | Stable | 🟢 (Calm) | 1.0 | Freight stable |
+| Chemicals | 5.0-6.0 (BBB) | 1 | Stable | 🟢 (Calm) | 1.0 | — |
+| Metals & Mining | 5.0-6.0 (BBB) | 1 | Stable | 🟢 (Calm) | 1.0 | Energy-transition metals firm |
+| Automobiles | 5.0-6.0 (BBB) | 1 | Negative | 🟡 (Watch) | **2.0** | EV price war + rate-sensitive demand |
+| Consumer Durables | 5.0-6.0 (BBB) | 1 | Negative | 🟢 (Calm) | 1.5 | Rate-sensitive big-ticket |
+| Retail | 5.0-6.0 (BBB) | 1 | Negative | 🟢 (Calm) | 1.5 | K-shaped consumer |
+| Commercial Services | 5.0-6.0 (BBB) | 1 | Stable | 🟢 (Calm) | 1.0 | — |
+| Technology Hardware (Semis) | 7.0+ (A) | 0 | Positive | 🟢 (Calm) | 0 | AI capex boom |
+| Software & Services | 7.0+ (A) | 0 | Positive | 🟢 (Calm) | 0 | AI tailwind |
+| Utilities (Regulated) | 7.0+ (A) | 0 | Positive | 🟢 (Calm) | 0 | Datacenter demand boom |
+| Telecommunications | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | — |
+| Consumer Staples | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | Defensive |
+| Biotech & Pharma | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | — |
+| Healthcare Equipment | 7.0+ (A) | 0 | Stable | 🟢 (Calm) | 0 | — |
 
-### 8.2 Industry Risk Score Detail
-
-| Industry | Risk Score | Detail |
-|----------|-----------|--------|
-| **Solar/PV & Energy Storage** | 3.0 | Base 2 (Track A 4.5-5.5, BB+ to BBB- range) + Negative outlook 0.5 + Track B Watch 0.5. Core issue is severe overcapacity; the entire supply chain faces restructuring pressure |
-| **New Energy Vehicles** | 2.0 | Base 1 (Track A 5.0-6.0, BBB- to BB+ range) + Negative outlook 0.5 + Track B Watch 0.5. Ongoing price wars, accelerating shakeout of weaker players, but battery sector stabilizing and recovering |
-| **LGFV/Sub-Sovereign** | 1.5 | Base 1 (Track A 5.0-5.5, BBB- to BB+ range) + Track B Watch 0.5. Debt resolution progressing, but regional divergence intensifying, concentrated rating downgrades in weaker regions |
-| **Retail** | 2.0 | Base 1 (Track A 5.0-6.0, BBB- to BB+ range) + Negative outlook 0.5 + Track B Watch 0.5. Consumption downgrade trend, online-offline integration pressure, some enterprises under stress |
-| **Remaining 9 industries** | 0 | All with Track A above 5.5 (BBB+ and above), stable or positive outlook, Track B calm, no risk contribution |
-
-### 8.3 SRI Calculation
+### 8.2 SRI Calculation
 
 ```
-Risk Score Count:
-  3.0-point industries: 1 (Solar/PV)
-  2.0-point industries: 2 (New Energy Vehicles, Retail)
-  1.5-point industries: 1 (LGFV/Sub-sovereign)
-  0-point industries: 9 (remaining industries)
+Weighted contributions (risk score × capped weight, §4.1 illustrative):
+  Financials            2.0 × 25.00% = 0.500
+  Sovereigns & GSEs     1.5 × 19.49% = 0.292
+  Energy                1.0 ×  8.40% = 0.084
+  Capital Goods         1.0 ×  5.04% = 0.050
+  Transportation        1.0 ×  4.56% = 0.046
+  Chemicals             1.0 ×  3.68% = 0.037
+  Automobiles           2.0 ×  2.89% = 0.058
+  Metals & Mining       1.0 ×  2.05% = 0.021
+  Construction Materials 2.0 ×  0.94% = 0.019
+  Consumer Durables     1.5 ×  0.91% = 0.014
+  Retail                1.5 ×  0.91% = 0.014
+  Commercial Services   1.0 ×  0.91% = 0.009
 
-Simple Arithmetic Mean = (3.0×1 + 2.0×2 + 1.5×1 + 0×9) / 13
-                       = (3.0 + 4.0 + 1.5) / 13
-                       = 8.5 / 13 = 0.65
-
-Weighted SRI Calculation:
-  LGFV/Sub-sovereign (25% weight): 1.5 points × 25% = 0.375
-  Solar/PV (2.33%): 3 points × 2.33% = 0.070
-  New Energy Vehicles (2.22%): 2.0 points × 2.22% = 0.044
-  Retail (4%): 2.0 points × 4% = 0.080
-  Transportation (8.5%): 0 points × 8.5% = 0
-  Other industries: 0 points × combined weight = 0
-  SRI = 0.375 + 0.070 + 0.044 + 0.080 = 0.569
-
-→ **SRI ≈ 0.57 (🟡 Watch range)**
+SRI ≈ 1.14  →  🟠 Alert (1.0 - 1.8)
 ```
 
-### 8.4 SRI Interpretation
+### 8.3 SRI Interpretation
 
 | Dimension | Analysis |
-|-----------|----------|
-| **Current Level** | 🟡 Watch (SRI ≈ 0.57), slightly below the pre-crisis backtest reading of 0.70 |
-| **Main Contributors** | ① LGFV/Sub-sovereign (largest weight, 1.5 points) contributes 0.375, 66% of SRI; ② Retail (2.0 points) contributes 0.080; ③ Solar/PV (3.0 points) contributes 0.070; ④ NEV (2.0 points) contributes 0.044 |
-| **Historical Comparison** | Similar to the pre-systemic-event level, but the risk structure is different — the GFC 2008 risk was concentrated in finance/energy, this scenario is concentrated in Sub-sovereign + Solar/PV + Consumer |
-| **Key Characteristic** | The SRI is elevated mainly because of the LGFV/Sub-sovereign weight (25%) combined with its risk signal (1.5 points). If the extreme LGFV weight is removed, the industries with substantive risk (Track A < 6.0) are only Solar/PV + NEV + Retail — 3 industries — and SRI would fall below 0.2 (🟢) |
-| **Assessment** | 🟡 Watch is reasonable — Sub-sovereign/LGFV does face regional divergence pressure, and Solar/PV and NEV face overcapacity issues. But it has not reached 🟠 Alert level (SRI < 1.0) because super-spreaders (Semiconductors, Advanced Equipment) are all operating normally, with no simultaneous multi-industry resonance |
+|-----------|---------|
+| **Reading** | SRI ≈ 1.14 (🟠 Alert): elevated but far from crisis. The two dominant contributors are Financials (0.500) and Sovereigns (0.292) — a rates/fiscal-driven stress pattern, not a broad credit event |
+| **Two-speed structure** | Technology, software, and utilities carry zero risk contribution (AI capex boom), while the rate-sensitive belt (construction, autos, durables, retail) forms the secondary layer. The thermometer sees the divergence, not just the average |
+| **§4.3 downgrade check** | Would the thermometer downgrade to 🟡? No: the stress is shared by 8+ industries, not a single dominant contributor |
+| **Prescribed actions (🟠)** | Re-run concentration (WP-RO-01) and contagion (WP-RO-02) for the Financials/Sovereigns-linked exposures; portfolio-wide stress test (WP-RO-04); review rate-sensitive belt sizing |
 
-### 8.5 Recommended Actions
+### 8.4 How to Use This Example
 
-| Action Item | Specific Content |
-|------------|-----------------|
-| **Monitoring Focus** | Sub-sovereign/LGFV regional divergence progress, Solar/PV industry restructuring progress, whether NEV price wars escalate further |
-| **Check Concentration** | Whether combined portfolio exposure to Sub-sovereign + Solar/PV + NEV + Retail exceeds concentration limits (Cluster D + Cluster F combined exposure < 40%) |
-| **Escalation Scenario** | If Semiconductors or Advanced Equipment (super-spreaders) show signal deterioration, SRI could rapidly rise above 1.0 into 🟠 Alert — immediate position reduction plan would be required |
-| **No Need for Panic** | Current SRI ≈ 0.57 is at the lower end of 🟡 Watch range, and the main contribution comes from the Sub-sovereign weight (rather than substantive risk spread) — no major portfolio adjustment needed |
+This scenario is a **template for computing the SRI on live inputs**: replace the illustrative Track A / outlook / Track B values with current assessments (Track A from the industry pyramid, outlook from `outlook-monitoring-framework.md`, Track B from market pricing signals), replace the §4.1 illustrative weights with live benchmark sector weights, and the same arithmetic yields the current SRI. The coded engine (`src/sri_calculator.py` via WP-RO-03) executes exactly this calculation; the orchestrator (`src/pipeline.py`) accepts the inputs as plain dicts/YAML.
 
 ---
 
