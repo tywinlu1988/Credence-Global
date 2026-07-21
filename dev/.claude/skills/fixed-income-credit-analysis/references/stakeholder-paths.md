@@ -15,14 +15,16 @@
 | Advisor | "What should my client do?" — allocation advice, suitability | WP-AD-01 (planned) | Planned |
 | Individual Investor | "Should I own this bond?" — personal investment decision | WP-II-01 (planned) | Planned |
 
-## Portfolio Manager: Four-Dimension Dashboard (WP-PM-01)
+## Portfolio Manager: Single-Instrument Dashboard (WP-PM-01)
 
-The PM dashboard evaluates an individual bond on four dimensions (weights and metric definitions single-sourced in `dev/engine/multi-stakeholder.md` §2.2):
+The WP-PM-01 dashboard (Type 5 template) evaluates a single bond on four dimensions (weights and metric anchors single-sourced in `dev/engine/multi-stakeholder.md` §2.2b):
 
-1. **Relative Value** — yield/spread vs same-industry and same-rating comparables
-2. **Sector Allocation Fit** — how the position fits target sector weights
-3. **Curve Positioning** — where the bond sits on the issuer's curve
-4. **Event & Calendar** — upcoming macro/industry/issuer events and covenant triggers
+1. **Relative Value (30%)** — yield/premium/spread vs same-industry and same-rating comparables
+2. **Covenant Protection (25%)** — adjustment history, put triggers, cross-default, redemption structure
+3. **Liquidity (20%)** — volume, turnover, abnormal volume, bid-ask spread, pledgeability
+4. **Event Calendar (25%)** — upcoming macro/industry/issuer events and covenant triggers
+
+Note the separate PM Portfolio-Construction Assessment (Relative Value / Sector Allocation Fit / Curve Positioning / Event & Calendar) in `multi-stakeholder.md` §2.2 — a different lens answering "does this position improve the portfolio?"
 
 Output: integrated ranking table + individual bond assessment + data gap report.
 

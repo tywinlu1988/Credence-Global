@@ -85,9 +85,13 @@ Credit Quality Score = f(
 | 2.0~3.9 | B to BB | Restrict — require covenant protection |
 | 0~1.9 | CCC and below | Exclude from book |
 
-### 2.2 Portfolio Manager — Relative Value & Sector Allocation
+### 2.2 Portfolio Manager — Portfolio Construction Assessment
 
-The Portfolio Manager determines whether a credit offers the best risk-adjusted return relative to alternatives. This role operates at the intersection of single-issuer analysis and portfolio construction. The PM Four-Dimension framework evaluates Relative Value, Sector Allocation Fit, Curve Positioning, and Event & Calendar factors.
+The Portfolio Manager determines whether a credit offers the best risk-adjusted return relative to alternatives. This role operates at the intersection of single-issuer analysis and portfolio construction. The PM Portfolio-Construction Assessment evaluates Relative Value, Sector Allocation Fit, Curve Positioning, and Event & Calendar factors.
+
+> **Two distinct four-dimension frameworks exist for this role; do not conflate them:**
+> - **This section (§2.2): Portfolio-Construction Assessment** — Relative Value 30% / Sector Allocation Fit 25% / Curve Positioning 20% / Event & Calendar 25%. Answers "does this position improve the portfolio?"
+> - **§2.2b: Single-Instrument Dashboard (WP-PM-01, Type 5 template)** — Relative Value 30% / Covenant Protection 25% / Liquidity 20% / Event Calendar 25%. Answers "is this bond worth buying on its own merits?"
 
 **Decision Logic**: Compare each credit against its peer group on yield, spread, and risk metrics, then allocate capital to the best risk/reward opportunities within sector and duration constraints.
 
@@ -118,6 +122,19 @@ Relative Value Score = f(
 - Negative carry but high roll-down — curve trade, requires duration conviction
 - Sector allocation delta > 5% from benchmark — active bet size needs justification
 - Top-quartile relative value + bottom-quartile liquidity — tension signal, escalate
+
+### 2.2b Portfolio Manager — Single-Instrument Dashboard (WP-PM-01)
+
+The WP-PM-01 Investment Dashboard (rendered by the Type 5 template) evaluates a single bond on its own merits across four dimensions. This is the definition referenced by the WP-PM-01 quality gate "Four-Dimension".
+
+| Dimension | Weight | Key Question | Metric Anchors |
+|-----------|--------|--------------|----------------|
+| **Relative Value** | 30% | Is this bond cheap or expensive vs comparables? | YTM, conversion premium, Z-spread (if available), same-industry peer comparison, same-rating comparison |
+| **Covenant Protection** | 25% | How protected is the holder on adverse outcomes? | Conversion price adjustment history, put option triggers, cross-default clauses, redemption terms, guarantee/collateral structure |
+| **Liquidity** | 20% | Can the position be exited at fair price? | Daily volume, turnover rate, abnormal volume events, bid-ask spread (if available), pledgeability |
+| **Event Calendar** | 25% | What could move this bond in the near term? | Next 3 months of macro events, industry events, issuer events, covenant triggers |
+
+Output: integrated ranking table + individual bond assessment + data gap report (per `work-path-registry.md` WP-PM-01).
 
 ### 2.3 Risk Officer — Portfolio Risk Monitoring
 

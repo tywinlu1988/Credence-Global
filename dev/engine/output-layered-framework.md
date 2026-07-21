@@ -302,6 +302,8 @@ L1's core is to answer four questions:
 
 #### 4.2.1 Four Dimension Definitions
 
+> **Disambiguation:** The L1 snapshot radar below is an **issuer-level visualization** (Spread / Fundamentals / Covenants / Liquidity). It is distinct from the WP-PM-01 Type-5 dashboard four-dimension (Relative Value / Covenant Protection / Liquidity / Event Calendar), whose single source of truth is `multi-stakeholder.md` §2.2b, and from the PM Portfolio-Construction Assessment (§2.2).
+
 | Dimension | Name | Content | Data Source | Standardization Method |
 |---|---|---|---|---|
 | **Spread Dimension** | Market pricing attractiveness | YTM, credit spread, spread historical percentile, spread trend (widening/narrowing) | Track B market pricing signals | Map same-industry spread percentile to 0-10: 0=most expensive (lowest spread), 10=cheapest (highest spread) |
