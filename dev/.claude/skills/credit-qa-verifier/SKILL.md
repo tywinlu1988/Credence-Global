@@ -29,7 +29,7 @@ QA layer — final stage of the four-stage chain. Responsibility: perform pre-de
 ## Mandatory Checks (rule source is engine documents)
 
 - **Signal density rule `density_rule`**: Dimensions below the density floor must not output numeric scores and must be annotated as `insufficient information to evaluate`; when weighted-average density is insufficient, must not output a final letter rating. Rule source: `dev/engine/mosaic-engine.md` §4.3.
-- **One-shot veto ceiling `veto_ceiling`**: Issuers triggering a one-shot veto have their rating ceiling locked at CCC, may not be raised. Rule source: `dev/engine/industry-framework.md` §5.
+- **One-shot veto ceiling `veto_ceiling`**: Issuers triggering a one-vote veto have their rating ceiling locked at CCC, may not be raised. Rule source: `dev/engine/industry-framework.md` §5.
 - **Mode B anti-hallucination `mode_b`**: Unless the user explicitly provides data sources (CSV/API/MCP), no Mode B external data values may appear; all Mode B fields must be treated as data gaps. Rule source: `dev/engine/mosaic-engine.md` §6.
 - **Single source of truth `single_source`**: Reports/analyses must not fabricate thresholds, weights, or rating mappings; quantities not defined in the engine must be annotated as `not defined in engine`. Rule source: all referenced engine documents.
 
@@ -58,13 +58,13 @@ Example (Credit Selector single target WP-CS-01, three gates all pass, mandatory
 path_id: WP-CS-01
 verdict: pass-with-findings
 gate_results:
-  - gate: "signal density (dev/engine/mosaic-engine.md §4.3)"
+  - gate: "Signal Density (dev/engine/mosaic-engine.md §4.3)"
     status: pass
     evidence: Dimensions below density floor are set to null and annotated insufficient information to evaluate (mosaic-engine §4.3)
-  - gate: "one-shot veto (dev/engine/industry-framework.md §5)"
+  - gate: "Veto (dev/engine/industry-framework.md §5)"
     status: pass
-    evidence: No one-shot veto triggered; rating ceiling rule verified (industry-framework §5)
-  - gate: "cross-comparison (dev/engine/dual-track-methodology.md §4)"
+    evidence: No one-vote veto triggered; rating ceiling rule verified (industry-framework §5)
+  - gate: "Cross-Validation (dev/engine/dual-track-methodology.md §4)"
     status: pass
     evidence: Track divergence presented and interpreted in report (dual-track-methodology §4)
 mandatory_checks:

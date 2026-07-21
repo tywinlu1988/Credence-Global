@@ -1,4 +1,4 @@
-# System-Intelligence Layer (v0.0.1)
+# System-Intelligence Layer
 
 **Version**: v0.0.2
 
@@ -9,7 +9,7 @@ The system-intelligence layer aggregates individual issuer assessments into port
 ## Cross-Industry Contagion
 
 - **Contagion theory**: four contagion types (credit-chain, regional resonance, liquidity squeeze, confidence collapse) and seven standard transmission paths.
-- **Contagion matrix**: 13×13 industry intensity matrix with direction, confidence, and upgrade-factor linkage. See `dev/engine/contagion-matrix.md`.
+- **Contagion matrix**: 19×19 industry intensity matrix with direction, confidence, and upgrade-factor linkage. See `dev/engine/contagion-matrix.md`.
 - **Industry clustering**: based on six analytical paradigms. Industries in the same paradigm have higher innate contagion coupling.
 
 ## Five-Dimensional Concentration Framework

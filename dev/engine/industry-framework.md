@@ -29,7 +29,7 @@ Every industry covered by the engine is assigned one of six analysis paradigms. 
 - **GICS mapping**: indicative sector/industry group coverage
 - **Ten-dimension weight template**: which D1-D10 carry the most weight
 - **Four-layer pyramid** (L1-L4): layer weights and key indicators
-- **Paradigm-specific veto triggers**: one-shot knockout conditions
+- **Paradigm-specific veto triggers**: one-vote veto conditions
 
 ### 2.1 P1 Cyclical
 

@@ -1,6 +1,6 @@
 ---
 name: credit-analysis-router
-description: Intake router for vague or compound fixed-income credit-analysis requests such as 'evaluate this company', 'check this portfolio for issues', 'what analysis should I run', 'where to start'. Use when the need is ambiguous, spans multiple roles (Credit Selector/Portfolio Manager/Advisor/Trader/Risk Officer/Corporate Financing), or the user asks which analysis to run or where to start. If the user already names a concrete methodology task or engine path, use the fixed-income-credit-analysis skill instead.
+description: Intake router for vague or compound fixed-income credit-analysis requests such as 'evaluate this company', 'check this portfolio for issues', 'what analysis should I run', 'where to start'. Use when the need is ambiguous, spans multiple roles (Credit Selector/Portfolio Manager/Advisor/Trader/Risk Officer/Individual Investor), or the user asks which analysis to run or where to start. If the user already names a concrete methodology task or engine path, use the fixed-income-credit-analysis skill instead.
 ---
 
 ## Purpose
@@ -13,7 +13,7 @@ Routing layer — does no analysis. Responsibility is three steps: interpret vag
 
 Clarify question by question. Allow skipping, multiple answers, or providing all information at once. If the user has already given sufficient information, skip the corresponding question; do not mechanically follow up.
 
-- **Q1 Role**: What role are you deciding as? Credit Selector / Portfolio Manager / Advisor / Trader / Risk Officer / Corporate Financing / Individual Investor / Not sure (infer from the question characteristics and confirm with the user).
+- **Q1 Role**: What role are you deciding as? Credit Selector / Portfolio Manager / Advisor / Trader / Risk Officer / Individual Investor / Not sure (infer from the question characteristics and confirm with the user).
 - **Q2 Object**: What is the analysis object? Single Issuer / Bond Portfolio / Industry / Full Market / Methodology Construction or Engine Validation.
 - **Q3 Depth**: How deep an output do you need? L0 Quick Signal / L1 Decision Snapshot / L2 Deep Report / Special Report.
 - **Q4 Data**: What data to use? Public data only (Mode A) / User explicitly provides external data sources (CSV/API/MCP → Mode B).
@@ -54,7 +54,7 @@ After the four questions converge, output the following YAML. Fields align with 
 Template:
 
 ```yaml
-role: ""                    # Credit Selector|Portfolio Manager|Advisor|Trader|Risk Officer|Corporate Financing|Individual Investor
+role: ""                    # Credit Selector|Portfolio Manager|Advisor|Trader|Risk Officer|Individual Investor
 object: ""                  # single-issuer|portfolio|industry|market|meta
 depth: ""                   # L0|L1|L2|special
 mode: ""                    # A=public data only / B=user explicitly provides external data sources
@@ -77,9 +77,9 @@ engine_reading_order:
   - dev/engine/mosaic-engine.md
   - dev/engine/dual-track-methodology.md
 quality_gates:
-  - "signal density (dev/engine/mosaic-engine.md §4.3)"
-  - "one-shot veto (dev/engine/industry-framework.md §5)"
-  - "cross-comparison (dev/engine/dual-track-methodology.md §4)"
+  - "Signal Density (dev/engine/mosaic-engine.md §4.3)"
+  - "Veto (dev/engine/industry-framework.md §5)"
+  - "Cross-Validation (dev/engine/dual-track-methodology.md §4)"
 notes: "If information is insufficient, downgrade to L1 Decision Snapshot with a data gap inventory."
 ```
 
@@ -87,7 +87,7 @@ notes: "If information is insufficient, downgrade to L1 Decision Snapshot with a
 
 - **Do not replicate engine content**: This skill only references path IDs and document names/sections; it does not replicate any thresholds, weights, or rating mappings. Rule content is always determined by the engine documents pointed to by `engine_reading_order`.
 - **Mode B guardrail**: When the user has not explicitly provided data sources (CSV/API/MCP), `mode` must not be set to B; all Mode B fields are treated as data gaps; do not fabricate external data values.
-- **Planned paths must be disclosed**: When recommending a 🔴 planned path (e.g., WP-AD-01, WP-CF-01), must explicitly state "this path is under development" and provide an alternative active path; do not misrepresent capability.
+- **Planned paths must be disclosed**: When recommending a 🔴 planned path (e.g., WP-AD-01, WP-II-01), must explicitly state "this path is under development" and provide an alternative active path; do not misrepresent capability.
 - **Route then hand off**: Once the Path Sheet is produced, switch to the `fixed-income-credit-analysis` skill, read engine documents in `engine_reading_order` and execute; validate quality gates per `quality_gates`. (Since v0.0.1 the execution skill is driven by the Path Sheet for reading order; without a Path Sheet, fall back to the core set `engine-overview.md` + `dual-track-methodology.md` + topic-specific documents requested.)
 
 ## Chaining

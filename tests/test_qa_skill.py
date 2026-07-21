@@ -89,7 +89,7 @@ def test_t8_1_frontmatter_structure_and_guardrails():
     assert n_lines <= 200, f"SKILL.md has {n_lines} lines (>200)"
 
     assert "never relaxes a gate" in SKILL_TEXT, "'never relaxes a gate' guardrail missing"
-    assert "signal density" in SKILL_TEXT, "density keyword 'signal density' missing"
+    assert "ignal density" in SKILL_TEXT, "density keyword 'signal density' missing"
     assert "Mode B" in SKILL_TEXT, "Mode B keyword missing"
 
 

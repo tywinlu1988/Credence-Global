@@ -2,29 +2,29 @@
 
 **Version**: v0.0.2
 
-> This document is derived from `fixed-income-credit-analysis` SKILL.md, organizing multi-stakeholder coverage and M1 dashboard content, supplemented with Work-Path Sheet consumption guidance. The single sources of truth are `dev/engine/multi-stakeholder.md` and `dev/engine/work-path-registry.md`.
+> This document is derived from `fixed-income-credit-analysis` SKILL.md, organizing multi-stakeholder coverage and dashboard content, supplemented with Work-Path Sheet consumption guidance. The single sources of truth are `dev/engine/multi-stakeholder.md` and `dev/engine/work-path-registry.md`.
 
 ## Multi-Stakeholder Coverage
 
-| # | Stakeholder | Core Question | Status |
+| Role | Core Question | Work Paths | Status |
 |---|---|---|---|
-| M0 | Credit Approval (Bank) | Can we lend? At what price? | Covered (Track A+B) |
-| M1 | Bond Investment | Cheap or expensive? Terms protective? Liquid? | P0 Complete |
-| M2 | Bond Underwriting (DCM) | Can we sell this? To whom? Best window? | Complete |
-| M3 | Market Trading | Rate/credit/liquidity environment? | Complete |
-| M4 | Portfolio Risk | Concentration? Stress scenario? | Complete |
-| M5 | Corporate Finance | How to finance? Which channel? When? | Complete |
+| Credit Selector | "Does this credit belong in the book?" — single-issuer rating, default probability | WP-CS-01 (active), WP-CS-02 (partial) | Covered (Track A+B) |
+| Portfolio Manager | "Is this the best risk/reward?" — relative value, sector allocation | WP-PM-01 (active), WP-PM-02 (partial) | Covered |
+| Risk Officer | "Where are concentration/contagion hotspots?" — portfolio risk monitoring | WP-RO-01/02/03 (active), WP-RO-04 (partial) | Covered |
+| Trader | "Is today the day to act?" — execution, market timing | WP-TR-01 (partial) | Partial |
+| Advisor | "What should my client do?" — allocation advice, suitability | WP-AD-01 (planned) | Planned |
+| Individual Investor | "Should I own this bond?" — personal investment decision | WP-II-01 (planned) | Planned |
 
-## M1: Bond Investment Dashboard (P0)
+## Portfolio Manager: Four-Dimension Dashboard (WP-PM-01)
 
-Four dimensions for evaluating individual bonds:
+The PM dashboard evaluates an individual bond on four dimensions (weights and metric definitions single-sourced in `dev/engine/multi-stakeholder.md` §2.2):
 
-1. **Relative Value (30%):** YTM, conversion premium, Z-spread (if available), same-industry peer comparison, same-rating comparison
-2. **Terms Protection (25%):** Conversion price adjustment history, put option triggers, cross-default clauses, redemption terms
-3. **Liquidity (20%):** Daily volume, turnover rate, abnormal volume events, bid-ask spread (if available)
-4. **Event Calendar (25%):** Next 3 months of macro events, industry events, company events, terms triggers
+1. **Relative Value** — yield/spread vs same-industry and same-rating comparables
+2. **Sector Allocation Fit** — how the position fits target sector weights
+3. **Curve Positioning** — where the bond sits on the issuer's curve
+4. **Event & Calendar** — upcoming macro/industry/issuer events and covenant triggers
 
-Output: Integrated ranking table + individual bond assessment + data gap report.
+Output: integrated ranking table + individual bond assessment + data gap report.
 
 ## Work-Path Sheet Consumption Guide
 

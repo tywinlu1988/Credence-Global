@@ -8,7 +8,7 @@ description: Use when analyzing industries or companies for credit decisions in 
 When this Skill is invoked:
 
 1. **Path-sheet-driven (preferred).** If the user message carries a Path Sheet produced by the `credit-analysis-router` skill, read the engine documents in the sheet's `engine_reading_order` order and validate against its `quality_gates`.
-2. **Direct task, no path sheet.** If the user directly names a concrete task, read the core set — `dev/engine/engine-overview.md` + `dev/engine/dual-track-methodology.md` — plus any topic-specific doc the request names (e.g. `contagion-matrix.md`, `concentration-framework.md`, `lgfv-framework.md`).
+2. **Direct task, no path sheet.** If the user directly names a concrete task, read the core set — `dev/engine/engine-overview.md` + `dev/engine/dual-track-methodology.md` — plus any topic-specific doc the request names (e.g. `contagion-matrix.md`, `concentration-framework.md`, `external-support-framework.md`).
 3. **Vague / unrouted need.** If the need is ambiguous and no path sheet exists, first route through the `credit-analysis-router` skill, or ask the Q1–Q4 questions (role / object / depth / data) yourself to pick a path from `dev/engine/work-path-registry.md`.
 4. Use **only** thresholds, weights, rating mappings, and veto rules found in those documents.
 5. For every quantitative judgment, cite the source document and section.
@@ -19,7 +19,7 @@ When this Skill is invoked:
 
 ## Overview
 
-A systematic methodology for evaluating corporate credit quality in fixed income markets. The engine operates in three layers: (1) a **Mosaic Engine** that assembles fragmented public data into coherent signals; (2) a **Dual-Track Engine** combining industry-specific multi-layer analysis pyramids with market-based pricing signals; and (3) a **System-Intelligence Layer** (v0.0.1-alpha) that models cross-industry contagion, portfolio concentration, and a market-wide Systemic Risk Index (SRI). Combines multi-stakeholder perspectives into a unified assessment framework.
+A systematic methodology for evaluating corporate credit quality in fixed income markets. The engine operates in three layers: (1) a **Mosaic Engine** that assembles fragmented public data into coherent signals; (2) a **Dual-Track Engine** combining industry-specific multi-layer analysis pyramids with market-based pricing signals; and (3) a **System-Intelligence Layer** that models cross-industry contagion, portfolio concentration, and a market-wide Systemic Risk Index (SRI). Combines multi-stakeholder perspectives into a unified assessment framework.
 
 **Core principles:**
 1. Traditional financial analysis systematically fails in policy-driven, technology-barrier, and asset-lease industries. The heaviest credit factor is rarely on the balance sheet.
@@ -31,10 +31,10 @@ A systematic methodology for evaluating corporate credit quality in fixed income
 
 - Building an industry credit analysis framework from scratch
 - Evaluating a specific company for lending or bond investment decisions
-- Constructing a multi-dimensional investment dashboard (relative value + terms protection + liquidity + event calendar)
+- Constructing a multi-dimensional investment dashboard (relative value + sector allocation fit + curve positioning + event calendar)
 - Assembling fragmented public data into a coherent credit assessment using mosaic theory
 - Retroactively validating analytical frameworks against historical defaults
-- Evaluating LGFV credit quality through the LGFV framework → read `dev/engine/lgfv-framework.md`
+- Evaluating sovereign-linked or government-supported credit → read `dev/engine/external-support-framework.md`
 - Conducting ESG/governance risk scans and fraud detection → read `dev/engine/esg-framework.md` and `dev/engine/governance-fraud-risk.md`
 - Performing LGD/recovery rate analysis for default scenarios → read `dev/engine/lgd-recovery-framework.md`
 - Assessing external support (government, parent company) impact on creditworthiness → read `dev/engine/external-support-framework.md`
@@ -62,9 +62,9 @@ Defined but not implemented. Adapter contract (`query_bond_analytics` / `query_m
 
 ## Veto & Rating Ceiling (mandatory)
 
-- **One-shot veto**: When any analysis layer triggers a one-shot veto condition, the issuer's rating **ceiling is locked at CCC** and may not be raised. Veto conditions for each layer: `dev/engine/industry-framework.md` §5.
+- **One-vote veto**: When any analysis layer triggers a one-vote veto condition, the issuer's rating **ceiling is locked at CCC** and may not be raised. Veto conditions for each layer: `dev/engine/industry-framework.md` §5.
 - Rating mapping must use the official 12-notch table (`dev/engine/dual-track-methodology.md` §6); do not create custom notches.
-- For LGFV entities: government credit sets the ceiling, platform strength sets the floor, and support willingness determines the final notch (`dev/engine/lgfv-framework.md` §5).
+- For sovereign-linked entities (P6): fiscal capacity and institutional strength govern, and support willingness determines the final notch (`dev/engine/external-support-framework.md`).
 
 ## Two-Track Parallel Structure (Core)
 
@@ -74,9 +74,9 @@ Track A (fundamental, qualitative+scoring, L1 heaviest → L4 lightest) and Trac
 
 Full pyramid weights, Track-B thresholds, and the cross-comparison matrix: `references/industry-scoring.md` and `dev/engine/dual-track-methodology.md`.
 
-## System-Intelligence Layer (v0.0.1-alpha)
+## System-Intelligence Layer
 
-Aggregates issuer assessments into portfolio/market signals: cross-industry contagion (13×13 matrix), five-dimensional concentration, and the Systemic Risk Index `SRI = Σ(industry_risk_score × industry_weight_pct)` (scale 0–3+).
+Aggregates issuer assessments into portfolio/market signals: cross-industry contagion (19×19 matrix), five-dimensional concentration, and the Systemic Risk Index `SRI = Σ(industry_risk_score × industry_weight_pct)` (scale 0–3+).
 
 SRI thermometer: 🟢 normal (<0.5), 🟡 watch (0.5–1.0), 🟠 alert (1.0–1.8), 🔴 danger (≥1.8).
 
@@ -105,7 +105,7 @@ Full specification: `references/system-intelligence.md` and `dev/engine/systemic
 Details have been moved to `references/` (single source of truth remains `dev/engine/` engine documents):
 
 - `references/mosaic-engine-architecture.md` — Mosaic Engine Mode A: signal confidence / density assessment / gap mapping / completeness output
-- `references/industry-scoring.md` — Track A industry pyramid · six paradigms+LGFV · D1-D10 · C1-C4
+- `references/industry-scoring.md` — Track A industry pyramid · six paradigms (P1-P6) · D1-D10
 - `references/system-intelligence.md` — Cross-industry contagion · five-dimensional concentration · SRI thermometer
 - `references/stakeholder-paths.md` — Multi-stakeholder views · portfolio manager dashboard · Path Sheet consumption guide
 - `dev/.claude/skills/credit-analysis-router/SKILL.md` — Requirement interpretation / routing layer, outputs Path Sheet
@@ -121,3 +121,5 @@ Details have been moved to `references/` (single source of truth remains `dev/en
 | 0.7.0-alpha | 2026-07-13 | System-intelligence layer: contagion theory/matrix, five-dimensional concentration, systemic warning (SRI), 13-industry coverage, six analytical paradigms. |
 | 0.7.1-release | 2026-07-15 | Dev-stack reorganization finalized; validation artifacts separated (root validation/, never in snapshots). Version headers promoted. |
 | 0.7.4 | 2026-07-15 | SKILL.md slimmed to a navigator (≤150 lines); detail sunk to `references/` (mosaic / industry / system-intelligence / stakeholder). Invocation Protocol is now path-sheet-driven (`engine_reading_order`). LGV→LGFV naming unified. |
+| v0.0.1 | 2026-07-18 | International release: 19-industry GICS contagion matrix, six international paradigms (P1-P6), six buy-side roles, S&P/Moody's/Fitch rating alignment, IFRS/US GAAP framework. LGFV framework retired (China-specific). |
+| v0.0.2 | 2026-07-21 | Paradigm taxonomy unified on industry-framework P1-P6; references rebuilt (ghost LGFV/Corporate-Financing references removed); outlook migration matrix completed for all 18 tiers. |

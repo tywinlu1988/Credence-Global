@@ -143,7 +143,7 @@ def test_skill_md_slimmed_and_retains_mandatory_guardrails():
     assert line_count <= 150, (
         f"SKILL.md is {line_count} lines; must be <=150 after the navigator slim-down"
     )
-    for keyword in ["Mandatory Density Rules", "Mode B", "One-shot veto"]:
+    for keyword in ["Mandatory Density Rules", "Mode B", "One-vote veto"]:
         assert keyword in skill, f"SKILL.md lost mandatory guardrail keyword: {keyword}"
 
 
