@@ -104,14 +104,14 @@ def test_t12_2_src_resolves_in_dist(dist):
     active = sorted(pid for pid, p in reg.items() if str(p.get("status")) == "active")
     assert active, "no active paths parsed from dist registry"
     for pid in active:
-        role = str(reg[pid].get("role", "meta"))
+        entry = reg[pid]
         sheet = {
-            "role": role,
-            "object": Object.SINGLE_ISSUER.value,
-            "depth": Depth.L1.value,
+            "role": str(entry.get("role", "meta")),
+            "object": str((entry.get("trigger") or {}).get("object", Object.SINGLE_ISSUER.value)),
+            "depth": str(entry.get("depth", Depth.L1.value)),
             "mode": Mode.A.value,
             "path_id": pid,
-            "engine_reading_order": ["e"],
+            "engine_reading_order": list(entry.get("engine_sequence") or []),
             "quality_gates": ["g"],
         }
         assert validate_path_sheet(sheet, reg, root=dist) == [], pid

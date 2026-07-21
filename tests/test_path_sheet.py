@@ -307,3 +307,88 @@ def test_enum_values_match_router_contract():
     assert {o.value for o in Object} == {"single-issuer", "portfolio", "industry", "market", "meta"}
     assert {d.value for d in Depth} == {"L0", "L1", "L2", "special"}
     assert {m.value for m in Mode} == {"A", "B"}
+
+
+# --------------------------------------------------------------------------
+# T5.5 — semantic consistency with registry entries (role/object/depth/sequence)
+# --------------------------------------------------------------------------
+
+def _full_registry() -> dict:
+    return {
+        "WP-RO-01": {
+            "id": "WP-RO-01",
+            "name": "Portfolio Concentration Assessment",
+            "status": "active",
+            "role": "risk-officer",
+            "trigger": {"user_intent": ["concentration"], "object": "portfolio"},
+            "depth": "special",
+            "engine_sequence": [
+                "dev/engine/contagion-matrix.md",
+                "dev/engine/contagion-theory.md",
+                "dev/engine/concentration-framework.md",
+            ],
+            "templates": ["planned"],
+        }
+    }
+
+
+def _full_sheet(**overrides) -> dict:
+    base = {
+        "role": "risk-officer",
+        "object": "portfolio",
+        "depth": "special",
+        "mode": "A",
+        "path_id": "WP-RO-01",
+        "engine_reading_order": ["dev/engine/contagion-matrix.md", "dev/engine/concentration-framework.md"],
+        "quality_gates": ["g"],
+        "notes": "",
+    }
+    base.update(overrides)
+    return base
+
+
+def test_t5_5_matching_sheet_passes():
+    assert validate_path_sheet(_full_sheet(), _full_registry()) == []
+
+
+def test_t5_5_role_mismatch_rejected():
+    errors = validate_path_sheet(_full_sheet(role="trader"), _full_registry())
+    assert any("role" in e and "trader" in e and "risk-officer" in e for e in errors)
+
+
+def test_t5_5_object_mismatch_rejected():
+    errors = validate_path_sheet(_full_sheet(object="market"), _full_registry())
+    assert any("object" in e and "market" in e and "portfolio" in e for e in errors)
+
+
+def test_t5_5_depth_mismatch_rejected():
+    errors = validate_path_sheet(_full_sheet(depth="L2"), _full_registry())
+    assert any("depth" in e and "L2" in e and "special" in e for e in errors)
+
+
+def test_t5_5_arbitrary_engine_doc_rejected():
+    errors = validate_path_sheet(
+        _full_sheet(engine_reading_order=["dev/engine/mosaic-engine.md"]),
+        _full_registry(),
+    )
+    assert any("engine_reading_order" in e and "mosaic-engine" in e for e in errors)
+
+
+def test_t5_5_out_of_order_engine_docs_rejected():
+    errors = validate_path_sheet(
+        _full_sheet(engine_reading_order=[
+            "dev/engine/concentration-framework.md",
+            "dev/engine/contagion-matrix.md",
+        ]),
+        _full_registry(),
+    )
+    assert any("engine_reading_order" in e and "order" in e for e in errors)
+
+
+def test_t5_5_sparse_registry_entry_skips_semantic_checks():
+    # Registry entries without declared role/object/depth/sequence (sparse trees)
+    # fall back to structural validation only.
+    _make_template_sparse = {
+        "WP-RO-01": {"id": "WP-RO-01", "status": "active", "templates": ["planned"]}
+    }
+    assert validate_path_sheet(_full_sheet(role="trader"), _make_template_sparse) == []

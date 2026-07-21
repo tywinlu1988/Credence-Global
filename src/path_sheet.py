@@ -277,7 +277,70 @@ def validate_path_sheet(sheet: dict, registry_paths: dict, root=None) -> list[st
                 if not (base / str(tmpl)).exists():
                     errors.append(f"active path {pid!r} template missing on disk: {tmpl}")
 
+    # Semantic consistency with the registry entry (only where the entry declares
+    # the field; sparse registry entries fall back to structural validation only).
+    if path is not None:
+        _check_semantic_consistency(sheet, pid, path, errors)
+
     return errors
+
+
+def _check_semantic_consistency(sheet: dict, pid: str, path: dict, errors: list[str]) -> None:
+    """Compare the sheet's role/object/depth/engine_reading_order against the registry entry.
+
+    The quadruple (role x object x depth) must match the registered path definition --
+    a sheet that mislabels which role/object/depth a path serves is meaningless, even
+    though it is structurally valid. engine_reading_order must be a subsequence of the
+    registered engine_sequence (no arbitrary documents, registered order preserved;
+    narrowing to fewer documents is allowed).
+    """
+    def _field(name: str) -> str:
+        raw = sheet.get(name)
+        raw = raw.value if isinstance(raw, Enum) else raw
+        return "" if raw is None else str(raw).strip()
+
+    declared_role = str(path.get("role") or "").strip()
+    if declared_role and _field("role") and _field("role") != declared_role:
+        errors.append(
+            f"field 'role' mismatch: sheet has {_field('role')!r} but path {pid!r} "
+            f"is registered for role {declared_role!r}"
+        )
+
+    trigger = path.get("trigger") or {}
+    declared_object = str(trigger.get("object") or "").strip()
+    if declared_object and _field("object") and _field("object") != declared_object:
+        errors.append(
+            f"field 'object' mismatch: sheet has {_field('object')!r} but path {pid!r} "
+            f"is registered for object {declared_object!r}"
+        )
+
+    declared_depth = str(path.get("depth") or "").strip()
+    if declared_depth and _field("depth") and _field("depth") != declared_depth:
+        errors.append(
+            f"field 'depth' mismatch: sheet has {_field('depth')!r} but path {pid!r} "
+            f"is registered for depth {declared_depth!r}"
+        )
+
+    declared_seq = [str(d) for d in (path.get("engine_sequence") or [])]
+    sheet_seq = sheet.get("engine_reading_order")
+    if declared_seq and isinstance(sheet_seq, (list, tuple)):
+        sheet_seq = [str(d) for d in sheet_seq]
+        foreign = {d for d in sheet_seq if d not in declared_seq}
+        for d in sorted(foreign):
+            errors.append(
+                f"engine_reading_order entry {d!r} is not registered in {pid!r}'s engine_sequence"
+            )
+        remaining = list(declared_seq)
+        for d in sheet_seq:
+            if d in foreign:
+                continue
+            if d not in remaining:
+                errors.append(
+                    f"engine_reading_order violates the registered order of {pid!r}: "
+                    f"{d!r} appears out of order (or duplicated)"
+                )
+                break
+            remaining = remaining[remaining.index(d) + 1:]
 
 
 def sheet_notice(sheet: dict, registry_paths: dict) -> str | None:
