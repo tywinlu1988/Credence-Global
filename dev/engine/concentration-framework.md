@@ -646,7 +646,7 @@ When two dimensions exceed thresholds simultaneously, the adjustment is not a si
 
 The following situations directly trigger **portfolio extreme concentration cap, cap BB** (portfolio-level veto, not issuer-level):
 
-1. **Single industry > 50%** and the industry is in a down-cycle (Track A rating < 5.0), and the industry is a super-spreader in the contagion matrix (Semiconductors/LGFV/Advanced Equipment)
+1. **Single industry > 50%** and the industry is in a down-cycle (Track A rating < 5.0), and the industry is a super-spreader in the contagion matrix (per contagion-matrix.md §5.1: Financials, Capital Goods, Chemicals, Technology Hardware)
 2. **Single peripheral region > 35%** and there have been SOE defaults in that region within the past 12 months
 3. **Pseudo-high rating (external AAA, internal < BBB) share > 40%**
 4. **Next 12 months maturity > 70%** and funding channel dependency > 70% overlap
@@ -660,7 +660,16 @@ The following situations directly trigger **portfolio extreme concentration cap,
 
 > **Note:** The portfolio extreme concentration cap (BB) is a different concept from the issuer-level veto (CCC). The former targets portfolio-level liquidity/realization risk from concentration; the latter targets the issuer's own operational survival risk.
 
-### 7.4 Examples for Each of the 13 Industries
+### 7.4 Examples (Legacy 13-Industry Composition)
+
+> **Legacy worked examples:** The examples below were written for the retired 13-industry
+> China-market composition (LGFV, Solar/PV, NEV, etc.) and reference its super-spreader
+> rankings. They remain valid as illustrations of the adjustment *mechanics*; the current
+> super-spreader set is Financials, Capital Goods, Chemicals, and Technology Hardware
+> (contagion-matrix.md §5.1), and the current industry set is the 19 GICS industries
+> (contagion-matrix.md §1.2). Re-derivation under the 19-industry composition is a
+> scheduled follow-up. Note also: a 50% single-industry concentration maps to the alert
+> band per §1.3 interpolation (score ~6, 🟠), not 5 as printed below.
 
 The following examples assume: the portfolio is 50% concentrated in the specified industry, with all other dimensions normal (🟢). Examples illustrate the impact path of industry concentration on rating adjustment.
 
@@ -748,7 +757,13 @@ Under special market conditions, weights should be adjusted to reflect changes i
 
 **Interpretation:** This portfolio has moderate to high concentration across all five dimensions. The funding channel dimension entered danger territory due to high bond channel share and closing market window. The composite score of 7.15 falls into the 🔴 high concentration range, requiring immediate position reduction initiation.
 
-**Note (D₅ dimension):** Raw metric mapped to 6 (🟠 Warning), synergy effect added +2 (Bond channel > 70% + channel freezing → channel concentration + freezing double penalty), final = 8 (🔴 Danger). Synergy adjustment per §7.3 rules.
+**Note (D₅ dimension):** Raw metric mapped to 6 (🟠 Warning), synergy effect added +2 (Bond channel > 70% + channel freezing → channel concentration + freezing double penalty), final = 8 (🔴 Danger). Synergy adjustment per §6.3 rules.
+
+> **Errata (v0.0.2):** The raw dimension scores printed in the main table above (7 for D₁-D₄)
+> predate the §1.3 floor-interpolation rule; per §1.3 linear interpolation those raw values
+> compute to 6 (HHI 1800 → 6 per §1.3's own example). The §1.3 rule and this D₅ note govern;
+> the coded engine (src/concentration_scorer.py) implements §1.3 interpolation. Full
+> re-derivation of this composite example is a scheduled follow-up.
 
 ---
 

@@ -60,7 +60,8 @@ def test_all_five_dimensions_contribute():
         maturity_12m_share=0.75,
         single_month_peak=0.35,
         top_channel_share=0.80,
-        top_channel_is_contracting=True,
+        top_channel_type="bond",
+        channel_cancellation_rate=18.0,
     )
     assert industry_score(high) >= 8
     assert region_score(high) >= 8
@@ -71,39 +72,76 @@ def test_all_five_dimensions_contribute():
 
 
 def test_channel_contraction_bonus():
+    # §6.3 synergy: bond channel > 70% + cancellation rate > 15% -> base + 2.
+    # 75% share lands in the alert band -> floor-interp 6 (§8.5) + 2 = 8.
     contracting = ConcentrationMetrics(
-        hhi=500,
-        cr3=0.30,
-        cr5=0.50,
-        max1=0.15,
-        single_province_share=0.10,
-        weak_region_share=0.02,
-        aaa_share=0.20,
-        pseudo_high_rating_share=0.01,
-        maturity_12m_share=0.20,
-        single_month_peak=0.05,
+        hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
+        single_province_share=0.10, weak_region_share=0.02,
+        aaa_share=0.20, pseudo_high_rating_share=0.01,
+        maturity_12m_share=0.20, single_month_peak=0.05,
+        top_channel_share=0.75,
+        top_channel_type="bond", channel_cancellation_rate=18.0,
+    )
+    assert channel_score(contracting) == 8
+
+    # Share below the >70% synergy gate -> no bonus even with high cancellation.
+    below_gate = ConcentrationMetrics(
+        hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
+        single_province_share=0.10, weak_region_share=0.02,
+        aaa_share=0.20, pseudo_high_rating_share=0.01,
+        maturity_12m_share=0.20, single_month_peak=0.05,
         top_channel_share=0.60,
-        top_channel_is_contracting=True,
+        top_channel_type="bond", channel_cancellation_rate=18.0,
     )
     relaxed = ConcentrationMetrics(
-        hhi=500,
-        cr3=0.30,
-        cr5=0.50,
-        max1=0.15,
-        single_province_share=0.10,
-        weak_region_share=0.02,
-        aaa_share=0.20,
-        pseudo_high_rating_share=0.01,
-        maturity_12m_share=0.20,
-        single_month_peak=0.05,
+        hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
+        single_province_share=0.10, weak_region_share=0.02,
+        aaa_share=0.20, pseudo_high_rating_share=0.01,
+        maturity_12m_share=0.20, single_month_peak=0.05,
         top_channel_share=0.60,
-        top_channel_is_contracting=False,
     )
-    assert channel_score(contracting) > channel_score(relaxed)
+    assert channel_score(below_gate) == channel_score(relaxed)
+
+
+def test_channel_synergy_nonstandard_and_bank():
+    base = dict(
+        hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
+        single_province_share=0.10, weak_region_share=0.02,
+        aaa_share=0.20, pseudo_high_rating_share=0.01,
+        maturity_12m_share=0.20, single_month_peak=0.05,
+    )
+    # §6.3: non-standard channel > 50% + balance YoY decline > 20% -> +3.
+    nonstd = ConcentrationMetrics(
+        **base, top_channel_share=0.55,
+        top_channel_type="non-standard", nonstd_balance_yoy_change=-25.0,
+    )
+    # 55% in [50,70) watch band -> 4 + 3 = 7
+    assert channel_score(nonstd) == 7
+
+    # §6.3: bank channel > 70% + credit growth < 8% -> +1.
+    bank = ConcentrationMetrics(
+        **base, top_channel_share=0.75,
+        top_channel_type="bank", credit_growth_yoy=6.0,
+    )
+    # 75% in [70,90) alert band -> 6 + 1 = 7
+    assert channel_score(bank) == 7
+
+
+def test_channel_diversification_bonus():
+    # §6.3: all channels available with single < 50% -> -1.
+    diversified = ConcentrationMetrics(
+        hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
+        single_province_share=0.10, weak_region_share=0.02,
+        aaa_share=0.20, pseudo_high_rating_share=0.01,
+        maturity_12m_share=0.20, single_month_peak=0.05,
+        top_channel_share=0.45, all_channels_available=True,
+    )
+    # 45% in normal band [0,50) -> floor-interp 2 - 1 = 1
+    assert channel_score(diversified) == 1
 
 
 def test_rating_orange_and_danger_bands():
-    # 20% pseudo-high-rating is in the documented alert (orange) band.
+    # 20% pseudo-high-rating is in the alert band [15%, 30%) -> floor-interp 6.
     orange = ConcentrationMetrics(
         hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
         single_province_share=0.10, weak_region_share=0.02,
@@ -111,9 +149,9 @@ def test_rating_orange_and_danger_bands():
         maturity_12m_share=0.20, single_month_peak=0.05,
         top_channel_share=0.30,
     )
-    assert rating_score(orange) == 7
+    assert rating_score(orange) == 6
 
-    # 75% AAA share is in the documented danger band.
+    # 75% AAA share reaches the top (danger) band -> floor at 8.
     danger = ConcentrationMetrics(
         hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
         single_province_share=0.10, weak_region_share=0.02,
@@ -121,11 +159,11 @@ def test_rating_orange_and_danger_bands():
         maturity_12m_share=0.20, single_month_peak=0.05,
         top_channel_share=0.30,
     )
-    assert rating_score(danger) == 9
+    assert rating_score(danger) == 8
 
 
 def test_maturity_orange_band():
-    # 60% 12-month maturity is in the documented alert (orange) band.
+    # 60% 12-month maturity is in the alert band [50%, 70%) -> floor-interp 6.
     metrics = ConcentrationMetrics(
         hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
         single_province_share=0.10, weak_region_share=0.02,
@@ -133,10 +171,11 @@ def test_maturity_orange_band():
         maturity_12m_share=0.60, single_month_peak=0.05,
         top_channel_share=0.30,
     )
-    assert maturity_score(metrics) == 7
+    assert maturity_score(metrics) == 6
 
 
 def test_region_danger_band():
+    # 50% single-province share reaches the top (danger) band -> floor at 8.
     metrics = ConcentrationMetrics(
         hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
         single_province_share=0.50, weak_region_share=0.35,
@@ -144,7 +183,20 @@ def test_region_danger_band():
         maturity_12m_share=0.20, single_month_peak=0.05,
         top_channel_share=0.30,
     )
-    assert region_score(metrics) == 9
+    assert region_score(metrics) == 8
+
+
+def test_interpolation_matches_doc_examples():
+    # §1.3: HHI = 1800 (warning band 1500-2500) -> linear interpolation -> 6.
+    # §8.5: MAX1 = 42% (alert band 40-60%) -> 6.
+    metrics = ConcentrationMetrics(
+        hhi=1800, cr3=0.30, cr5=0.50, max1=0.42,
+        single_province_share=0.10, weak_region_share=0.02,
+        aaa_share=0.20, pseudo_high_rating_share=0.01,
+        maturity_12m_share=0.20, single_month_peak=0.05,
+        top_channel_share=0.30,
+    )
+    assert industry_score(metrics) == 6
 
 
 def test_concentration_weights_must_sum_to_one():
@@ -245,15 +297,12 @@ def test_rating_adjustment_three_reds():
 
 
 def test_bb_cap_weak_region_threshold():
-    metrics = ConcentrationMetrics(
-        hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
-        single_province_share=0.10, weak_region_share=0.40,
-        aaa_share=0.20, pseudo_high_rating_share=0.01,
-        maturity_12m_share=0.20, single_month_peak=0.05,
-        top_channel_share=0.30,
-    )
-    adj = rating_adjustment(metrics)
-    assert adj["bb_cap_triggered"] is True
+    # §7.3 #2: weak region > 35% AND SOE defaults in region within past 12 months.
+    with_default = _base_metrics(weak_region_share=0.40, region_had_soe_default=True)
+    assert rating_adjustment(with_default)["bb_cap_triggered"] is True
+    # Share alone is not sufficient without the SOE-default condition.
+    without_default = _base_metrics(weak_region_share=0.40, region_had_soe_default=False)
+    assert rating_adjustment(without_default)["bb_cap_triggered"] is False
 
 
 def test_bb_cap_pseudo_high_rating_threshold():
@@ -373,41 +422,44 @@ def test_rating_adjustment_one_red_zero_orange():
 
 
 def test_bb_cap_single_industry_boundary():
-    at_cap = ConcentrationMetrics(
-        hhi=500, cr3=0.30, cr5=0.50, max1=0.50,
-        single_province_share=0.10, weak_region_share=0.02,
-        aaa_share=0.20, pseudo_high_rating_share=0.01,
-        maturity_12m_share=0.20, single_month_peak=0.05,
-        top_channel_share=0.30,
-    )
-    below_cap = ConcentrationMetrics(
-        hhi=500, cr3=0.30, cr5=0.50, max1=0.49,
-        single_province_share=0.10, weak_region_share=0.02,
-        aaa_share=0.20, pseudo_high_rating_share=0.01,
-        maturity_12m_share=0.20, single_month_peak=0.05,
-        top_channel_share=0.30,
-    )
-    assert rating_adjustment(at_cap)["bb_cap_triggered"] is True
-    assert rating_adjustment(below_cap)["bb_cap_triggered"] is False
+    # §7.3 #1 is a triple conjunct: single industry > 50% AND down-cycle
+    # (Track A < 5.0) AND super-spreader. Share alone never triggers.
+    assert rating_adjustment(_base_metrics(max1=0.50))["bb_cap_triggered"] is False
+    assert rating_adjustment(_base_metrics(max1=0.51))["bb_cap_triggered"] is False
+    # Full conjunct triggers.
+    full = _base_metrics(max1=0.51, track_a_score=4.5, industry_is_super_spreader=True)
+    assert rating_adjustment(full)["bb_cap_triggered"] is True
+    # Missing super-spreader attribute -> no trigger.
+    no_spreader = _base_metrics(max1=0.51, track_a_score=4.5, industry_is_super_spreader=False)
+    assert rating_adjustment(no_spreader)["bb_cap_triggered"] is False
+    # Not in down-cycle -> no trigger.
+    up_cycle = _base_metrics(max1=0.51, track_a_score=5.5, industry_is_super_spreader=True)
+    assert rating_adjustment(up_cycle)["bb_cap_triggered"] is False
 
 
 def test_bb_cap_weak_region_boundary():
-    at_cap = ConcentrationMetrics(
-        hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
-        single_province_share=0.10, weak_region_share=0.36,
-        aaa_share=0.20, pseudo_high_rating_share=0.01,
-        maturity_12m_share=0.20, single_month_peak=0.05,
-        top_channel_share=0.30,
-    )
-    below_cap = ConcentrationMetrics(
-        hhi=500, cr3=0.30, cr5=0.50, max1=0.15,
-        single_province_share=0.10, weak_region_share=0.34,
-        aaa_share=0.20, pseudo_high_rating_share=0.01,
-        maturity_12m_share=0.20, single_month_peak=0.05,
-        top_channel_share=0.30,
-    )
+    # §7.3 #2 boundary: > 35% (strict) with the SOE-default condition met.
+    at_cap = _base_metrics(weak_region_share=0.36, region_had_soe_default=True)
+    below_cap = _base_metrics(weak_region_share=0.34, region_had_soe_default=True)
     assert rating_adjustment(at_cap)["bb_cap_triggered"] is True
     assert rating_adjustment(below_cap)["bb_cap_triggered"] is False
+
+
+def test_five_oranges_systemic_alert_not_bb_cap():
+    # §7.2: all 5 dimensions 🟠 triggers a systemic risk alert — the individual
+    # issuer adjustment rules are NOT applicable. It is not a §7.3 BB cap.
+    metrics = ConcentrationMetrics(
+        hhi=1800, cr3=0.70, cr5=0.85, max1=0.45,
+        single_province_share=0.40, weak_region_share=0.25,
+        aaa_share=0.55, pseudo_high_rating_share=0.20,
+        maturity_12m_share=0.60, single_month_peak=0.25,
+        top_channel_share=0.80,
+    )
+    adj = rating_adjustment(metrics)
+    assert set(adj["levels"].values()) == {"orange"}
+    assert adj["adjustment"] is None
+    assert adj["systemic_risk_alert"] is True
+    assert adj["bb_cap_triggered"] is False
 
 
 def test_bb_cap_pseudo_high_rating_boundary():
