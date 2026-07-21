@@ -1,6 +1,6 @@
 # Path → Template → Tier Mapping View
 
-**Version**: v0.0.2
+**Version**: v0.0.3
 
 > This table is an assembly mapping view for `credit-report-builder`: given a `path_id`, it lists the templates and primary tier to use. The single source of truth for the template list is `dev/engine/work-path-registry.md` (the `templates` field of each path); the single source of truth for tier semantics is `dev/engine/output-layered-framework.md` §§2/3/5. This table contains no thresholds, tier time budgets, or rating values — all numeric judgments are subject to the referenced engine documents. In case of any inconsistency between this table and those two documents, the latter take precedence.
 

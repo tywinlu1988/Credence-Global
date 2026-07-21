@@ -1,6 +1,6 @@
 # Network-Effect and Traffic/Throughput Analysis: Secondary-Attribute Application Note
 
-**Version**: v0.0.2 | **Paradigm Version**: v1.0.0 | **Date**: 2026-07-18 | **Status**: Initial international release
+**Version**: v0.0.3 | **Paradigm Version**: v1.0.0 | **Date**: 2026-07-18 | **Status**: Initial international release
 
 > **Taxonomy note**: This document is an **application note**, not a standalone paradigm.
 > Under the six-paradigm taxonomy (single source of truth: [industry-framework.md](industry-framework.md) §2-§3),

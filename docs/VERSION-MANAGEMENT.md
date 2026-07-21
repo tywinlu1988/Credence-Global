@@ -1,6 +1,6 @@
 # Version Management Strategy
 
-**Corresponding Engine Version**: v0.0.2
+**Corresponding Engine Version**: v0.0.3
 **Last Updated**: 2026-07-20
 
 ## Directory Structure Convention
@@ -23,7 +23,7 @@
 
 - Format: `v<major>.<minor>.<patch>-<stage>`
 - Scope: All core methodology documents under `dev/engine/`, skill packages, templates, and reports.
-- Current: `v0.0.2`
+- Current: `v0.0.3`
 - Upgrade Trigger Conditions:
   - New feature modules or industry coverage -> Increment minor version
   - Major methodology restructuring or rating system changes -> Increment major version

@@ -1,7 +1,7 @@
 # Fixed Income Credit Intelligent Analysis Engine
 
 **Project Codename**: Credence
-**Version**: v0.0.2
+**Version**: v0.0.3
 **Status**: Methodology documentation complete — 4 coded engines wired (concentration / contagion / SRI / outlook) — 19-industry GICS coverage — four-stage skill chain delivered
 
 ---
@@ -142,6 +142,7 @@ Product vision, Magic Experience, 3-layer output system, commercial model, prici
 
 | Version | Date | Milestone |
 |---|---|---|
+| v0.0.3 | 2026-07-21 | Single-source convergence: paradigm taxonomy adjudication + full propagation; 13→19 GICS migration; machine-generated contagion derived tables; engine correctness rework (concentration/outlook/contagion); skills cleanup; naming convergence |
 | v0.0.2 | 2026-07-21 | Consistency convergence: paradigm taxonomy unified on industry-framework P1-P6; 13→19-industry document migration; contagion derived tables machine-generated; concentration/outlook/contagion engine corrections; skills ghost references purged |
 | v0.0.1 | 2026-07-18 | Initial release: international fixed-income credit analysis engine |
 

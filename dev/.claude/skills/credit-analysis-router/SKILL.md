@@ -5,7 +5,7 @@ description: Intake router for vague or compound fixed-income credit-analysis re
 
 ## Purpose
 
-**Engine version**: v0.0.2
+**Engine version**: v0.0.3
 
 Routing layer — does no analysis. Responsibility is three steps: interpret vague/compound needs → match a work path in `work-path-registry` → output a structured Path Sheet. This skill does not replicate any engine thresholds/weights/rating mappings; rule content uses engine documents as the single source of truth. After routing, hand off to the `fixed-income-credit-analysis` skill, which executes according to the Path Sheet's `engine_reading_order`.
 

@@ -1,6 +1,6 @@
 # Five-Dimensional Concentration Analysis Framework
 
-**Version**: v0.0.2 | **Date**: 2026-07-10 | **Status**: Released
+**Version**: v0.0.3 | **Date**: 2026-07-10 | **Status**: Released
 
 ---
 
@@ -275,7 +275,7 @@ The regional fiscal health weighted share serves as a supplementary indicator th
 
 According to the [Contagion Matrix](contagion-matrix.md) §4.1 Principle 3 (intra-regional dependency transmission is high), regional concentration risk is amplified through the following pathways:
 
-> **Cross-document consumption note:** When the Concentration Framework references the Contagion Matrix, it only consumes each cell's **`intensity`** and **`direction`** fields, used to identify contagion strength and determine uni/bidirectional relationships. The `type`, `confidence`, and `historical_cases` fields do not enter the quantitative calculation in the current v0.0.2.
+> **Cross-document consumption note:** When the Concentration Framework references the Contagion Matrix, it only consumes each cell's **`intensity`** and **`direction`** fields, used to identify contagion strength and determine uni/bidirectional relationships. The `type`, `confidence`, and `historical_cases` fields do not enter the quantitative calculation in the current v0.0.3.
 
 | Regional Resonance Pathway | Contagion Intensity | Logic Description |
 |--------------------------|-------------------|-------------------|
@@ -597,7 +597,7 @@ Step 6: Output the final funding channel concentration risk score (1-10)
 
 ## 7. Concentration to Rating Adjustment Mapping
 
-**Version**: v0.0.2 | **Date**: 2026-07-10 | **Status**: Released
+**Version**: v0.0.3 | **Date**: 2026-07-10 | **Status**: Released
 
 The five-dimensional concentration composite score identifies the concentration risk level (🟢🟡🟠🔴) of the portfolio across five dimensions, but does not directly answer a core question: "How does concentration risk affect the credit rating of individual issuers?" This section establishes the mapping rules from dimension threshold breaches to issuer rating adjustments.
 
@@ -759,7 +759,7 @@ Under special market conditions, weights should be adjusted to reflect changes i
 
 **Note (D₅ dimension):** Raw metric mapped to 6 (🟠 Warning), synergy effect added +2 (Bond channel > 70% + channel freezing → channel concentration + freezing double penalty), final = 8 (🔴 Danger). Synergy adjustment per §6.3 rules.
 
-> **Errata (v0.0.2):** The raw dimension scores printed in the main table above (7 for D₁-D₄)
+> **Errata (v0.0.3):** The raw dimension scores printed in the main table above (7 for D₁-D₄)
 > predate the §1.3 floor-interpolation rule; per §1.3 linear interpolation those raw values
 > compute to 6 (HHI 1800 → 6 per §1.3's own example). The §1.3 rule and this D₅ note govern;
 > the coded engine (src/concentration_scorer.py) implements §1.3 interpolation. Full
@@ -888,4 +888,4 @@ Use the following table to quickly estimate the composite risk score:
 
 ---
 
-*This document should be used in conjunction with the Contagion Matrix (v0.0.2) and Financial Deep Dive (v0.0.2). The Concentration Analysis Framework is the core component of the M4 Portfolio Risk Control Layer and forms a complete risk control loop with the Industry Pyramid (M1-M2) and Dual-Track Analysis (M3).*
+*This document should be used in conjunction with the Contagion Matrix (v0.0.3) and Financial Deep Dive (v0.0.3). The Concentration Analysis Framework is the core component of the M4 Portfolio Risk Control Layer and forms a complete risk control loop with the Industry Pyramid (M1-M2) and Dual-Track Analysis (M3).*
