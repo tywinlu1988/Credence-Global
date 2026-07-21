@@ -1,6 +1,6 @@
 # QA Checklist
 
-**Version**: v0.0.3
+**Version**: v0.0.4
 
 > This checklist is the review basis for `credit-qa-verifier`: four mandatory checks + common path quality gates. Every **rule name must be grep-able in the referenced engine document** (same traceability standard as the registry quality gates), and no rules may be fabricated. Rule content and values use the referenced engine documents as the single source of truth; this checklist does not copy any thresholds, SRI tiers, layered time budgets, or rating values.
 

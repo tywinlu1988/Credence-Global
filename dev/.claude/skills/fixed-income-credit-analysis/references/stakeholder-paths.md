@@ -1,6 +1,6 @@
 # Multi-Stakeholder Coverage & Path-Sheet Consumption
 
-**Version**: v0.0.3
+**Version**: v0.0.4
 
 > This document is derived from `fixed-income-credit-analysis` SKILL.md, organizing multi-stakeholder coverage and dashboard content, supplemented with Work-Path Sheet consumption guidance. The single sources of truth are `dev/engine/multi-stakeholder.md` and `dev/engine/work-path-registry.md`.
 

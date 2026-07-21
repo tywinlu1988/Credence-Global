@@ -1,6 +1,6 @@
 # Work Path Routing View
 
-**Version**: v0.0.3
+**Version**: v0.0.4
 
 > This table is a condensed routing view of `dev/engine/work-path-registry.md`, for `credit-analysis-router` matching. It only lists path ID / name / role / status / one-liner trigger pattern. It contains no engine thresholds, weights, or rating mappings — the canonical rules are defined by the engine documents referenced via the registry's `engine_sequence`.
 

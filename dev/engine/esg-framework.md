@@ -1,6 +1,6 @@
 # ESG Risk Assessment Framework (Applicable to Global Fixed Income Markets)
 
-**Version**: v0.0.3 | **Date**: 2026-07-10 | **Status**: Published | **Type**: Non-Credit Risk Overlay Sub-Module
+**Version**: v0.0.4 | **Date**: 2026-07-10 | **Status**: Published | **Type**: Non-Credit Risk Overlay Sub-Module
 
 ---
 

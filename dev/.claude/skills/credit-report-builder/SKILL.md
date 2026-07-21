@@ -5,7 +5,7 @@ description: Use when turning a completed fixed-income credit analysis into a de
 
 ## Purpose
 
-**Engine version**: v0.0.3
+**Engine version**: v0.0.4
 
 Assembly layer — **this skill does not perform analysis**. Responsibility is two steps: map the Analysis Artifact produced by the upstream `fixed-income-credit-analysis` skill to L0/L1/L2 output tiers and select the correct template → assemble into a deliverable report and produce a Delivery Note. This skill does not replicate any engine thresholds/layered time budgets/rating mappings; template selection and tier semantics are always determined by engine documents as the single source of truth.
 

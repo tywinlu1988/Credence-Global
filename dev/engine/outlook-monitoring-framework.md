@@ -1,6 +1,6 @@
 # Rating Outlook and Continuous Monitoring Framework
 
-**Version**: v0.0.3 | **Date**: 2026-07-10 | **Positioning**: On top of dual-track static ratings, add forward-looking direction and continuous monitoring mechanisms
+**Version**: v0.0.4 | **Date**: 2026-07-10 | **Positioning**: On top of dual-track static ratings, add forward-looking direction and continuous monitoring mechanisms
 
 ---
 
@@ -8,7 +8,7 @@
 
 ### 1.1 The Current Engine Gap
 
-The current engine (v0.0.3) outputs a **static snapshot rating** (AAA through D) that only reflects the credit quality assessment at the time of analysis. Beyond static ratings, professional rating agencies consistently maintain **three time dimensions**:
+The current engine (v0.0.4) outputs a **static snapshot rating** (AAA through D) that only reflects the credit quality assessment at the time of analysis. Beyond static ratings, professional rating agencies consistently maintain **three time dimensions**:
 
 | Time Dimension | Traditional Rating Output | Engine Current State | Gap |
 |---|---|---|---|
@@ -439,7 +439,7 @@ When Signal Density > Threshold (policy-driven L1 threshold 70%; tech-moat L2 th
 
 ### 5.1 Migration Probability Reference (Legacy China-Market Calibration)
 
-> **Calibration note (v0.0.3):** This matrix was calibrated on China credit-bond market
+> **Calibration note (v0.0.4):** This matrix was calibrated on China credit-bond market
 > history (see §5.2 limitations). It is retained as the reference shape for migration
 > probabilities pending recalibration against international (US IG/HY, EU) transition
 > data; the engine treats it as directional, not statistical, per §5.2's honest statement.
@@ -511,11 +511,11 @@ This module is not an independent document -- corresponding modifications need t
 **Rating Output Specification Changes**:
 
 ```
-# Current (v0.0.3)
+# Current (v0.0.4)
 Composite Output
 Rating + Signals + Completeness Report
 
-# Revised (v0.0.3)
+# Revised (v0.0.4)
 Composite Output
 Rating + Outlook + Watchlist + Continuous Monitoring Checklist + Signal Completeness Report
 ```

@@ -1,6 +1,6 @@
 # External Support Assessment Framework — Fixed Income Credit Analysis Engine
 
-**Version**: v0.0.3 | **Date**: 2026-07-17
+**Version**: v0.0.4 | **Date**: 2026-07-17
 **Position**: Rating Adjustment Layer (independent cross-cutting adjustment factor) · Track A Fundamental Analysis Supplement
 **Core Question**: When an issuer encounters distress, will the sovereign/parent/shareholder provide support? How much capacity do they have?
 
