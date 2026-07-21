@@ -1,5 +1,6 @@
 import pytest
 
+from src.path_sheet import engine_dir
 from src.sri_calculator import (
     IndustryInput,
     Outlook,
@@ -10,6 +11,8 @@ from src.sri_calculator import (
     sri,
     thermometer_level,
 )
+
+DOC = engine_dir() / "systemic-warning-framework.md"
 
 
 def test_industry_risk_score_normal():
@@ -159,3 +162,39 @@ def test_m4_weight_adjustment():
     assert m4_concentration_weight_adjustment(1.2) == 1.15
     assert m4_concentration_weight_adjustment(1.8) == 1.30
     assert m4_concentration_weight_adjustment(2.0) == 1.30
+
+
+# ---------------- runtime-parsed rules (SS2.2.1 + Appendix A + SS3.1) ----------------
+
+def test_load_sri_rules_matches_document():
+    from src.sri_calculator import load_sri_rules
+    rules = load_sri_rules()
+    # §2.2.1 base bands: <3.0 -> 3, <5.0 -> 2, <6.0 -> 1, top -> 0
+    assert rules["base_bands"] == [(3.0, 3), (5.0, 2), (6.0, 1), (float("inf"), 0)]
+    assert rules["outlook_penalty"] == {"positive": 0.0, "stable": 0.0, "negative": 0.5}
+    assert rules["track_b_penalty"] == {"green": 0.0, "yellow": 0.5, "orange": 1.0, "red": 1.5}
+    # Appendix A: min(base + penalties, 3.0); §2.2.1 veto -> 3 points forced
+    assert rules["cap"] == 3.0 and rules["veto_score"] == 3.0
+    # §3.1 thermometer tiers
+    assert rules["thermometer"] == [(0.5, "watch"), (1.0, "alert"), (1.8, "danger")]
+
+
+def test_load_sri_rules_is_live(tmp_path):
+    from src.sri_calculator import load_sri_rules
+    text = DOC.read_text(encoding="utf-8")
+    tampered = tmp_path / "tampered.md"
+    tampered.write_text(
+        text.replace("Negative outlook  →  +0.5 points", "Negative outlook  →  +0.7 points", 1),
+        encoding="utf-8",
+    )
+    rules = load_sri_rules(tampered)
+    assert rules["outlook_penalty"]["negative"] == 0.7, (
+        "rules must be parsed from the document at load time, not hardcoded"
+    )
+
+
+def test_m4_multipliers_parsed_from_doc():
+    # §10.1 M4 percentage table must also come from the document (drift guard).
+    from src.sri_calculator import load_sri_rules
+    rules = load_sri_rules()
+    assert rules["m4_factor"] == {"normal": 0.0, "watch": 0.05, "alert": 0.15, "danger": 0.30}
