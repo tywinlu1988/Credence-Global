@@ -47,10 +47,19 @@ _EXPLICIT_JUMPS = {
 }
 
 # Section 6.2 generic type-bump rules: factor -> affected contagion-type set (matches get +1, cap 5).
-# Market Panic = S/L; Information Asymmetry = C/R (Rule 1 / Rule 4 in document); other factors have no
-# generic rules (Rule 2 specifies "+0~+1" and Rule 5 "all +0~+1" as fuzzy ranges left to LLM judgment,
-# encoded as +0).
-_GENERIC_TYPE_BUMP = {"Market Panic": frozenset("SL"), "Information Asymmetry": frozenset("CR")}
+# Market Panic = S/L (Rule 1); Information Asymmetry = C/R (Rule 4); High Leverage = L (Rule 3's
+# "All pairs with 'L' mark -> Base + 1"). Rule 2 specifies "+0~+1" and Rule 5 "all +0~+1" as fuzzy
+# ranges left to LLM judgment, encoded as +0.
+_GENERIC_TYPE_BUMP = {
+    "Market Panic": frozenset("SL"),
+    "Information Asymmetry": frozenset("CR"),
+    "High Leverage": frozenset("L"),
+}
+
+# Section 6.2 Rules 1/2 "Financials → All 3 (avg) → 4 (avg)": deterministic encoding lifts
+# Financials-source cells with base intensity exactly 3 to 4. Rule 3's broad row (3→3.5 avg) is
+# fuzzy (half-point) and left to LLM judgment, not coded.
+_BROAD_FINANCIALS_LIFT = {"Market Panic", "Regulatory Vacuum"}
 
 
 @dataclass(frozen=True)
@@ -276,13 +285,20 @@ def high_intensity_links(matrix, industries=None, threshold=4) -> list:
 
 def apply_escalation(matrix, factors) -> ContagionMatrix:
     """Given a set of triggered escalation factors, return a stressed matrix (explicit pair jumps + generic
-    type +1, cap 5; original matrix unchanged)."""
+    type +1, cap 5; original matrix unchanged). Duplicate factors are deduplicated at entry — the same
+    factor never applies its generic bump twice.
+
+    Trimming notes: §6.3 multi-factor synergy multipliers (1.5x/2.0x/3.0x) are NOT implemented
+    (the doc's example arithmetic is order-dependent and under-specified for deterministic coding);
+    Rule 3's "Financials → All (broad) 3→3.5 (avg)" half-point row is likewise left to LLM judgment."""
     unknown = sorted(set(factors) - set(ESCALATION_FACTORS))
     if unknown:
         raise ValueError(f"Unknown escalation factors: {unknown}, available: {list(ESCALATION_FACTORS)}")
     boosts = {}
-    for f in factors:
+    for f in dict.fromkeys(factors):
         for (s, t, base, stressed, _label) in _EXPLICIT_JUMPS.get(f, []):
+            if s not in matrix.industries or t not in matrix.industries:
+                continue  # explicit jump pair not present in a subset/fixture matrix
             cur = matrix.intensity(s, t)
             if cur != base:
                 raise ValueError(
@@ -290,6 +306,11 @@ def apply_escalation(matrix, factors) -> ContagionMatrix:
                 )
             key = (s, t)
             boosts[key] = max(boosts.get(key, cur), stressed)
+        if f in _BROAD_FINANCIALS_LIFT:
+            for c in matrix.itercells():
+                if c.source == "Financials (Banks/Insurance)" and c.intensity == 3:
+                    key = (c.source, c.target)
+                    boosts[key] = max(boosts.get(key, c.intensity), 4)
         types = _GENERIC_TYPE_BUMP.get(f)
         if types:
             for c in matrix.itercells():
@@ -297,9 +318,10 @@ def apply_escalation(matrix, factors) -> ContagionMatrix:
                     key = (c.source, c.target)
                     cur = boosts.get(key, c.intensity)
                     boosts[key] = min(cur + 1, INTENSITY_MAX)
-        if f == "Year-End Effect":  # Rule 5: Financials-related pairs +1 ("all +0~+1" fuzzy range left to LLM)
+        if f == "Year-End Effect":  # Rule 5: "Financials → All" +1, source direction only
+            # ("all +0~+1" fuzzy range left to LLM judgment, encoded as +0)
             for c in matrix.itercells():
-                if "Financials" in c.source or "Financials" in c.target:
+                if c.source == "Financials (Banks/Insurance)":
                     key = (c.source, c.target)
                     cur = boosts.get(key, c.intensity)
                     boosts[key] = min(cur + 1, INTENSITY_MAX)

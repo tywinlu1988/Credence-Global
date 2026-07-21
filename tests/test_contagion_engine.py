@@ -197,6 +197,69 @@ def test_apply_escalation_stacks(matrix):
     assert stressed.intensity("Sovereigns & GSEs", "Energy (Oil & Gas)") == 4
 
 
+def test_escalation_duplicate_factors_no_double_stack(matrix):
+    # A duplicated factor must not double-apply its generic bump (dedupe at entry).
+    once = apply_escalation(matrix, ["Market Panic"])
+    twice = apply_escalation(matrix, ["Market Panic", "Market Panic"])
+    for c in matrix.itercells():
+        assert twice.intensity(c.source, c.target) == once.intensity(c.source, c.target), (
+            f"{c.source}->{c.target}: duplicate factor changed {once.intensity(c.source, c.target)} "
+            f"to {twice.intensity(c.source, c.target)}"
+        )
+
+
+def test_high_leverage_generic_l_rule(matrix):
+    # §6.2 Jump Rule 3: all pairs with 'L' mark -> Base + 1 (was missing; only the
+    # explicit Financials -> TechHW/Software/CapGoods jumps were coded).
+    stressed = apply_escalation(matrix, ["High Leverage"])
+    # explicit rows per doc
+    assert stressed.intensity("Financials (Banks/Insurance)", "Technology Hardware (Semiconductors)") == 4
+    assert stressed.intensity("Financials (Banks/Insurance)", "Software & Services") == 4
+    assert stressed.intensity("Financials (Banks/Insurance)", "Capital Goods") == 4
+    # the doc's only L-typed cells (Fin <-> Sov) sit at the cap and stay 5
+    assert stressed.intensity("Financials (Banks/Insurance)", "Sovereigns & GSEs") == 5
+    # the generic L rule itself, on a fixture matrix with an L-typed sub-cap cell
+    fixture = ContagionMatrix(
+        ["A", "B", "C"],
+        {
+            ("A", "B"): ContagionCell("A", "B", 3, ("L",), "H", True),
+            ("B", "A"): ContagionCell("B", "A", 3, ("L",), "H", True),
+            ("A", "C"): ContagionCell("A", "C", 3, ("C",), "H", True),
+            ("C", "A"): ContagionCell("C", "A", 3, ("C",), "H", True),
+            ("B", "C"): ContagionCell("B", "C", 1, (), "-", False),
+            ("C", "B"): ContagionCell("C", "B", 1, (), "-", False),
+        },
+    )
+    stressed_fx = apply_escalation(fixture, ["High Leverage"])
+    assert stressed_fx.intensity("A", "B") == 4  # L-typed: Base + 1
+    assert stressed_fx.intensity("B", "A") == 4
+    assert stressed_fx.intensity("A", "C") == 3  # non-L typed unchanged
+
+
+def test_year_end_source_direction_only(matrix):
+    # §6.2 Jump Rule 5: "Financials → All" +1 is source-direction only; the reverse
+    # direction (X → Financials) must NOT be bumped.
+    stressed = apply_escalation(matrix, ["Year-End Effect"])
+    assert stressed.intensity("Financials (Banks/Insurance)", "Energy (Oil & Gas)") == 4  # base 3 + 1
+    assert stressed.intensity("Energy (Oil & Gas)", "Financials (Banks/Insurance)") == 3  # unchanged
+
+
+def test_financials_broad_row_rules_1_and_2(matrix):
+    # §6.2 Rules 1/2: "Financials → All 3 (avg) → 4 (avg)" — deterministic encoding:
+    # Financials-source cells with base intensity exactly 3 lift to 4.
+    for factor in ("Market Panic", "Regulatory Vacuum"):
+        stressed = apply_escalation(matrix, [factor])
+        fin_base3 = [
+            c for c in matrix.itercells()
+            if c.source == "Financials (Banks/Insurance)" and c.intensity == 3
+        ]
+        assert fin_base3, "fixture expects Financials base-3 cells"
+        for c in fin_base3:
+            assert stressed.intensity("Financials (Banks/Insurance)", c.target) >= 4, (
+                f"{factor}: Financials->{c.target} should lift to >= 4"
+            )
+
+
 def test_escalation_rules_covered_in_doc():
     """Every coded explicit jump pair must be greppable in SS6.2 text (silent drift guard)."""
     from src.contagion_engine import _EXPLICIT_JUMPS
