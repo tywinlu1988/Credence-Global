@@ -90,10 +90,20 @@ function sha256Hex(buf) {
 }
 
 function extractZip(zipPath, destDir) {
-  try {
-    execFileSync('tar', ['-xf', zipPath, '-C', destDir], { stdio: 'pipe' });
-    return;
-  } catch (err) { /* tar unavailable or failed — try PowerShell on Windows */ }
+  // bsdtar (Windows/macOS `tar`) handles zip; GNU tar (Linux) does not — unzip is
+  // the Linux fallback; PowerShell Expand-Archive is the Windows last resort.
+  const attempts = [];
+  const tryCmd = (cmd, args) => {
+    try {
+      execFileSync(cmd, args, { stdio: 'pipe' });
+      return true;
+    } catch (err) {
+      attempts.push(`${cmd} failed`);
+      return false;
+    }
+  };
+  if (tryCmd('unzip', ['-q', zipPath, '-d', destDir])) return;
+  if (tryCmd('tar', ['-xf', zipPath, '-C', destDir])) return;
   if (process.platform === 'win32') {
     execFileSync('powershell', [
       '-NoProfile', '-Command',
@@ -101,7 +111,7 @@ function extractZip(zipPath, destDir) {
     ], { stdio: 'pipe' });
     return;
   }
-  throw new Error('no working unzip tool found (need bsdtar/tar)');
+  throw new Error(`no working unzip tool found (${attempts.join(', ')})`);
 }
 
 async function main() {
