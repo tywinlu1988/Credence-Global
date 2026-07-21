@@ -118,7 +118,11 @@ def watchlist_check(triggers: list) -> dict:
 
 def load_migration_table(migration_md_path=None):
     """Parse Section 5.1 -> {rating: {upgrade, maintain, downgrade, default}};
-    Section 5.3 -> {paradigm: (target, low_pp, high_pp)}."""
+    Section 5.3 -> ({paradigm: (target, low_pp, high_pp)}, delegated_paradigms).
+
+    Delegated paradigms (rows marked "No generic adjustment") carry no shift; their
+    migration bias is governed by a dedicated framework document, and migration_range
+    returns the base row with a delegation note instead of raising."""
     path = Path(migration_md_path) if migration_md_path else engine_dir() / "outlook-monitoring-framework.md"
     text = path.read_text(encoding="utf-8")
     sec51 = re.search(r"### 5\.1 .*?(?=\n### |\Z)", text, re.DOTALL)
@@ -147,7 +151,13 @@ def load_migration_table(migration_md_path=None):
         sec53.group(0), re.MULTILINE | re.IGNORECASE,
     ):
         adj[row.group(1).strip()] = (row.group(2).lower(), int(row.group(3)), int(row.group(4) or row.group(3)))
-    return table, adj
+    delegated = set()
+    for row in re.finditer(
+        r"^\|\s*\*\*(.+?)\*\*\s*\|\s*No generic adjustment",
+        sec53.group(0), re.MULTILINE | re.IGNORECASE,
+    ):
+        delegated.add(row.group(1).strip())
+    return table, adj, delegated
 
 
 def _shift_range(range_text: str, low: int, high: int) -> str:
@@ -167,7 +177,7 @@ def _shift_range(range_text: str, low: int, high: int) -> str:
 
 def migration_range(rating: str, paradigm: str = None, path=None) -> dict:
     """Section 5.1 base interval + Section 5.3 industry adjustment; merged rows ("A / A-") accept either sub-grade."""
-    table, adj = load_migration_table(path)
+    table, adj, delegated = load_migration_table(path)
     row = table.get(rating)
     if row is None:
         for key, cells in table.items():
@@ -179,8 +189,11 @@ def migration_range(rating: str, paradigm: str = None, path=None) -> dict:
     out = dict(row)
     note = ""
     if paradigm:
+        if paradigm in delegated:
+            out["paradigm_note"] = f"{paradigm}: no generic adjustment (dedicated framework governs)"
+            return out
         if paradigm not in adj:
-            raise ValueError(f"Unknown industry paradigm: {paradigm!r} (available {sorted(adj)})")
+            raise ValueError(f"Unknown industry paradigm: {paradigm!r} (available {sorted(adj) + sorted(delegated)})")
         target, low, high = adj[paradigm]
         out[target] = _shift_range(row[target], low, high)
         note = f"{paradigm}: {target} probability+{low}%" if low == high else f"{paradigm}: {target} probability+{low}-{high}%"

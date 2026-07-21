@@ -168,7 +168,7 @@ def _outlook_inputs():
             {"layer": "L4", "direction": "positive", "signal": "operating_cash_flow_positive"},
         ],
         "rating": "AA",
-        "paradigm": "Policy-Driven",
+        "paradigm": "P1 Cyclical",
         "watchlist_triggers": [{"side": "negative", "event": "regulatory_investigation"}],
     }
 

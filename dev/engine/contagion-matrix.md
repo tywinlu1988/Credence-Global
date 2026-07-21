@@ -28,47 +28,49 @@ Based on [Contagion Theory](contagion-theory.md) Section 4, each international i
 
 | Paradigm | Description | Core Characteristics |
 |---|---|---|
-| **P1: Policy-Driven** | Sectors where government policy, regulation, geopolitics, or fiscal/tax regimes determine demand cycles and profitability | Regulatory sensitivity, policy cycle dependence, geopolitical exposure |
-| **P2: Technology Moat** | R&D-intensive sectors where IP, patents, and proprietary technology create durable competitive advantage | High R&D intensity, patent concentration, skilled labor dependence |
-| **P3: Zero-Sum Game** | Cyclical, commoditized sectors where price competition erodes margins; one player's gain is another's loss | Overcapacity risk, price elasticity, cyclical demand |
-| **P4: Asset Lease** | Infrastructure-heavy sectors where cash flows are asset-utilization driven; NOI and DSCR are key metrics | High fixed assets, long-duration contracts, infrastructure financing |
-| **P5: Brand + Channel** | Consumer sectors where brand equity, distribution networks, and consumer trust are primary value drivers | Brand intangible value, channel dependency, consumer trust sensitivity |
-| **P6: Network + Traffic** | Platform and network-effect sectors where scale, user base, and data generate increasing returns | Network effects, multi-sided platforms, scale economics |
+| **P1: Cyclical** | Sectors where commodity prices, freight rates, capacity utilization, or cyclical business/consumer spending determine demand and margins | Cycle amplitude, capacity utilization, inventory cycles, overcapacity risk |
+| **P2: Defensive** | Sectors with inelastic demand where brand moats and pricing power stabilize margins through the cycle | Gross-margin stability, repeat purchase rate, channel density |
+| **P3: Growth** | R&D-intensive sectors where technology roadmaps, IP, and pipelines drive revenue growth | High R&D intensity, patent concentration, skilled labor dependence |
+| **P4: Regulated Utility** | License- or concession-based sectors where the regulated asset base and tariff frameworks drive cash flows (NOI/DSCR) | High fixed assets, long-duration contracts, infrastructure financing |
+| **P5: Financial** | Financial institutions where capital adequacy, asset quality, and funding structure are the core risk drivers | Capital ratios, funding stability, regulatory cycle |
+| **P6: Sovereign-Linked** | Sovereigns, sub-sovereigns, GSEs, and DFIs where fiscal capacity and institutional strength determine credit | Fiscal balance, debt sustainability, institutional credibility |
+
+> Paradigm codes follow the single source of truth in [industry-framework.md](industry-framework.md) §2-§3. Legacy archetype names (Policy-Driven, Technology Moat, Zero-Sum Game, Asset Lease, Brand + Channel, Network + Traffic) survive only as descriptive language; the official legacy-to-current mapping is recorded in industry-framework.md Appendix C.
 
 ### 1.2 Industry-to-Paradigm Mapping Table
 
 | # | Industry | Primary Paradigm | Secondary Paradigm | Financial Intensity | Rationale |
 |---|---|---|---|---|---|
-| 1 | **Energy (Oil & Gas)** | P1 (Policy-Driven) | P4 (Asset Lease) | High | Geopolitical commodity, OPEC+ policy dependence, E&P infrastructure-heavy |
-| 2 | **Chemicals** | P1 (Policy-Driven) | P2 (Technology Moat) | Medium | Environmental regulation, specialty chemicals IP, energy cost dependence |
-| 3 | **Metals & Mining** | P3 (Zero-Sum Game) | P1 (Policy-Driven) | Medium | Commodity price cycle dominance, resource nationalism, trade policy |
-| 4 | **Construction Materials** | P4 (Asset Lease) | P1 (Policy-Driven) | Medium | Infrastructure corridor-dependent, quarries/plants as fixed assets |
-| 5 | **Capital Goods** | P2 (Technology Moat) | P4 (Asset Lease) | Medium-High | Engineering IP, manufacturing plant as asset, defense/industrial policy |
-| 6 | **Commercial Services** | P6 (Network + Traffic) | P3 (Zero-Sum Game) | Low-Medium | B2B service platform effects, labor-intensive, fragmented |
-| 7 | **Transportation (Air/Rail/Shipping)** | P4 (Asset Lease) | P6 (Network + Traffic) | High | Fleet/network infrastructure, fuel leverage, network economies |
-| 8 | **Automobiles** | P3 (Zero-Sum Game) | P2 (Technology Moat) | High | Overcapacity, price war risk, EV/autonomous tech disruption |
-| 9 | **Consumer Durables** | P5 (Brand + Channel) | P3 (Zero-Sum Game) | Low-Medium | Brand differentiation, replacement cycle, price competition |
-| 10 | **Consumer Staples** | P5 (Brand + Channel) | P2 (Technology Moat) | Low | Brand loyalty, stable demand, R&D in food/CPG innovation |
-| 11 | **Retail** | P6 (Network + Traffic) | P5 (Brand + Channel) | Medium | Omnichannel network, platform scale, private label brand leverage |
-| 12 | **Technology Hardware (Semis)** | P2 (Technology Moat) | P1 (Policy-Driven) | High | Moore's Law IP, fab capex, chip policy (CHIPS Act), export controls |
-| 13 | **Software & Services** | P2 (Technology Moat) | P6 (Network + Traffic) | Medium | SaaS/IP, network effects, cloud platform economies |
-| 14 | **Biotech & Pharma** | P2 (Technology Moat) | P1 (Policy-Driven) | Medium-High | Patent cliff, FDA/EMA regulation, pipeline value dependence |
-| 15 | **Healthcare Equipment** | P2 (Technology Moat) | P1 (Policy-Driven) | Medium | Device IP, FDA clearance, hospital procurement sensitivity |
-| 16 | **Utilities (Regulated)** | P4 (Asset Lease) | P1 (Policy-Driven) | High | Regulated asset base (RAB), tariff policy, long-lived infrastructure |
-| 17 | **Telecommunications** | P4 (Asset Lease) | P6 (Network + Traffic) | High | Spectrum/network assets, subscriber base, 5G capex cycle |
-| 18 | **Financials (Banks/Insurance)** | P1 (Policy-Driven) | P6 (Network + Traffic) | Very High | Capital regulation, sovereign exposure, payment network effects |
-| 19 | **Sovereigns & GSEs** | P1 (Policy-Driven) | — (Special: Gov't Credit Binding) | Very High | Fiscal capacity, monetary control, quasi-government guarantee |
+| 1 | **Energy (Oil & Gas)** | P1 (Cyclical) | P4 (Regulated Utility) | High | Geopolitical commodity, OPEC+ policy dependence, E&P infrastructure-heavy |
+| 2 | **Chemicals** | P1 (Cyclical) | P3 (Growth) | Medium | Commodity/specialty price cycles, specialty chemicals IP, energy cost dependence |
+| 3 | **Metals & Mining** | P1 (Cyclical) | P6 (Sovereign-Linked) | Medium | Commodity price cycle dominance, resource nationalism, trade policy |
+| 4 | **Construction Materials** | P1 (Cyclical) | P4 (Regulated Utility) | Medium | Infrastructure demand cycle, quarries/plants as fixed assets |
+| 5 | **Capital Goods** | P1 (Cyclical) | P2 (Defensive) | Medium-High | Business investment cycle; brand/aftermarket moats in select sub-industries |
+| 6 | **Commercial Services** | P1 (Cyclical) | P3 (Growth) | Low-Medium | Corporate spending cycle; platform-scaled sub-industries, fragmented |
+| 7 | **Transportation (Air/Rail/Shipping)** | P4 (Regulated Utility) | P1 (Cyclical) | High | Fleet/network infrastructure, regulated access pricing, fuel/demand cycle |
+| 8 | **Automobiles** | P1 (Cyclical) | P3 (Growth) | High | Big-ticket consumer cycle, overcapacity/price war risk, EV/autonomous disruption |
+| 9 | **Consumer Durables** | P1 (Cyclical) | P2 (Defensive) | Low-Medium | Deferrable purchases, replacement cycle, brand provides partial cushion |
+| 10 | **Consumer Staples** | P2 (Defensive) | P3 (Growth) | Low | Brand loyalty, inelastic demand, product innovation overlay |
+| 11 | **Retail** | P1 (Cyclical) | P2 (Defensive) | Medium | Consumer spending cycle; staples-anchored formats defensive, omnichannel scale |
+| 12 | **Technology Hardware (Semis)** | P3 (Growth) | P1 (Cyclical) | High | Moore's Law IP, fab capex, memory/commodity-chip cycle, export controls |
+| 13 | **Software & Services** | P3 (Growth) | P2 (Defensive) | Medium | SaaS/IP, switching-cost moats, cloud platform economies |
+| 14 | **Biotech & Pharma** | P3 (Growth) | P2 (Defensive) | Medium-High | Patent cliff, pipeline value dependence; marketed-drug cash flows defensive |
+| 15 | **Healthcare Equipment** | P2 (Defensive) | P3 (Growth) | Medium | Device IP, FDA clearance, procedure-volume stability |
+| 16 | **Utilities (Regulated)** | P4 (Regulated Utility) | P2 (Defensive) | High | Regulated asset base (RAB), tariff policy, long-lived infrastructure |
+| 17 | **Telecommunications** | P4 (Regulated Utility) | P3 (Growth) | High | Licensed spectrum, regulated networks, 5G capex cycle |
+| 18 | **Financials (Banks/Insurance)** | P5 (Financial) | P6 (Sovereign-Linked) | Very High | Capital regulation, asset quality, sovereign exposure |
+| 19 | **Sovereigns & GSEs** | P6 (Sovereign-Linked) | — (Special: Gov't Credit Binding) | Very High | Fiscal capacity, monetary control, quasi-government guarantee |
 
 ### 1.3 Paradigm Clusters
 
 | Paradigm | Industries | Intra-Paradigm Contagion Characteristics |
 |---|---|---|
-| **P1 (Policy-Driven)** | Energy, Chemicals, Financials, Sovereigns & GSEs; secondary for Metals, Construction Materials, TechHW, Biotech, Utilities, Telecom | Policy shifts synchronize across sectors; regulatory change can affect multiple P1 industries simultaneously; geopolitical risk is shared |
-| **P2 (Technology Moat)** | Capital Goods, TechHW, Software, Biotech, Healthcare Equipment; secondary for Chemicals, Automobiles, Consumer Staples | Supply chain tight coupling (chip → equipment → software); IPO/venture capital funding channels shared; talent market co-dependence |
-| **P3 (Zero-Sum Game)** | Metals & Mining, Automobiles, Consumer Durables; secondary for Commercial Services | Commodity price cycle; overcapacity risk; price war contagion across similar end-markets |
-| **P4 (Asset Lease)** | Construction Materials, Transportation, Utilities, Telecom; secondary for Energy, Capital Goods | Infrastructure funding channels (project finance, green bonds); interest rate sensitivity; regulatory concession risk |
-| **P5 (Brand + Channel)** | Consumer Durables, Consumer Staples; secondary for Retail | Consumer confidence resonance; brand crisis demonstration effects; advertising and distribution cost linkage |
-| **P6 (Network + Traffic)** | Commercial Services, Retail, Transportation (secondary), Telecom (secondary), Software (secondary), Financials (secondary) | Platform interdependence (e-commerce + shipping + payments); data flow integration; user base cross-pollination |
+| **P1 (Cyclical)** | Energy, Chemicals, Metals & Mining, Construction Materials, Capital Goods, Commercial Services, Automobiles, Consumer Durables, Retail; secondary for Transportation, TechHW | Commodity/freight cycles synchronize across sectors; overcapacity and price-war phases spread across similar end-markets; shared macro-demand sensitivity |
+| **P2 (Defensive)** | Consumer Staples, Healthcare Equipment; secondary for Capital Goods, Consumer Durables, Retail, Software, Biotech (pharma), Utilities | Consumer confidence resonance; brand-crisis demonstration effects; defensive cash flows co-move in risk-off episodes |
+| **P3 (Growth)** | Technology Hardware, Software & Services, Biotech & Pharma; secondary for Chemicals, Commercial Services, Automobiles, Consumer Staples, Telecom, Healthcare Equipment | Supply chain tight coupling (chip → equipment → software); IPO/venture capital funding channels shared; talent market co-dependence |
+| **P4 (Regulated Utility)** | Transportation, Utilities, Telecommunications; secondary for Energy, Construction Materials | Infrastructure funding channels (project finance, green bonds); interest rate sensitivity; regulatory concession risk |
+| **P5 (Financial)** | Financials (Banks/Insurance); no secondary members | Single-industry paradigm: coupling manifests through cross-paradigm channels — common creditor, financial linkage, and the sovereign-bank nexus |
+| **P6 (Sovereign-Linked)** | Sovereigns & GSEs; secondary for Metals & Mining, Financials | Fiscal-policy transmission; sovereign-bank doom loop; quasi-government guarantee repricing |
 
 ---
 
@@ -366,38 +368,32 @@ Total: 17 high-intensity links (score >= 4), including 2 at score 5
 
 Score-3 links form the secondary transmission network. In total there are 62 unique moderate-intensity directed links connecting industries across all paradigms. Key clusters:
 
-**P1 (Policy-Driven) Cluster:**
-- Energy ↔ Financials, Energy ↔ Sovereigns
-- Chemicals ↔ Automobiles, Chemicals ↔ Consumer Durables
-- Financials ↔ Capital Goods, Financials ↔ Commercial Services
-- Financials ↔ Transportation, Financials ↔ Tech Hardware, Financials ↔ Software
-- Sovereigns ↔ Energy, Sovereigns ↔ Metals & Mining, Sovereigns ↔ Construction Materials, Sovereigns ↔ Utilities
+**P1 (Cyclical) Cluster:**
+- Chemicals ↔ Automobiles, Chemicals ↔ Consumer Durables, Automobiles ↔ Consumer Durables
+- Metals & Mining ↔ Energy, Metals & Mining ↔ Construction Materials
+- Construction Materials ↔ Capital Goods
 
-**P2 (Technology Moat) Cluster:**
-- Tech Hardware ↔ Capital Goods (also score 4), Tech Hardware ↔ Healthcare
+**P3 (Growth) Cluster:**
+- Tech Hardware ↔ Software & Services (also score 4)
+- Tech Hardware ↔ Capital Goods (also score 4), Tech Hardware ↔ Healthcare Equipment
 - Software ↔ Commercial Services, Software ↔ Retail
 - Biotech ↔ Financials, Healthcare Equipment ↔ Capital Goods
-- Capital Goods ↔ Transportation, Capital Goods ↔ Healthcare Equipment
 
-**P3 (Zero-Sum Game) Cluster:**
-- Automobiles ↔ Chemicals, Automobiles ↔ Consumer Durables
-- Metals & Mining ↔ Energy, Metals & Mining ↔ Construction Materials
-
-**P4 (Asset Lease) Cluster:**
-- Construction Materials ↔ Capital Goods, Construction Materials ↔ Utilities
+**P4 (Regulated Utility) Cluster:**
+- Construction Materials ↔ Utilities
 - Transportation ↔ Capital Goods, Transportation ↔ Commercial Services
-- Telecommunications ↔ Software & Services (also score 4), Telecom ↔ Financials
-- Utilities ↔ Financials, Utilities ↔ Sovereigns
+- Telecommunications ↔ Software & Services (also score 4)
 
-**P5 (Brand + Channel) Cluster:**
-- Consumer Staples ↔ Retail, Consumer Durables ↔ Retail
+**P5/P6 Financial–Sovereign Nexus (cross-paradigm):**
+- Financials ↔ Sovereigns (score 5 — the strongest link in the matrix)
+- Financials ↔ Energy, Financials ↔ Capital Goods, Financials ↔ Commercial Services, Financials ↔ Transportation, Financials ↔ Tech Hardware, Financials ↔ Software
+- Sovereigns ↔ Energy, Sovereigns ↔ Metals & Mining, Sovereigns ↔ Construction Materials, Sovereigns ↔ Utilities
+- Telecommunications ↔ Financials, Utilities ↔ Financials
+
+**Consumer (P1/P2) Cluster:**
+- Consumer Staples ↔ Retail, Consumer Durables ↔ Retail, Retail ↔ Commercial Services
 - Consumer Durables ↔ Chemicals, Consumer Staples ↔ Chemicals
 - Consumer Durables ↔ Technology Hardware
-
-**P6 (Network + Traffic) Cluster:**
-- Retail ↔ Commercial Services, Retail ↔ Software & Services
-- Commercial Services ↔ Transportation, Commercial Services ↔ Software
-- Commercial Services ↔ Financials
 
 ### 3.3 Low-Intensity Links (Score <= 2)
 
@@ -428,12 +424,12 @@ Industries under the same analytical paradigm exhibit systematically higher cont
 
 | Paradigm | Example Pair | Intensity | Rationale |
 |---|---|---|---|
-| P1 (Policy-Driven) | Energy ↔ Sovereigns | 3 | Resource fiscal policy, geopolitical risk, regulatory cycle synchronization |
-| P2 (Technology Moat) | Tech Hardware ↔ Software | 4 | Ecosystem lock-in (Apple, Wintel, ARM); AI/GPU dependency |
-| P3 (Zero-Sum Game) | Automobiles ↔ Consumer Durables | 3 | Shared consumer discretionary spending; replacement cycle correlation |
-| P4 (Asset Lease) | Transportation ↔ Utilities | 2 | Both are infrastructure-intensive but serve different end-markets |
-| P5 (Brand + Channel) | Consumer Staples ↔ Consumer Durables | 2 | Share "consumer trust" attribute but fundamentally different demand drivers |
-| P6 (Network + Traffic) | Retail ↔ Software & Services | 3 | E-commerce platform ecosystem; cloud → omnichannel integration |
+| P1 (Cyclical) | Automobiles ↔ Consumer Durables | 3 | Shared consumer discretionary spending; replacement cycle correlation |
+| P2 (Defensive) | Consumer Staples ↔ Healthcare Equipment | 1 | Only two member industries; intra-paradigm coupling is weak — defensive sectors decouple idiosyncratically |
+| P3 (Growth) | Tech Hardware ↔ Software | 4 | Ecosystem lock-in (Apple, Wintel, ARM); AI/GPU dependency |
+| P4 (Regulated Utility) | Transportation ↔ Utilities | 2 | Both are infrastructure-intensive but serve different end-markets |
+| P5 (Financial) | — (single-industry paradigm) | — | Coupling manifests cross-paradigm: Financials ↔ Sovereigns (5) via the sovereign-bank nexus |
+| P6 (Sovereign-Linked) | — (single-industry paradigm) | — | Coupling manifests cross-paradigm: Sovereigns ↔ Energy / Metals & Mining / Utilities (3) via fiscal-commodity transmission |
 
 #### Principle 2: Upstream-Downstream Supply Chain
 

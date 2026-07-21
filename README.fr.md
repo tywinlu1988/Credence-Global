@@ -218,25 +218,25 @@ Une matrice complete d'intensite de contagion inter-industrielle 19x19 basee sur
 
 | # | Industrie | Paradigme Principal | Role de Contagion |
 |---|---|---|---|
-| 1 | Energie (Petrole & Gaz) | P1 : Pilote par les Politiques | Super-propagateur (forte contagion sortante) |
-| 2 | Chimie | P1 : Pilote par les Politiques | Transmetteur modere |
-| 3 | Metaux & Mines | P3 : Jeu a Somme Nulle | Amplificateur cyclique |
-| 4 | Materiaux de Construction | P4 : Location d'Actifs | Transmetteur lie aux infrastructures |
-| 5 | Biens d'Equipement | P2 : Barriere Technologique | Hub de contagion manufacturiere |
-| 6 | Services Commerciaux | P6 : Reseau + Trafic | Faible lien systemique |
-| 7 | Transport | P4 : Location d'Actifs | Vecteur de transmission logistique |
-| 8 | Automobiles | P3 : Jeu a Somme Nulle | Pont consommation-industrie |
-| 9 | Biens de Consommation Durables | P5 : Marque + Canal | Recepteur cyclique de la demande |
-| 10 | Biens de Consommation de Base | P5 : Marque + Canal | Defensif, faible contagion |
-| 11 | Commerce de Detail | P6 : Reseau + Trafic | Recepteur de transmission de la demande finale |
-| 12 | Materiel Technologique (Semi-conducteurs) | P2 : Barriere Technologique | Super-propagateur de contagion geopolitique |
-| 13 | Logiciels & Services | P2 : Barriere Technologique | Faible contagion directe, fort effet de recit |
-| 14 | Biotechnologie & Pharmacie | P2 : Barriere Technologique | Recepteur de choc reglementaire |
-| 15 | Equipement Medical | P2 : Barriere Technologique | Faible contagion cyclique |
-| 16 | Services Publics (Reglementes) | P4 : Location d'Actifs | Defensif, faible contagion |
-| 17 | Telecommunications | P4 : Location d'Actifs | Recepteur de contagion d'infrastructure |
-| 18 | Finance (Banques/Assurance) | P1 : Pilote par les Politiques | **Super-propagateur systemique** (plus forte contagion sortante) |
-| 19 | Souverains & ESE | P1 : Pilote par les Politiques | Facteur de risque fondamental |
+| 1 | Energie (Petrole & Gaz) | P1 : Cyclique | Super-propagateur (forte contagion sortante) |
+| 2 | Chimie | P1 : Cyclique | Transmetteur modere |
+| 3 | Metaux & Mines | P1 : Cyclique | Amplificateur cyclique |
+| 4 | Materiaux de Construction | P1 : Cyclique | Transmetteur lie aux infrastructures |
+| 5 | Biens d'Equipement | P1 : Cyclique | Hub de contagion manufacturiere |
+| 6 | Services Commerciaux | P1 : Cyclique | Faible lien systemique |
+| 7 | Transport | P4 : Service Public Reglemente | Vecteur de transmission logistique |
+| 8 | Automobiles | P1 : Cyclique | Pont consommation-industrie |
+| 9 | Biens de Consommation Durables | P1 : Cyclique | Recepteur cyclique de la demande |
+| 10 | Biens de Consommation de Base | P2 : Defensif | Defensif, faible contagion |
+| 11 | Commerce de Detail | P1 : Cyclique | Recepteur de transmission de la demande finale |
+| 12 | Materiel Technologique (Semi-conducteurs) | P3 : Croissance | Super-propagateur de contagion geopolitique |
+| 13 | Logiciels & Services | P3 : Croissance | Faible contagion directe, fort effet de recit |
+| 14 | Biotechnologie & Pharmacie | P3 : Croissance | Recepteur de choc reglementaire |
+| 15 | Equipement Medical | P2 : Defensif | Faible contagion cyclique |
+| 16 | Services Publics (Reglementes) | P4 : Service Public Reglemente | Defensif, faible contagion |
+| 17 | Telecommunications | P4 : Service Public Reglemente | Recepteur de contagion d'infrastructure |
+| 18 | Finance (Banques/Assurance) | P5 : Financier | **Super-propagateur systemique** (plus forte contagion sortante) |
+| 19 | Souverains & ESE | P6 : Lie au Souverain | Facteur de risque fondamental |
 
 Les mesures derivees cles incluent le Coefficient de Contagion Directe (CFC), le Coefficient de Vulnerabilite a la Contagion (CVC) et le Ratio d'Exposition Nette a la Contagion (CNER), ainsi que des tables d'escalade de stress pour les sauts d'intensite specifiques aux facteurs.
 
@@ -325,12 +325,12 @@ Le moteur classe toutes les industries en six paradigmes analytiques, chacun ave
 
 | Paradigme | Code | Industries Cles | Facteur Differentiateur Cles |
 |---|---|---|---|
-| **Cyclique** | P1 | Energie (Petrole & Gaz), Chimie, Finance, Souverains & ESE | Les cycles politiques et de matieres premieres determinent les plafonds de demande |
-| **Defensif** | P2 | Biens d'Equipement, Materiel Technologique, Logiciels, Biotech & Pharma, Equipement Medical | L'intensite de R&D et la PI creent des fosses durables |
-| **Croissance** | P3 | Metaux & Mines, Automobiles | Dynamique competitive a somme nulle ; la concurrence par les prix erode les marges |
-| **Service Public Reglemente** | P4 | Materiaux de Construction, Transport, Services Publics, Telecommunications | Profil de location d'actifs ; le NOI/DSCR sont les mesures cles |
-| **Financier** | P5 | Biens de Consommation Durables, Biens de Consommation de Base | La valeur de la marque et les reseaux de distribution generent de la valeur |
-| **Lie au Souverain** | P6 | Services Commerciaux, Commerce de Detail | Effets de reseau et economie de plateforme |
+| **Cyclique** | P1 | Energie, Chimie, Metaux & Mines, Materiaux de Construction, Biens d'Equipement, Services Commerciaux, Automobiles, Biens de Consommation Durables, Commerce de Detail | Les cycles de matieres premieres/fret/depenses determinent demande et marges |
+| **Defensif** | P2 | Biens de Consommation de Base, Equipement Medical | Demande inelastique ; les marques et le pricing power stabilisent les marges |
+| **Croissance** | P3 | Materiel Technologique (Semi-conducteurs), Logiciels & Services, Biotech & Pharma | L'intensite de R&D et la PI determinant la croissance du chiffre d'affaires |
+| **Service Public Reglemente** | P4 | Transport, Services Publics, Telecommunications | Revenus de licence/concession ; NOI/DSCR sont les mesures cles ; financement d'infrastructure |
+| **Financier** | P5 | Finance (Banques/Assurance) | Adequation des fonds propres, qualite des actifs et structure de financement |
+| **Lie au Souverain** | P6 | Souverains & ESE | La capacite budgetaire et la solidite institutionnelle determinent le credit |
 
 ### 16 Chemins de Travail
 
@@ -499,8 +499,8 @@ credence-global/
 |   |   |-- concentration-framework.md  # Analyse de concentration 5 dimensions
 |   |   |-- systemic-warning-framework.md    # Agregation SRI, thermometre 4 niveaux
 |   |   |-- validation-methodology.md   # Backtest cygne noir, validation a deux points
-|   |   |-- paradigm-brand-channel.md   # Paradigme Defensif (P2)
-|   |   |-- paradigm-network-traffic.md # Paradigme Reseau (P4)
+|   |   |-- paradigm-brand-channel.md   # Note d'application marque/canal (P2 Defensif)
+|   |   |-- paradigm-network-traffic.md # Note d'application attribut secondaire reseau/debit
 |   |   |-- dimension-registry.md       # Index adressable des 6 paradigmes + roles M0-M5
 |   |   |-- work-path-registry.md       # 16 chemins de travail, routage, integration pipeline
 |   |   |-- pipeline-contract.md        # Contrats I/O du pipeline 4 etapes, aretes de chainage

@@ -564,34 +564,36 @@ For the international industry classification used in the Contagion Matrix (19 G
 
 | Paradigm | Description | Core Industries (Primary) |
 |---|---|---|
-| **P1: Policy-Driven** | Sectors where government policy, regulation, geopolitics, or fiscal/tax regimes determine the demand cycle and profitability | Energy (Oil & Gas), Chemicals, Metals & Mining, Construction Materials, Utilities (Regulated), Financials (Banks/Insurance), Sovereigns & GSEs |
-| **P2: Technology Moat** | R&D-intensive sectors where intellectual property, patents, and proprietary technology create durable competitive advantage | Technology Hardware (Semis), Software & Services, Biotech & Pharma, Healthcare Equipment, Capital Goods (advanced manufacturing) |
-| **P3: Zero-Sum Game** | Cyclical, commoditized sectors where price competition erodes margins; one player's gain is another's loss | Automobiles, Consumer Durables, Metals & Mining (secondary), Construction Materials (secondary) |
-| **P4: Asset Lease** | Infrastructure-heavy sectors where cash flows are driven by physical asset utilization; NOI and DSCR are the key metrics | Utilities (Regulated), Telecommunications, Transportation |
-| **P5: Brand + Channel** | Consumer sectors where brand equity, distribution networks, and consumer trust are the primary value drivers | Consumer Staples, Consumer Durables, Retail (branded) |
-| **P6: Network + Traffic** | Platform and network-effect sectors where scale, user base, and data generate increasing returns | Commercial Services, Retail (e-commerce), Transportation (logistics platforms), Telecommunications (data) |
+| **P1: Cyclical** | Sectors where commodity prices, freight rates, capacity utilization, or cyclical business/consumer spending determine demand and margins | Energy (Oil & Gas), Chemicals, Metals & Mining, Construction Materials, Capital Goods, Commercial Services, Automobiles, Consumer Durables, Retail |
+| **P2: Defensive** | Sectors with inelastic demand where brand moats and pricing power stabilize margins through the cycle | Consumer Staples, Healthcare Equipment |
+| **P3: Growth** | R&D-intensive sectors where technology roadmaps, IP, and pipelines drive revenue growth | Technology Hardware (Semis), Software & Services, Biotech & Pharma |
+| **P4: Regulated Utility** | License- or concession-based sectors where the regulated asset base and tariff frameworks drive cash flows (NOI/DSCR) | Utilities (Regulated), Telecommunications, Transportation |
+| **P5: Financial** | Financial institutions where capital adequacy, asset quality, and funding structure are the core risk drivers | Financials (Banks/Insurance) |
+| **P6: Sovereign-Linked** | Sovereigns, sub-sovereigns, GSEs, and DFIs where fiscal capacity and institutional strength determine credit | Sovereigns & GSEs |
+
+> Paradigm codes follow the single source of truth in [industry-framework.md](industry-framework.md) §2-§3; the legacy-to-current mapping is recorded in its Appendix C.
 
 ### 4.2 Paradigm Contagion Characteristics
 
-| Characteristic | P1: Policy-Driven | P2: Technology Moat | P3: Zero-Sum Game | P4: Asset Lease | P5: Brand + Channel | P6: Network + Traffic |
+| Characteristic | P1: Cyclical | P2: Defensive | P3: Growth | P4: Regulated Utility | P5: Financial | P6: Sovereign-Linked |
 |---|---|---|---|---|---|---|
-| **Primary Contagion Type** | R + S | C + L | C + S | C + L | S + C | C + L |
-| **Contagion Speed** | Fast (days-weeks) | Moderate (1-3 months) | Moderate (1-3 months) | Fast (weeks) | Moderate-Variable | Fast (days-weeks) |
-| **Decay Distance** | Region-bound | Supply chain depth | Market-wide | Asset class-bound | Brand-loyalty bound | Network depth |
-| **Historical Amplitude** | Very High | High | High | Moderate | High | High |
-| **Predictability** | Medium | Medium-High | Medium | Medium-High | Low-Medium | Medium |
-| **Trigger Frequency** | Medium | Low-Medium | High | Medium | Low | Medium |
+| **Primary Contagion Type** | C + S | S + C | C + L | C + L | R + L | R + S |
+| **Contagion Speed** | Moderate (1-3 months) | Moderate-Variable | Moderate (1-3 months) | Fast (weeks) | Very Fast (days) | Fast (days-weeks) |
+| **Decay Distance** | Market-wide | Brand-loyalty bound | Supply chain depth | Asset class-bound | System-wide | Sovereign-bank nexus |
+| **Historical Amplitude** | High | High | High | Moderate | Very High | Very High |
+| **Predictability** | Medium | Low-Medium | Medium-High | Medium-High | Medium | Medium |
+| **Trigger Frequency** | High | Low | Low-Medium | Medium | Medium | Medium |
 
 ### 4.3 Paradigm x Pathway Exposure Grid
 
 | Paradigm | Most Exposed 3 Pathways | Secondary Exposed Pathways | Least Exposed |
 |---|---|---|---|
-| **P1 (Policy-Driven)** | 3-Regional/Sector, 7-Sovereign-Bank, 6-Rating Cliff | 4-Common Creditor, 2-Financial Linkage | 1-Supply Chain |
-| **P2 (Technology Moat)** | 1-Supply Chain, 5-Index Inclusion, 4-Common Creditor | 6-Rating Cliff, 3-Regional/Sector | 7-Sovereign-Bank |
-| **P3 (Zero-Sum Game)** | 2-Financial Linkage, 1-Supply Chain, 5-Index Inclusion | 6-Rating Cliff, 4-Common Creditor | 3-Regional/Sector, 7-Sovereign-Bank |
-| **P4 (Asset Lease)** | 4-Common Creditor, 5-Index Inclusion, 1-Supply Chain | 3-Regional/Sector, 2-Financial Linkage | 7-Sovereign-Bank |
-| **P5 (Brand + Channel)** | 1-Supply Chain, 5-Index Inclusion, 6-Rating Cliff | 3-Regional/Sector | 7-Sovereign-Bank, 2-Financial Linkage |
-| **P6 (Network + Traffic)** | 1-Supply Chain, 4-Common Creditor, 2-Financial Linkage | 5-Index Inclusion, 3-Regional/Sector | 7-Sovereign-Bank |
+| **P1 (Cyclical)** | 2-Financial Linkage, 1-Supply Chain, 5-Index Inclusion | 6-Rating Cliff, 4-Common Creditor | 3-Regional/Sector, 7-Sovereign-Bank |
+| **P2 (Defensive)** | 1-Supply Chain, 5-Index Inclusion, 6-Rating Cliff | 3-Regional/Sector | 7-Sovereign-Bank, 2-Financial Linkage |
+| **P3 (Growth)** | 1-Supply Chain, 5-Index Inclusion, 4-Common Creditor | 6-Rating Cliff, 3-Regional/Sector | 7-Sovereign-Bank |
+| **P4 (Regulated Utility)** | 4-Common Creditor, 5-Index Inclusion, 1-Supply Chain | 3-Regional/Sector, 2-Financial Linkage | 7-Sovereign-Bank |
+| **P5 (Financial)** | 2-Financial Linkage, 4-Common Creditor, 7-Sovereign-Bank | 6-Rating Cliff, 5-Index Inclusion | 1-Supply Chain |
+| **P6 (Sovereign-Linked)** | 7-Sovereign-Bank, 3-Regional/Sector, 6-Rating Cliff | 4-Common Creditor, 2-Financial Linkage | 1-Supply Chain |
 
 ---
 

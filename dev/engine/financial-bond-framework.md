@@ -55,7 +55,7 @@ In the global credit bond market (as of end-2025), financial bonds (including co
 
 ### 1.3 Why Financial Bonds Need an Independent Analysis Track
 
-The existing engine's corporate bond pyramids (policy-driven / technology-moat / zero-sum / asset-lease types) are completely unsuitable for financial enterprises:
+The existing engine's corporate bond pyramids (cyclical / defensive / growth / regulated-utility types) are completely unsuitable for financial enterprises:
 
 - **L1 Policy Layer**: Still important for financial enterprises (monetary policy / regulatory policy), but weights and indicators are completely different
 - **L2 Technology Layer**: Financial enterprises have no "technology moat" concept (except fintech)

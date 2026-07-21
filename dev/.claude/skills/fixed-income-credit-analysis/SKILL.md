@@ -43,7 +43,7 @@ A systematic methodology for evaluating corporate credit quality in fixed income
 - Assessing cross-industry contagion risk from a stressed issuer or sector
 - Evaluating portfolio concentration across industry, region, rating, tenor, and funding-channel dimensions
 - Computing the Systemic Risk Index (SRI) and interpreting the four-level thermometer
-- Mapping an industry to one of the six analytical paradigms (policy-driven, tech-barrier, consolidation, asset-lease, brand-channel, network-traffic)
+- Mapping an industry to one of the six analytical paradigms (cyclical, defensive, growth, regulated-utility, financial, sovereign-linked)
 
 ## Mandatory Density Rules (mandatory)
 

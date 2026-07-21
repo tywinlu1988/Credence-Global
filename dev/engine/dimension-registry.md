@@ -14,7 +14,7 @@ This registry objectifies the engine's **analysis dimensions** into addressable,
 
 ## 1. Analysis Paradigm Dimensions
 
-Each entry corresponds to an analysis paradigm (P1-P6). The `industries` field reflects the **primary paradigm** assignment in the contagion matrix (single source of truth: [contagion-matrix.md](contagion-matrix.md) §1.2 Paradigm Mapping Table). Secondary paradigm attributes (e.g., semiconductor also has P2 attributes) are not expanded here and are governed by that mapping table's "Secondary Paradigm" column.
+Each entry corresponds to an analysis paradigm (P1-P6). The `industries` field reflects the **primary paradigm** assignment in the contagion matrix (single source of truth: [contagion-matrix.md](contagion-matrix.md) §1.2 Paradigm Mapping Table). Secondary paradigm attributes (e.g., semiconductor also has P1 attributes) are not expanded here and are governed by that mapping table's "Secondary Paradigm" column.
 
 ```yaml
 dimensions:
@@ -23,15 +23,15 @@ dimensions:
     letter: P1
     definition: Cyclical (dev/engine/industry-framework.md §3)
     standalone_doc: embedded in dev/engine/industry-framework.md §3 (determination) and §4 (pyramid weights)
-    industries: [Energy (Oil & Gas), Chemicals, Financials (Banks/Insurance), Sovereigns & GSEs]
+    industries: [Energy (Oil & Gas), Chemicals, Metals & Mining, Construction Materials, Capital Goods, Commercial Services, Automobiles, Consumer Durables, Retail]
     used_by_paths: [WP-CS-01, WP-PM-02, WP-X-02, WP-X-03]
 
   - id: paradigm-P2
     name: Defensive
     letter: P2
     definition: Defensive (dev/engine/industry-framework.md §3)
-    standalone_doc: embedded in dev/engine/industry-framework.md §3 (determination) and §4 (pyramid weights)
-    industries: [Capital Goods, Technology Hardware (Semis), Software & Services, Biotech & Pharma, Healthcare Equipment]
+    standalone_doc: embedded in dev/engine/industry-framework.md §3 (determination) and §4 (pyramid weights) + application note dev/engine/paradigm-brand-channel.md
+    industries: [Consumer Staples, Healthcare Equipment]
     used_by_paths: [WP-CS-01, WP-PM-02, WP-X-02, WP-X-03]
 
   - id: paradigm-P3
@@ -39,31 +39,31 @@ dimensions:
     letter: P3
     definition: Growth (dev/engine/industry-framework.md §3)
     standalone_doc: embedded in dev/engine/industry-framework.md §3 (determination) and §4 (pyramid weights)
-    industries: [Metals & Mining, Automobiles]
+    industries: [Technology Hardware (Semis), Software & Services, Biotech & Pharma]
     used_by_paths: [WP-CS-01, WP-PM-02, WP-X-02, WP-X-03]
 
   - id: paradigm-P4
     name: Regulated Utility
     letter: P4
     definition: Regulated Utility (dev/engine/industry-framework.md §3)
-    standalone_doc: embedded in dev/engine/industry-framework.md §3 (determination) and §4 (pyramid weights)
-    industries: [Construction Materials, Transportation (Air/Rail/Shipping), Utilities (Regulated), Telecommunications]
+    standalone_doc: embedded in dev/engine/industry-framework.md §3 (determination) and §4 (pyramid weights) + application note dev/engine/paradigm-network-traffic.md (network/throughput lens)
+    industries: [Transportation (Air/Rail/Shipping), Utilities (Regulated), Telecommunications]
     used_by_paths: [WP-CS-01, WP-PM-02, WP-X-02, WP-X-03]
 
   - id: paradigm-P5
     name: Financial
     letter: P5
     definition: Financial (dev/engine/industry-framework.md §3)
-    standalone_doc: embedded in dev/engine/industry-framework.md §3 (determination) and §4 (pyramid weights)
-    industries: [Consumer Durables, Consumer Staples]
+    standalone_doc: embedded in dev/engine/industry-framework.md §3 (determination) and §4 (pyramid weights) + dedicated framework dev/engine/financial-bond-framework.md
+    industries: [Financials (Banks/Insurance)]
     used_by_paths: [WP-CS-01, WP-PM-02, WP-X-02, WP-X-03]
 
   - id: paradigm-P6
     name: Sovereign-Linked
     letter: P6
     definition: Sovereign-Linked (dev/engine/industry-framework.md §3)
-    standalone_doc: embedded in dev/engine/industry-framework.md §3 (determination) and §4 (pyramid weights)
-    industries: [Commercial Services, Retail]
+    standalone_doc: embedded in dev/engine/industry-framework.md §3 (determination) and §4 (pyramid weights) + dedicated framework dev/engine/external-support-framework.md
+    industries: [Sovereigns & GSEs]
     used_by_paths: [WP-CS-01, WP-PM-02, WP-X-02, WP-X-03]
 
 ```
@@ -141,9 +141,9 @@ The `definition` field follows the same traceability convention as the work path
 
 ## Related Content
 
-- [Industry Classification and Analysis Framework](industry-framework.md) -- Six paradigm determination (§3) / Seven-industry pyramid specifications (§4) / Industry type determination (§7)
-- [Financial Paradigm (P5)](industry-framework.md) — Paradigm P5 full specification (Consumer Durables, Consumer Staples)
-- [Sovereign-Linked Paradigm (P6)](industry-framework.md) — Paradigm P6 full specification (Commercial Services, Retail)
-- [13-Industry Contagion Matrix](contagion-matrix.md) -- §1.2 Paradigm Mapping Table (industry to primary/secondary paradigm)
+- [Industry Classification and Analysis Framework](industry-framework.md) -- Six paradigm determination (§3) / Industry pyramid specifications (§4)
+- [Financial Paradigm (P5)](industry-framework.md) — Paradigm P5 full specification (Financials: Banks/Insurance)
+- [Sovereign-Linked Paradigm (P6)](industry-framework.md) — Paradigm P6 full specification (Sovereigns, sub-sovereigns, GSEs, DFIs)
+- [19-Industry Contagion Matrix](contagion-matrix.md) -- §1.2 Paradigm Mapping Table (industry to primary/secondary paradigm)
 - [Multi-Stakeholder Perspective Framework](multi-stakeholder.md) -- Role definitions (§1)
 - [Work Path Registry](work-path-registry.md) -- Each path's role and paradigm_selection

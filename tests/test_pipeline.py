@@ -320,7 +320,7 @@ def test_t9_9_outlook_wired_and_runs(contract, registry_paths):
             {"layer": "External Support", "direction": "negative"},
         ],
         "rating": "AA",
-        "paradigm": "Policy-Driven",
+        "paradigm": "P1 Cyclical",
         "watchlist_triggers": [{"side": "negative", "event": "regulatory_investigation"}],
     })
     analysis = next(s for s in manifest["stages"] if s["name"] == "analysis")

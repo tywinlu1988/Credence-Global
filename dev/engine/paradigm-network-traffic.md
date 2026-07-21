@@ -1,14 +1,20 @@
-# Network and Throughput (P4) Paradigm: Network-Effect and Traffic/Throughput Analysis
+# Network-Effect and Traffic/Throughput Analysis: Secondary-Attribute Application Note
 
 **Version**: v0.0.2 | **Paradigm Version**: v1.0.0 | **Date**: 2026-07-18 | **Status**: Initial international release
+
+> **Taxonomy note**: This document is an **application note**, not a standalone paradigm.
+> Under the six-paradigm taxonomy (single source of truth: [industry-framework.md](industry-framework.md) §2-§3),
+> Transportation and Telecommunications are **P4 Regulated Utility**, platform technology is **P3 Growth**,
+> and logistics/cyclical transport is **P1 Cyclical**. The network/throughput lens defined here applies as a
+> **secondary-attribute overlay** for those sectors; it carries no paradigm code of its own.
 
 ---
 
 ## 1. Paradigm Definition and Scope
 
-### 1.1 What is the Network and Throughput (P4) Paradigm
+### 1.1 What is the Network and Throughput Lens
 
-The Network and Throughput (P4) paradigm covers industries where credit quality is driven by **network effects**, **scale economies**, and **traffic/throughput volume** as the core operating metric. Unlike brand-driven or technology-moat paradigms, credit analysis here centers on whether scale advantages translate into irreversible cost leadership and whether throughput volumes are sustainable.
+The network and throughput lens covers industries where credit quality is driven by **network effects**, **scale economies**, and **traffic/throughput volume** as the core operating metric. Unlike brand-driven or technology-moat paradigms, credit analysis here centers on whether scale advantages translate into irreversible cost leadership and whether throughput volumes are sustainable.
 
 The defining question: **Does the company's scale translate into an irreversible cost advantage?**
 

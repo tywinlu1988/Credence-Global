@@ -216,25 +216,25 @@ A full 19x19 inter-industry contagion intensity matrix based on the Global Indus
 
 | # | Industry | Primary Paradigm | Contagion Role |
 |---|---|---|---|
-| 1 | Energy (Oil & Gas) | P1: Policy-Driven | Super-spreader (high outbound contagion) |
-| 2 | Chemicals | P1: Policy-Driven | Moderate transmitter |
-| 3 | Metals & Mining | P3: Zero-Sum Game | Cyclical amplifier |
-| 4 | Construction Materials | P4: Asset Lease | Infrastructure-linked transmitter |
-| 5 | Capital Goods | P2: Technology Moat | Manufacturing contagion hub |
-| 6 | Commercial Services | P6: Network + Traffic | Low systemic linkage |
-| 7 | Transportation | P4: Asset Lease | Logistics transmission vector |
-| 8 | Automobiles | P3: Zero-Sum Game | Consumer-industrial bridge |
-| 9 | Consumer Durables | P5: Brand + Channel | Demand-cyclical receiver |
-| 10 | Consumer Staples | P5: Brand + Channel | Defensive, low contagion |
-| 11 | Retail | P6: Network + Traffic | End-demand transmission receiver |
-| 12 | Technology Hardware (Semis) | P2: Technology Moat | Geopolitical contagion super-spreader |
-| 13 | Software & Services | P2: Technology Moat | Low direct contagion, high narrative spillover |
-| 14 | Biotech & Pharma | P2: Technology Moat | Regulatory shock receiver |
-| 15 | Healthcare Equipment | P2: Technology Moat | Low cyclical contagion |
-| 16 | Utilities (Regulated) | P4: Asset Lease | Defensive, low contagion |
-| 17 | Telecommunications | P4: Asset Lease | Infrastructure contagion receiver |
-| 18 | Financials (Banks/Insurance) | P1: Policy-Driven | **Systemic super-spreader** (highest outbound contagion) |
-| 19 | Sovereigns & GSEs | P1: Policy-Driven | Foundational risk factor |
+| 1 | Energy (Oil & Gas) | P1: Cyclical | Super-spreader (high outbound contagion) |
+| 2 | Chemicals | P1: Cyclical | Moderate transmitter |
+| 3 | Metals & Mining | P1: Cyclical | Cyclical amplifier |
+| 4 | Construction Materials | P1: Cyclical | Infrastructure-linked transmitter |
+| 5 | Capital Goods | P1: Cyclical | Manufacturing contagion hub |
+| 6 | Commercial Services | P1: Cyclical | Low systemic linkage |
+| 7 | Transportation | P4: Regulated Utility | Logistics transmission vector |
+| 8 | Automobiles | P1: Cyclical | Consumer-industrial bridge |
+| 9 | Consumer Durables | P1: Cyclical | Demand-cyclical receiver |
+| 10 | Consumer Staples | P2: Defensive | Defensive, low contagion |
+| 11 | Retail | P1: Cyclical | End-demand transmission receiver |
+| 12 | Technology Hardware (Semis) | P3: Growth | Geopolitical contagion super-spreader |
+| 13 | Software & Services | P3: Growth | Low direct contagion, high narrative spillover |
+| 14 | Biotech & Pharma | P3: Growth | Regulatory shock receiver |
+| 15 | Healthcare Equipment | P2: Defensive | Low cyclical contagion |
+| 16 | Utilities (Regulated) | P4: Regulated Utility | Defensive, low contagion |
+| 17 | Telecommunications | P4: Regulated Utility | Infrastructure contagion receiver |
+| 18 | Financials (Banks/Insurance) | P5: Financial | **Systemic super-spreader** (highest outbound contagion) |
+| 19 | Sovereigns & GSEs | P6: Sovereign-Linked | Foundational risk factor |
 
 Key derived metrics include the Contagion Forward Coefficient (CFC), Contagion Vulnerability Coefficient (CVC), and Contagion Net Exposure Ratio (CNER), plus stress-escalation jump tables for factor-specific intensity increases.
 
@@ -323,12 +323,12 @@ The engine classifies all industries into six analytical paradigms, each with di
 
 | Paradigm | Code | Core Industries | Key Differentiator |
 |---|---|---|---|
-| **Cyclical** | P1 | Energy (Oil & Gas), Chemicals, Financials, Sovereigns & GSEs | Policy and commodity cycle determine demand ceilings |
-| **Defensive** | P2 | Capital Goods, Technology Hardware, Software, Biotech & Pharma, Healthcare Equipment | R&D intensity and IP create durable moats; pre-revenue valuation is standard |
-| **Growth** | P3 | Metals & Mining, Automobiles | Zero-sum competitive dynamics; price competition erodes margins |
-| **Regulated Utility** | P4 | Construction Materials, Transportation, Utilities, Telecommunications | Asset-lease profile; NOI/DSCR are the core metrics; infrastructure financing |
-| **Financial** | P5 | Consumer Durables, Consumer Staples | Brand equity and distribution networks drive value; stable demand patterns |
-| **Sovereign-Linked** | P6 | Commercial Services, Retail | Network effects and platform economics; scale generates increasing returns |
+| **Cyclical** | P1 | Energy, Chemicals, Metals & Mining, Construction Materials, Capital Goods, Commercial Services, Automobiles, Consumer Durables, Retail | Commodity/freight/spending cycles determine demand and margins |
+| **Defensive** | P2 | Consumer Staples, Healthcare Equipment | Inelastic demand; brand moats and pricing power stabilize margins |
+| **Growth** | P3 | Technology Hardware (Semis), Software & Services, Biotech & Pharma | R&D intensity and IP drive revenue growth; pre-revenue valuation is standard |
+| **Regulated Utility** | P4 | Transportation, Utilities, Telecommunications | License/concession revenue; NOI/DSCR are the core metrics; infrastructure financing |
+| **Financial** | P5 | Financials (Banks/Insurance) | Capital adequacy, asset quality, and funding structure are the core risk drivers |
+| **Sovereign-Linked** | P6 | Sovereigns & GSEs | Fiscal capacity and institutional strength determine credit |
 
 ### 16 Work Paths
 
@@ -497,8 +497,8 @@ credence-global/
 |   |   |-- concentration-framework.md  # 5-dimension concentration analysis
 |   |   |-- systemic-warning-framework.md    # SRI signal aggregation, 4-tier thermometer
 |   |   |-- validation-methodology.md   # Black swan backtesting, dual-point validation
-|   |   |-- paradigm-brand-channel.md   # Defensive (P2) paradigm: brand moat & channels
-|   |   |-- paradigm-network-traffic.md # Network & Throughput (P4) paradigm
+|   |   |-- paradigm-brand-channel.md   # Brand/channel application note (P2 Defensive)
+|   |   |-- paradigm-network-traffic.md # Network/throughput secondary-attribute application note
 |   |   |-- dimension-registry.md       # Addressable index of 6 paradigms + M0-M5 roles
 |   |   |-- work-path-registry.md       # 16 work paths, routing, pipeline integration
 |   |   |-- pipeline-contract.md        # 4-stage pipeline I/O contracts, chain edges

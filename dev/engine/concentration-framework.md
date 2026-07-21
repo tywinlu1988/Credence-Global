@@ -137,7 +137,7 @@ Mapping Rule: For each dimension, select the worst-performing metric as the dime
 |-----------|-------------|
 | Historical Basis | During the 2022 wealth management product redemption crisis, fixed-income-plus portfolios with CR5 > 85% experienced NAV drawdowns 2.7x greater than those with CR5 < 70%. The synchronous downside correlation among the top 5 industries under stress reached 0.75 |
 | Theoretical Basis | Based on industry cluster analysis of the contagion matrix (clusters A-J), 5 industries is the critical threshold spanning 2-3 clusters — CR5 > 80% means the portfolio covers at least 2 high-contagion clusters, significantly increasing systemic risk |
-| Exceptions | If the industries in CR5 are all low-financial-intensity sectors (Paradigm E [Brand + Channel] per paradigm-brand-channel.md), thresholds may be relaxed to 85% |
+| Exceptions | If the industries in CR5 are all low-financial-intensity consumer sectors (brand/channel-driven, per paradigm-brand-channel.md), thresholds may be relaxed to 85% |
 
 #### 2.2.4 Single Industry Cap (MAX1) Thresholds
 

@@ -51,7 +51,8 @@ def test_watchlist_trigger_counts_in_doc():
 
 
 def test_migration_table_structure():
-    table, adj = load_migration_table(DOC)
+    table, adj, delegated = load_migration_table(DOC)
+    assert {"P5 Financial", "P6 Sovereign-Linked"} <= delegated
     assert len(table) == 12
     for rating in ("AAA", "AA+", "D"):
         assert rating in table
@@ -151,9 +152,22 @@ def test_migration_range_base_and_merged():
 
 def test_migration_range_paradigm_shift():
     base = migration_range("AA")
-    shifted = migration_range("AA", paradigm="Policy-Driven")
+    shifted = migration_range("AA", paradigm="P1 Cyclical")
     assert shifted["paradigm_note"]
-    # base downgrade "10%" -> Policy-Driven +5-10% -> 15-20%
+    # base downgrade "10%" -> P1 Cyclical +5-10% -> 15-20%
     assert base["downgrade"] == "10%" and shifted["downgrade"] == "15-20%"
     with pytest.raises(ValueError, match="Unknown industry paradigm"):
         migration_range("AA", paradigm="nonexistent_type")
+
+
+def test_migration_range_delegated_paradigm():
+    # P5 Financial / P6 Sovereign-Linked carry no generic adjustment; the dedicated
+    # frameworks govern. The engine returns the base row with a delegation note.
+    base = migration_range("AA")
+    delegated = migration_range("AA", paradigm="P5 Financial")
+    assert delegated["upgrade"] == base["upgrade"]
+    assert delegated["downgrade"] == base["downgrade"]
+    assert "dedicated framework" in delegated["paradigm_note"]
+    delegated6 = migration_range("AA", paradigm="P6 Sovereign-Linked")
+    assert delegated6["downgrade"] == base["downgrade"]
+    assert "dedicated framework" in delegated6["paradigm_note"]

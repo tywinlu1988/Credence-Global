@@ -475,14 +475,21 @@ Based on approximate estimates from historical market data. **Important limitati
 
 Different industries, due to their structural characteristics, should have industry-specific directional migration biases:
 
-| Industry Type | Migration Deviation Relative to Overall Market | Reason |
+| Industry Type (paradigm codes per industry-framework.md §2-§3) | Migration Deviation Relative to Overall Market | Reason |
 |---|---|---|
-| **Policy-Driven** | Downgrade probability +5-10% (policy-driven) | Policy shifts can rapidly destroy industry credit quality; L1 weight >35% → policy veto risk |
-| **Tech Moat** | Upgrade probability +3-5% | Core IP/registration certificates form a relatively strong moat; once established, advantages can rapidly improve |
-| **Zero-Sum Game** | Downgrade probability +5% | In a zero-sum game, >30% of enterprises will be eliminated; higher tail risk |
-| **Asset Lease** | Upgrade probability +2% | Quasi-REITs nature, relatively high business model stability |
-| **Semiconductor (Special)** | Downgrade probability +10-15% | Geopolitical risk is the heaviest factor; L1 accounts for 30-35% of the five-layer pyramid; adjustment magnitude may be larger |
-| **New Energy Vehicle - OEM** | Downgrade probability +5-10% | Intense competition + fast technology iteration + L5 policy change risk |
+| **P1 Cyclical** | Downgrade probability +5-10% | Cycle turns (commodity prices, freight rates, capacity utilization, consumer spending) can rapidly impair industry-wide credit quality; overcapacity/price-war phases amplify tail risk |
+| **P2 Defensive** | Upgrade probability +2% | Inelastic demand and pricing power; gross-margin stability limits downgrade pressure in normal recessions |
+| **P3 Growth** | Upgrade probability +3-5% | Core IP/technology roadmap forms a relatively strong moat; once established, advantages compound rapidly |
+| **P4 Regulated Utility** | Upgrade probability +2% | Regulated asset base / concession cash flows; relatively high business-model stability |
+| **Semiconductor (Special)** | Downgrade probability +10-15% | Geopolitical/export-control risk is the heaviest factor; adjustment magnitude may be larger |
+| **Automobiles (EV transition)** | Downgrade probability +5-10% | Intense competition + fast technology iteration + policy-change risk |
+
+**Delegated paradigms (no generic adjustment):**
+
+| Industry Type | Adjustment |
+|---|---|
+| **P5 Financial** | No generic adjustment — governed by the dedicated framework in financial-bond-framework.md |
+| **P6 Sovereign-Linked** | No generic adjustment — governed by the dedicated framework in external-support-framework.md |
 
 ---
 

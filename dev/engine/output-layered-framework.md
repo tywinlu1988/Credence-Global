@@ -460,7 +460,7 @@ L2 does not reinvent the wheel -- it reuses the current engine's full output (Mo
 
 ```
 ===== LONGi Green Energy (601012) Full Credit Analysis =====
-Analysis Date: 2026-07-08 | Industry: PV (Policy-Driven) | Duration: ~3 minutes
+Analysis Date: 2026-07-08 | Industry: PV (P1 Cyclical) | Duration: ~3 minutes
 
 +-------------------------------------------------------+
 | Composite Rating: BB+            Outlook: Negative      |

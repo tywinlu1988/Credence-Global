@@ -171,6 +171,11 @@ Every industry covered by the engine is assigned one of six analysis paradigms. 
 | 2010 Capital Goods | 201010 Aerospace & Defense, 201020 Building Products, 201030 Construction & Engineering, 201040 Electrical Equipment, 201050 Industrial Conglomerates, 201060 Machinery, 201070 Trading Companies & Distributors | P1 Cyclical | P2 Defensive (select sub-industries) | Demand tied to business investment cycle; some sub-industries have brand/aftermarket moats |
 | 15 Chemicals | 151010 Chemicals | P1 Cyclical | — | Commodity or specialty chemical price cycles |
 | 20 Transportation | 2030 Transportation (select: Shipping 203050) | P1 Cyclical | — | Freight rate cycle, capacity utilization |
+| 20 Industrials | 2020 Commercial & Professional Services | P1 Cyclical | P3 Growth (platform-scaled services) | Corporate spending cycle primary; platform sub-industries have growth attributes |
+| 50 Communication Services | 5010 Telecommunication Services | P4 Regulated Utility | P3 Growth (5G/digital services) | Licensed spectrum, regulated networks, infrastructure capex |
+| 25 Consumer Discretionary | 2510 Automobiles & Components | P1 Cyclical | P3 Growth (EV/autonomous transition) | Big-ticket consumer cycle; technology disruption overlay |
+| 25 Consumer Discretionary | 2520/2530 Consumer Durables & Apparel / Leisure Products | P1 Cyclical | P2 Defensive (brand moats) | Deferrable purchases, replacement cycle; brand provides partial cushion |
+| 25 Consumer Discretionary | 2550 Retailing (discretionary & multiline) | P1 Cyclical | P2 Defensive (staples-anchored retail) | Consumer spending cycle; staples-anchored formats are defensive |
 | 30 Consumer Staples | 3010 Retailing (Food & Staples), 3020 Food & Beverage, 3030 Household & Personal Products | P2 Defensive | — | Inelastic demand, brand moat, pricing power |
 | 35 Healthcare | 3510 Healthcare Equipment & Supplies | P2 Defensive / P3 Growth | — | MedTech=Defensive; Biotech=Growth; Pharma=mixed |
 | 55 Utilities | 5510 Electric, 5520 Gas, 5530 Multi, 5540 Water | P4 Regulated Utility | P2 Defensive (vertically integrated IPP) | Regulated tariff, license-based |
@@ -181,6 +186,32 @@ Every industry covered by the engine is assigned one of six analysis paradigms. 
 | — | Sovereigns, Sub-Sovereigns, GSEs, DFIs | P6 Sovereign-Linked | — | Fiscal capacity, institutional strength |
 | Infrastructure | Toll Roads, Airports, Regulated Networks | P4 Regulated Utility | P1 Cyclical (traffic-dependent) | Concession/regulatory framework core |
 | 2030 Transportation | Transport Infrastructure (Rail, Ports, Airports) | P4 Regulated Utility | P1 Cyclical | Regulated access pricing, traffic cycle |
+
+### 3.1a Bridge to the 19-Industry Contagion Matrix
+
+The contagion matrix ([contagion-matrix.md](contagion-matrix.md) §1.2) uses 19 canonical industry names. The bridge below maps each matrix industry to its primary paradigm and its §3.1 GICS row, so that every matrix industry has exactly one framework home:
+
+| Contagion-Matrix Industry | Primary Paradigm | §3.1 GICS Row |
+|---|---|---|
+| **Energy (Oil & Gas)** | P1 Cyclical | 10 Energy / 1010 Energy |
+| **Chemicals** | P1 Cyclical | 15 Chemicals / 151010 Chemicals |
+| **Metals & Mining** | P1 Cyclical | 15 Materials / 1510 Materials |
+| **Construction Materials** | P1 Cyclical | 15 Materials / 1510 Materials |
+| **Capital Goods** | P1 Cyclical | 2010 Capital Goods |
+| **Commercial Services** | P1 Cyclical | 2020 Commercial & Professional Services |
+| **Transportation (Air/Rail/Shipping)** | P4 Regulated Utility | 2030 Transportation / Transport Infrastructure (shipping sub-industry carries P1 secondary) |
+| **Automobiles** | P1 Cyclical | 2510 Automobiles & Components |
+| **Consumer Durables** | P1 Cyclical | 2520/2530 Consumer Durables & Apparel / Leisure Products |
+| **Consumer Staples** | P2 Defensive | 30 Consumer Staples / 3010-3030 |
+| **Retail** | P1 Cyclical | 2550 Retailing (discretionary & multiline) |
+| **Technology Hardware (Semis)** | P3 Growth | 45 Information Technology / 4520-4530 |
+| **Software & Services** | P3 Growth | 4510 Software & Services |
+| **Biotech & Pharma** | P3 Growth | 3520 Biotechnology / 352010 Pharmaceuticals |
+| **Healthcare Equipment** | P2 Defensive | 3510 Healthcare Equipment & Supplies |
+| **Utilities (Regulated)** | P4 Regulated Utility | 55 Utilities / 5510-5540 |
+| **Telecommunications** | P4 Regulated Utility | 5010 Telecommunication Services |
+| **Financials (Banks/Insurance)** | P5 Financial | 40 Financials / 4010-4030 |
+| **Sovereigns & GSEs** | P6 Sovereign-Linked | Sovereigns, Sub-Sovereigns, GSEs, DFIs |
 
 ### 3.2 Paradigm Determination Decision Tree
 
@@ -207,8 +238,10 @@ Step 5: Is demand for the obligor's product/service relatively inelastic to econ
   YES → P2 Defensive
   NO  → Step 6
 
-Step 6: Is the obligor's revenue primarily driven by commodity prices, freight rates, or capacity utilization?
-  (e.g., Energy, Materials, Chemicals, Capital Goods, Shipping)
+Step 6: Is the obligor's revenue primarily driven by commodity prices, freight rates, capacity utilization,
+  or cyclical business/consumer spending?
+  (e.g., Energy, Materials, Chemicals, Capital Goods, Shipping, Automobiles,
+   Consumer Durables, discretionary Retail, Commercial Services)
   YES → P1 Cyclical
   NO  → Re-evaluate industry classification or mark as "Special Structure" per Section 3.4
 ```
@@ -229,6 +262,7 @@ When an industry triggers conditions for multiple paradigms, the following prior
 |----------|-----------------|-------|
 | **Pharmaceuticals (Large Cap)** | Dual-track (P2+P3) | P3 for pipeline assessment, P2 for defensive cash flows from marketed drugs |
 | **Semiconductors** | Layered (P3 + P1 overlay) | P3 (technology roadmap) primary; P1 (cyclical demand from memory/commodity chips) secondary overlay |
+| **Automobiles** | Layered (P1 + P3 overlay) | P1 (demand cycle, input costs) primary; P3 (EV/autonomous technology roadmap) secondary overlay |
 | **Clean Energy** | Dual-track (P3 + P4) | Technology development → P3; infrastructure/project finance → P4 |
 | **Airports / Ports** | Hybrid (P4 + P1) | Regulatory framework primary (P4); traffic/volume cycle secondary (P1) |
 | **Multi-line Insurers** | Mixed (P5 + P2) | Life insurance → P5; P&C with defensive characteristics → P2 overlay |
