@@ -175,6 +175,71 @@ def _shift_range(range_text: str, low: int, high: int) -> str:
     return range_text
 
 
+# Rating scale order used to interpolate rows missing from §5.1 (18-notch scale per
+# §6.1; the migration table documents only 12 rows).
+_RATING_ORDER = [
+    "AAA", "AA+", "AA", "AA-", "A+", "A", "A-", "BBB+", "BBB", "BBB-",
+    "BB+", "BB", "BB-", "B+", "B", "B-", "CCC", "D",
+]
+
+
+def _cell_bounds(cell: str):
+    """Parse a probability cell into (low, high) numeric bounds; '--' -> None."""
+    t = cell.strip()
+    if t == "--":
+        return None
+    m = re.match(r"^<(\d+(?:\.\d+)?)%$", t)
+    if m:
+        return (0.0, float(m.group(1)))
+    m = re.match(r"^(\d+(?:\.\d+)?)%\+$", t)
+    if m:
+        return (float(m.group(1)), 100.0)
+    m = re.match(r"^(\d+(?:\.\d+)?)(?:-(\d+(?:\.\d+)?))?%$", t)
+    if m:
+        lo = float(m.group(1))
+        return (lo, float(m.group(2)) if m.group(2) else lo)
+    raise ValueError(f"unparseable migration cell: {cell!r}")
+
+
+def _fmt_bounds(lo: float, hi: float) -> str:
+    if abs(lo - hi) < 1e-9:
+        return f"{lo:g}%"
+    return f"{lo:g}-{hi:g}%"
+
+
+def _interpolate_cells(a: str, b: str) -> str:
+    ba, bb = _cell_bounds(a), _cell_bounds(b)
+    if ba is None:
+        return b
+    if bb is None:
+        return a
+    return _fmt_bounds((ba[0] + bb[0]) / 2, (ba[1] + bb[1]) / 2)
+
+
+def _interpolate_rows(table: dict, rating: str):
+    """Midpoint interpolation between the nearest existing §5.1 rows."""
+    if rating not in _RATING_ORDER:
+        return None
+    idx = _RATING_ORDER.index(rating)
+
+    def _rows_for(key):
+        for name, cells in table.items():
+            parts = [p.strip() for p in name.split("/")]
+            if key in parts:
+                return cells
+        return None
+
+    upper = next((r for r in reversed(_RATING_ORDER[:idx]) if _rows_for(r)), None)
+    lower = next((r for r in _RATING_ORDER[idx + 1:] if _rows_for(r)), None)
+    if upper is None or lower is None:
+        return None
+    hi_row, lo_row = _rows_for(upper), _rows_for(lower)
+    return {
+        k: _interpolate_cells(hi_row[k], lo_row[k])
+        for k in ("upgrade", "maintain", "downgrade", "default")
+    }
+
+
 def migration_range(rating: str, paradigm: str = None, path=None) -> dict:
     """Section 5.1 base interval + Section 5.3 industry adjustment; merged rows ("A / A-") accept either sub-grade."""
     table, adj, delegated = load_migration_table(path)
@@ -184,18 +249,30 @@ def migration_range(rating: str, paradigm: str = None, path=None) -> dict:
             if "/" in key and rating in [p.strip() for p in key.split("/")]:
                 row = cells
                 break
+    interpolated = False
+    if row is None:
+        row = _interpolate_rows(table, rating)
+        interpolated = row is not None
     if row is None:
         raise ValueError(f"Unknown rating: {rating!r}")
     out = dict(row)
-    note = ""
+    note = "(interpolated between adjacent §5.1 rows) " if interpolated else ""
+    # D is the terminal state (§5.1): no migration, paradigm shifts are inert.
+    if rating == "D":
+        out["paradigm_note"] = note + "D: terminal state; no migration"
+        return out
     if paradigm:
         if paradigm in delegated:
-            out["paradigm_note"] = f"{paradigm}: no generic adjustment (dedicated framework governs)"
+            out["paradigm_note"] = note + f"{paradigm}: no generic adjustment (dedicated framework governs)"
             return out
         if paradigm not in adj:
             raise ValueError(f"Unknown industry paradigm: {paradigm!r} (available {sorted(adj) + sorted(delegated)})")
         target, low, high = adj[paradigm]
+        # §2.5: AAA has no upgrade path; an upgrade shift must not create one.
+        if rating == "AAA" and target == "upgrade":
+            out["paradigm_note"] = note + f"{paradigm}: upgrade shift suppressed — AAA cannot upgrade (§2.5)"
+            return out
         out[target] = _shift_range(row[target], low, high)
-        note = f"{paradigm}: {target} probability+{low}%" if low == high else f"{paradigm}: {target} probability+{low}-{high}%"
+        note += f"{paradigm}: {target} probability+{low}%" if low == high else f"{paradigm}: {target} probability+{low}-{high}%"
     out["paradigm_note"] = note
     return out

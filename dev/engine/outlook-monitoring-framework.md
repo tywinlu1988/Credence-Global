@@ -437,7 +437,14 @@ When Signal Density > Threshold (policy-driven L1 threshold 70%; tech-moat L2 th
 
 ## 5. Rating Migration Matrices
 
-### 5.1 China Credit Bond Market Migration Probability Reference
+### 5.1 Migration Probability Reference (Legacy China-Market Calibration)
+
+> **Calibration note (v0.0.2):** This matrix was calibrated on China credit-bond market
+> history (see §5.2 limitations). It is retained as the reference shape for migration
+> probabilities pending recalibration against international (US IG/HY, EU) transition
+> data; the engine treats it as directional, not statistical, per §5.2's honest statement.
+> Rows for BB+/BB-/B+/B- do not exist in the table; the coded engine
+> (`src/outlook_engine.py`) midpoint-interpolates those tiers between adjacent rows.
 
 Based on approximate estimates from historical market data. **Important limitations are stated in the data quality notes**.
 

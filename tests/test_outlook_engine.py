@@ -150,6 +150,46 @@ def test_migration_range_base_and_merged():
         migration_range("CC")
 
 
+def test_migration_range_interpolated_ratings():
+    # §5.1 has no BB+/BB-/B+/B- rows; those tiers interpolate between the
+    # nearest existing rows (midpoint of the two rows' probability ranges).
+    bb_plus = migration_range("BB+")
+    # midpoint of "BBB / BBB-" (3-5 / 65-70 / 20-30 / 8-10) and "BB" (3-5 / 60 / 25-30 / 10-15)
+    assert bb_plus["upgrade"] == "3-5%"
+    assert bb_plus["maintain"] == "62.5-65%"
+    assert bb_plus["downgrade"] == "22.5-30%"
+    assert bb_plus["default"] == "9-12.5%"
+
+    bb_minus = migration_range("BB-")
+    # midpoint of "BB" and "B" (<3 / 50-55 / 30-35 / 15-20)
+    assert bb_minus["upgrade"] == "1.5-4%"
+    assert bb_minus["maintain"] == "55-57.5%"
+    assert bb_minus["downgrade"] == "27.5-32.5%"
+    assert bb_minus["default"] == "12.5-17.5%"
+
+    b_minus = migration_range("B-")
+    # midpoint of "B" and "CCC" (<2 / 30-40 / 30-40 / 30+)
+    assert b_minus["maintain"] == "40-47.5%"
+    assert b_minus["downgrade"] == "30-37.5%"
+
+
+def test_migration_range_aaa_upgrade_capped():
+    # §2.5: AAA has no upgrade path; paradigm upgrade shifts must not create one.
+    base = migration_range("AAA")
+    shifted = migration_range("AAA", paradigm="P3 Growth")
+    assert base["upgrade"] == "0%"
+    assert shifted["upgrade"] == "0%"
+    assert "cannot upgrade" in shifted["paradigm_note"]
+
+
+def test_migration_range_terminal_d_unchanged():
+    # D is the terminal state: no migration, paradigm shifts are inert.
+    row = migration_range("D", paradigm="P1 Cyclical")
+    assert row["default"] == "100%"
+    assert row["downgrade"] == "--"
+    assert "terminal" in row["paradigm_note"]
+
+
 def test_migration_range_paradigm_shift():
     base = migration_range("AA")
     shifted = migration_range("AA", paradigm="P1 Cyclical")
