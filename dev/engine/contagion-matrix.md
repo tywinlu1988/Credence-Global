@@ -338,31 +338,29 @@ Each matrix cell output fields are consumed by upstream modules as follows:
 
 The following links form the structural backbone of the global industry contagion network:
 
+<!-- GENERATED:high-intensity-links -->
 ```
 Score 5 (Very Strong):
-  Energy (1)       ↔    Chemicals (2)                  (C+R, H)
-  Financials (18)  ↔    Sovereigns & GSEs (19)           (R+L+S, H)
+  Energy (Oil & Gas) ↔ Chemicals  (C+R, H)
+  Financials (Banks/Insurance) ↔ Sovereigns & GSEs  (R+L+S, H)
 
 Score 4 (Strong):
-  Energy (1)       ↔    Transportation (7)               (C, H)
-  Energy (1)       ↔    Utilities (16)                   (C, H)
-  Chemicals (2)    →    Consumer Staples (10)             (C, H)
-  Chemicals (2)    →    Biotech & Pharma (14)             (C, H)
-  Metals & Mining (3) ↔  Construction Materials (4)       (C, H)
-  Metals & Mining (3) ↔  Capital Goods (5)                (C, H)
-  Capital Goods (5) ↔    Technology Hardware (12)         (C, H)
-  Transportation (7) ↔   Retail (11)                      (C, H)
-  Automobiles (8)  ↔    Technology Hardware (12)          (C, H)
-  Technology Hardware↔   Software & Services (13)         (C+S, H)
-  Biotech & Pharma↔     Healthcare Equipment (15)         (C+S, H)
-  Software & Services↔  Telecommunications (17)          (C+S, H)
-  Sovereigns & GSEs↔    Financials (18)                   (R+L+S, H)
-  Chemicals (2)    ↔    Technology Hardware (12)          (C, M)
-  Capital Goods (5) ↔   Automobiles (8)                   (C, M)
-  Technology Hardware↔  Healthcare Equipment (15)         (C, M)
+  Automobiles ↔ Technology Hardware (Semiconductors)  (C, H)
+  Biotech & Pharma ↔ Healthcare Equipment  (C+S, H)
+  Capital Goods ↔ Technology Hardware (Semiconductors)  (C, H)
+  Chemicals ↔ Biotech & Pharma  (C, H)
+  Chemicals ↔ Consumer Staples  (C, H)
+  Energy (Oil & Gas) ↔ Transportation  (C, H)
+  Energy (Oil & Gas) ↔ Utilities (Regulated)  (C, H)
+  Metals & Mining ↔ Capital Goods  (C, H)
+  Metals & Mining ↔ Construction Materials  (C, H)
+  Software & Services ↔ Telecommunications  (C+S, H)
+  Technology Hardware (Semiconductors) ↔ Software & Services  (C+S, H)
+  Transportation ↔ Retail  (C, H)
 
-Total: 17 high-intensity links (score >= 4), including 2 at score 5
+Total: 14 unique high-intensity pairs (28 directed links, score >= 4), including 2 pairs at score 5
 ```
+<!-- /GENERATED -->
 
 ### 3.2 Moderate-Intensity Links (Score = 3)
 
@@ -495,16 +493,17 @@ Industries with higher financial intensity (larger debt markets, more leveraged 
 | Consumer Staples | Low | 25 | 18 |
 | Commercial Services | Low-Medium | 24 | 19 |
 
-### 4.2 Asymmetry Analysis
+### 4.2 Symmetry Analysis
 
-The matrix is not perfectly symmetric; key asymmetries include:
+The base matrix is **fully symmetric**: every off-diagonal pair is assigned the same intensity in both directions (verified at parse time by `src/contagion_engine.py`). This reflects the design principle that the matrix captures linkage **existence** and **magnitude** rather than unidirectional flow:
 
 | Type | Example | Explanation |
 |---|---|---|
-| **Supply Chain Asymmetry** | Energy → Transportation (4) vs Transportation → Energy (4) | Symmetric: fuel cost impact on transportation (input) AND transport demand impact on energy (output) are both strong |
-| **Vertical Asymmetry** | Chemicals → Consumer Staples (4) vs Consumer Staples → Chemicals (1) | Chemicals are upstream input for CPG, but CPG demand has limited reverse impact on chemical production |
-| **Financial Hub Asymmetry** | Sovereigns → Financials (5) vs Financials → Sovereigns (5) | Symmetric in the sovereign-bank nexus: the doom loop is bidirectional |
-| **Scale/Concentration Asymmetry** | Financials → All (3 avg) vs Individual sector → Financials (1-3) | Financials have broad diversified exposure to all sectors; individual sector stress has limited impact on diversified bank portfolios |
+| **Supply Chain Symmetry** | Energy ↔ Transportation (4) | Fuel cost impact on transportation (input) and transport demand impact on energy (output) are both strong |
+| **Sovereign-Bank Nexus** | Financials ↔ Sovereigns (5) | The doom loop is inherently bidirectional — the strongest link in the matrix |
+| **Financial Hub Reach** | Financials ↔ All (3 avg) | Financials have broad diversified exposure to all sectors, in both directions |
+
+**Where asymmetry lives instead:** directional nuance is captured in (a) the §2.4 cell annotations (one-way arrows and channel types), and (b) the §6 stress escalation rules, which apply factor-specific jumps to specific directions (e.g., "Financials → All") and therefore break symmetry under stress. CNER (§5.3) is 1.00 for every industry at base and only discriminates once escalation is applied.
 
 ### 4.3 Channels Not Exhaustively Captured
 
@@ -521,25 +520,33 @@ The matrix is not perfectly symmetric; key asymmetries include:
 
 Super-spreaders are industries whose default or distress causes the widest contagion to other sectors. Measured by **row sum** (total outgoing contagion intensity).
 
-| Rank | Industry | Row Sum | Key Targets (Score >= 3) | Core Logic |
-|---|---|---|---|---|
-| **1** | **Financials (Banks/Insurance)** | **48** | Sovereigns(5), TechHW(3), Software(3), Energy(3), Transport(3), CapGoods(3), ComServ(3), Utilities(3), Telecom(3), Chemicals(2) | Central credit intermediary; credit supply contraction affects all sectors; sovereign-bank nexus is the highest-intensity link in the matrix |
-| **2** | **Technology Hardware (Semis)** | **44** | Software(4), Automobiles(4), CapGoods(4), Chemicals(3), Healthcare(3), Consumer Durables(3), Telecom(3), Financials(3) | "Industrial rice" — chips are essential inputs to virtually all manufacturing and technology sectors |
-| **3** | **Energy (Oil & Gas)** | **43** | Chemicals(5), Transportation(4), Utilities(4), Automobiles(3), CapGoods(3), Metals(3), Financials(3), Sovereigns(3) | Primary commodity with economy-wide cost impact; petrochemical feedstock; fuel for transport and power generation |
+<!-- GENERATED:super-spreaders -->
+| Rank | Industry | Row Sum | Key Targets (Score >= 3) |
+|---|---|---|---|
+| 1 | **Financials (Banks/Insurance)** | **47** | Sovereigns & GSEs(5), Capital Goods(3), Commercial Services(3), Energy (Oil & Gas)(3), Software & Services(3), Technology Hardware (Semiconductors)(3), Telecommunications(3), Transportation(3), Utilities (Regulated)(3) |
+| 2 | **Capital Goods** | **43** | Metals & Mining(4), Technology Hardware (Semiconductors)(4), Automobiles(3), Construction Materials(3), Energy (Oil & Gas)(3), Financials (Banks/Insurance)(3), Healthcare Equipment(3), Transportation(3) |
+| 3 | **Chemicals** | **42** | Energy (Oil & Gas)(5), Biotech & Pharma(4), Consumer Staples(4), Automobiles(3), Construction Materials(3), Consumer Durables(3), Technology Hardware (Semiconductors)(3) |
+| 3 | **Technology Hardware (Semiconductors)** | **42** | Automobiles(4), Capital Goods(4), Software & Services(4), Chemicals(3), Consumer Durables(3), Financials (Banks/Insurance)(3), Healthcare Equipment(3), Telecommunications(3) |
+| 5 | **Energy (Oil & Gas)** | **41** | Chemicals(5), Transportation(4), Utilities (Regulated)(4), Automobiles(3), Capital Goods(3), Financials (Banks/Insurance)(3), Metals & Mining(3), Sovereigns & GSEs(3) |
+<!-- /GENERATED -->
 
-**Note:** Sovereigns & GSEs rank 4th (row sum 42), just outside top 3.
+**Core logic:** Financials (Banks/Insurance) is the central credit intermediary — credit supply contraction affects all sectors, and the sovereign-bank nexus is the highest-intensity link in the matrix. Capital Goods sits at the manufacturing hub: equipment demand is the first casualty of credit tightening across every downstream sector. Chemicals and Technology Hardware tie at rank 3 — petrochemical feedstock reaches virtually all manufacturing, while chips are essential inputs to virtually all technology and advanced manufacturing. Energy (rank 5) remains the primary economy-wide cost channel.
 
 ### 5.2 Vulnerable Industries (Top 3 Column Sums)
 
-Vulnerable industries are those most exposed to incoming contagion from other sectors. Measured by **column sum** (total incoming contagion exposure).
+Vulnerable industries are those most exposed to incoming contagion from other sectors. Measured by **column sum** (total incoming contagion exposure). Because the base matrix is symmetric (§4.2), column sums equal row sums at base; the ranking below mirrors §5.1 and diverges only once §6 escalation is applied.
 
-| Rank | Industry | Column Sum | Key Sources (Score >= 3) | Core Logic |
-|---|---|---|---|---|
-| **1** | **Financials (Banks/Insurance)** | **48** | Sovereigns(5), Energy(3), CapGoods(3), ComServ(3), Transport(3), TechHW(3), Software(3), Utilities(3), Telecom(3) | The most "central" node: exposed to every sector through loan books, investment portfolios, and derivative counterparty risk |
-| **2** | **Energy (Oil & Gas)** | **43** | Chemicals(5), Transport(4), Utilities(4), Capital Goods(3), Automobiles(3), TechHW(3), Financials(3), Sovereigns(3) | Dual vulnerability: input cost side (chemicals → energy) and demand side (transport, utilities, industrial) |
-| **3** | **Technology Hardware (Semis)** | **44** | CapGoods(4), Software(4), Automobiles(4), Chemicals(3), Healthcare(3), Retail(3), Telecom(3), Financials(3) | Technology hardware is simultaneously a super-spreader AND a highly vulnerable industry — a "central hub" property with dual risk |
+<!-- GENERATED:vulnerable-industries -->
+| Rank | Industry | Column Sum | Key Sources (Score >= 3) |
+|---|---|---|---|
+| 1 | **Financials (Banks/Insurance)** | **47** | Sovereigns & GSEs(5), Capital Goods(3), Commercial Services(3), Energy (Oil & Gas)(3), Software & Services(3), Technology Hardware (Semiconductors)(3), Telecommunications(3), Transportation(3), Utilities (Regulated)(3) |
+| 2 | **Capital Goods** | **43** | Metals & Mining(4), Technology Hardware (Semiconductors)(4), Automobiles(3), Construction Materials(3), Energy (Oil & Gas)(3), Financials (Banks/Insurance)(3), Healthcare Equipment(3), Transportation(3) |
+| 3 | **Chemicals** | **42** | Energy (Oil & Gas)(5), Biotech & Pharma(4), Consumer Staples(4), Automobiles(3), Construction Materials(3), Consumer Durables(3), Technology Hardware (Semiconductors)(3) |
+| 3 | **Technology Hardware (Semiconductors)** | **42** | Automobiles(4), Capital Goods(4), Software & Services(4), Chemicals(3), Consumer Durables(3), Financials (Banks/Insurance)(3), Healthcare Equipment(3), Telecommunications(3) |
+| 5 | **Energy (Oil & Gas)** | **41** | Chemicals(5), Transportation(4), Utilities (Regulated)(4), Automobiles(3), Capital Goods(3), Financials (Banks/Insurance)(3), Metals & Mining(3), Sovereigns & GSEs(3) |
+<!-- /GENERATED -->
 
-**Key finding:** Technology Hardware (Semis) is simultaneously the #2 super-spreader (row sum 44) and #3 vulnerable industry (column sum 44). This "central node" property means semiconductor sector credit events may trigger **systemic contagion** not limited to local pathways.
+**Key finding:** Financials is simultaneously the #1 super-spreader and the #1 vulnerable industry — the most "central" node, exposed to every sector through loan books, investment portfolios, and derivative counterparty risk. Capital Goods and Chemicals share the same hub property at ranks 2-3. This "central node" property means credit events in these sectors can trigger **systemic contagion** not limited to local pathways.
 
 ### 5.3 Contagion Coefficients
 
@@ -551,27 +558,29 @@ Measures the relative contagion transmission capacity of each industry:
 CFC_i = Row_Sum_i / Max(Row_Sum)
 ```
 
-| Rank | Industry | Row Sum | CFC |
+<!-- GENERATED:cfc-table -->
+| Rank | Industry | Row Sum | Coefficient |
 |---|---|---|---|
-| 1 | Financials | 48 | 1.00 |
-| 2 | Technology Hardware | 44 | 0.92 |
-| 3 | Energy | 43 | 0.90 |
-| 4 | Sovereigns & GSEs | 42 | 0.88 |
-| 5 | Chemicals | 40 | 0.83 |
-| 6 | Capital Goods | 39 | 0.81 |
-| 7 | Transportation | 38 | 0.79 |
-| 8 | Software & Services | 36 | 0.75 |
-| 9 | Automobiles | 34 | 0.71 |
-| 10 | Retail | 33 | 0.69 |
-| 11 | Biotech & Pharma | 30 | 0.63 |
-| 12 | Utilities | 30 | 0.63 |
-| 13 | Metals & Mining | 29 | 0.60 |
-| 14 | Healthcare Equipment | 28 | 0.58 |
-| 15 | Consumer Durables | 27 | 0.56 |
-| 16 | Construction Materials | 27 | 0.56 |
-| 17 | Telecommunications | 25 | 0.52 |
-| 18 | Consumer Staples | 25 | 0.52 |
-| 19 | Commercial Services | 24 | 0.50 |
+| 1 | Financials (Banks/Insurance) | 47 | 1.00 |
+| 2 | Capital Goods | 43 | 0.91 |
+| 3 | Chemicals | 42 | 0.89 |
+| 3 | Technology Hardware (Semiconductors) | 42 | 0.89 |
+| 5 | Energy (Oil & Gas) | 41 | 0.87 |
+| 6 | Transportation | 39 | 0.83 |
+| 7 | Sovereigns & GSEs | 37 | 0.79 |
+| 8 | Metals & Mining | 35 | 0.74 |
+| 9 | Software & Services | 34 | 0.72 |
+| 10 | Automobiles | 33 | 0.70 |
+| 11 | Construction Materials | 32 | 0.68 |
+| 11 | Utilities (Regulated) | 32 | 0.68 |
+| 13 | Commercial Services | 31 | 0.66 |
+| 13 | Consumer Durables | 31 | 0.66 |
+| 13 | Retail | 31 | 0.66 |
+| 16 | Telecommunications | 29 | 0.62 |
+| 17 | Biotech & Pharma | 28 | 0.60 |
+| 17 | Consumer Staples | 28 | 0.60 |
+| 19 | Healthcare Equipment | 27 | 0.57 |
+<!-- /GENERATED -->
 
 #### Contagion Vulnerability Coefficient (CVC)
 
@@ -581,27 +590,29 @@ Measures the relative contagion reception vulnerability of each industry:
 CVC_i = Col_Sum_i / Max(Col_Sum)
 ```
 
-| Rank | Industry | Col Sum | CVC |
+<!-- GENERATED:cvc-table -->
+| Rank | Industry | Col Sum | Coefficient |
 |---|---|---|---|
-| 1 | Financials | 48 | 1.00 |
-| 2 | Technology Hardware | 44 | 0.92 |
-| 3 | Energy | 43 | 0.90 |
-| 4 | Sovereigns & GSEs | 42 | 0.88 |
-| 5 | Chemicals | 40 | 0.83 |
-| 6 | Capital Goods | 39 | 0.81 |
-| 7 | Transportation | 38 | 0.79 |
-| 8 | Software & Services | 36 | 0.75 |
-| 9 | Automobiles | 34 | 0.71 |
-| 10 | Retail | 33 | 0.69 |
-| 11 | Biotech & Pharma | 30 | 0.63 |
-| 12 | Utilities | 30 | 0.63 |
-| 13 | Metals & Mining | 29 | 0.60 |
-| 14 | Healthcare Equipment | 28 | 0.58 |
-| 15 | Consumer Durables | 27 | 0.56 |
-| 16 | Construction Materials | 27 | 0.56 |
-| 17 | Telecommunications | 25 | 0.52 |
-| 18 | Consumer Staples | 25 | 0.52 |
-| 19 | Commercial Services | 24 | 0.50 |
+| 1 | Financials (Banks/Insurance) | 47 | 1.00 |
+| 2 | Capital Goods | 43 | 0.91 |
+| 3 | Chemicals | 42 | 0.89 |
+| 3 | Technology Hardware (Semiconductors) | 42 | 0.89 |
+| 5 | Energy (Oil & Gas) | 41 | 0.87 |
+| 6 | Transportation | 39 | 0.83 |
+| 7 | Sovereigns & GSEs | 37 | 0.79 |
+| 8 | Metals & Mining | 35 | 0.74 |
+| 9 | Software & Services | 34 | 0.72 |
+| 10 | Automobiles | 33 | 0.70 |
+| 11 | Construction Materials | 32 | 0.68 |
+| 11 | Utilities (Regulated) | 32 | 0.68 |
+| 13 | Commercial Services | 31 | 0.66 |
+| 13 | Consumer Durables | 31 | 0.66 |
+| 13 | Retail | 31 | 0.66 |
+| 16 | Telecommunications | 29 | 0.62 |
+| 17 | Biotech & Pharma | 28 | 0.60 |
+| 17 | Consumer Staples | 28 | 0.60 |
+| 19 | Healthcare Equipment | 27 | 0.57 |
+<!-- /GENERATED -->
 
 #### Contagion Net Exposure Ratio (CNER)
 
@@ -609,49 +620,53 @@ CVC_i = Col_Sum_i / Max(Col_Sum)
 CNER_i = Row_Sum_i / Col_Sum_i
 ```
 
+<!-- GENERATED:cner-table -->
 | Industry | Row Sum | Col Sum | CNER | Interpretation |
 |---|---|---|---|---|
-| Commercial Services | 24 | 24 | 1.00 | Balanced |
-| Telecommunications | 25 | 25 | 1.00 | Balanced |
-| Metals & Mining | 29 | 29 | 1.00 | Balanced |
-| Construction Materials | 27 | 27 | 1.00 | Balanced |
-| Technology Hardware | 44 | 44 | 1.00 | Balanced (central hub) |
-| Energy | 43 | 43 | 1.00 | Balanced |
-| Financials | 48 | 48 | 1.00 | Balanced (central hub) |
-| Consumer Durables | 27 | 27 | 1.00 | Balanced |
-| Consumer Staples | 25 | 25 | 1.00 | Balanced |
-| Healthcare Equipment | 28 | 28 | 1.00 | Balanced |
-| Capital Goods | 39 | 39 | 1.00 | Balanced |
-| Chemicals | 40 | 40 | 1.00 | Balanced |
-| Utilities | 30 | 30 | 1.00 | Balanced |
-| Transportation | 38 | 38 | 1.00 | Balanced |
-| Retail | 33 | 33 | 1.00 | Balanced |
-| Automobiles | 34 | 34 | 1.00 | Balanced |
-| Software & Services | 36 | 36 | 1.00 | Balanced |
-| Biotech & Pharma | 30 | 30 | 1.00 | Balanced |
-| Sovereigns & GSEs | 42 | 42 | 1.00 | Balanced |
+| Financials (Banks/Insurance) | 47 | 47 | 1.00 | Balanced |
+| Capital Goods | 43 | 43 | 1.00 | Balanced |
+| Chemicals | 42 | 42 | 1.00 | Balanced |
+| Technology Hardware (Semiconductors) | 42 | 42 | 1.00 | Balanced |
+| Energy (Oil & Gas) | 41 | 41 | 1.00 | Balanced |
+| Transportation | 39 | 39 | 1.00 | Balanced |
+| Sovereigns & GSEs | 37 | 37 | 1.00 | Balanced |
+| Metals & Mining | 35 | 35 | 1.00 | Balanced |
+| Software & Services | 34 | 34 | 1.00 | Balanced |
+| Automobiles | 33 | 33 | 1.00 | Balanced |
+| Construction Materials | 32 | 32 | 1.00 | Balanced |
+| Utilities (Regulated) | 32 | 32 | 1.00 | Balanced |
+| Commercial Services | 31 | 31 | 1.00 | Balanced |
+| Consumer Durables | 31 | 31 | 1.00 | Balanced |
+| Retail | 31 | 31 | 1.00 | Balanced |
+| Telecommunications | 29 | 29 | 1.00 | Balanced |
+| Biotech & Pharma | 28 | 28 | 1.00 | Balanced |
+| Consumer Staples | 28 | 28 | 1.00 | Balanced |
+| Healthcare Equipment | 27 | 27 | 1.00 | Balanced |
+<!-- /GENERATED -->
 
 **Note on symmetry:** The CNER for all industries is 1.00 because the matrix is structurally symmetric (each off-diagonal pair is assigned the same intensity in both directions). This reflects the design principle that the matrix captures linkage **existence** and **magnitude** rather than unidirectional flow. Directional asymmetries (e.g., upstream → downstream) are captured in the detailed annotations (Section 2.4) and in practical application (Section 6 stress scenario design), but the base matrix is symmetric. Future calibrated versions may introduce asymmetry coefficients based on empirical directional default correlation data.
 
 ### 5.4 Industry Clustering
 
+<!-- GENERATED:clusters -->
 #### High-Contagion Cluster (Intra-cluster average intensity >= 3.0)
 
-| Cluster | Industries | Core Links | Dominant Contagion Type |
+| Cluster | Industries | Core Links | Intra Avg |
 |---|---|---|---|
-| **A: Energy-Chemicals-Transport-Utilities** | Energy, Chemicals, Transportation, Utilities | Energy↔Chemicals(5), Energy↔Transport(4), Energy↔Utilities(4), Chemicals↔Transport(2) | Credit Chain |
-| **B: Tech-Auto-Capital Goods** | Technology Hardware, Software & Services, Automobiles, Capital Goods | Tech HW↔Software(4), Tech HW↔Autos(4), Cap Goods↔Tech HW(4), Cap Goods↔Autos(3) | Credit Chain + Confidence Collapse |
-| **C: Sovereign-Financial Hub** | Sovereigns & GSEs, Financials | Sovereigns↔Financials(5) | All types (each contaminated through the nexus) |
-| **D: Bio-Healthcare** | Biotech & Pharma, Healthcare Equipment | Biotech↔Healthcare Equip(4), Chemicals↔Biotech(4) | Credit Chain + Confidence Collapse |
+| **A: Energy-Chemicals-Transport-Utilities** | Energy (Oil & Gas), Chemicals, Transportation, Utilities (Regulated) | Energy↔Chemicals(5), Energy↔Transport(4), Energy↔Utilities(4), Chemicals↔Transport(2) | 3.0 |
+| **B: Tech-Auto-Capital Goods** | Technology Hardware (Semiconductors), Software & Services, Automobiles, Capital Goods | Tech HW↔Software(4), Tech HW↔Autos(4), Cap Goods↔Tech HW(4), Cap Goods↔Autos(3) | 3.2 |
+| **C: Sovereign-Financial Hub** | Sovereigns & GSEs, Financials (Banks/Insurance) | Sovereigns↔Financials(5) | 5.0 |
+| **D: Bio-Healthcare** | Biotech & Pharma, Healthcare Equipment | Biotech↔Healthcare Equip(4), Chemicals↔Biotech(4) | 4.0 |
+| **F: Infrastructure-Construction** | Construction Materials, Metals & Mining, Capital Goods, Utilities (Regulated) | Metals↔Const Mat(4), Metals↔Cap Goods(4), Const Mat↔Utilities(3) | 3.0 |
+| **G: Telecom-Software** | Telecommunications, Software & Services | Telecom↔Software(4) | 4.0 |
+| **H: Commercial Services-Network** | Commercial Services, Retail, Transportation, Software & Services | ComServ↔Retail(3), ComServ↔Transport(3), ComServ↔Software(3) | 3.0 |
 
 #### Moderate-Contagion Cluster (Intra-cluster average intensity 2.0-2.9)
 
-| Cluster | Industries | Key Links |
-|---|---|---|
-| **E: Retail-Consumer-Logistics** | Retail, Consumer Staples, Consumer Durables, Transportation | Retail↔Transport(4), Retail↔Consumer Staples(3), Retail↔Consumer Durables(3), Consumer Staples↔Chemicals(4) |
-| **F: Infrastructure-Construction** | Construction Materials, Metals & Mining, Capital Goods, Utilities | Metals↔Const Mat(4), Metals↔Cap Goods(4), Const Mat↔Utilities(3) |
-| **G: Telecom-Software** | Telecommunications, Software & Services | Telecom↔Software(4) |
-| **H: Commercial Services-Network** | Commercial Services, Retail, Transportation, Software | ComServ↔Retail(3), ComServ↔Transport(3), ComServ↔Software(3) |
+| Cluster | Industries | Core Links | Intra Avg |
+|---|---|---|---|
+| **E: Retail-Consumer-Logistics** | Retail, Consumer Staples, Consumer Durables, Transportation | Retail↔Transport(4), Retail↔Consumer Staples(3), Retail↔Consumer Durables(3), Consumer Staples↔Chemicals(4) | 2.7 |
+<!-- /GENERATED -->
 
 ---
 
@@ -906,41 +921,47 @@ Each industry methodology document should include a "Contagion Exposure" chapter
 
 ## 9. Appendix
 
-### 9.1 Intensity Distribution Summary (342 Off-Diagonal Pairs)
+### 9.1 Intensity Distribution Summary (342 Directed Off-Diagonal Links)
 
-| Intensity | Count | Percentage | Cumulative |
+<!-- GENERATED:intensity-distribution -->
+| Intensity | Directed Links | Unique Pairs | Share of Directed |
 |---|---|---|---|
-| 5 (Very Strong) | 2 | 0.6% | 0.6% |
-| 4 (Strong) | 15 | 4.4% | 5.0% |
-| 3 (Moderate) | 62 | 18.1% | 23.1% |
-| 2 (Weak) | 48 | 14.0% | 37.1% |
-| 1 (Very Weak) | 215 | 62.9% | 100.0% |
+| 1 | 150 | 75 | 43.9% |
+| 2 | 96 | 48 | 28.1% |
+| 3 | 68 | 34 | 19.9% |
+| 4 | 24 | 12 | 7.0% |
+| 5 | 4 | 2 | 1.2% |
+| **Total** | **342** | **171** | 100.0% |
+<!-- /GENERATED -->
 
-**Total high-intensity links (>= 4):** 17 (5.0%) — these form the structural backbone of the contagion network.
+**High-intensity links (>= 4)** form the structural backbone of the contagion network (see §3.1).
 
 ### 9.2 Complete Row/Column Sums
 
-| # | Industry | Row Sum | Col Sum | Average Intensity |
+<!-- GENERATED:row-col-sums -->
+| Rank | Industry | Row Sum | Col Sum | CFC (Row/Max) |
 |---|---|---|---|---|
-| 1 | Energy (Oil & Gas) | 43 | 43 | 2.39 |
-| 2 | Chemicals | 40 | 40 | 2.22 |
-| 3 | Metals & Mining | 29 | 29 | 1.61 |
-| 4 | Construction Materials | 27 | 27 | 1.50 |
-| 5 | Capital Goods | 39 | 39 | 2.17 |
-| 6 | Commercial Services | 24 | 24 | 1.33 |
-| 7 | Transportation | 38 | 38 | 2.11 |
-| 8 | Automobiles | 34 | 34 | 1.89 |
-| 9 | Consumer Durables | 27 | 27 | 1.50 |
-| 10 | Consumer Staples | 25 | 25 | 1.39 |
-| 11 | Retail | 33 | 33 | 1.83 |
-| 12 | Technology Hardware | 44 | 44 | 2.44 |
-| 13 | Software & Services | 36 | 36 | 2.00 |
-| 14 | Biotech & Pharma | 30 | 30 | 1.67 |
-| 15 | Healthcare Equipment | 28 | 28 | 1.56 |
-| 16 | Utilities (Regulated) | 30 | 30 | 1.67 |
-| 17 | Telecommunications | 25 | 25 | 1.39 |
-| 18 | Financials (Banks/Insurance) | 48 | 48 | 2.67 |
-| 19 | Sovereigns & GSEs | 42 | 42 | 2.33 |
+| 1 | Financials (Banks/Insurance) | 47 | 47 | 1.00 |
+| 2 | Capital Goods | 43 | 43 | 0.91 |
+| 3 | Chemicals | 42 | 42 | 0.89 |
+| 3 | Technology Hardware (Semiconductors) | 42 | 42 | 0.89 |
+| 5 | Energy (Oil & Gas) | 41 | 41 | 0.87 |
+| 6 | Transportation | 39 | 39 | 0.83 |
+| 7 | Sovereigns & GSEs | 37 | 37 | 0.79 |
+| 8 | Metals & Mining | 35 | 35 | 0.74 |
+| 9 | Software & Services | 34 | 34 | 0.72 |
+| 10 | Automobiles | 33 | 33 | 0.70 |
+| 11 | Construction Materials | 32 | 32 | 0.68 |
+| 11 | Utilities (Regulated) | 32 | 32 | 0.68 |
+| 13 | Commercial Services | 31 | 31 | 0.66 |
+| 13 | Consumer Durables | 31 | 31 | 0.66 |
+| 13 | Retail | 31 | 31 | 0.66 |
+| 16 | Telecommunications | 29 | 29 | 0.62 |
+| 17 | Biotech & Pharma | 28 | 28 | 0.60 |
+| 17 | Consumer Staples | 28 | 28 | 0.60 |
+| 19 | Healthcare Equipment | 27 | 27 | 0.57 |
+| | **Total / Mean** | **662** | **662** | mean 34.84 |
+<!-- /GENERATED -->
 
 ### 9.3 Version History
 
