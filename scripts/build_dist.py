@@ -140,7 +140,7 @@ def _copy_and_transform(src: Path, dst: Path, log: list, scrub: bool) -> None:
 def _version() -> str:
     text = (DEV / "engine" / "engine-overview.md").read_text(encoding="utf-8")
     m = re.search(r"\*\*Version\*\*\s*[:：]\s*(\S+)", text)
-    return m.group(1) if m else "v0.0.4"
+    return m.group(1) if m else "v0.0.5"
 
 
 def _gen_agents_md(v: str) -> str:

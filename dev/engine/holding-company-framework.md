@@ -1,6 +1,6 @@
 # Holding Company Credit Analysis Framework
 
-**Version**: v0.0.4 | **Date**: 2026-07-10
+**Version**: v0.0.5 | **Date**: 2026-07-10
 **Position**: Independent cross-sectional analysis framework separate from the seven-industry pyramid - applicable to credit analysis of holding companies / financial-industrial conglomerates
 **Driving Cases**: Validation of "strong subsidiary, weak parent" patterns from multiple conglomerate default cases
 
