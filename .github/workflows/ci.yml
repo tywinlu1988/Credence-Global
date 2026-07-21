@@ -8,11 +8,12 @@ on:
 
 jobs:
   gates:
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest, windows-latest]
         python-version: ["3.11", "3.12"]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -22,5 +23,57 @@ jobs:
         run: python -m pip install --upgrade pip pytest pyyaml
       - name: Regression tests
         run: python -m pytest tests/ -q
+      - name: Skip-count gate (only T11.3 may skip)
+        run: |
+          python -m pytest tests/ -q --tb=no -p no:cacheprovider > pytest-out.txt || true
+          tail -1 pytest-out.txt
+          python -c "
+          import re, sys
+          tail = open('pytest-out.txt', encoding='utf-8', errors='replace').read()
+          skipped = re.findall(r'(\d+) skipped', tail)
+          failed = re.findall(r'(\d+) failed', tail)
+          sys.exit(1 if (failed and int(failed[-1]) > 0) or (skipped and int(skipped[-1]) > 1) else 0)
+          "
       - name: Consistency check
         run: python scripts/consistency_check.py
+
+  npm-installer-smoke:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install smoke deps
+        run: python -m pip install pyyaml
+      - name: End-to-end installer smoke (build zip, serve locally, install, tamper rejection)
+        run: bash scripts/smoke_install.sh
+        shell: bash
+
+  pip-install-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Editable install
+        run: python -m pip install -e .
+      - name: Import engine from outside the repo root
+        run: |
+          cd /tmp
+          python -c "
+          from src.pipeline import EXECUTABLE_ENGINES
+          from src.sri_calculator import IndustryInput, TrackBLevel, Outlook, sri, thermometer_level
+          assert sorted(EXECUTABLE_ENGINES)
+          v = sri([IndustryInput('X', 5.0, TrackBLevel.YELLOW, Outlook.NEGATIVE)], [1.0])
+          assert v > 0 and thermometer_level(v) in ('normal', 'watch', 'alert', 'danger')
+          print('pip-installed engine import + SRI OK')
+          "
