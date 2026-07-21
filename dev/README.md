@@ -142,6 +142,7 @@ Product vision, Magic Experience, 3-layer output system, commercial model, prici
 
 | Version | Date | Milestone |
 |---|---|---|
+| v0.0.6 | 2026-07-21 | Hotfix: installer unzip fallback chain — GNU tar (Linux) cannot extract zip; install.js now tries unzip -> tar -> PowerShell (caught by the new CI npm-installer-smoke job on day one) |
 | v0.0.5 | 2026-07-21 | Engineering hardening: SRI runtime rule parsing; drift guards; input validation + error isolation; path_sheet semantic validation; checker release/dependency gates; CI windows+npm+pip expansion |
 | v0.0.4 | 2026-07-21 | Residual convergence: round interpolation + §8.5 recompute; PM four-dimension by-name split; §6.3 synergy implemented; systemic-warning examples re-derived (GFC/Eurozone/COVID/2026) |
 | v0.0.3 | 2026-07-21 | Single-source convergence: paradigm taxonomy adjudication + full propagation; 13→19 GICS migration; machine-generated contagion derived tables; engine correctness rework (concentration/outlook/contagion); skills cleanup; naming convergence |
