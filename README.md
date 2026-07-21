@@ -289,12 +289,12 @@ Every credit analysis flows through a four-stage chained pipeline, with `path_id
 
 | Stage | Name | Artifact | Hosting Skill | Status |
 |---|---|---|---|---|
-| S1 | **Intake** | Work Path Sheet | `credit-analysis-router` | ✅ Delivered |
-| S2 | **Analysis** | Analysis Output | `fixed-income-credit-analysis` | ✅ Delivered |
-| S3 | **Report** | Delivery Order | `credit-report-builder` | ✅ Delivered |
-| S4 | **QA** | QA Ruling | `credit-qa-verifier` | ✅ Delivered |
+| S1 | **Intake** | Path Sheet | `credit-analysis-router` | ✅ Delivered |
+| S2 | **Analysis** | Analysis Artifact | `fixed-income-credit-analysis` | ✅ Delivered |
+| S3 | **Report** | Delivery Note | `credit-report-builder` | ✅ Delivered |
+| S4 | **QA** | QA Verdict | `credit-qa-verifier` | ✅ Delivered |
 
-**S1 — Intake (Router)** : The `credit-analysis-router` skill uses a four-question routing mechanism to classify vague user requests ("analyze this company", "what analysis should I run") into a concrete **Work Path Sheet**. The sheet carries a `path_id`, engine reading order, template selection, and quality gate specifications — all derived from the single source of truth in `dev/engine/work-path-registry.md`.
+**S1 — Intake (Router)** : The `credit-analysis-router` skill uses a four-question routing mechanism to classify vague user requests ("analyze this company", "what analysis should I run") into a concrete **Path Sheet**. The sheet carries a `path_id`, engine reading order, template selection, and quality gate specifications — all derived from the single source of truth in `dev/engine/work-path-registry.md`.
 
 **S2 — Analysis** : The `fixed-income-credit-analysis` skill executes the analysis per the path sheet's engine reading order. For four wired paths, the orchestrator (`src/pipeline.py`) invokes the corresponding coded engine directly:
 - **WP-RO-01** -> `src/concentration_scorer.py` (five-dimension concentration)
@@ -311,7 +311,7 @@ All non-wired paths are LLM-orchestrated per engine documentation.
 
 **S4 — QA** : The `credit-qa-verifier` skill performs a pre-delivery quality gate review, enforcing signal-density rules, one-shot-veto ceiling compliance, Mode B guardrails, and single-source-of-truth integrity. This is the terminal stage in the four-stage chain — no report is delivered without passing QA.
 
-**Executable Orchestrator**: `src/pipeline.py` drives the entire four-stage chain in code. It reads stage definitions from `dev/engine/pipeline-contract.md` (never hardcodes stage names), validates path sheets using `src/path_sheet.py`, and invokes coded engines only for explicitly wired paths. The single source of truth for all four artifacts (path sheet, analysis artifact, delivery sheet, QA verdict) and their chaining edges is `dev/engine/pipeline-contract.md`.
+**Executable Orchestrator**: `src/pipeline.py` drives the entire four-stage chain in code. It reads stage definitions from `dev/engine/pipeline-contract.md` (never hardcodes stage names), validates path sheets using `src/path_sheet.py`, and invokes coded engines only for explicitly wired paths. The single source of truth for all four artifacts (path sheet, analysis artifact, delivery note, QA verdict) and their chaining edges is `dev/engine/pipeline-contract.md`.
 
 ---
 
@@ -380,7 +380,7 @@ The engine defines **16 work paths** mapped to international buy-side roles, eac
 | WP-X-04 | ESG/Governance Risk Scan | 🟡 Partial | ESG Risk Scan + Governance Red-Flag List |
 | WP-X-05 | Outlook & Continuous Monitoring | ✅ Active | Rating Outlook + Watchlist |
 
-**Status summary**: 8 active, 6 partial, 2 planned.
+**Status summary**: 9 active, 5 partial, 2 planned.
 
 ### Report Templates (Type 1-18)
 
@@ -563,7 +563,7 @@ Yes. Credence is CLI-agnostic. It works with Claude Code (full auto-discovery), 
 
 ### Q5: How are the 16 work paths organized?
 
-Paths are organized by buy-side role: Credit Selector (2 paths), Portfolio Manager (2), Risk Officer (4), Trader (1), Advisor (1), Individual Investor (1), and Meta/Special-Purpose (5). Each path specifies an engine sequence, report template, and quality gates. 8 paths are fully active, 6 are partially implemented, and 2 are planned.
+Paths are organized by buy-side role: Credit Selector (2 paths), Portfolio Manager (2), Risk Officer (4), Trader (1), Advisor (1), Individual Investor (1), and Meta/Special-Purpose (5). Each path specifies an engine sequence, report template, and quality gates. 9 paths are fully active, 5 are partially implemented, and 2 are planned.
 
 ### Q6: What are the 6 international paradigms?
 

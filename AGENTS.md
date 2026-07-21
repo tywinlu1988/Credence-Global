@@ -46,12 +46,12 @@ The engine decomposes each credit analysis into a four-stage chained contract, w
 
 | Stage | Responsibility | Skill | Status |
 |-------|---------------|-------|--------|
-| ① intake | Four-question routing, produces a **Work Path Sheet** | `credit-analysis-router` | ✅ Delivered |
+| ① intake | Four-question routing, produces a **Path Sheet** | `credit-analysis-router` | ✅ Delivered |
 | ② analysis | Execute analysis per path sheet `engine_reading_order` | `fixed-income-credit-analysis` | ✅ Delivered |
 | ③ report | Assemble completed analysis into a deliverable report | `credit-report-builder` | ✅ Delivered |
 | ④ qa | Pre-delivery quality gate verification | `credit-qa-verifier` | ✅ Delivered |
 
-The single source of truth for the four artifacts (path sheet / analysis artifact / delivery sheet / qa verdict) and their chaining edges is `dev/engine/pipeline-contract.md`.
+The single source of truth for the four artifacts (path sheet / analysis artifact / delivery note / qa verdict) and their chaining edges is `dev/engine/pipeline-contract.md`.
 
 **Executable Orchestrator**: `src/pipeline.py` drives the four-stage chain in code. It reads stage definitions from `pipeline-contract.md` (never hardcodes stage names), and calls coded engines only for wired paths — **WP-RO-03 → SRI (`src/sri_calculator.py`), WP-RO-01 → Five-Dimension Concentration (`src/concentration_scorer.py`), WP-RO-02 → Contagion Matrix (`src/contagion_engine.py`), WP-X-05 → Outlook Monitoring (`src/outlook_engine.py`)**. All other paths/stages remain LLM-orchestrated per engine docs.
 
@@ -61,7 +61,7 @@ The single source of truth for the four artifacts (path sheet / analysis artifac
 
 ## Routing Baseline (Work Path Registry)
 
-`dev/engine/work-path-registry.md` is the single source of truth for routing: **16 work paths (8 active / 6 partial / 2 planned)**. The router maps vague requests to concrete work paths using this registry; when a planned path is recommended, it MUST honestly state "under development" and offer an alternative active path.
+`dev/engine/work-path-registry.md` is the single source of truth for routing: **16 work paths (9 active / 5 partial / 2 planned)**. The router maps vague requests to concrete work paths using this registry; when a planned path is recommended, it MUST honestly state "under development" and offer an alternative active path.
 
 ## Validation Commands
 

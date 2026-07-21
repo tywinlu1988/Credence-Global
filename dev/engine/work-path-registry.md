@@ -44,7 +44,7 @@ This registry is the design baseline for the v0.0.1 skill architecture refactori
 | WP-X-04 | ESG/Governance Risk Scan | meta | esg + governance-fraud | special | Type 10 | 🟡 partial |
 | WP-X-05 | Outlook & Continuous Monitoring | meta | outlook-monitoring + migration matrix | special | Type 18 | ✅ active |
 
-> Status distribution: ✅ active 8 paths / 🟡 partial 6 paths / 🔴 planned 2 paths. See [Appendix](#6-appendix-development-backlog) for the development backlog.
+> Status distribution: ✅ active 9 paths / 🟡 partial 5 paths / 🔴 planned 2 paths. See [Appendix](#6-appendix-development-backlog) for the development backlog.
 
 ## 3. Path Schema Definition
 

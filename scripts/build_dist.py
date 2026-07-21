@@ -208,7 +208,7 @@ Four-stage artifacts (Path Sheet / Analysis Artifact / Delivery Note / QA Verdic
 
 ## Routing Baseline (Work Path Registry)
 
-`engine/work-path-registry.md` is the single source of truth for routing: **16 work paths (8 active / 6 partial / 2 planned)**. The router maps ambiguous requirements to concrete work paths; when recommending a planned path, honestly state "not yet implemented" and suggest an active alternative.
+`engine/work-path-registry.md` is the single source of truth for routing: **16 work paths (9 active / 5 partial / 2 planned)**. The router maps ambiguous requirements to concrete work paths; when recommending a planned path, honestly state "not yet implemented" and suggest an active alternative.
 
 ## Platform Neutrality Note
 

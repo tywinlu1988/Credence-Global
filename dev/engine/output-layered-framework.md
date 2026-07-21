@@ -273,7 +273,7 @@ The thermometer card is pushed only when the **thermometer level changes**; it i
 | Action Button | Target View | Description |
 |---|---|---|
 | [View Systemic Alert] | Type 15 Report | Navigate to the current systemic risk alert full report |
-| [View Contagion Matrix] | Contagion Matrix Highlight View | Open the 13x13 contagion matrix, highlighting rows and columns of current red industries |
+| [View Contagion Matrix] | Contagion Matrix Highlight View | Open the 19x19 contagion matrix, highlighting rows and columns of current red industries |
 | [Run Stress Test] | M4 Stress Test Module | Based on current thermometer reading, run portfolio-level stress test (S3 scenario) |
 
 #### 3.6.7 Thermometer Card and Individual Bond L0 Signal Card Linkage

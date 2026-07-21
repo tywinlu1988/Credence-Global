@@ -317,10 +317,10 @@ Step 5: Consolidated Output
 |-----------|--------------------------------------|
 | WP-X-02 (this) | Standard process for multi-role parallel evaluation |
 | Type 4 Report Template | Standard output format for cross-role comparison matrix |
-| WP-M0-01 to WP-M5-01 | Individual role work paths feed into Step 2 |
+| WP-CS-01, WP-PM-01, WP-TR-01, WP-RO-01, WP-AD-01, WP-II-01 | Individual role work paths feed into Step 2 |
 | WP-X-03 (Industry Analysis) | Pyramid structure feeds Credit Selector framework |
 | WP-X-05 (Outlook Monitoring) | Updates each role's starting assumptions in periodic reviews |
-| WP-M4-02 (Contagion Matrix) | Risk Officer uses this in Step 2 |
+| WP-RO-02 (Contagion Matrix) | Risk Officer uses this in Step 2 |
 
 ### 4.4 Workflow Diagram
 

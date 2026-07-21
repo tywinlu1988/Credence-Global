@@ -50,18 +50,18 @@ Track B (Market Pricing) Auxiliary validation                       ✅ Core dom
 
 ### 1.3 Differences in Qualitative Analysis Roles Across Six Stakeholder Perspectives
 
-The six stakeholder types (M0-M5) have different weights for qualitative analysis needs. The following shows the weight and focus of qualitative analysis for each perspective:
+The six stakeholder roles have different weights for qualitative analysis needs. The following shows the weight and focus of qualitative analysis for each perspective (role definitions: multi-stakeholder.md §1):
 
 | Role | Qualitative Analysis Weight | Core Focus of Qualitative Analysis |
 |------|---------------------------|------------------------------------|
-| **M0 Credit Approval (Bank)** | **High (60-70%)** | Industry risk, policy stability, management integrity, reliability of secondary repayment source |
-| **M1 Bond Investment** | **Medium (40-50%)** | Industry trend direction, substance of covenant protection, event-driven judgment |
-| **M2 Bond Underwriting** | **High (50-60%)** | Qualitative judgment of investor demand, issuance window selection, comparable case studies |
-| **M3 Market Trading** | **Low (20-30%)** | Qualitative assessment of market sentiment, extreme event scenario judgment |
-| **M4 Portfolio Risk Control** | **Medium (40-50%)** | Tail risk scenario construction, qualitative explanation of correlation mutations |
-| **M5 Corporate Finance** | **High (60-70%)** | Capital market window judgment, investor preference shifts, rating agency focus areas |
+| **Credit Selector** | **High (60-70%)** | Industry risk, policy stability, management integrity, reliability of secondary repayment source |
+| **Portfolio Manager** | **Medium (40-50%)** | Industry trend direction, substance of covenant protection, event-driven judgment |
+| **Advisor** | **High (50-60%)** | Qualitative judgment of investor demand, issuance window selection, comparable case studies |
+| **Trader** | **Low (20-30%)** | Qualitative assessment of market sentiment, extreme event scenario judgment |
+| **Risk Officer** | **Medium (40-50%)** | Tail risk scenario construction, qualitative explanation of correlation mutations |
+| **Individual Investor** | **High (60-70%)** | Capital market window judgment, investor preference shifts, rating agency focus areas |
 
-**M0 and M5 have the highest dependence on qualitative analysis — because these two roles face the greatest information asymmetry and long-term uncertainty. M3 has the lowest dependence — quantitative signals dominate in short-term trading.**
+**Credit Selector and Individual Investor have the highest dependence on qualitative analysis — because these two roles face the greatest information asymmetry and long-term uncertainty. Trader has the lowest dependence — quantitative signals dominate in short-term trading.**
 
 ### 1.4 Types of Qualitative Analysis Methodologies
 
@@ -1148,7 +1148,7 @@ Track A (Fundamental Pyramid Scoring)
 | [Mosaic Engine](mosaic-engine.md) | Technical implementation of signal extraction and assembly | Chapter 5 (Mosaic Assembly Practice) is the qualitative supporting methodology for the Mosaic Engine |
 | [Quantitative Analysis Methodology](quantitative-analysis.md) | Track B quantitative analysis standards | Qualitative judges direction (this document) → Quantitative calibrates precision (quantitative document) = complete dual-track |
 | [Engine Architecture Overview](engine-overview.md) | Engine global architecture | This document is one of the underlying methodologies for Track A |
-| [Multi-Stakeholder Perspective Framework](multi-stakeholder.md) | M0-M6 role perspectives | Section 1.3 of this document details the weight differences of qualitative analysis across roles |
+| [Multi-Stakeholder Perspective Framework](multi-stakeholder.md) | 6 role perspectives | Section 1.3 of this document details the weight differences of qualitative analysis across roles |
 | [Industry Classification and Analysis Framework](industry-framework.md) | Industry types and pyramid specifications | Section 4.3 (Industry-Specific Red Flags) directly relates to veto conditions for each industry pyramid |
 
 ### D. Document Version History

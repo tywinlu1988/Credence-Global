@@ -291,12 +291,12 @@ Chaque analyse de credit transite par un pipeline chaine en quatre etapes, avec 
 
 | Etape | Nom | Livrable | Competence Hote | Statut |
 |---|---|---|---|---|
-| S1 | **Admission** | Fiche de Chemin de Travail | `credit-analysis-router` | ✅ Livre |
-| S2 | **Analyse** | Sortie d'Analyse | `fixed-income-credit-analysis` | ✅ Livre |
-| S3 | **Rapport** | Ordre de Livraison | `credit-report-builder` | ✅ Livre |
+| S1 | **Admission** | Fiche de Chemin | `credit-analysis-router` | ✅ Livre |
+| S2 | **Analyse** | Artefact d'Analyse | `fixed-income-credit-analysis` | ✅ Livre |
+| S3 | **Rapport** | Note de Livraison | `credit-report-builder` | ✅ Livre |
 | S4 | **AQ** | Decision AQ | `credit-qa-verifier` | ✅ Livre |
 
-**S1 — Admission (Routeur)** : La competence `credit-analysis-router` utilise un mecanisme de routage a quatre questions pour classer les demandes vagues des utilisateurs en une **Fiche de Chemin de Travail** concrete. La fiche porte un `path_id`, un ordre de lecture du moteur, une selection de template et des specifications de portes qualite — le tout derive de la source unique de verite dans `dev/engine/work-path-registry.md`.
+**S1 — Admission (Routeur)** : La competence `credit-analysis-router` utilise un mecanisme de routage a quatre questions pour classer les demandes vagues des utilisateurs en une **Fiche de Chemin** concrete. La fiche porte un `path_id`, un ordre de lecture du moteur, une selection de template et des specifications de portes qualite — le tout derive de la source unique de verite dans `dev/engine/work-path-registry.md`.
 
 **S2 — Analyse** : La competence `fixed-income-credit-analysis` execute l'analyse selon l'ordre de lecture du moteur de la fiche de chemin. Pour quatre chemins cables, l'orchestrateur (`src/pipeline.py`) invoque directement le moteur code correspondant :
 - **WP-RO-01** -> `src/concentration_scorer.py` (concentration cinq dimensions)
@@ -313,7 +313,7 @@ Tous les chemins non cables sont orchestres par LLM selon la documentation du mo
 
 **S4 — AQ** : La competence `credit-qa-verifier` effectue un examen de porte qualite avant livraison, appliquant les regles de densite des signaux, la conformite au plafond de veto unique, les garde-fous du Mode B et l'integrite de la source unique de verite. C'est l'etape terminale de la chaine en quatre etapes — aucun rapport n'est livre sans avoir passe l'AQ.
 
-**Orchestrateur Executable** : `src/pipeline.py` pilote l'ensemble de la chaine en quatre etapes dans le code. Il lit les definitions d'etape depuis `dev/engine/pipeline-contract.md` (ne code jamais en dur les noms d'etape), valide les fiches de chemin via `src/path_sheet.py`, et invoque les moteurs codes uniquement pour les chemins explicitement cables. La source unique de verite pour les quatre artefacts (fiche de chemin, artefact d'analyse, fiche de livraison, decision AQ) et leurs aretes de chainage est `dev/engine/pipeline-contract.md`.
+**Orchestrateur Executable** : `src/pipeline.py` pilote l'ensemble de la chaine en quatre etapes dans le code. Il lit les definitions d'etape depuis `dev/engine/pipeline-contract.md` (ne code jamais en dur les noms d'etape), valide les fiches de chemin via `src/path_sheet.py`, et invoque les moteurs codes uniquement pour les chemins explicitement cables. La source unique de verite pour les quatre artefacts (fiche de chemin, artefact d'analyse, note de livraison, decision AQ) et leurs aretes de chainage est `dev/engine/pipeline-contract.md`.
 
 ---
 
@@ -382,7 +382,7 @@ Le moteur definit **16 chemins de travail** mappes aux roles buy-side internatio
 | WP-X-04 | Analyse des Risques ESG/Gouvernance | 🟡 Partiel | Analyse des Risques ESG + Liste de Drapeaux Rouges de Gouvernance |
 | WP-X-05 | Perspectives et Surveillance Continue | ✅ Actif | Perspectives de Notation + Liste de Surveillance |
 
-**Resume des statuts** : 8 actifs, 6 partiels, 2 planifies.
+**Resume des statuts** : 9 actifs, 5 partiels, 2 planifies.
 
 ### Templates de Rapport (Type 1-18)
 
@@ -565,7 +565,7 @@ Oui. Credence est independant du CLI. Il fonctionne avec Claude Code (decouverte
 
 ### Q5 : Comment les 16 chemins de travail sont-ils organises ?
 
-Les chemins sont organises par role buy-side : Selectionneur de Credit (2), Gestionnaire de Portefeuille (2), Responsable des Risques (4), Trader (1), Conseiller (1), Investisseur Individuel (1) et Meta/Usage Special (5). Chaque chemin specifie une sequence de moteur, un template de rapport et des portes qualite. 8 chemins sont completement actifs, 6 sont partiellement implementes et 2 sont planifies.
+Les chemins sont organises par role buy-side : Selectionneur de Credit (2), Gestionnaire de Portefeuille (2), Responsable des Risques (4), Trader (1), Conseiller (1), Investisseur Individuel (1) et Meta/Usage Special (5). Chaque chemin specifie une sequence de moteur, un template de rapport et des portes qualite. 9 chemins sont completement actifs, 5 sont partiellement implementes et 2 sont planifies.
 
 ### Q6 : Quels sont les 6 paradigmes internationaux ?
 

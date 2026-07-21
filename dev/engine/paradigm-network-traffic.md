@@ -24,11 +24,11 @@ The defining question: **Does the company's scale translate into an irreversible
 - Select Technology (GICS 45): E-commerce platforms, gig economy platforms, digital marketplaces, cloud infrastructure
 - Select Industrials: Logistics, delivery networks, freight forwarding
 
-**Paradigm mapping:** Transportation (2030), Telecommunication Services (5010), and select Technology platforms are categorized under the **Network and Throughput (P4)** paradigm in `industry-framework.md`.
+**Taxonomy mapping:** Transportation and Telecommunication Services are **P4 Regulated Utility**, and select Technology platforms are **P3 Growth** in `industry-framework.md` §3; this lens applies to them as a secondary-attribute overlay.
 
 ### 1.2 Qualification Criteria
 
-An industry qualifies for the Network and Throughput (P4) paradigm by meeting the following conditions:
+An industry is a candidate for the network and throughput lens by meeting the following conditions:
 
 | Criterion | Standard | Explanation |
 |---|---|---|
@@ -430,4 +430,4 @@ N-Score and S-Score serve as the primary quantitative inputs for L1 and L2 respe
 - [Dual-Track Methodology](dual-track-methodology.md) -- Track A + Track B scoring, cross-validation, rating mapping
 - [Mosaic Engine](mosaic-engine.md) -- Signal extraction, puzzle assembly, completeness assessment
 - [Industry Classification and Framework](industry-framework.md) -- Four industry paradigms, determination criteria, weight mapping
-- [Dimension Registry](dimension-registry.md) -- 6-paradigm + LGFV registry, M0-M5 role index, addressable pointer layer
+- [Dimension Registry](dimension-registry.md) -- 6-paradigm + 6-role registry, addressable pointer layer

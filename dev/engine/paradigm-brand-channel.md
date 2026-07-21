@@ -405,4 +405,4 @@ The Defensive (P2) paradigm fits within the four-industry-type taxonomy as follo
 - [Dual-Track Methodology](dual-track-methodology.md) -- Track A + Track B scoring, cross-validation, rating mapping
 - [Mosaic Engine](mosaic-engine.md) -- Signal extraction, puzzle assembly, completeness assessment
 - [Industry Classification and Framework](industry-framework.md) -- Four industry paradigms, determination criteria, weight mapping
-- [Dimension Registry](dimension-registry.md) -- 6-paradigm + LGFV registry, M0-M5 role index, addressable pointer layer
+- [Dimension Registry](dimension-registry.md) -- 6-paradigm + 6-role registry, addressable pointer layer
