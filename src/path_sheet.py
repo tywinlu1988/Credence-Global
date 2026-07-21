@@ -133,14 +133,14 @@ class PathSheet:
     def from_dict(cls, data: dict) -> "PathSheet":
         """Construct from a yaml dict produced by the router (known fields only; omitted fields default to empty)."""
         return cls(
-            role=str(data.get("role", "")),
-            object=str(data.get("object", "")),
-            depth=str(data.get("depth", "")),
-            mode=str(data.get("mode", "")),
-            path_id=str(data.get("path_id", "")),
+            role=str(data.get("role") or ""),
+            object=str(data.get("object") or ""),
+            depth=str(data.get("depth") or ""),
+            mode=str(data.get("mode") or ""),
+            path_id=str(data.get("path_id") or ""),
             engine_reading_order=list(data.get("engine_reading_order") or []),
             quality_gates=list(data.get("quality_gates") or []),
-            notes=str(data.get("notes", "")),
+            notes=str(data.get("notes") or ""),
         )
 
     def to_dict(self) -> dict:

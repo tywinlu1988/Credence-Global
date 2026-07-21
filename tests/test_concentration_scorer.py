@@ -490,3 +490,14 @@ def test_bb_cap_pseudo_high_rating_boundary():
     )
     assert rating_adjustment(at_cap)["bb_cap_triggered"] is True
     assert rating_adjustment(below_cap)["bb_cap_triggered"] is False
+
+
+def test_metrics_share_range_checked():
+    with pytest.raises(ValueError, match="range"):
+        rating_adjustment(_base_metrics(aaa_share=-0.1))
+    with pytest.raises(ValueError, match="range"):
+        rating_adjustment(_base_metrics(top_channel_share=1.2))
+    with pytest.raises(ValueError, match="range"):
+        concentration_risk_score(_base_metrics(weak_region_share=1.5))
+    with pytest.raises(ValueError, match="range"):
+        concentration_risk_score(_base_metrics(hhi=-100))

@@ -99,6 +99,27 @@ _PEAK_BANDS = ((0.0, 0.10, 1, 3), (0.10, 0.20, 4, 5), (0.20, 0.30, 6, 7), (0.30,
 _CHANNEL_BANDS = ((0.0, 0.50, 1, 3), (0.50, 0.70, 4, 5), (0.70, 0.90, 6, 7), (0.90, None, 8, 10))
 
 
+def _validate_metrics(metrics: ConcentrationMetrics) -> None:
+    """Hard-fail on out-of-range shares — garbage-in must not produce plausible-looking scores."""
+    if metrics.hhi < 0:
+        raise ValueError(f"hhi out of range (>= 0): {metrics.hhi!r}")
+    shares = {
+        "cr3": metrics.cr3,
+        "cr5": metrics.cr5,
+        "max1": metrics.max1,
+        "single_province_share": metrics.single_province_share,
+        "weak_region_share": metrics.weak_region_share,
+        "aaa_share": metrics.aaa_share,
+        "pseudo_high_rating_share": metrics.pseudo_high_rating_share,
+        "maturity_12m_share": metrics.maturity_12m_share,
+        "single_month_peak": metrics.single_month_peak,
+        "top_channel_share": metrics.top_channel_share,
+    }
+    for name, value in shares.items():
+        if not (0.0 <= value <= 1.0):
+            raise ValueError(f"{name} out of 0-1 range: {value!r}")
+
+
 def industry_score(metrics: ConcentrationMetrics) -> int:
     """D1: Industry concentration (HHI/CR3/CR5/MAX1; worst metric governs per §1.3)."""
     return max(
@@ -182,6 +203,7 @@ def rating_adjustment(metrics: ConcentrationMetrics) -> dict:
     ``{"adjustment", "levels", "bb_cap_triggered", "systemic_risk_alert"}``;
     ``adjustment`` is None when §7.2 declares it not applicable (5 x 🟠).
     """
+    _validate_metrics(metrics)
     levels = {
         "industry": _risk_level(industry_score(metrics)),
         "region": _risk_level(region_score(metrics)),
@@ -251,6 +273,7 @@ def concentration_risk_score(
     Default weights follow dev/engine/concentration-framework.md §8.2:
     industry 25%, region 20%, rating 20%, maturity 20%, channel 15%.
     """
+    _validate_metrics(metrics)
     if len(weights) != 5:
         raise ValueError("weights must contain exactly 5 values")
     if abs(sum(weights) - 1.0) > 1e-6:

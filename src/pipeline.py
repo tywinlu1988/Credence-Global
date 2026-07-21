@@ -209,15 +209,27 @@ def run_executable_stages(plan: list[Stage], inputs: dict) -> dict:
     in EXECUTABLE_ENGINES and runs it with ``inputs``, marking ``mode="code"``; remaining stages
     are left for LLM orchestration, gracefully skipped with ``mode="llm-orchestrated"``.
     The manifest has the shape ``{"path_id": ..., "stages": [{"name","mode","outputs"}]}``.
+
+    Error contract: input-contract violations (KeyError) and input-validation failures
+    (ValueError from coercion/engines) raise loudly — they are caller bugs. Engine-internal
+    failures (any other exception, e.g., document drift at parse time) are isolated per
+    stage as ``mode="error"`` manifest entries so one stage's failure does not kill the run.
     """
     path_id = plan[0].path_id if plan else ""
     stages_manifest = []
     for stage in plan:
         if stage.executable and stage.path_id in EXECUTABLE_ENGINES:
             engine = EXECUTABLE_ENGINES[stage.path_id]
-            stages_manifest.append(
-                {"name": stage.name, "mode": "code", "outputs": engine(inputs)}
-            )
+            try:
+                outputs = engine(inputs)
+            except (KeyError, ValueError):
+                raise
+            except Exception as exc:
+                stages_manifest.append(
+                    {"name": stage.name, "mode": "error", "error": f"{type(exc).__name__}: {exc}"}
+                )
+                continue
+            stages_manifest.append({"name": stage.name, "mode": "code", "outputs": outputs})
         else:
             stages_manifest.append(
                 {"name": stage.name, "mode": "llm-orchestrated", "outputs": None}

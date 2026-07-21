@@ -198,3 +198,31 @@ def test_m4_multipliers_parsed_from_doc():
     from src.sri_calculator import load_sri_rules
     rules = load_sri_rules()
     assert rules["m4_factor"] == {"normal": 0.0, "watch": 0.05, "alert": 0.15, "danger": 0.30}
+
+
+# ---------------- input validation (hard failure, no silent zero) ----------------
+
+def test_invalid_track_b_level_raises():
+    with pytest.raises(ValueError, match="track_b_level"):
+        industry_risk_score(IndustryInput("X", 5.0, "crimson", Outlook.STABLE))
+
+
+def test_invalid_outlook_raises():
+    with pytest.raises(ValueError, match="outlook"):
+        industry_risk_score(IndustryInput("X", 5.0, TrackBLevel.GREEN, "neutral"))
+
+
+def test_track_a_score_range_checked():
+    with pytest.raises(ValueError, match="track_a_score"):
+        industry_risk_score(IndustryInput("X", -1.0, TrackBLevel.GREEN, Outlook.STABLE))
+    with pytest.raises(ValueError, match="track_a_score"):
+        industry_risk_score(IndustryInput("X", 11.0, TrackBLevel.GREEN, Outlook.STABLE))
+
+
+def test_sri_rejects_negative_weights():
+    industries = [
+        IndustryInput("A", 5.0, TrackBLevel.GREEN, Outlook.STABLE),
+        IndustryInput("B", 7.0, TrackBLevel.GREEN, Outlook.STABLE),
+    ]
+    with pytest.raises(ValueError, match="negative"):
+        sri(industries, [-0.5, 1.5])

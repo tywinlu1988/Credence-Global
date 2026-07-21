@@ -393,3 +393,32 @@ def test_t9_10_missing_field_raises_value_error(contract, registry_paths):
     }
     with pytest.raises(ValueError):
         run_executable_stages(plan, inputs)
+
+
+# --------------------------------------------------------------------------
+# T9.11 — per-stage error isolation: engine-internal failures become manifest
+# error entries instead of killing the run
+# --------------------------------------------------------------------------
+
+def test_t9_11_engine_failure_isolated_as_error_entry(contract, registry_paths, monkeypatch):
+    plan = load_stage_plan(_sheet("WP-RO-03"), registry_paths, contract)
+
+    def _boom(inputs):
+        raise RuntimeError("engine-internal failure (e.g., document drift)")
+
+    monkeypatch.setitem(EXECUTABLE_ENGINES, "WP-RO-03", _boom)
+    manifest = run_executable_stages(plan, _sri_2026q2_inputs())
+    analysis = next(s for s in manifest["stages"] if s["name"] == "analysis")
+    assert analysis["mode"] == "error"
+    assert "engine-internal failure" in analysis["error"]
+    # the other stages still produce their graceful entries
+    assert all(s["mode"] == "llm-orchestrated" for s in manifest["stages"] if s["name"] != "analysis")
+
+
+def test_t9_11_input_contract_violations_still_raise(contract, registry_paths):
+    # Input contract violations (missing keys) raise loudly — they are caller bugs,
+    # not engine-internal failures.
+    plan = load_stage_plan(_sheet("WP-RO-03"), registry_paths, contract)
+    import pytest as _pytest
+    with _pytest.raises(KeyError):
+        run_executable_stages(plan, {"weights": [1.0]})

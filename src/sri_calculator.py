@@ -139,7 +139,30 @@ def load_sri_rules(path=None) -> dict:
 # Engine functions (all values from load_sri_rules)
 # ---------------------------------------------------------------------------
 
+def _validate_industry(ind: IndustryInput) -> None:
+    """Hard-fail on invalid inputs — a silently zero-scored industry is worse than a crash."""
+    if not (0.0 <= ind.track_a_score <= 10.0):
+        raise ValueError(f"track_a_score out of 0-10 range: {ind.track_a_score!r} (industry {ind.name!r})")
+    if not isinstance(ind.track_b_level, TrackBLevel):
+        try:
+            TrackBLevel(ind.track_b_level)
+        except ValueError:
+            raise ValueError(
+                f"unknown track_b_level: {ind.track_b_level!r} (industry {ind.name!r}, "
+                f"available {[e.value for e in TrackBLevel]})"
+            ) from None
+    if not isinstance(ind.outlook, Outlook):
+        try:
+            Outlook(ind.outlook)
+        except ValueError:
+            raise ValueError(
+                f"unknown outlook: {ind.outlook!r} (industry {ind.name!r}, "
+                f"available {[e.value for e in Outlook]})"
+            ) from None
+
+
 def industry_risk_score(ind: IndustryInput) -> float:
+    _validate_industry(ind)
     rules = load_sri_rules()
     if ind.veto_triggered:
         return rules["veto_score"]
@@ -158,6 +181,8 @@ def industry_risk_score(ind: IndustryInput) -> float:
 def sri(industries: list[IndustryInput], weights: list[float]) -> float:
     if len(industries) != len(weights):
         raise ValueError("industries and weights must have same length")
+    if any(w < 0 for w in weights):
+        raise ValueError(f"weights must not contain negative values: {weights}")
     if abs(sum(weights) - 1.0) > 1e-6:
         raise ValueError("weights must sum to 1.0")
 
