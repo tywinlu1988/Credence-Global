@@ -237,6 +237,38 @@ def gen_clusters(m, text: str) -> str:
     return "\n".join(out)
 
 
+def gen_sri_contagion_coefficients(m) -> str:
+    """Contagion coefficient table consumed by systemic-warning-framework.md §2.3.1
+    (SRI industry weights = outstanding share × row_sum / mean row_sum)."""
+    sums = row_sums(m)
+    mean = sum(sums.values()) / len(sums)
+    ranked = sorted(sums.items(), key=lambda kv: (-kv[1], kv[0]))
+    lines = [
+        "| Rank | Industry | Total Contagion Score (Row Sum) | Contagion Coefficient | Classification Label |",
+        "|------|----------|-------------------------------|----------------------|--------------------|",
+    ]
+
+    def label(coef, rank):
+        if rank <= 3:
+            return "Super-Spreader"
+        if coef > 1.0:
+            return "Quasi Super-Spreader"
+        if coef >= 0.9:
+            return "Moderate Contagion"
+        if coef >= 0.8:
+            return "Weak Contagion"
+        return "Weakest Contagion"
+
+    prev_sum, rank = None, 0
+    for i, (name, s) in enumerate(ranked):
+        rank = i + 1 if s != prev_sum else rank
+        prev_sum = s
+        coef = s / mean
+        lines.append(f"| {rank} | {name} | {s} | {s:.0f} / {mean:.2f} = {coef:.3f} | {label(coef, rank)} |")
+    lines.append(f"| | **Mean** | **{mean:.2f}** | **1.000** | |")
+    return "\n".join(lines)
+
+
 GENERATORS = {
     "high-intensity-links": gen_high_intensity_links,
     "super-spreaders": gen_super_spreaders,
@@ -247,7 +279,14 @@ GENERATORS = {
     "intensity-distribution": gen_intensity_distribution,
     "row-col-sums": gen_row_col_sums,
     "clusters": gen_clusters,
+    "sri-contagion-coefficients": gen_sri_contagion_coefficients,
 }
+
+# Each document's derived blocks are regenerated from the contagion heatmap.
+DOCS = [
+    ROOT / "dev" / "engine" / "contagion-matrix.md",
+    ROOT / "dev" / "engine" / "systemic-warning-framework.md",
+]
 
 
 def regenerate(text: str, m) -> tuple[str, list[str]]:
@@ -293,24 +332,27 @@ def main() -> int:
     if not (args.write or args.check):
         ap.error("pass --write or --check")
 
-    m = load_matrix(DOC)
-    text = DOC.read_text(encoding="utf-8")
-    new_text, skipped = regenerate(text, m)
-    if skipped:
-        print(f"warning: no generator for block keys: {skipped}", file=sys.stderr)
+    m = load_matrix(DOCS[0])
+    drift = False
+    for doc in DOCS:
+        if not doc.exists():
+            continue
+        text = doc.read_text(encoding="utf-8")
+        new_text, skipped = regenerate(text, m)
+        if skipped:
+            print(f"warning: no generator for block keys in {doc.name}: {skipped}", file=sys.stderr)
+        if args.write:
+            if new_text != text:
+                doc.write_text(new_text, encoding="utf-8", newline="\n")
+                print(f"regenerated derived blocks in {doc}")
+        elif new_text != text:
+            print(f"DRIFT: {doc} GENERATED blocks are stale; run --write")
+            drift = True
 
-    if args.write:
-        if new_text != text:
-            DOC.write_text(new_text, encoding="utf-8", newline="\n")
-            print(f"regenerated derived blocks in {DOC}")
-        else:
-            print("all derived blocks already up to date")
-        return 0
-
-    if new_text != text:
-        print("DRIFT: contagion-matrix.md GENERATED blocks are stale; run --write")
-        return 1
-    print("derived blocks OK")
+    if args.check:
+        if drift:
+            return 1
+        print("derived blocks OK")
     return 0
 
 

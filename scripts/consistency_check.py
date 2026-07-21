@@ -647,6 +647,7 @@ def collect_errors(only_links: bool = False) -> list[str]:
     errors.extend(check_registry_quality_gates())
     errors.extend(check_migration_matrix_structure())
     errors.extend(check_readme_methodology())
+    errors.extend(check_paradigm_coverage())
     return errors
 
 
@@ -656,7 +657,6 @@ def collect_warnings() -> list[str]:
     warnings.extend(check_rating_map_consistency())
     warnings.extend(check_sri_track_b_consistency())
     warnings.extend(check_skill_references())
-    warnings.extend(check_paradigm_coverage())
     return warnings
 
 

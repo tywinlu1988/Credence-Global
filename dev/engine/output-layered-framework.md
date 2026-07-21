@@ -207,10 +207,10 @@ The thermometer card is pushed only when the **thermometer level changes**; it i
 +-------------------------------------------------------+
 |  [Y] Systemic Risk Watch         SRI: 0.56              |
 |                                                          |
-|  Red Industries: 2/13 (15.4%)  .  High-contagion industries: 1 at yellow |
-|  Triggered Industries: Real Estate (Red)  .  Automotive (Yellow) |
+|  Red Industries: 2/19 (10.5%)  .  High-contagion industries: 1 at yellow |
+|  Triggered Industries: Chemicals (Red)  .  Automobiles (Yellow) |
 |                                                          |
-|  Contagion Risk: Real Estate -> Banking -> Construction (transmission intensity 4+) |
+|  Contagion Risk: Chemicals -> Energy -> Utilities (transmission intensity 4+) |
 |  Recommendation: Check portfolio exposure to above industries, monitor downstream of contagion chain |
 |                                                          |
 |  [View Systemic Alert >]  [View Contagion Matrix]        |
@@ -224,9 +224,9 @@ The thermometer card is pushed only when the **thermometer level changes**; it i
 |  [O] Systemic Risk Caution         SRI: 1.15              |
 |  [W] Red industry share exceeds 30%, high-contagion industries showing severe signals |
 |-------------------------------------------------------|
-|  Red Industries: 5/13 (38.5%)                            |
-|  Red List: Real Estate . PV . Automotive . Retail . Media |
-|  High-Contagion Triggered: PV (contagion 4) . Automotive (contagion 3) |
+|  Red Industries: 5/19 (26.3%)                            |
+|  Red List: Energy . Chemicals . Automobiles . Retail . Metals & Mining |
+|  High-Contagion Triggered: Chemicals (contagion 5) . Automobiles (contagion 3) |
 |                                                          |
 |  Expected to affect 2 related industries -> Portfolio impairment stress: Medium |
 |  -> Recommendation: Run portfolio stress test, reduce high-risk industry exposure |
@@ -242,9 +242,9 @@ The thermometer card is pushed only when the **thermometer level changes**; it i
 |  [R] Systemic Risk Alert            SRI: 1.83              |
 |  [W] Red industry share exceeds 50%, all high-contagion industries triggered |
 |-------------------------------------------------------|
-|  Red Industries: 7/13 (53.8%)                            |
-|  Red List: Real Estate . PV . Semiconductor . Automotive . Retail . Media . F&B |
-|  High-Contagion Triggered: Real Estate (contagion 5) . Semiconductor (contagion 4) |
+|  Red Industries: 7/19 (36.8%)                            |
+|  Red List: Energy . Chemicals . Tech Hardware . Automobiles . Retail . Metals & Mining . Consumer Staples |
+|  High-Contagion Triggered: Financials (contagion 5) . Tech Hardware (contagion 4) |
 |                                                          |
 |  4 industries have triggered concentrated contagion -> Expected to affect 3 related industries |
 |  -> Portfolio impairment stress: Medium-High             |

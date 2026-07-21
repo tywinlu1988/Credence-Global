@@ -33,15 +33,15 @@ The existing engine has established comprehensive individual credit analysis sys
 | Industry Pyramid | Single industry | Industry score | Cannot aggregate across industries |
 | Contagion Matrix | Industry pairs | Contagion intensity matrix | Static structure, no real-time reading |
 | Concentration Framework | Portfolio | Five-dimensional risk score | Focuses on portfolio, not entire market |
-| **Systemic Warning Framework (this document)** | **Full market, 13 industries** | **SRI Index + Thermometer** | **Fills the "last mile" gap** |
+| **Systemic Warning Framework (this document)** | **Full market, 19 industries** | **SRI Index + Thermometer** | **Fills the "last mile" gap** |
 
 ### 1.2 Framework Position in the Overall Engine
 
 ```
 Input Layer:
-  Track A ratings for 13 industries (fundamental scores)
-  Track B signals for 13 industries (market pricing signals)
-  Outlook direction for 13 industries (positive/stable/negative)
+  Track A ratings for 19 industries (fundamental scores)
+  Track B signals for 19 industries (market pricing signals)
+  Outlook direction for 19 industries (positive/stable/negative)
          │
          ▼
 Aggregation Layer: (This document · Systemic Warning Framework)
@@ -62,13 +62,13 @@ Portfolio Risk Control Layer (M4):
   Limit management
 ```
 
-> **SRI Scope Note:** The SRI is a **systemic industry risk index** that aggregates industry risk scores for the 13 industries. It does not directly receive portfolio concentration scores. Concentration risk is assessed through the independent Five-Dimensional Concentration Framework. The two run in parallel at the M4 Portfolio Risk Control Layer. If a merger is desired in the future, the merger formula must be explicitly defined.
+> **SRI Scope Note:** The SRI is a **systemic industry risk index** that aggregates industry risk scores for the 19 industries. It does not directly receive portfolio concentration scores. Concentration risk is assessed through the independent Five-Dimensional Concentration Framework. The two run in parallel at the M4 Portfolio Risk Control Layer. If a merger is desired in the future, the merger formula must be explicitly defined.
 
 ### 1.3 Design Principles
 
 | Principle | Meaning |
 |-----------|---------|
-| **Full Signal Coverage** | Include all Track A + Track B + Outlook signals for all 13 industries, no omissions |
+| **Full Signal Coverage** | Include all Track A + Track B + Outlook signals for all 19 industries, no omissions |
 | **Contagion Weighted** | Not a simple arithmetic average — industry weights are jointly determined by credit bond outstanding and contagion coefficients |
 | **Transparent Thresholds** | All four thermometer level thresholds have theoretical or historical basis, no black box |
 | **Verifiable via Backtests** | Must pass at least 3 historical event backtests to validate framework effectiveness |
@@ -202,13 +202,13 @@ Where:
 ### 2.3 Industry Weights
 
 ```
-Industry Weight = Credit Bond Outstanding Weight × Contagion Coefficient
+Industry Weight = Bond Outstanding Weight × Contagion Coefficient
 
 Where:
-  Credit Bond Outstanding Weight = Industry's share of total outstanding credit bonds across all 13 industries
+  Bond Outstanding Weight = Industry's share of total outstanding bonds across all 19 industries
   
   Contagion Coefficient = Industry's "Super-Spreader" score in contagion-matrix.md
-                          / Mean contagion score across 13 industries
+                          / Mean contagion score across 19 industries
   
   Normalization: Final industry weight percentages are normalized across industries,
                  ensuring Σ(Industry Weight Percentage) = 1 (i.e., 100%)
@@ -216,62 +216,76 @@ Where:
 
 #### 2.3.1 Contagion Coefficient Table
 
-According to the [Contagion Matrix](contagion-matrix.md) §5.5 (Super-Spreaders) and Appendix B (Complete Contagion Ranking by Industry), the contagion scores for the 13 industries are as follows:
+According to the [Contagion Matrix](contagion-matrix.md) §5.1 (Super-Spreaders) and §9.2 (Complete Row/Column Sums), the contagion scores for the 19 industries are as follows:
 
+<!-- GENERATED:sri-contagion-coefficients -->
 | Rank | Industry | Total Contagion Score (Row Sum) | Contagion Coefficient | Classification Label |
 |------|----------|-------------------------------|----------------------|--------------------|
-| 1 | Semiconductors/Integrated Circuits | 25 | 25 / 19.38 = 1.290 | Super-Spreader |
-| 2 | LGFV Bonds | 23 | 23 / 19.38 = 1.187 | Super-Spreader |
-| 3 | Advanced Equipment/Industrial Machinery | 22 | 22 / 19.38 = 1.135 | Super-Spreader |
-| 4 | Solar/PV & Energy Storage | 21 | 21 / 19.38 = 1.083 | Quasi Super-Spreader |
-| 5 | New Energy Vehicles | 20 | 20 / 19.38 = 1.032 | Quasi Super-Spreader |
-| 6 | Data Centers/Compute Infrastructure | 20 | 20 / 19.38 = 1.032 | Quasi Super-Spreader |
-| 7 | Media/Internet | 20 | 20 / 19.38 = 1.032 | Moderate Contagion |
-| 8 | Transportation | 19 | 19 / 19.38 = 0.980 | Moderate Contagion |
-| 9 | Medical Devices | 18 | 18 / 19.38 = 0.929 | Moderate Contagion |
-| 10 | Retail | 18 | 18 / 19.38 = 0.929 | Moderate Contagion |
-| 11 | Biopharmaceuticals/Innovative Drugs | 17 | 17 / 19.38 = 0.877 | Weak Contagion |
-| 12 | Textile & Apparel | 15 | 15 / 19.38 = 0.774 | Weak Contagion |
-| 13 | Food & Beverage | 14 | 14 / 19.38 = 0.722 | Weakest Contagion |
-| | **Mean** | **19.38** | **1.000** | |
+| 1 | Financials (Banks/Insurance) | 47 | 47 / 34.84 = 1.349 | Super-Spreader |
+| 2 | Capital Goods | 43 | 43 / 34.84 = 1.234 | Super-Spreader |
+| 3 | Chemicals | 42 | 42 / 34.84 = 1.205 | Super-Spreader |
+| 3 | Technology Hardware (Semiconductors) | 42 | 42 / 34.84 = 1.205 | Super-Spreader |
+| 5 | Energy (Oil & Gas) | 41 | 41 / 34.84 = 1.177 | Quasi Super-Spreader |
+| 6 | Transportation | 39 | 39 / 34.84 = 1.119 | Quasi Super-Spreader |
+| 7 | Sovereigns & GSEs | 37 | 37 / 34.84 = 1.062 | Quasi Super-Spreader |
+| 8 | Metals & Mining | 35 | 35 / 34.84 = 1.005 | Quasi Super-Spreader |
+| 9 | Software & Services | 34 | 34 / 34.84 = 0.976 | Moderate Contagion |
+| 10 | Automobiles | 33 | 33 / 34.84 = 0.947 | Moderate Contagion |
+| 11 | Construction Materials | 32 | 32 / 34.84 = 0.918 | Moderate Contagion |
+| 11 | Utilities (Regulated) | 32 | 32 / 34.84 = 0.918 | Moderate Contagion |
+| 13 | Commercial Services | 31 | 31 / 34.84 = 0.890 | Weak Contagion |
+| 13 | Consumer Durables | 31 | 31 / 34.84 = 0.890 | Weak Contagion |
+| 13 | Retail | 31 | 31 / 34.84 = 0.890 | Weak Contagion |
+| 16 | Telecommunications | 29 | 29 / 34.84 = 0.832 | Weak Contagion |
+| 17 | Biotech & Pharma | 28 | 28 / 34.84 = 0.804 | Weak Contagion |
+| 17 | Consumer Staples | 28 | 28 / 34.84 = 0.804 | Weak Contagion |
+| 19 | Healthcare Equipment | 27 | 27 / 34.84 = 0.775 | Weakest Contagion |
+| | **Mean** | **34.84** | **1.000** | |
+<!-- /GENERATED -->
 
 **Calculation Notes:**
-- Mean of 13 industry contagion scores = (25 + 23 + 22 + 21 + 20 + 20 + 20 + 19 + 18 + 18 + 17 + 15 + 14) / 13 = 252 / 13 = 19.38
+- Mean of 19 industry contagion scores = 662 / 19 = 34.84 (machine-generated from the §2.1 heatmap via `scripts/build_contagion_derived.py`)
 - Contagion Coefficient > 1.0 = Contagion above mean (weight increase)
 - Contagion Coefficient < 1.0 = Contagion below mean (weight decrease)
-- Super-spreaders (top 3: Semiconductors 25, LGFV 23, Advanced Equipment 22) all have coefficients significantly > 1.0, receiving higher weights in SRI calculation
+- Super-spreaders (Financials 47, Capital Goods 43, Chemicals/TechHW 42) all have coefficients significantly > 1.0, receiving higher weights in SRI calculation
 
-#### 2.3.2 Credit Bond Outstanding Weights
+#### 2.3.2 Bond Outstanding Weights
 
-Based on international bond market sector outstanding share data (reference 2025-2026 data):
+The SRI weights are **inputs supplied at analysis time**, not constants baked into the engine: use the latest sector composition of the relevant international benchmark (e.g., Bloomberg Global Aggregate / ICE BofA index sector weights, SIFMA/AFME issuance statistics). The table below is an **illustrative starting point** for an international IG/HY blended universe — replace with live data in production:
 
-| Industry | Credit Bond Outstanding Share | Data Source |
-|----------|------------------------------|-------------|
-| LGFV Bonds | approx. 35% | Largest single category, approx. 15 trillion outstanding |
-| Transportation | approx. 8% | Infrastructure/transport SOE bonds |
-| Real Estate | approx. 5% | Continues to contract, declining outstanding |
-| Retail | approx. 4% | Includes e-commerce platform bonds |
-| Media/Internet | approx. 3% | Technology sector bonds |
-| Food & Beverage | approx. 3% | Consumer staple bonds |
-| Solar/PV & Energy Storage | approx. 2% | Fast-growing sector |
-| New Energy Vehicles | approx. 2% | Includes OEM and supply chain bonds |
-| Semiconductors/Integrated Circuits | approx. 1.5% | Growth enterprise board + bond financing |
-| Advanced Equipment/Industrial Machinery | approx. 1% | State-owned enterprises + niche leaders |
-| Medical Devices | approx. 1% | Includes medical equipment bonds |
-| Biopharmaceuticals/Innovative Drugs | approx. 0.8% | Biotech primarily equity financed |
-| Textile & Apparel | approx. 0.7% | Consumer-focused private enterprise bonds |
+| Industry | Illustrative Outstanding Share | Note |
+|----------|------------------------------|------|
+| Financials (Banks/Insurance) | approx. 30% | Largest corporate-bond sector globally |
+| Sovereigns & GSEs | approx. 20% | Depends on whether the mandate includes quasi-sovereign |
+| Utilities (Regulated) | approx. 8% | Classic bond-financed sector |
+| Energy (Oil & Gas) | approx. 7% | Integrated + independent issuers |
+| Telecommunications | approx. 5% | Tower/network capex financed in bonds |
+| Technology Hardware (Semis) | approx. 4% | Large IG issuers + HY memory |
+| Transportation | approx. 4% | Rail/airline equipment trusts, shipping |
+| Capital Goods | approx. 4% | Diversified industrials |
+| Consumer Staples | approx. 4% | Defensive IG issuers |
+| Chemicals | approx. 3% | Commodity + specialty |
+| Automobiles | approx. 3% | OEM + captive finance |
+| Healthcare Equipment | approx. 2% | MedTech IG |
+| Biotech & Pharma | approx. 2% | Large pharma IG; biotech mostly equity |
+| Software & Services | approx. 2% | Growing IG tech issuance |
+| Metals & Mining | approx. 2% | HY-tilted |
+| Construction Materials | approx. 2% | Cement/building products |
+| Consumer Durables | approx. 1% | Discretionary HY |
+| Retail | approx. 1% | Mixed IG/HY |
+| Commercial Services | approx. 1% | Staffing/services HY |
 
-**Note:** The above shares are directional estimates. In actual calculations, the latest full-market credit bond outstanding data should be used for dynamic updates. When structural changes occur in a specific industry's credit bond outstanding (e.g., LGFV reduction due to debt resolution or bond expansion for technology sectors), weights should be adjusted promptly. Data Centers/Compute Infrastructure credit bond outstanding is consolidated into the LGFV category (park/infrastructure related), not listed separately.
+**Note:** These shares are directional illustrations only. In actual calculations, use the latest index/benchmark sector weights and adjust promptly on structural change (e.g., sovereign issuance surges, sector-specific refinancing waves).
 
 #### 2.3.3 Industry Weight Calculation Example
 
-Using the semiconductor industry as an example, assuming credit bond outstanding share is 1.5%:
+Using Technology Hardware (Semis) as an example, assuming bond outstanding share is 4% (illustrative §2.3.2 value):
 
 ```
-Semiconductor Industry Weight Percentage = 1.5% × 1.290 = 1.94%
+TechHW Industry Weight Percentage = 4% × 1.205 = 4.82%
 
 Normalization:
-  Raw weight percentage per industry = Credit bond outstanding share × Contagion coefficient
+  Raw weight percentage per industry = Bond outstanding share × Contagion coefficient
   Normalization factor = 100% / Σ(Raw weight percentage)
   Final weight percentage = Raw weight percentage × Normalization factor
   Ensures Σ(Final weight percentage) = 100%
@@ -280,7 +294,7 @@ Normalization:
 ### 2.4 Complete Calculation Flow
 
 ```
-Step 1: Collect four types of input signals for the 13 industries
+Step 1: Collect four types of input signals for the 19 industries
   ├── Track A score (fundamental pyramid output)
   ├── Track B signal (market signal level)
   ├── Outlook direction (positive/stable/negative)
@@ -292,7 +306,7 @@ Step 2: Calculate single industry risk score
 
 Step 3: Calculate industry weight percentage
   ├── Credit bond outstanding weight ← market data
-  ├── Contagion coefficient ← Contagion Matrix (contagion-matrix.md) Appendix B
+  ├── Contagion coefficient ← Contagion Matrix (contagion-matrix.md) §9.2
   └── Industry weight percentage = outstanding weight × contagion coefficient (normalized to sum 100%)
 
 Step 4: Calculate SRI
@@ -314,7 +328,7 @@ Step 6: Action recommendation output
 | Outlook Direction | [Outlook Monitoring Framework](outlook-monitoring-framework.md) | Monthly/Quarterly |
 | Veto Conditions | [Industry Framework](industry-framework.md) §5 | Event-driven |
 | Credit Bond Outstanding Weight | Market data terminals, industry bond outstanding statistics | Quarterly update |
-| Contagion Coefficient | [Contagion Matrix](contagion-matrix.md) §5.5 and Appendix B | Updated on version changes |
+| Contagion Coefficient | [Contagion Matrix](contagion-matrix.md) §5.1 and §9.2 | Updated on version changes |
 
 ---
 
@@ -366,7 +380,7 @@ Step 6: Action recommendation output
 **Action Recommendations:**
 - Focus on industries that turned red — check their contagion and vulnerability rankings in the contagion matrix
 - If the red-turned industry is a weak contagion (Food & Beverage / Textile & Apparel / Biopharmaceuticals) → continue observing
-- If the red-turned industry is a super-spreader (Semiconductors / LGFV / Advanced Equipment) → immediately upgrade to Alert level
+- If the red-turned industry is a super-spreader (Financials / Capital Goods / Chemicals / Tech Hardware) → immediately upgrade to Alert level
 - Check portfolio exposure to red-turned industries against concentration limits
 - Increase monitoring frequency from monthly to bi-weekly
 
@@ -423,7 +437,7 @@ Step 6: Action recommendation output
 
 | Basis Type | Specific Rationale |
 |-----------|-------------------|
-| **Statistical** | When SRI < 0.5, the average risk score across 13 industries is approximately equivalent to 1 industry scoring 2 + 12 scoring 0, or 3 industries scoring 1 + 10 scoring 0 — meaning only 1-2 industries at medium-high risk or 2-3 at medium risk. This falls within normal market differentiation |
+| **Statistical** | When SRI < 0.5, the average risk score across 19 industries is approximately equivalent to 2 industries scoring 2 + 17 scoring 0, or 4 industries scoring 1 + 15 scoring 0 — meaning only 1-2 industries at medium-high risk or 2-3 at medium risk. This falls within normal market differentiation |
 | **Historical Validation** | During post-crisis recovery periods, credit bond market default rates were below 0.3%, representing a normal credit cycle |
 | **Contagion Logic** | A single weak contagion industry (e.g., Food & Beverage) in trouble does not spread to other industries; no systemic warning needed |
 
@@ -441,14 +455,14 @@ Step 6: Action recommendation output
 |-----------|-------------------|
 | **Statistical** | SRI = 1.0 is equivalent to approximately 4-5 industries scoring 2 points (medium-high risk), or 2 industries scoring 3 (high risk) + the rest normal. When nearly half of industries have problems, systemic risk is substantively present |
 | **Historical Validation** | During the Eurozone sovereign debt crisis (2011-12), estimated SRI approximately 1.0-1.2 (see §6 backtest), already entered Alert range |
-| **Contagion Logic** | When SRI ≥ 1.0, the industries in crisis likely include super-spreaders (3 out of 13 industries), and these spread risk to other healthy industries through the contagion matrix |
+| **Contagion Logic** | When SRI ≥ 1.0, the industries in crisis likely include super-spreaders (3-4 out of 19 industries), and these spread risk to other healthy industries through the contagion matrix |
 
 #### SRI ≥ 1.8 (🔴 Danger) Threshold Rationale
 
 | Basis Type | Specific Rationale |
 |-----------|-------------------|
 | **Statistical** | SRI = 1.8 is equivalent to approximately 7 industries scoring 2 (over half at medium-high risk), or 5 scoring 3 + 1-2 scoring 1. Over half of industries in trouble simultaneously = full market systemic risk |
-| **Historical Validation** | During the COVID-19 shock Q1 2020, all 13 industries were stressed simultaneously, SRI could reach ≥ 2.0 (see §7 backtest) |
+| **Historical Validation** | During the COVID-19 shock Q1 2020, all 19 industries were stressed simultaneously, SRI could reach ≥ 2.0 (see §7 backtest) |
 | **Contagion Logic** | When most industries are simultaneously distressed, all four contagion types (credit chain + regional resonance + liquidity run + confidence collapse) may trigger simultaneously, forming the "three or more simultaneously triggered" condition from contagion matrix escalation factor synergy (Contagion Matrix §6.3), causing most links in the matrix to increase by +1 to +2 |
 
 ### 3.4 Thermometer and Contagion Matrix Escalation Factor Linkage
@@ -478,87 +492,67 @@ by the systemic risk itself.
 
 ## 4. Industry Weights and Contagion Coefficients
 
-### 4.1 Complete Weight Calculation Table
+### 4.1 Complete Weight Calculation Table (Illustrative)
 
-Based on the Contagion Matrix (contagion-matrix.md) super-spreader rankings and 13-industry mean contagion score, the weight parameters for each industry are as follows:
+The table below is a **worked illustration** using the §2.3.2 illustrative outstanding shares and the machine-generated §2.3.1 contagion coefficients (single source: contagion-matrix.md §2.1 heatmap). Production weights must be recomputed from live benchmark sector weights at analysis time.
 
-| Industry | Credit Bond Outstanding Share (A) | Contagion Coefficient (B) | Raw Weight (A×B) | Normalized Weight |
+| Industry | Outstanding Share (A) | Contagion Coefficient (B) | Raw Weight (A×B) | Normalized Weight |
 |----------|-------------------------------|--------------------------|-----------------|------------------|
-| LGFV Bonds | 35.0% | 1.187 | 41.53% | 37.55% |
-| Transportation | 8.0% | 0.980 | 7.84% | 7.09% |
-| Retail | 4.0% | 0.929 | 3.71% | 3.36% |
-| Media/Internet | 3.0% | 1.032 | 3.10% | 2.80% |
-| Food & Beverage | 3.0% | 0.722 | 2.17% | 1.96% |
-| Solar/PV & Energy Storage | 2.0% | 1.083 | 2.17% | 1.96% |
-| New Energy Vehicles | 2.0% | 1.032 | 2.06% | 1.87% |
-| Semiconductors/Integrated Circuits | 1.5% | 1.290 | 1.93% | 1.75% |
-| Advanced Equipment/Industrial Machinery | 1.0% | 1.135 | 1.13% | 1.03% |
-| Medical Devices | 1.0% | 0.929 | 0.93% | 0.84% |
-| Biopharmaceuticals/Innovative Drugs | 0.8% | 0.877 | 0.70% | 0.63% |
-| Textile & Apparel | 0.7% | 0.774 | 0.54% | 0.49% |
-| Real Estate (Note) | 5.0% | — | — | — |
-| **Total** | **~67%** | — | **~67.82%** | **61.33%** |
+| Financials (Banks/Insurance) | 28.0% | 1.349 | 37.77% | 33.92% |
+| Sovereigns & GSEs | 18.0% | 1.062 | 19.12% | 17.17% |
+| Energy (Oil & Gas) | 7.0% | 1.177 | 8.24% | 7.40% |
+| Utilities (Regulated) | 8.0% | 0.918 | 7.34% | 6.59% |
+| Technology Hardware (Semis) | 4.0% | 1.205 | 4.82% | 4.33% |
+| Capital Goods | 4.0% | 1.234 | 4.94% | 4.44% |
+| Transportation | 4.0% | 1.119 | 4.48% | 4.02% |
+| Telecommunications | 5.0% | 0.832 | 4.16% | 3.74% |
+| Chemicals | 3.0% | 1.205 | 3.61% | 3.24% |
+| Consumer Staples | 4.0% | 0.804 | 3.21% | 2.88% |
+| Automobiles | 3.0% | 0.947 | 2.84% | 2.55% |
+| Metals & Mining | 2.0% | 1.005 | 2.01% | 1.81% |
+| Software & Services | 2.0% | 0.976 | 1.95% | 1.75% |
+| Biotech & Pharma | 2.0% | 0.804 | 1.61% | 1.45% |
+| Healthcare Equipment | 2.0% | 0.775 | 1.55% | 1.39% |
+| Construction Materials | 1.0% | 0.918 | 0.92% | 0.83% |
+| Consumer Durables | 1.0% | 0.890 | 0.89% | 0.80% |
+| Retail | 1.0% | 0.890 | 0.89% | 0.80% |
+| Commercial Services | 1.0% | 0.890 | 0.89% | 0.80% |
+| **Total** | **100.0%** | — | **111.34%** | **≈100% (rounding)** |
 
-**Note:** The real estate industry is not within the engine's 13-industry coverage, but its credit bond outstanding is approximately 5%. In the SRI calculation, this portion can be attributed to related industries (e.g., LGFV through land finance linkages) or treated as "other industries" separately. In the current version, real estate credit bonds are added back to LGFV weight through regional credit linkage.
+**Normalization:** raw weights are scaled by `100% / Σ(raw)` so the final weights sum to 100%.
 
-**Data Source:** Credit bond outstanding shares are based on market data from major financial information terminals (Q2 2026 credit bond market statistics, including enterprise bonds, corporate bonds, MTNs, CPs, PPNs), covering both interbank and exchange markets. Contagion coefficients are derived from the 13-industry mean contagion score in contagion-matrix.md Appendix B. Real estate outstanding share of 5% is for reference only and is not included in SRI calculation. Data Centers/Compute Infrastructure credit bond outstanding is consolidated into the LGFV category (park/infrastructure related), not listed separately.
-
-**Normalization Calculation Notes:**
-- Raw weight total ≈ 67.82% (covering only the credit bond outstanding weight within the 13-industry scope)
-- Normalized industry weight percentage = raw weight / 67.82% × 61.33%
-- Normalization factor = 100% / Σ(weight percentage) (ensures final Σ(weight percentage) = 100%)
-
-**Practical Simplified Treatment:** Due to the excessively high LGFV weight (raw weight 41.53%), **truncated weights** are recommended for actual calculations:
-- LGFV weight truncated at 25% (prevents a single industry from dominating the SRI)
-- Excess truncated weight is redistributed to other industries proportionally by their raw weights
-
-| Industry | Truncated Weight (Recommended) | Description |
-|----------|-------------------------------|-------------|
-| LGFV Bonds | 25.00% | Truncated at 25%, preventing over-dominance |
-| Transportation | 8.50% | Adjusted upward |
-| Retail | 4.00% | Adjusted upward |
-| Media/Internet | 3.35% | Adjusted upward |
-| Food & Beverage | 2.22% | Adjusted upward |
-| Solar/PV & Energy Storage | 2.33% | Adjusted upward |
-| New Energy Vehicles | 2.22% | Adjusted upward |
-| Semiconductors/Integrated Circuits | 2.06% | Adjusted upward |
-| Advanced Equipment/Industrial Machinery | 1.22% | Adjusted upward |
-| Medical Devices | 1.01% | Adjusted upward |
-| Biopharmaceuticals/Innovative Drugs | 0.77% | Adjusted upward |
-| Textile & Apparel | 0.60% | Adjusted upward |
-| Other (including Real Estate, etc.) | 46.72% | Transmitted through LGFV + infrastructure linkages |
-| **Total** | **100.00%** | |
-
-**Truncation Sensitivity Analysis:** The impact of different truncation thresholds on SRI calculation results (scenario example):
-
-| Truncation Threshold | LGFV Weight | Other Industry Weights | SRI | Thermometer | Description |
-|--------------------|------------|----------------------|-----|-------------|-------------|
-| 20% | 20.00% | Each industry ↑ | 0.52 | 🟡 Watch | More aggressive truncation, reducing LGFV dominance, but may underestimate LGFV systemic risk |
-| **25% (Recommended)** | **25.00%** | **Each industry ↑** | **0.56** | **🟡 Watch** | **Balanced compromise between LGFV representation and over-dominance** |
-| 30% | 30.00% | Each industry ↓ | 0.61 | 🟡 Watch (upper bound) | More conservative truncation, retaining LGFV signal, SRI more sensitive |
-| No truncation (37.55%) | 37.55% | Normalized weights | 0.73 | 🟠 Alert | SRI dominated by LGFV alone, weakening risk signals from other industries |
-
-**Recommendation:** Default to 25% truncation. During LGFV systemic risk exposure periods (e.g., debt resolution critical years), 30% truncation may be selected to retain more LGFV signal. When the portfolio is highly diversified away from LGFV, 20% truncation may be selected to reduce LGFV interference.
+**Single-industry cap:** any single industry weight is capped at **25%**; the excess is redistributed pro-rata across the other industries. Under the illustrative table above, Financials (33.9%) would be capped at 25% — the cap prevents the largest bond-market sector from dominating the SRI by weight alone.
 
 ### 4.2 Dynamic Weight Adjustment Rules
 
 | Trigger Condition | Adjustment | Rationale |
 |------------------|-----------|-----------|
-| An industry's credit bond outstanding share changes > 20% quarter-over-quarter | Update the industry's credit bond outstanding weight | E.g., LGFV reduction due to debt resolution, or bond expansion causing semiconductor share to rise |
-| Super-spreader rankings change | Update contagion coefficients | E.g., a new-generation industry (AI compute) rises to replace existing super-spreaders |
-| Contagion matrix version update | Synchronously update contagion coefficients | Intensity adjustments in the contagion matrix change contagion total scores |
+| An industry's outstanding share changes > 20% quarter-over-quarter | Update the industry's outstanding weight | E.g., sovereign issuance surges, sector-specific refinancing waves, buyback-driven shrinkage |
+| Super-spreader rankings change | Update contagion coefficients | Row-sum rankings shift when the contagion matrix heatmap is updated |
+| Contagion matrix version update | Synchronously regenerate contagion coefficients | Coefficients are machine-generated from the heatmap (§2.3.1); run `scripts/build_contagion_derived.py --write` |
 | High-leverage escalation factor triggered | Multiply weight by 1.2 for industries with high financial intensity (high debt ratio) | Contagion risk of high-debt industries amplified in high-leverage environments |
 
 ### 4.3 Design to Avoid Weight Over-Concentration
 
-As the largest category in the credit bond market (approximately 35% of outstanding), LGFV naturally has the highest weight in the SRI. To prevent the SRI from being dominated by a single LGFV signal:
+Financials is naturally the largest bond-market sector (~30% of international corporate bond outstanding). To prevent the SRI from being dominated by a single sector's weight:
 
 | Design | Description |
 |--------|-------------|
-| **Contagion Coefficient Moderation** | LGFV is super-spreader #2 (23 points), lower than Semiconductors (25 points), with a contagion coefficient of 1.187, mid-range among super-spreaders — prevents excessive weight stacking |
-| **Weight Truncation Mechanism** | Any single industry weight capped at 25% |
-| **Contagion Matrix Linkage** | LGFV credit risk primarily spreads through regional resonance rather than direct inter-industry contagion; in the SRI, high LGFV risk does not necessarily mean other industries are also high risk |
-| **Thermometer Downgrade Condition** | If SRI is elevated but the main contribution comes from LGFV alone, and all other industries are 🟢, the thermometer may be downgraded one level (🟠 → 🟡) |
+| **Single-Industry Cap (25%)** | Any single industry weight capped at 25%; excess redistributed pro-rata |
+| **Contagion Coefficient Moderation** | Financials' coefficient (1.349) is the highest but bounded — super-spreader status amplifies but does not multiply weight without limit |
+| **Contagion Matrix Linkage** | Financials stress transmits through defined matrix links; high Financials risk in SRI is checked against actual contagion pathways, not assumed to implicate all sectors equally |
+| **Thermometer Downgrade Condition** | If SRI is elevated but the main contribution comes from a single sector and all other sectors are 🟢, the thermometer may be downgraded one level (🟠 → 🟡) |
+
+---
+
+> **Legacy worked examples (§5-§8):** The backtests and the current-period example in
+> Sections 5-8 were computed under the **retired 13-industry China-market composition**
+> (LGFV/sub-sovereign, Solar/PV, NEV, etc.) and the pre-v0.0.2 contagion coefficients.
+> They remain valid as *methodology demonstrations* of the SRI arithmetic and thermometer
+> behavior, but their industry weights, contagion coefficients, and industry set do not
+> match the current 19-industry GICS composition (§2.3.1/§4.1). Re-derivation of these
+> worked examples under the 19-industry composition is a scheduled follow-up; until then,
+> read §5-§8 for the *mechanics*, not for current parameter values.
 
 ---
 
@@ -675,7 +669,7 @@ Based on historical data reconstruction, the estimated signal states for the 13 
 
 ### 6.3 Contagion Chain Mapping: Sovereign-Related Industries in SRI Weight Treatment
 
-Since sovereign/banking is not one of the 13 industries, the sovereign debt crisis impacts the SRI indirectly through two pathways:
+In the legacy 13-industry composition used by this worked example, sovereign/banking was not directly covered, so the sovereign debt crisis impacts the example's SRI indirectly through two pathways (under the current 19-industry GICS composition, Sovereigns & GSEs and Financials are first-class inputs — see §2.3.1):
 
 ```
 Pathway A: Sovereign → LGFV/Sub-Sovereign (Regional Resonance + Credit Chain)
@@ -716,7 +710,7 @@ Weighted SRI Estimate (including sovereign indirect mapping):
 | Assessment Dimension | Conclusion |
 |---------------------|-----------|
 | **Did SRI enter Watch?** | **Yes.** SRI ≈ 1.23, well into 🟠 Alert range, crossing the 1.0 threshold |
-| **Could it warn of the Eurozone crisis?** | **Significant warning, mainly through indirect pathways.** Since sovereign/banking are not among the 13 industries, SRI primarily reflected the crisis through Sub-sovereign/LGFV (3 points) and indirect mapping. SRI ≈ 1.23 clearly indicated "Alert level — systemic risk accumulating" |
+| **Could it warn of the Eurozone crisis?** | **Significant warning, mainly through indirect pathways.** In the legacy 13-industry composition, sovereign/banking was captured only through Sub-sovereign/LGFV (3 points) and indirect mapping; SRI ≈ 1.23 still clearly indicated "Alert level — systemic risk accumulating". Under the current 19-industry composition, sovereign stress enters directly via the Sovereigns & GSEs and Financials inputs |
 | **Did SRI identify sovereign-related contagion chains?** | **Partially identified.** SRI captured the Sub-sovereign risk escalation (negative outlook + Track B abnormal), but could not directly reflect banking/construction sector risks — these industries are not within the 13-industry coverage |
 | **Improvement Direction** | Adding a "sovereign/banking indirect contagion factor" as an input (e.g., Sub-sovereign outlook negative weight × 1.5 during sovereign stress cycles) would make the SRI more sensitive to the sovereign → sub-sovereign → infrastructure contagion chain. Additionally, the contagion matrix pathways for Sub-sovereign ↔ Transportation (intensity 4) and Sub-sovereign ↔ Solar/PV/Data Centers (intensity 3) would trigger jumps under stress, further elevating the SRI reading |
 
@@ -726,7 +720,7 @@ Weighted SRI Estimate (including sovereign indirect mapping):
 |--------------------|---------------------|
 | **Warning Effective** | SRI in Q3 2011 was approximately 1.23, well into 🟠 Alert range, clearly signaling "systemic risk accumulating, need to reduce exposure" |
 | **Crossed Alert Threshold** | SRI ≈ 1.23 crossed the 1.0 Alert threshold, framework would recommend "actively reduce high-risk industry exposure · increase hedging · shorten duration" |
-| **Sovereign Not in 13 Industries is a Blind Spot** | The SRI framework directly covers 13 industries; sovereign/banking is captured indirectly through Sub-sovereign. For more accurate sovereign crisis early warning, it is recommended to monitor sovereign credit signals separately outside the SRI framework |
+| **Sovereign Coverage in the Legacy Example** | The legacy 13-industry composition captured sovereign/banking only indirectly through Sub-sovereign — a blind spot of that composition. The current 19-industry GICS composition closes it: Sovereigns & GSEs (#19) and Financials (#18) are first-class SRI inputs with their own contagion coefficients (1.062 / 1.349) |
 | **Overall Assessment** | The framework performed **well** in this backtest — SRI entered the Alert range 3-6 months before the peak of the crisis. If investors had initiated "check concentration · reduce exposure" procedures when SRI > 1.0, the combined sovereign + sub-sovereign + banking exposure could have been identified and reduced in advance |
 
 ---
@@ -1071,7 +1065,7 @@ It is prohibited to recalculate industry scores or SRI using already-adjusted in
 | Limitation | Specific Description | Mitigation |
 |-----------|---------------------|------------|
 | **1. Lags behind exogenous shocks** | The SRI framework is based on industry fundamental signals and cannot pre-warn exogenous, non-credit shocks (e.g., pandemics, natural disasters, geopolitical conflicts) | For known external risks (e.g., trade frictions, regulatory policy changes), advance reflection in outlook assessment can partially mitigate the lag |
-| **2. Incomplete industry coverage** | The framework only covers 13 industries; important credit bond industries such as banking, construction, energy/mining are not directly covered and require indirect mapping with information loss | Indirect capture through related industries' signals (e.g., sub-sovereign for fiscal linkages, transportation for construction supply chain) |
+| **2. Industry granularity** | The framework aggregates at the level of 19 GICS-based industries; intra-industry divergence (e.g., IG vs HY issuers within one sector) is averaged out | Pair SRI with single-issuer Track A analysis for issuer-level differentiation |
 | **3. Static weight risk** | Industry weights based on credit bond outstanding share and contagion coefficients are fixed parameters that cannot reflect short-term market structural changes | Establish quarterly weight update mechanism; update immediately when an industry's credit bond outstanding changes > 20% |
 | **4. Parameter subjectivity** | Industry risk score thresholds (3.0/5.0/6.0), penalty factors (0.5), and thermometer thresholds (0.5/1.0/1.8) are based on subjective judgment and historical calibration, not statistical optimization | Provide pessimistic/baseline/optimistic parameter versions for user selection based on risk preference; conduct annual backtest calibration |
 | **5. Linear weighting limitation** | SRI uses linear weighted aggregation and cannot capture non-linear interaction effects between industries (e.g., industry A in trouble → contagion to B → feedback loop strengthening A) | Partially compensated through thermometer and contagion matrix escalation factor linkage (§3.4) — automatically activate escalation factor synergy when SRI ≥ 1.0 |
@@ -1115,13 +1109,13 @@ function calculate_SRI(industries, weights):
     Calculate the Systemic Risk Index
     
     Parameters:
-      industries: list of dictionaries for 13 industries, each containing:
+      industries: list of dictionaries for 19 industries, each containing:
         - name: industry name
         - track_A_score: Track A score (0-10)
         - track_B_level: Track B level ('green'/'yellow'/'orange'/'red')
         - outlook: outlook direction ('positive'/'stable'/'negative')
         - veto_triggered: veto trigger (True/False)
-      weights: list of weight percentages for 13 industries (normalized, sum to 100%)
+      weights: list of weight percentages for 19 industries (normalized, sum to 100%)
     
     Returns:
       SRI: Systemic Risk Index (float)
@@ -1202,7 +1196,7 @@ function calculate_SRI(industries, weights):
 
 ### Appendix C: Quick Calculation Table
 
-Use the following table to quickly estimate SRI for any combination of 13 industry signals:
+Use the following table to quickly estimate SRI for any combination of 19 industry signals:
 
 ```
 SRI Estimate = (A×3 + B×2 + C×1 + D×0) / 13 × Weight Adjustment Factor

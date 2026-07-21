@@ -252,7 +252,7 @@ quality_gates:
 
 ### WP-RO-02 Risk Officer Cross-Industry Contagion (✅ active)
 
-Portfolio risk control perspective: uses a 13x13 contagion matrix + contagion theory to analyze cross-industry transmission risk within a portfolio, identifying high-contagion chains and escalation factors, producing a contagion path map and adjustment recommendations. Paired with the Type 13 template.
+Portfolio risk control perspective: uses a 19x19 contagion matrix + contagion theory to analyze cross-industry transmission risk within a portfolio, identifying high-contagion chains and escalation factors, producing a contagion path map and adjustment recommendations. Paired with the Type 13 template.
 
 ```yaml
 id: WP-RO-02

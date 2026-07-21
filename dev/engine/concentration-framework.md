@@ -154,27 +154,33 @@ Mapping Rule: For each dimension, select the worst-performing metric as the dime
 |-----------|-------------|
 | Historical Basis | In 2021, a joint-stock bank wealth management subsidiary had a single industry (Real Estate) exposure of 58%. After the Evergrande default, the industry's credit spreads widened 500bp, directly causing the subsidiary's NAV to fall 3.2% and triggering a redemption crisis. In 2023, a securities firm's asset management arm had 72% single-industry exposure to LGFV bonds, suffering heavy losses during a regional LGFV debt extension event |
 | Theoretical Basis | The 25% single industry cap references UCITS diversification rules (single sector ≤ 20%) adjusted upward to 25% to accommodate credit market industry concentration characteristics |
-| Exceptions | When a single industry's total contagion matrix row score is ≤ 20 (low contagion industries such as Food & Beverage, Textile & Apparel), MAX1 thresholds may be increased to 35%; if the single industry is a super-spreader (Semiconductors/LGFV with row total > 23), MAX1 should be tightened to 20% |
+| Exceptions | When a single industry's contagion matrix row sum is ≤ 30 (low-contagion industries such as Healthcare Equipment 27, Biotech & Pharma 28, Consumer Staples 28, Telecommunications 29), MAX1 thresholds may be increased to 35%; if the single industry is a super-spreader (row sum ≥ 42: Financials 47, Capital Goods 43, Chemicals/TechHW 42), MAX1 should be tightened to 20% |
 
 ### 2.3 Cross-Reference with Contagion Matrix
 
-**The danger level of single industry concentration depends on the industry's position in the contagion matrix:**
+**The danger level of single industry concentration depends on the industry's position in the contagion matrix** (row sums per contagion-matrix.md §9.2; clusters per §5.4):
 
-| Industry | Contagion Rank | Row Total (Contagion Force) | Column Total (Contagion Risk) | Cluster | MAX1 Threshold Adjustment |
-|---------|---------------|---------------------------|-----------------------------|---------|--------------------------|
-| Semiconductors/Integrated Circuits | Super-spreader #1 | 26 | 24 | Cluster A (Core Triangle) | ≤ 20% |
-| LGFV Bonds | Super-spreader #2 | 24 | 24 | Cluster C (Infrastructure-Transport) | ≤ 20% |
-| Advanced Equipment | Super-spreader #3 | 23 | 22 | Cluster A (Core Triangle) | ≤ 22% |
-| Solar/PV & Energy Storage | Quasi Super-spreader | 22 | 22 | Cluster A (Core Triangle) | ≤ 22% |
-| New Energy Vehicles | Quasi Super-spreader | 21 | 22 | Cluster D (New Energy Ecosystem) | ≤ 22% |
-| Data Centers | Quasi Super-spreader | 21 | 21 | Cluster E (Digital Infrastructure) | ≤ 25% |
-| Media/Internet | Moderate Contagion | 21 | 19 | Clusters E/F | ≤ 25% |
-| Transportation | Moderate Contagion | 20 | 20 | Cluster C (Infrastructure-Transport) | ≤ 28% |
-| Medical Devices | Moderate Contagion | 19 | 18 | Cluster B (Healthcare) | ≤ 30% |
-| Retail | Moderate Contagion | 19 | 19 | Cluster F (Consumer Distribution) | ≤ 30% |
-| Biopharmaceuticals | Weak Contagion | 18 | 17 | Cluster B (Healthcare) | ≤ 30% |
-| Textile & Apparel | Weak Contagion | 16 | 16 | Cluster F (Consumer Distribution) | ≤ 35% |
-| Food & Beverage | Weakest Contagion | 14 | 16 | Cluster F (Consumer Distribution) | ≤ 35% |
+| Industry | Contagion Rank | Row/Col Sum | Cluster | MAX1 Threshold Adjustment |
+|---------|---------------|---------------------------|---------|--------------------------|
+| Financials (Banks/Insurance) | Super-spreader #1 | 47 | C (Sovereign-Financial Hub) | ≤ 20% |
+| Capital Goods | Super-spreader #2 | 43 | B (Tech-Auto-Capital Goods), F (Infrastructure-Construction) | ≤ 20% |
+| Chemicals | Super-spreader #3 (tie) | 42 | A (Energy-Chemicals-Transport-Utilities) | ≤ 22% |
+| Technology Hardware (Semis) | Super-spreader #3 (tie) | 42 | B (Tech-Auto-Capital Goods) | ≤ 22% |
+| Energy (Oil & Gas) | Quasi super-spreader | 41 | A (Energy-Chemicals-Transport-Utilities) | ≤ 22% |
+| Transportation | Quasi super-spreader | 39 | A, E, H | ≤ 25% |
+| Sovereigns & GSEs | Quasi super-spreader | 37 | C (Sovereign-Financial Hub) | ≤ 25% |
+| Metals & Mining | Moderate Contagion | 35 | F (Infrastructure-Construction) | ≤ 28% |
+| Software & Services | Moderate Contagion | 34 | B, G, H | ≤ 28% |
+| Automobiles | Moderate Contagion | 33 | B (Tech-Auto-Capital Goods) | ≤ 28% |
+| Construction Materials | Moderate Contagion | 32 | F (Infrastructure-Construction) | ≤ 28% |
+| Utilities (Regulated) | Moderate Contagion | 32 | A, F | ≤ 28% |
+| Commercial Services | Moderate Contagion | 31 | H (Commercial Services-Network) | ≤ 30% |
+| Consumer Durables | Moderate Contagion | 31 | E (Retail-Consumer-Logistics) | ≤ 30% |
+| Retail | Moderate Contagion | 31 | E, H | ≤ 30% |
+| Telecommunications | Weak Contagion | 29 | G (Telecom-Software) | ≤ 30% |
+| Consumer Staples | Weak Contagion | 28 | E (Retail-Consumer-Logistics) | ≤ 32% |
+| Biotech & Pharma | Weak Contagion | 28 | D (Bio-Healthcare) | ≤ 32% |
+| Healthcare Equipment | Weakest Contagion | 27 | D (Bio-Healthcare) | ≤ 35% |
 
 **Industry Concentration Comprehensive Assessment Procedure:**
 
@@ -182,7 +188,7 @@ Mapping Rule: For each dimension, select the worst-performing metric as the dime
 Step 1: Calculate the raw risk scores for the four metrics (HHI/CR3/CR5/MAX1)
 Step 2: Take the highest score among the four metrics as the raw industry concentration score
 Step 3: Identify the top 3 industries by position weight in the portfolio
-Step 4: Query the contagion matrix to determine if these industries belong to the same high-contagion cluster (Cluster A/B/C)
+Step 4: Query the contagion matrix to determine if these industries belong to the same high-contagion cluster (contagion-matrix.md §5.4 clusters A-H)
   ├── If they belong to the same cluster → raw score + 2 (cluster concentration penalty)
   ├── If they belong to the same paradigm (see industry-framework.md § Four Industry Types) but different clusters → raw score + 1 (intra-paradigm resonance penalty)
   └── If they belong to isolated clusters → no adjustment
