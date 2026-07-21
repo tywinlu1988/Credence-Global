@@ -136,8 +136,8 @@ def test_channel_diversification_bonus():
         maturity_12m_share=0.20, single_month_peak=0.05,
         top_channel_share=0.45, all_channels_available=True,
     )
-    # 45% in normal band [0,50) -> floor-interp 2 - 1 = 1
-    assert channel_score(diversified) == 1
+    # 45% in normal band [0,50) -> round-interp 3 - 1 = 2
+    assert channel_score(diversified) == 2
 
 
 def test_rating_orange_and_danger_bands():
@@ -197,6 +197,17 @@ def test_interpolation_matches_doc_examples():
         top_channel_share=0.30,
     )
     assert industry_score(metrics) == 6
+
+
+def test_interpolation_rounds_to_nearest_band_value():
+    # Interpolation rounds (not floors): the upper half of a band reaches the
+    # band's upper score, keeping 5/7/9-class values reachable.
+    # HHI 2200 in [1500, 2500) -> 6 + 0.7 -> 7.
+    assert industry_score(_base_metrics(hhi=2200)) == 7
+    # MAX1 55% in [40%, 60%) -> 6 + 0.75 -> 7.
+    assert industry_score(_base_metrics(max1=0.55)) == 7
+    # HHI 1800 in [1500, 2500) -> 6 + 0.3 -> 6 (doc §1.3 anchor).
+    assert industry_score(_base_metrics(hhi=1800)) == 6
 
 
 def test_concentration_weights_must_sum_to_one():

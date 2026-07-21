@@ -748,22 +748,20 @@ Under special market conditions, weights should be adjusted to reflect changes i
 
 | Dimension | Raw Metric Value | Dimension Risk Score | Weight | Weighted Score |
 |-----------|----------------|--------------------|--------|---------------|
-| D₁ Industry | HHI=1800 · CR3=68% · MAX1=42% | 7 (Warning) | 25% | 1.75 |
-| D₂ Region | Single country/region=38% · Peripheral=22% | 7 (Warning) | 20% | 1.40 |
-| D₃ Rating | AAA share=55% · Pseudo-high=18% | 7 (Warning) | 20% | 1.40 |
-| D₄ Maturity | 12-month=55% · Single month peak=22% | 7 (Warning) | 20% | 1.40 |
+| D₁ Industry | HHI=1800 · CR3=68% · MAX1=42% | 6 (Warning) | 25% | 1.50 |
+| D₂ Region | Single country/region=38% · Peripheral=22% | 6 (Warning) | 20% | 1.20 |
+| D₃ Rating | AAA share=55% · Pseudo-high=18% | 6 (Warning) | 20% | 1.20 |
+| D₄ Maturity | 12-month=55% · Single month peak=22% | 6 (Warning) | 20% | 1.20 |
 | D₅ Funding Channel | Bond channel=75% · Cancellation rate=18% | 8 (Danger) | 15% | 1.20 |
-| **Composite Score** | — | — | **100%** | **7.15 (High Concentration 🔴)** |
+| **Composite Score** | — | — | **100%** | **6.30 (Moderately Concentrated 🟠)** |
 
-**Interpretation:** This portfolio has moderate to high concentration across all five dimensions. The funding channel dimension entered danger territory due to high bond channel share and closing market window. The composite score of 7.15 falls into the 🔴 high concentration range, requiring immediate position reduction initiation.
+**Interpolation detail (§1.3):** HHI 1800 → 6 + 300/1000 → 6; CR3 68% → 6 + 3/15 → 6; MAX1 42% → 6 + 2/20 → 6; region 38% → 6 + 3/15 → 6; weak region 22% → 6 + 2/15 → 6; AAA 55% → 6 + 5/20 → 6; pseudo-high 18% → 6 + 3/15 → 6; 12-month 55% → 6 + 5/20 → 6; peak 22% → 6 + 2/10 → 6; bond channel 75% → 6 + 5/20 → 6, then §6.3 synergy +2 (bond >70% + cancellation >15%) → 8.
+
+**Interpretation:** This portfolio sits at the bottom of the 🟠 Warning band across all five dimensions — four dimensions at 6 (Warning floor) and the funding channel dimension at 8 (Danger) due to high bond channel share plus a closing market window. The composite score of 6.30 calls for §7.2 stacking treatment (1🔴+4🟠 coexisting → apply the 1🔴+1🟠 level per the usage rule) and heightened monitoring of the bond channel trajectory; it does not by itself trigger the §7.3 extreme-concentration cap.
 
 **Note (D₅ dimension):** Raw metric mapped to 6 (🟠 Warning), synergy effect added +2 (Bond channel > 70% + channel freezing → channel concentration + freezing double penalty), final = 8 (🔴 Danger). Synergy adjustment per §6.3 rules.
 
-> **Errata (v0.0.3):** The raw dimension scores printed in the main table above (7 for D₁-D₄)
-> predate the §1.3 floor-interpolation rule; per §1.3 linear interpolation those raw values
-> compute to 6 (HHI 1800 → 6 per §1.3's own example). The §1.3 rule and this D₅ note govern;
-> the coded engine (src/concentration_scorer.py) implements §1.3 interpolation. Full
-> re-derivation of this composite example is a scheduled follow-up.
+> **Correction history:** The pre-v0.0.3 version of this example used integer representative values (raw 7 for D₁-D₄, composite 7.15 🔴). Per §1.3 linear interpolation the raw scores compute to 6 and the composite to 6.30 🟠; the table above is the corrected derivation, and the coded engine (src/concentration_scorer.py) implements the same rule.
 
 ---
 

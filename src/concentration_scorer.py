@@ -4,11 +4,13 @@ dev/engine/concentration-framework.md).
 Disambiguation and trimming notes (coding decisions where the document overlaps,
 is not explicit, or exceeds what is implemented):
 
-- **Linear interpolation (§1.3)**: bounded bands interpolate linearly and truncate
-  (`int()`), per §1.3 ("determine the specific score through linear interpolation
-  within threshold intervals", HHI 1800 -> 6) and §8.5's D5 note (bond channel 75%
-  -> 6). The §8.5 main table shows 7 for the same raw metrics — that table is the
-  outlier; §1.3 + the §8.5 D5 note govern. The top (danger) band floors at 8:
+- **Linear interpolation (§1.3)**: bounded bands interpolate linearly and round to the
+  nearest integer (`round()`), per §1.3 ("determine the specific score through linear
+  interpolation within threshold intervals", HHI 1800 -> 6) and §8.5's D5 note (bond
+  channel 75% -> 6). Rounding keeps each band's upper value reachable (5/7/9-class);
+  Python's round-half-to-even affects only exact .5 boundaries, all of which land on
+  even band starts (4/6). The §8.5 main table's 7s for the same raw metrics predate
+  this rule and were corrected in v0.0.3. The top (danger) band floors at 8:
   the doc gives no within-band rule for 8-10.
 - **Adjustment steps trimmed**: the per-dimension adjustment steps in §2.3 Step 4-5,
   §3.3.3, §4.4 Step 4-5, §5.4 Step 3-4 and the 24m/36m maturity metrics are NOT
@@ -67,7 +69,7 @@ def _clamp(value: float, low: float, high: float) -> float:
 
 
 def _interpolate(value: float, bands: tuple) -> int:
-    """Linear interpolation within documented threshold bands (§1.3).
+    """Linear interpolation within documented threshold bands (§1.3), rounded.
 
     bands: tuple of (lo, hi, s_lo, s_hi); hi=None marks the top (danger) band,
     which floors at s_lo (the doc defines no within-band rule for 8-10).
@@ -79,7 +81,7 @@ def _interpolate(value: float, bands: tuple) -> int:
             break
         if lo <= value < hi:
             frac = (value - lo) / (hi - lo)
-            return int(s_lo + frac * (s_hi - s_lo))
+            return round(s_lo + frac * (s_hi - s_lo))
     return bands[0][2]
 
 
