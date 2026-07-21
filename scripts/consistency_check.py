@@ -363,23 +363,104 @@ def check_migration_matrix_structure() -> list[str]:
 
 
 def check_sri_track_b_consistency() -> list[str]:
-    """Flag contradictory textual descriptions of Track-B penalties across yellow/orange/red."""
+    """Flag contradictory textual descriptions of Track-B penalties across yellow/orange/red.
+
+    Scoped to the signal-definition section (## 2. Signal Aggregation ...) — penalty-shaped
+    numbers elsewhere (e.g., worked-example SRI values next to a 🟠) are not definitions.
+    Documents without the section header fall back to a full-document scan (fixtures)."""
     path = ENGINE_DIR / "systemic-warning-framework.md"
     if not path.exists():
         return []
     text = path.read_text(encoding="utf-8")
+    sec = re.search(r"^## 2\. .*?(?=^## 3\. |\Z)", text, re.DOTALL | re.MULTILINE)
+    scoped = sec.group(0) if sec else text
     contradictions = []
-    if any(p.search(text) for p in YELLOW_05_PATTERNS) and any(p.search(text) for p in YELLOW_0_PATTERNS):
+    if any(p.search(scoped) for p in YELLOW_05_PATTERNS) and any(p.search(scoped) for p in YELLOW_0_PATTERNS):
         contradictions.append("yellow penalty as both 0.5 and 0")
-    if any(p.search(text) for p in ORANGE_05_PATTERNS) and any(p.search(text) for p in ORANGE_10_PATTERNS):
+    if any(p.search(scoped) for p in ORANGE_05_PATTERNS) and any(p.search(scoped) for p in ORANGE_10_PATTERNS):
         contradictions.append("orange penalty as both 0.5 and 1.0")
-    if any(p.search(text) for p in RED_10_PATTERNS) and any(p.search(text) for p in RED_15_PATTERNS):
+    if any(p.search(scoped) for p in RED_10_PATTERNS) and any(p.search(scoped) for p in RED_15_PATTERNS):
         contradictions.append("red penalty as both 1.0 and 1.5")
     if contradictions:
         return [
             f"SRI_TRACK_B: {path.relative_to(ENGINE_DIR)} describes " + " and ".join(contradictions)
         ]
     return []
+
+
+def check_release_artifacts() -> tuple[list[str], list[str]]:
+    """Release artifact sanity: (errors, warnings).
+
+    - no zips at all -> warning only (CI-fresh clones legitimately lack the gitignored build output)
+    - zips exist but the current EXPECTED_VERSION zip is missing -> error
+      (older zips are legitimate local artifacts and are ignored)
+    - current zip present but .sha256 sidecar missing -> error
+    """
+    errors, warnings = [], []
+    vdir = ROOT / "version"
+    zips = sorted(vdir.glob("*-release.zip")) if vdir.is_dir() else []
+    current = f"{EXPECTED_VERSION}-release.zip"
+    if not zips:
+        warnings.append(f"missing_release_zip: version/{current} not built locally")
+        return errors, warnings
+    if not any(z.name == current for z in zips):
+        errors.append(
+            f"current_release_missing: version/{current} not built "
+            f"(found: {[z.name for z in zips]})"
+        )
+    elif not (vdir / f"{current}.sha256").exists():
+        errors.append(f"missing_sha256_sidecar: version/{current}.sha256")
+    return errors, warnings
+
+
+_DEP_NAME_MAP = {"yaml": "pyyaml"}
+
+
+def check_dependency_completeness() -> list[str]:
+    """Third-party imports in src/ and scripts/ must be declared in pyproject dependencies."""
+    import ast
+    import tomllib
+
+    pyproject = ROOT / "pyproject.toml"
+    if not pyproject.exists():
+        return [f"DEPENDENCY: pyproject.toml missing at {pyproject}"]
+    data = tomllib.loads(pyproject.read_text(encoding="utf-8"))
+    declared = {
+        re.split(r"[<>=!~\\[]", dep, maxsplit=1)[0].strip().lower().replace("-", "_")
+        for dep in data.get("project", {}).get("dependencies", [])
+    }
+    stdlib = set(getattr(sys, "stdlib_module_names", ()))
+    third_party = {}
+    for py in sorted(ROOT.glob("src/**/*.py")) + sorted(ROOT.glob("scripts/*.py")):
+        tree = ast.parse(py.read_text(encoding="utf-8"), filename=str(py))
+        for node in ast.walk(tree):
+            names = []
+            if isinstance(node, ast.Import):
+                names = [a.name.split(".")[0] for a in node.names]
+            elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+                names = [node.module.split(".")[0]]
+            for name in names:
+                if name not in stdlib and name != "src":
+                    third_party.setdefault(name, set()).add(py.name)
+
+    errors = []
+    for module, files in sorted(third_party.items()):
+        package = _DEP_NAME_MAP.get(module, module)
+        if package in declared or module in declared:
+            continue
+        # local project modules (never third-party dependencies)
+        if (
+            (ROOT / f"{module}.py").exists()
+            or (ROOT / "scripts" / f"{module}.py").exists()
+            or (ROOT / "src" / f"{module}.py").exists()
+            or (ROOT / "src" / module / "__init__.py").exists()
+        ):
+            continue
+        errors.append(
+            f"DEPENDENCY: '{module}' imported in {sorted(files)} but '{package}' "
+            "is not declared in pyproject.toml dependencies"
+        )
+    return errors
 
 
 def _skill_reference_files() -> list[Path]:
@@ -648,15 +729,21 @@ def collect_errors(only_links: bool = False) -> list[str]:
     errors.extend(check_migration_matrix_structure())
     errors.extend(check_readme_methodology())
     errors.extend(check_paradigm_coverage())
+    errors.extend(check_dependency_completeness())
+    # formerly warning-level; promoted to blocking after the underlying issues were fixed
+    errors.extend(check_rating_map_consistency())
+    errors.extend(check_sri_track_b_consistency())
+    errors.extend(check_skill_references())
+    release_errors, _release_warnings = check_release_artifacts()
+    errors.extend(release_errors)
     return errors
 
 
 def collect_warnings() -> list[str]:
     """Structural coherence checks that are reported as warnings until fixes land."""
     warnings = []
-    warnings.extend(check_rating_map_consistency())
-    warnings.extend(check_sri_track_b_consistency())
-    warnings.extend(check_skill_references())
+    _rel_errors, rel_warnings = check_release_artifacts()
+    warnings.extend(rel_warnings)
     return warnings
 
 

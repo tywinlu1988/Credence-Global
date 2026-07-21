@@ -448,3 +448,61 @@ def test_check_migration_matrix_structure_flags_missing_rating(tmp_path, monkeyp
     errors = cc.check_migration_matrix_structure()
     assert any("AA+" in e for e in errors)
     assert any("D" in e for e in errors)
+
+
+def test_release_artifacts_check(tmp_path, monkeypatch):
+    cc = _import_checker()
+    monkeypatch.setattr(cc, "ROOT", tmp_path)
+    monkeypatch.setattr(cc, "EXPECTED_VERSION", "v9.9.9")
+    # missing artifacts -> warning only (non-blocking, CI-fresh clones lack the gitignored zip)
+    assert cc.check_release_artifacts() == ([], ["missing_release_zip: version/v9.9.9-release.zip not built locally"])
+    # zips exist but current version missing -> error (older zips themselves are fine)
+    vdir = tmp_path / "version"
+    vdir.mkdir()
+    (vdir / "v0.0.1-release.zip").write_bytes(b"zip")
+    (vdir / "v0.0.1-release.zip.sha256").write_text("x", encoding="utf-8")
+    errors, warnings = cc.check_release_artifacts()
+    assert any("current_release_missing" in e and "v9.9.9" in e for e in errors)
+    assert warnings == []
+    # current artifact (with older zip kept around) -> clean
+    (vdir / "v9.9.9-release.zip").write_bytes(b"zip")
+    (vdir / "v9.9.9-release.zip.sha256").write_text("x", encoding="utf-8")
+    assert cc.check_release_artifacts() == ([], [])
+
+
+def test_dependency_completeness_check(tmp_path, monkeypatch):
+    cc = _import_checker()
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "engine.py").write_text("import yaml\nimport re\n", encoding="utf-8")
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "scripts" / "tool.py").write_text("import sys\n", encoding="utf-8")
+    monkeypatch.setattr(cc, "ROOT", tmp_path)
+    # missing pyyaml declaration -> error
+    (tmp_path / "pyproject.toml").write_text('[project]\ndependencies = []\n', encoding="utf-8")
+    errors = cc.check_dependency_completeness()
+    assert any("yaml" in e and "pyyaml" in e.lower() for e in errors)
+    # declared -> clean
+    (tmp_path / "pyproject.toml").write_text('[project]\ndependencies = ["pyyaml>=6.0"]\n', encoding="utf-8")
+    assert cc.check_dependency_completeness() == []
+
+
+def test_sri_track_b_check_scoped_to_definition_section(tmp_path, monkeypatch):
+    cc = _import_checker()
+    fake_engine = tmp_path / "engine"
+    fake_engine.mkdir()
+    monkeypatch.setattr(cc, "ENGINE_DIR", fake_engine)
+    # a 🟠-adjacent 0.5 outside the signal-definition section (e.g., a worked example
+    # like "SRI ≈ 1.14 (🟠 Alert) ... 0.500") must NOT count as a contradiction
+    (fake_engine / "systemic-warning-framework.md").write_text(
+        "## 1. Intro\n\n| **Reading** | SRI ≈ 1.14 (🟠 Alert): elevated. Financials (0.500) dominates |\n"
+        "## 2. Signal Aggregation Algorithm\n\nTrack B signal 🟠 (Abnormal) →  +1.0 points\n",
+        encoding="utf-8",
+    )
+    assert cc.check_sri_track_b_consistency() == []
+    # but a real contradiction inside the definition section is caught
+    (fake_engine / "systemic-warning-framework.md").write_text(
+        "## 2. Signal Aggregation Algorithm\n\nTrack B signal 🟠 (Abnormal) →  +1.0 points\n"
+        "orange = 0.5\n",
+        encoding="utf-8",
+    )
+    assert any("orange penalty as both 0.5 and 1.0" in e for e in cc.check_sri_track_b_consistency())
