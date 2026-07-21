@@ -5,7 +5,7 @@ description: Use when verifying a fixed-income credit report or analysis — che
 
 ## Purpose
 
-**Engine version**: v0.0.5
+**Engine version**: v0.0.6
 
 QA layer — final stage of the four-stage chain. Responsibility: perform pre-delivery review of the Delivery Note and its upstream Analysis Artifact and Path Sheet, producing a QA Verdict. This skill uses engine documents as the rule source and **never relaxes a gate**: if any quality gate or mandatory check fails, the verdict is `fail` and must be sent back for remediation; do not lower standards for delivery. This skill does not replicate any thresholds/rating mappings; rule content uses the referenced engine documents as the single source of truth.
 

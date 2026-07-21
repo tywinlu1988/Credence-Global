@@ -1,6 +1,6 @@
 # Quantitative Analysis Methodology — Fixed Income Credit Analysis Engine
 
-**Version**: v0.0.5 | **Date**: 2026-07-10
+**Version**: v0.0.6 | **Date**: 2026-07-10
 **Positioning**: Deep quantitative layer of Track B (Market Pricing) · Quantitative analysis specification in the dual-track framework
 
 > **Honest Statement**: The statistical correction methods defined in this document (confidence intervals / ADF test / B-P test / FDR correction) are methodological documentation and have not yet been verified through code implementation.

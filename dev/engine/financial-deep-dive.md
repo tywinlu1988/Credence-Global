@@ -1,6 +1,6 @@
 # Financial Deep Dive Sub-Module
 
-**Version**: v0.0.5 | **Date**: 2026-07-17 | **Status**: Published
+**Version**: v0.0.6 | **Date**: 2026-07-17 | **Status**: Published
 
 ---
 

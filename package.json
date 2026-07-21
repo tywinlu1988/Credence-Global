@@ -1,6 +1,6 @@
 {
   "name": "credence",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Credence — A methodology-first fixed-income credit analysis engine delivered as an Agent Skills pack. `npx github:tywinlu1988/credence-global` lays the current release package into a directly openable project.",
   "license": "SEE LICENSE IN LICENSE",
   "bin": {

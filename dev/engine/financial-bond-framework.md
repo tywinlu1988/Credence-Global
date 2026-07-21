@@ -1,6 +1,6 @@
 # Financial Bond Credit Analysis Framework
 
-**Version**: v0.0.5 | **Date**: 2026-07-10 | **Status**: Published
+**Version**: v0.0.6 | **Date**: 2026-07-10 | **Status**: Published
 
 **Module**: Fixed Income Credit Analysis Engine - Financial Industry Analysis Track (Parallel to Corporate Bond Pyramid)
 

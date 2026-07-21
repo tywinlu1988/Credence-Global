@@ -1,6 +1,6 @@
 # Industry Classification & Analysis Framework
 
-**Version**: v0.0.5 | **Date**: 2026-07-17 | **Status**: Internationalized (Phase 2)
+**Version**: v0.0.6 | **Date**: 2026-07-17 | **Status**: Internationalized (Phase 2)
 
 ---
 

@@ -1,6 +1,6 @@
 # Mosaic Engine Architecture (Mode A — Primary)
 
-**Version**: v0.0.5
+**Version**: v0.0.6
 
 > This document is derived from `fixed-income-credit-analysis` SKILL.md, organizing detailed references for the Mosaic Engine (Mode A). The single source of truth for thresholds/rules is `dev/engine/mosaic-engine.md`; this file is for navigation and organization only and introduces no new values.
 

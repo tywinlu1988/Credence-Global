@@ -1,6 +1,6 @@
 # Codex Deep Adaptation — Credence
 
-**Engine Version**: v0.0.5 · **Entry**: Repository root `AGENTS.md`
+**Engine Version**: v0.0.6 · **Entry**: Repository root `AGENTS.md`
 
 Codex natively reads the repository root `AGENTS.md`, but **will not automatically discover** `dev/.claude/skills/`. Therefore, Codex's access pattern is: first read `AGENTS.md` to locate the skill corresponding to the current task, then **manually read the `SKILL.md` content**, and then execute according to the content. The single source of truth for thresholds, weights, and rating mapping remains `dev/engine/*.md`; this file does not duplicate any values.
 
