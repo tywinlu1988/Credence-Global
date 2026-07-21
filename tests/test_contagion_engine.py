@@ -193,8 +193,9 @@ def test_apply_escalation_stacks(matrix):
     stressed = apply_escalation(matrix, ["Market Panic", "Regulatory Vacuum"])
     # Market Panic: Technology Hardware -> Automobiles, base 4, explicit jump to 5
     assert stressed.intensity("Technology Hardware (Semiconductors)", "Automobiles") == 5
-    # Regulatory Vacuum: Sovereigns -> Energy, base 3, explicit jump to 4
-    assert stressed.intensity("Sovereigns & GSEs", "Energy (Oil & Gas)") == 4
+    # Regulatory Vacuum: Sovereigns -> Energy, base 3, explicit jump Δ=1,
+    # then §6.3 Panic+Vacuum 1.5x synergy: 3 + round(1.5) = 5
+    assert stressed.intensity("Sovereigns & GSEs", "Energy (Oil & Gas)") == 5
 
 
 def test_escalation_duplicate_factors_no_double_stack(matrix):
@@ -258,6 +259,36 @@ def test_financials_broad_row_rules_1_and_2(matrix):
             assert stressed.intensity("Financials (Banks/Insurance)", c.target) >= 4, (
                 f"{factor}: Financials->{c.target} should lift to >= 4"
             )
+
+
+def test_synergy_multiplier_panic_plus_vacuum(matrix):
+    # §6.3: Panic + Regulatory Vacuum -> 1.5x on the total increment of touched cells.
+    # Fin -> Commercial Services: base 3, C-type only (no S/L generic, no explicit jump);
+    # broad rows lift to 4 (Δ = 1); synergy: 3 + round(1 × 1.5) = 3 + 2 = 5.
+    stressed = apply_escalation(matrix, ["Market Panic", "Regulatory Vacuum"])
+    assert stressed.intensity("Financials (Banks/Insurance)", "Commercial Services") == 5
+
+
+def test_synergy_two_factor_panic_leverage(matrix):
+    # §6.3: Panic + High Leverage -> 2.0x. Fin -> Telecom: base 3, C-type only,
+    # broad row lifts to 4 (Δ = 1); synergy: 3 + round(1 × 2.0) = 5.
+    stressed = apply_escalation(matrix, ["Market Panic", "High Leverage"])
+    assert stressed.intensity("Financials (Banks/Insurance)", "Telecommunications") == 5
+
+
+def test_synergy_multiplier_vacuum_plus_year_end(matrix):
+    # §6.3: Regulatory Vacuum + Year-End -> 1.5x. Sovereigns -> Utilities: base 3,
+    # explicit Vacuum jump to 4 (Δ = 1); Year-End does not touch non-Fin sources;
+    # synergy: 3 + round(1 × 1.5) = 5.
+    stressed = apply_escalation(matrix, ["Regulatory Vacuum", "Year-End Effect"])
+    assert stressed.intensity("Sovereigns & GSEs", "Utilities (Regulated)") == 5
+
+
+def test_synergy_multiplier_three_factors(matrix):
+    # §6.3: three or more simultaneous factors -> 3.0x on the total increment.
+    # Fin -> Commercial Services: base 3, Δ = 1 from broad rows; 3 + round(1 × 3.0) = 6 -> capped at 5.
+    stressed = apply_escalation(matrix, ["Market Panic", "Regulatory Vacuum", "High Leverage"])
+    assert stressed.intensity("Financials (Banks/Insurance)", "Commercial Services") == 5
 
 
 def test_escalation_rules_covered_in_doc():

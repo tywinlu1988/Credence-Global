@@ -750,14 +750,26 @@ Based on the five escalation factors defined in [Contagion Theory](contagion-the
 
 ### 6.3 Synergy Effects (Multi-Factor Escalation)
 
-When multiple escalation factors trigger simultaneously, intensity amplification follows **multiplicative stacking** rather than additive:
+When multiple escalation factors trigger simultaneously, intensity amplification follows **multiplicative stacking** rather than additive. Deterministic rule (implemented by `src/contagion_engine.py`):
 
-| Factor Combination | Synergy Multiplier | Hardest-Hit Pairs | Example Calculation |
-|---|---|---|---|
-| Market Panic + Regulatory Vacuum | 1.5x | Sovereigns → Financials, Financials → All | Base 3 → +1 (Panic) → 4 → +1x1.5 (Vacuum) → 5 (capped) |
-| Market Panic + High Leverage | 2.0x | Financials → Technology Hardware, Financials → Software | Base 3 → +1 (Panic) → 4 → +2 (Leverage) → 6 → capped at 5 |
-| Regulatory Vacuum + Year-End | 1.5x | Sovereigns → Financials, Sovereigns → Utilities | Base 3 → +1 (Vacuum) → 4 → +1x1.5 (Year-End) → 5 |
-| Three or more simultaneously | 3.0x | All matrix pairs | Systemic crisis threshold: most base-3 pairs jump to 4-5 |
+```
+For each documented combination in the triggered factor set:
+  Multiplier = per-combination value from the table below
+  (any 3+ simultaneous factors -> 3.0x, dominating pair combinations)
+
+For every cell touched by the combined factors:
+  Δ         = (intensity after all per-factor §6.2 rules) - base intensity
+  intensity = min(5, base + round(Δ × Multiplier))
+```
+
+| Factor Combination | Synergy Multiplier | Worked Example |
+|---|---|---|
+| Market Panic + Regulatory Vacuum | 1.5x | Base 3, Panic broad row +1 and Vacuum broad row +1 → Δ=2 → 3 + round(2×1.5) = 5 |
+| Market Panic + High Leverage | 2.0x | Base 3, Panic broad row +1 (explicit Leverage jump co-applies via max) → Δ=1 → 3 + round(1×2.0) = 5 |
+| Regulatory Vacuum + Year-End Effect | 1.5x | Base 3, Vacuum explicit jump +1 → Δ=1 → 3 + round(1×1.5) = 5 |
+| Three or more simultaneously | 3.0x | Systemic crisis threshold: most base-3 pairs jump to 4-5 (Δ=1 → 3+3=6 → capped at 5) |
+
+**Interpretation note:** the multiplier applies to the total increment produced by the combined §6.2 rules, not to the final intensity. Cells untouched by every triggered factor (no explicit jump, no generic bump, no broad row) are unaffected by synergy.
 
 **Synergy ceiling:** Regardless of the number of simultaneous escalation factors, no individual cell can exceed the maximum intensity of 5.
 

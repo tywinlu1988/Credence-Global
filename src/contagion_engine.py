@@ -61,6 +61,16 @@ _GENERIC_TYPE_BUMP = {
 # fuzzy (half-point) and left to LLM judgment, not coded.
 _BROAD_FINANCIALS_LIFT = {"Market Panic", "Regulatory Vacuum"}
 
+# Section 6.3 synergy multipliers: when the triggered factor set forms a documented
+# combination, the TOTAL increment (boosted - base) on every touched cell is multiplied.
+# Three or more simultaneous factors -> 3.0x (dominates any pair combination).
+_SYNERGY_MULTIPLIERS = {
+    frozenset({"Market Panic", "Regulatory Vacuum"}): 1.5,
+    frozenset({"Market Panic", "High Leverage"}): 2.0,
+    frozenset({"Regulatory Vacuum", "Year-End Effect"}): 1.5,
+}
+_SYNERGY_THREE_OR_MORE = 3.0
+
 
 @dataclass(frozen=True)
 class ContagionCell:
@@ -288,9 +298,10 @@ def apply_escalation(matrix, factors) -> ContagionMatrix:
     type +1, cap 5; original matrix unchanged). Duplicate factors are deduplicated at entry — the same
     factor never applies its generic bump twice.
 
-    Trimming notes: §6.3 multi-factor synergy multipliers (1.5x/2.0x/3.0x) are NOT implemented
-    (the doc's example arithmetic is order-dependent and under-specified for deterministic coding);
-    Rule 3's "Financials → All (broad) 3→3.5 (avg)" half-point row is likewise left to LLM judgment."""
+    §6.3 synergy: when the triggered set forms a documented combination (Panic+Vacuum 1.5x,
+    Panic+Leverage 2.0x, Vacuum+Year-End 1.5x, any 3+ factors 3.0x), the TOTAL increment on every
+    touched cell is multiplied (cap 5). Rule 3's "Financials → All (broad) 3→3.5 (avg)" half-point
+    row is fuzzy and left to LLM judgment, not coded."""
     unknown = sorted(set(factors) - set(ESCALATION_FACTORS))
     if unknown:
         raise ValueError(f"Unknown escalation factors: {unknown}, available: {list(ESCALATION_FACTORS)}")
@@ -325,4 +336,18 @@ def apply_escalation(matrix, factors) -> ContagionMatrix:
                     key = (c.source, c.target)
                     cur = boosts.get(key, c.intensity)
                     boosts[key] = min(cur + 1, INTENSITY_MAX)
+
+    # §6.3 synergy: documented factor combinations multiply the total increment on
+    # touched cells (cap 5). Three or more simultaneous factors -> 3.0x.
+    triggered = set(factors)
+    if len(triggered) >= 3:
+        multiplier = _SYNERGY_THREE_OR_MORE
+    else:
+        multiplier = _SYNERGY_MULTIPLIERS.get(frozenset(triggered))
+    if multiplier and len(triggered) >= 2:
+        for key, boosted in boosts.items():
+            base = matrix.intensity(*key)
+            delta = boosted - base
+            if delta > 0:
+                boosts[key] = min(base + round(delta * multiplier), INTENSITY_MAX)
     return matrix.with_intensities(boosts)
