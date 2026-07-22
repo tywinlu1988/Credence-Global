@@ -34,12 +34,21 @@ Gate-by-gate review follows the Path Sheet's `quality_gates` list; the complete 
 
 Any failure results in `fail`:
 
-| Check | What to verify | Rule Source |
+| Check | Rule Name (grep keyword) | Rule Source |
 |---|---|---|
-| template_compliance | Every rendered report file maps to a template in the path's registry `templates` field (or a declared marker) — no ad-hoc layouts | `dev/engine/work-path-registry.md` + `dev/templates/index.yaml` |
-| citation_compliance | Every numeric claim (threshold, weight, score, tier, rating) carries a `doc §section` citation or is marked `engine_undefined` | AGENTS.md Non-Negotiables |
-| dimension_compliance | All analysis dimensions/metrics use engine vocabulary only (industry-framework D1-D10 + paradigm pyramids; concentration-framework five dimensions; contagion-matrix 19 industries; P1-P6 paradigms) — no invented dimensions, industries, or paradigms | `dev/engine/industry-framework.md` + `dev/engine/contagion-matrix.md` |
-| chain_compliance | A Path Sheet exists for the `path_id`, and this QA Verdict is produced before delivery — analysis never ships without it | `dev/engine/pipeline-contract.md` |
+| template_compliance | templates | dev/engine/work-path-registry.md |
+| citation_compliance | engine_undefined | AGENTS.md |
+| dimension_compliance | Ten-Dimension Scoring | dev/engine/industry-framework.md |
+| dimension_compliance | Six International Paradigms | dev/engine/industry-framework.md |
+| dimension_compliance | Contagion Matrix | dev/engine/contagion-matrix.md |
+| chain_compliance | Path Sheet | dev/engine/pipeline-contract.md |
+
+**What each check verifies:**
+
+- **template_compliance**: Every rendered report file maps to a template in the path's registry `templates` field (or a declared marker) — no ad-hoc layouts. Manifest: `dev/templates/index.yaml`.
+- **citation_compliance**: Every numeric claim (threshold, weight, score, tier, rating) carries a `doc §section` citation or is marked `engine_undefined`.
+- **dimension_compliance**: All analysis dimensions/metrics use engine vocabulary only (industry-framework D1-D10 + paradigm pyramids; concentration-framework five dimensions; contagion-matrix 19 industries; P1-P6 paradigms) — no invented dimensions, industries, or paradigms.
+- **chain_compliance**: A Path Sheet exists for the `path_id`, and this QA Verdict is produced before delivery — analysis never ships without it.
 
 ## Fail Conditions (not limited to)
 
