@@ -18,7 +18,7 @@ When this Skill is invoked:
 7. Do not invoke Mode B or generate external-data values unless the user has explicitly provided a CSV upload, API endpoint, or MCP server. Treat Mode B fields as data gaps until then.
 8. **Before delivering**: hand the analysis artifact to `credit-report-builder` (if a report is requested) and obtain a passing QA Verdict from `credit-qa-verifier`. No verdict, no delivery.
 
-# Fixed Income Credit Analysis Engine v0.0.6
+# Fixed Income Credit Analysis Engine v0.0.7
 
 ## Overview
 

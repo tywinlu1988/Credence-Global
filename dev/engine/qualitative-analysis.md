@@ -1,6 +1,6 @@
 # Qualitative Analysis Methodology — Fixed Income Credit Analysis Engine
 
-**Version**: v0.0.6 | **Date**: 2026-07-10
+**Version**: v0.0.7 | **Date**: 2026-07-10
 **Role**: Qualitative judgment methodology for Track A (Fundamental Analysis) · Normative guidance for "direction judgment" in the dual-track framework
 
 ---

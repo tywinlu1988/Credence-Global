@@ -1,7 +1,7 @@
 # Fixed Income Credit Intelligent Analysis Engine
 
 **Project Codename**: Credence
-**Version**: v0.0.6
+**Version**: v0.0.7
 **Status**: Methodology documentation complete — 4 coded engines wired (concentration / contagion / SRI / outlook) — 19-industry GICS coverage — four-stage skill chain delivered
 
 ---
@@ -142,6 +142,7 @@ Product vision, Magic Experience, 3-layer output system, commercial model, prici
 
 | Version | Date | Milestone |
 |---|---|---|
+| v0.0.7 | 2026-07-22 | Agent constraint layer: AGENTS.md + SKILL.md Non-Negotiables (no analysis without Path Sheet, no numbers without citation, no report outside templates/, no delivery without QA, no invented dimensions); 9 per-path execution contracts (path-playbooks/) with registry drift checks; QA process-compliance checks (template/citation/dimension/chain); templates/index.yaml machine-generated; strict path-sheet posture; installer Linux hotfix (v0.0.6) |
 | v0.0.6 | 2026-07-21 | Hotfix: installer unzip fallback chain — GNU tar (Linux) cannot extract zip; install.js now tries unzip -> tar -> PowerShell (caught by the new CI npm-installer-smoke job on day one) |
 | v0.0.5 | 2026-07-21 | Engineering hardening: SRI runtime rule parsing; drift guards; input validation + error isolation; path_sheet semantic validation; checker release/dependency gates; CI windows+npm+pip expansion |
 | v0.0.4 | 2026-07-21 | Residual convergence: round interpolation + §8.5 recompute; PM four-dimension by-name split; §6.3 synergy implemented; systemic-warning examples re-derived (GFC/Eurozone/COVID/2026) |

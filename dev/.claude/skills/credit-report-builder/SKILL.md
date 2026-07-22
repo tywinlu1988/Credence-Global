@@ -5,7 +5,7 @@ description: Use when turning a completed fixed-income credit analysis into a de
 
 ## Purpose
 
-**Engine version**: v0.0.6
+**Engine version**: v0.0.7
 
 **Non-Negotiables (see AGENTS.md)**: no report without a template from `dev/templates/` (never design ad-hoc HTML, dashboards, or layouts) · no numbers without a `doc §section` citation · no delivery without a QA Verdict.
 

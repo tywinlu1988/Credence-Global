@@ -5,7 +5,7 @@ description: Use when verifying a fixed-income credit report or analysis — che
 
 ## Purpose
 
-**Engine version**: v0.0.6
+**Engine version**: v0.0.7
 
 **Non-Negotiables (see AGENTS.md)**: **no delivery of analysis conclusions without a passing QA Verdict from this skill** (pure knowledge questions exempt) · no numbers without a `doc §section` citation (`engine_undefined` otherwise) · no report outside `dev/templates/`.
 

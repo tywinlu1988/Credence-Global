@@ -1,6 +1,6 @@
 # QA Checklist
 
-**Version**: v0.0.6
+**Version**: v0.0.7
 
 > This checklist is the review basis for `credit-qa-verifier`: four mandatory checks + common path quality gates. Every **rule name must be grep-able in the referenced engine document** (same traceability standard as the registry quality gates), and no rules may be fabricated. Rule content and values use the referenced engine documents as the single source of truth; this checklist does not copy any thresholds, SRI tiers, layered time budgets, or rating values.
 
@@ -54,7 +54,7 @@ Any failure results in `fail`:
 
 - Missing completeness report (completeness is a required output for every analysis; rule source: `dev/engine/mosaic-engine.md` §5).
 - Dimensions below the density floor outputting numeric scores, or insufficient weighted-average density yet a final letter rating is output.
-- One-shot veto triggered but rating ceiling not locked.
+- One-vote veto triggered but rating ceiling not locked.
 - Mode B hallucination: external data values appearing when the user has not explicitly provided data sources.
 - Fabricated thresholds/weights/rating mappings; engine-undefined quantities not truthfully annotated.
 - The three artifacts' `path_id` are inconsistent or unresolvable in the registry.

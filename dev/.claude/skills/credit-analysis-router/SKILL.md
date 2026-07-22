@@ -5,7 +5,7 @@ description: Intake router for vague or compound fixed-income credit-analysis re
 
 ## Purpose
 
-**Engine version**: v0.0.6
+**Engine version**: v0.0.7
 
 **Non-Negotiables (see AGENTS.md)**: no analysis without a Path Sheet · no numbers without a `doc §section` citation · no report outside `dev/templates/` · no delivery without a QA Verdict · no invented dimensions or vocabulary.
 

@@ -1,6 +1,6 @@
 # Loss Given Default (LGD) and Recovery Analysis Framework
 
-**Version**: v0.0.6 | **Date**: 2026-07-17 | **Status**: Published
+**Version**: v0.0.7 | **Date**: 2026-07-17 | **Status**: Published
 
 **Module**: Fixed Income Credit Analysis Engine — Expected Loss (EL) Framework Supplement
 

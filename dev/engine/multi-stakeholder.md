@@ -1,6 +1,6 @@
 # Multi-Stakeholder Perspective Framework
 
-**Version**: v0.0.6 | **Date**: 2026-07-17
+**Version**: v0.0.7 | **Date**: 2026-07-17
 **Source**: Fixed Income Credit Intelligence Engine v0.0.1 · Mosaic Engine Architecture
 **Nature**: Structured archive — compiled from existing skill packages and specification documents
 

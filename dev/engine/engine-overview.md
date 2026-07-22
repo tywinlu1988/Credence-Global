@@ -1,6 +1,6 @@
 # Fixed Income Credit Analysis Engine — Architecture Overview
 
-**Version**: v0.0.6 | **Date**: 2026-07-18
+**Version**: v0.0.7 | **Date**: 2026-07-18
 
 ---
 
@@ -114,10 +114,10 @@ Pyramid)       signals)
 
 | Layer | Name | Function | Status |
 |---|---|---|---|
-| **Layer 1** | Mosaic Engine (Mode A) | Extract signals from unstructured public data, assemble, assess completeness | Implemented (v0.0.6) |
-| **Layer 2** | Dual-Track Analysis (Track A + B) | Fundamental pyramid scoring + market pricing signal cross-validation | Implemented (v0.0.6) |
+| **Layer 1** | Mosaic Engine (Mode A) | Extract signals from unstructured public data, assemble, assess completeness | Implemented (v0.0.7) |
+| **Layer 2** | Dual-Track Analysis (Track A + B) | Fundamental pyramid scoring + market pricing signal cross-validation | Implemented (v0.0.7) |
 | **Layer 3** | Multi-Stakeholder Perspective (6 roles) | Coverage across Credit Selector, Portfolio Manager, Risk Officer, Trader, Advisor, Individual Investor | All 6 roles defined (multi-stakeholder.md) |
-| **Layer 4** | System Intelligence Layer (Aggregation) *NEW | Contagion mapping, concentration dashboard, early warning thermometer; cross-industry and cross-issuer systemic risk perception | Implemented (v0.0.6) |
+| **Layer 4** | System Intelligence Layer (Aggregation) *NEW | Contagion mapping, concentration dashboard, early warning thermometer; cross-industry and cross-issuer systemic risk perception | Implemented (v0.0.7) |
 
 ### Dual-Track Parallel Structure
 
@@ -193,6 +193,7 @@ Indicator Score = f(Raw Value, Threshold, Direction)
 
 | Version | Date | Changes |
 |---|---|---|
+| v0.0.7 | 2026-07-22 | Agent constraint layer: AGENTS.md + SKILL.md Non-Negotiables (no analysis without Path Sheet, no numbers without citation, no report outside templates/, no delivery without QA, no invented dimensions); 9 per-path execution contracts (path-playbooks/) with registry drift checks; QA process-compliance checks (template/citation/dimension/chain); templates/index.yaml machine-generated; strict path-sheet posture; installer Linux hotfix (v0.0.6) |
 | v0.0.6 | 2026-07-21 | Hotfix: installer unzip fallback chain — GNU tar (Linux) cannot extract zip; install.js now tries unzip -> tar -> PowerShell (caught by the new CI npm-installer-smoke job on day one) |
 | v0.0.5 | 2026-07-21 | Engineering hardening: SRI rules runtime-parsed from document (no hardcoded thresholds); concentration drift guard; input validation hardened (invalid enums/ranges fail loudly, per-stage error isolation); path_sheet semantic validation against registry; consistency_check gains release-artifact + dependency-completeness gates (3 checks promoted to blocking); CI adds installer smoke (ubuntu+windows), full windows matrix, pip-install check, skip-count gate |
 | v0.0.4 | 2026-07-21 | Residual convergence: interpolation switched to round (band values fully reachable) and §8.5 example re-derived (6.30 🟠); PM four-dimension disambiguated by name (§2.2 Portfolio Construction / §2.2b Single-Instrument Dashboard); §6.3 multi-factor synergy multipliers implemented; systemic-warning worked examples re-derived under 19-industry GICS (GFC 1.29 🟠, Eurozone 1.96 🔴, COVID reframed as exogenous-shock boundary case, 2026 scenario) |
@@ -210,40 +211,40 @@ The engine documentation system uses two parallel version numbering schemes:
 
 | Version Scheme | Scope | Example | Description |
 |---|---|---|---|
-| **Engine Version** | Core methodology documents | v0.0.6 | Reflects the overall iteration stage of engine methodology; all core methodology documents are uniformly labeled with this version |
+| **Engine Version** | Core methodology documents | v0.0.7 | Reflects the overall iteration stage of engine methodology; all core methodology documents are uniformly labeled with this version |
 | **Review Report Version** | Audit, self-assessment, final review documents | v1.0, v1.1 | Independent versioning for review reports; document headers note "Corresponding engine version: v0.0.1" |
 
 ### 7.2 Core Methodology Document Version Mapping
 
 | Document | Current Version | Description |
 |---|---|---|
-| engine-overview.md | v0.0.6 | Engine architecture overview |
-| dual-track-methodology.md | v0.0.6 | Dual-track analysis methodology |
-| industry-framework.md | v0.0.6 | Industry classification and analysis framework |
-| qualitative-analysis.md | v0.0.6 | Qualitative analysis methodology |
-| quantitative-analysis.md | v0.0.6 | Quantitative analysis methodology |
-| mosaic-engine.md | v0.0.6 | Mosaic engine |
-| output-layered-framework.md | v0.0.6 | Layered output framework |
-| contagion-theory.md | v0.0.6 | Contagion theory foundations (System Intelligence Layer) |
-| contagion-matrix.md | v0.0.6 | 19-industry contagion matrix |
-| concentration-framework.md | v0.0.6 | 5-dimension concentration analysis framework |
-| systemic-warning-framework.md | v0.0.6 | Systemic early warning framework |
-| validation-methodology.md | v0.0.6 | Black swan backtesting validation methodology |
-| financial-bond-framework.md | v0.0.6 | Financial bond analysis framework |
-| holding-company-framework.md | v0.0.6 | Holding company credit analysis framework |
-| non-credit-risk-overlay.md | v0.0.6 | Non-credit risk overlay |
-| external-support-framework.md | v0.0.6 | External support assessment framework |
-| esg-framework.md | v0.0.6 | ESG and governance risk framework |
-| governance-fraud-risk.md | v0.0.6 | Governance and fraud risk framework |
-| outlook-monitoring-framework.md | v0.0.6 | Outlook and ongoing monitoring framework |
-| lgd-recovery-framework.md | v0.0.6 | LGD and recovery analysis framework |
-| multi-stakeholder.md | v0.0.6 | Multi-stakeholder framework |
-| financial-deep-dive.md | v0.0.6 | Financial deep dive analysis framework |
-| paradigm-brand-channel.md | v0.0.6 | Brand + channel paradigm specification |
-| paradigm-network-traffic.md | v0.0.6 | Network + traffic paradigm specification |
-| work-path-registry.md | v0.0.6 | Work path registry |
-| dimension-registry.md | v0.0.6 | Dimension registry |
-| pipeline-contract.md | v0.0.6 | Four-stage pipeline product contracts |
+| engine-overview.md | v0.0.7 | Engine architecture overview |
+| dual-track-methodology.md | v0.0.7 | Dual-track analysis methodology |
+| industry-framework.md | v0.0.7 | Industry classification and analysis framework |
+| qualitative-analysis.md | v0.0.7 | Qualitative analysis methodology |
+| quantitative-analysis.md | v0.0.7 | Quantitative analysis methodology |
+| mosaic-engine.md | v0.0.7 | Mosaic engine |
+| output-layered-framework.md | v0.0.7 | Layered output framework |
+| contagion-theory.md | v0.0.7 | Contagion theory foundations (System Intelligence Layer) |
+| contagion-matrix.md | v0.0.7 | 19-industry contagion matrix |
+| concentration-framework.md | v0.0.7 | 5-dimension concentration analysis framework |
+| systemic-warning-framework.md | v0.0.7 | Systemic early warning framework |
+| validation-methodology.md | v0.0.7 | Black swan backtesting validation methodology |
+| financial-bond-framework.md | v0.0.7 | Financial bond analysis framework |
+| holding-company-framework.md | v0.0.7 | Holding company credit analysis framework |
+| non-credit-risk-overlay.md | v0.0.7 | Non-credit risk overlay |
+| external-support-framework.md | v0.0.7 | External support assessment framework |
+| esg-framework.md | v0.0.7 | ESG and governance risk framework |
+| governance-fraud-risk.md | v0.0.7 | Governance and fraud risk framework |
+| outlook-monitoring-framework.md | v0.0.7 | Outlook and ongoing monitoring framework |
+| lgd-recovery-framework.md | v0.0.7 | LGD and recovery analysis framework |
+| multi-stakeholder.md | v0.0.7 | Multi-stakeholder framework |
+| financial-deep-dive.md | v0.0.7 | Financial deep dive analysis framework |
+| paradigm-brand-channel.md | v0.0.7 | Brand + channel paradigm specification |
+| paradigm-network-traffic.md | v0.0.7 | Network + traffic paradigm specification |
+| work-path-registry.md | v0.0.7 | Work path registry |
+| dimension-registry.md | v0.0.7 | Dimension registry |
+| pipeline-contract.md | v0.0.7 | Four-stage pipeline product contracts |
 
 **Responsibility boundary note:** The Risk Officer portfolio risk control framework (multi-stakeholder.md §5) handles single-issuer and single-portfolio risk control (concentration limits, stress testing, rating adjustments). The System Intelligence Layer (contagion-matrix.md, concentration-framework.md, systemic-warning-framework.md) adds cross-issuer and cross-portfolio systemic risk analysis on top of it — the contagion matrix covers full-market industry pair transmission, the concentration framework covers 5-dimension portfolio concentration, and the early warning framework provides market-wide SRI readings. The division is clear: the Risk Officer framework handles single-issuer risk control; the System Intelligence Layer handles cross-issuer systemic risk.
 

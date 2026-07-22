@@ -1,6 +1,6 @@
 # Mosaic Engine
 
-**Version**: v0.0.6 | **Date**: 2026-07-10
+**Version**: v0.0.7 | **Date**: 2026-07-10
 **Core Principle**: Data is always incomplete -- turn "incompleteness" from a weakness into a product feature
 
 ---
