@@ -17,6 +17,15 @@ A credit analysis engine for global fixed-income markets, organized in four laye
 
 **Thresholds, weights, and rating mappings live only in `dev/engine/*.md`.** This file and all skills reference engine documents by path + section; never duplicate numeric values.
 
+## Non-Negotiables (binding on every agent, every CLI, every request)
+
+1. **No analysis without a Path Sheet.** Any request that produces a credit conclusion, rating, or score MUST begin with a Path Sheet from `credit-analysis-router` (or an explicit registered `path_id` named by the user). Pure knowledge questions (e.g., "what is the SRI formula?") may be answered directly from engine docs.
+2. **No numbers without a citation.** Every threshold, weight, score, tier, or rating mapping MUST cite `dev/engine/<doc>.md §section`. If the engine documents do not define it, output `engine_undefined` — never invent values.
+3. **No report without a template.** Deliverable reports MUST be assembled by `credit-report-builder` from `dev/templates/` per the path's registry `templates` field. Never design ad-hoc HTML, dashboards, or layouts.
+4. **No delivery without QA.** Analysis conclusions are delivered only after `credit-qa-verifier` has produced a passing QA Verdict (knowledge questions exempt).
+5. **No invented dimensions or vocabulary.** Analysis dimensions come only from the engine documents (industry-framework D1-D10 + paradigm pyramids; concentration-framework five dimensions; the 19 contagion-matrix industries; the six P1-P6 paradigms). Never create new dimensions, metrics, industries, or paradigms.
+6. **Follow the path's Playbook.** For active paths, `dev/engine/path-playbooks/<path_id>.md` is the execution contract — read it before starting and do not deviate.
+
 ## How to Use in Your Agent CLI
 
 Skills are stored in `dev/.claude/skills/`. Discovery mechanisms differ by CLI:

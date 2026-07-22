@@ -5,15 +5,18 @@ description: Use when analyzing industries or companies for credit decisions in 
 
 ## Invocation Protocol
 
+**Non-Negotiables (see AGENTS.md)**: no analysis without a Path Sheet · no numbers without a `doc §section` citation (`engine_undefined` otherwise) · no report outside `dev/templates/` · no delivery without a QA Verdict · no invented dimensions or vocabulary · follow the path's Playbook (`dev/engine/path-playbooks/<path_id>.md`).
+
 When this Skill is invoked:
 
-1. **Path-sheet-driven (preferred).** If the user message carries a Path Sheet produced by the `credit-analysis-router` skill, read the engine documents in the sheet's `engine_reading_order` order and validate against its `quality_gates`.
-2. **Direct task, no path sheet.** If the user directly names a concrete task, read the core set — `dev/engine/engine-overview.md` + `dev/engine/dual-track-methodology.md` — plus any topic-specific doc the request names (e.g. `contagion-matrix.md`, `concentration-framework.md`, `external-support-framework.md`).
-3. **Vague / unrouted need.** If the need is ambiguous and no path sheet exists, first route through the `credit-analysis-router` skill, or ask the Q1–Q4 questions (role / object / depth / data) yourself to pick a path from `dev/engine/work-path-registry.md`.
+1. **Path-sheet-driven (preferred).** If the user message carries a Path Sheet produced by the `credit-analysis-router` skill, read `dev/engine/path-playbooks/<path_id>.md` first, then the engine documents in the sheet's `engine_reading_order` order, and validate against its `quality_gates`.
+2. **Explicit registered path_id.** If the user explicitly names a registered path (e.g., "run WP-RO-01"), treat that as the path selection: load the Playbook, then the core set — `dev/engine/engine-overview.md` + `dev/engine/dual-track-methodology.md` — plus any topic-specific doc the request names.
+3. **No Path Sheet and no explicit path_id (strict).** If the request would produce a credit conclusion/rating/score, **STOP — do not analyze.** Route through the `credit-analysis-router` skill first, or ask the Q1–Q4 questions (role / object / depth / data) yourself to pick a path from `dev/engine/work-path-registry.md`. **Exception**: pure knowledge questions (e.g., "what is the SRI formula?", "explain the veto mechanism") may be answered directly from engine documents with citations.
 4. Use **only** thresholds, weights, rating mappings, and veto rules found in those documents.
 5. For every quantitative judgment, cite the source document and section.
-6. If a required threshold, weight, or mapping is missing from the engine documents, output `not defined in engine` and do not invent a value.
+6. If a required threshold, weight, or mapping is missing from the engine documents, output `engine_undefined` and do not invent a value.
 7. Do not invoke Mode B or generate external-data values unless the user has explicitly provided a CSV upload, API endpoint, or MCP server. Treat Mode B fields as data gaps until then.
+8. **Before delivering**: hand the analysis artifact to `credit-report-builder` (if a report is requested) and obtain a passing QA Verdict from `credit-qa-verifier`. No verdict, no delivery.
 
 # Fixed Income Credit Analysis Engine v0.0.6
 

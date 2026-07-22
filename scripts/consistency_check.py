@@ -388,6 +388,58 @@ def check_sri_track_b_consistency() -> list[str]:
     return []
 
 
+def check_template_index() -> list[str]:
+    """templates/index.yaml must be in sync with the registry templates fields and disk."""
+    import subprocess
+
+    gen = ROOT / "scripts" / "build_template_index.py"
+    result = subprocess.run(
+        [sys.executable, str(gen), "--check"],
+        capture_output=True, text=True, encoding="utf-8", errors="replace",
+    )
+    if result.returncode != 0:
+        return [f"TEMPLATE_INDEX: stale (run `python scripts/build_template_index.py --write`)"]
+    return []
+
+
+def check_playbooks() -> list[str]:
+    """Every active registry path must have an execution-contract playbook at
+    engine/path-playbooks/<path_id>.md containing its registry engine_sequence docs
+    (in order), every quality-gate rule name, every template file, and a Drift Blacklist."""
+    errors = []
+    registry = ENGINE_DIR / "work-path-registry.md"
+    if not registry.exists():
+        return errors
+    paths = load_registry_paths(registry)
+    for pid, entry in sorted(paths.items()):
+        if str(entry.get("status", "")).strip() != "active":
+            continue
+        pb = ENGINE_DIR / "path-playbooks" / f"{pid}.md"
+        if not pb.exists():
+            errors.append(f"PLAYBOOK: missing playbook for active path {pid} (engine/path-playbooks/{pid}.md)")
+            continue
+        text = pb.read_text(encoding="utf-8")
+        seq = [str(d) for d in (entry.get("engine_sequence") or [])]
+        pos = -1
+        for doc in seq:
+            idx = text.find(doc, pos + 1)
+            if idx == -1:
+                errors.append(f"PLAYBOOK: {pid} playbook missing engine doc {doc} (or out of order)")
+                break
+            pos = idx
+        for gate in entry.get("quality_gates") or []:
+            rule = str(gate).split("(")[0].strip()
+            if rule and rule not in text:
+                errors.append(f"PLAYBOOK: {pid} playbook missing quality gate rule {rule!r}")
+        for tmpl in entry.get("templates") or []:
+            name = Path(str(tmpl)).name
+            if name and name not in text:
+                errors.append(f"PLAYBOOK: {pid} playbook missing template {name}")
+        if "Drift Blacklist" not in text:
+            errors.append(f"PLAYBOOK: {pid} playbook missing Drift Blacklist section")
+    return errors
+
+
 def check_release_artifacts() -> tuple[list[str], list[str]]:
     """Release artifact sanity: (errors, warnings).
 
@@ -730,6 +782,8 @@ def collect_errors(only_links: bool = False) -> list[str]:
     errors.extend(check_readme_methodology())
     errors.extend(check_paradigm_coverage())
     errors.extend(check_dependency_completeness())
+    errors.extend(check_template_index())
+    errors.extend(check_playbooks())
     # formerly warning-level; promoted to blocking after the underlying issues were fixed
     errors.extend(check_rating_map_consistency())
     errors.extend(check_sri_track_b_consistency())

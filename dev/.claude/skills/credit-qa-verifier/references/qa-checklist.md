@@ -30,6 +30,17 @@ Gate-by-gate review follows the Path Sheet's `quality_gates` list; the complete 
 | Contagion Matrix | dev/engine/contagion-matrix.md §2 |
 | Deep-Dive Frameworks | dev/engine/multi-stakeholder.md §2 |
 
+## Process-Compliance Checks (anti-drift; process_compliance)
+
+Any failure results in `fail`:
+
+| Check | What to verify | Rule Source |
+|---|---|---|
+| template_compliance | Every rendered report file maps to a template in the path's registry `templates` field (or a declared marker) — no ad-hoc layouts | `dev/engine/work-path-registry.md` + `dev/templates/index.yaml` |
+| citation_compliance | Every numeric claim (threshold, weight, score, tier, rating) carries a `doc §section` citation or is marked `engine_undefined` | AGENTS.md Non-Negotiables |
+| dimension_compliance | All analysis dimensions/metrics use engine vocabulary only (industry-framework D1-D10 + paradigm pyramids; concentration-framework five dimensions; contagion-matrix 19 industries; P1-P6 paradigms) — no invented dimensions, industries, or paradigms | `dev/engine/industry-framework.md` + `dev/engine/contagion-matrix.md` |
+| chain_compliance | A Path Sheet exists for the `path_id`, and this QA Verdict is produced before delivery — analysis never ships without it | `dev/engine/pipeline-contract.md` |
+
 ## Fail Conditions (not limited to)
 
 - Missing completeness report (completeness is a required output for every analysis; rule source: `dev/engine/mosaic-engine.md` §5).
@@ -38,5 +49,9 @@ Gate-by-gate review follows the Path Sheet's `quality_gates` list; the complete 
 - Mode B hallucination: external data values appearing when the user has not explicitly provided data sources.
 - Fabricated thresholds/weights/rating mappings; engine-undefined quantities not truthfully annotated.
 - The three artifacts' `path_id` are inconsistent or unresolvable in the registry.
+- A rendered report file that does not map to any template in the path's registry `templates` field (ad-hoc layout).
+- Numeric claims without a `doc §section` citation that are not marked `engine_undefined`.
+- Dimensions, industries, metrics, or paradigms not present in the engine vocabulary.
+- Analysis delivered without a passing QA Verdict.
 
 > If any inconsistency arises between this checklist and the referenced engine documents, the engine documents prevail.

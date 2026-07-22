@@ -7,6 +7,8 @@ description: Use when verifying a fixed-income credit report or analysis — che
 
 **Engine version**: v0.0.6
 
+**Non-Negotiables (see AGENTS.md)**: **no delivery of analysis conclusions without a passing QA Verdict from this skill** (pure knowledge questions exempt) · no numbers without a `doc §section` citation (`engine_undefined` otherwise) · no report outside `dev/templates/`.
+
 QA layer — final stage of the four-stage chain. Responsibility: perform pre-delivery review of the Delivery Note and its upstream Analysis Artifact and Path Sheet, producing a QA Verdict. This skill uses engine documents as the rule source and **never relaxes a gate**: if any quality gate or mandatory check fails, the verdict is `fail` and must be sent back for remediation; do not lower standards for delivery. This skill does not replicate any thresholds/rating mappings; rule content uses the referenced engine documents as the single source of truth.
 
 ## Inputs
@@ -29,9 +31,16 @@ QA layer — final stage of the four-stage chain. Responsibility: perform pre-de
 ## Mandatory Checks (rule source is engine documents)
 
 - **Signal density rule `density_rule`**: Dimensions below the density floor must not output numeric scores and must be annotated as `insufficient information to evaluate`; when weighted-average density is insufficient, must not output a final letter rating. Rule source: `dev/engine/mosaic-engine.md` §4.3.
-- **One-shot veto ceiling `veto_ceiling`**: Issuers triggering a one-vote veto have their rating ceiling locked at CCC, may not be raised. Rule source: `dev/engine/industry-framework.md` §5.
+- **One-vote veto ceiling `veto_ceiling`**: Issuers triggering a one-vote veto have their rating ceiling locked at CCC, may not be raised. Rule source: `dev/engine/industry-framework.md` §5.
 - **Mode B anti-hallucination `mode_b`**: Unless the user explicitly provides data sources (CSV/API/MCP), no Mode B external data values may appear; all Mode B fields must be treated as data gaps. Rule source: `dev/engine/mosaic-engine.md` §6.
-- **Single source of truth `single_source`**: Reports/analyses must not fabricate thresholds, weights, or rating mappings; quantities not defined in the engine must be annotated as `not defined in engine`. Rule source: all referenced engine documents.
+- **Single source of truth `single_source`**: Reports/analyses must not fabricate thresholds, weights, or rating mappings; quantities not defined in the engine must be annotated as `engine_undefined`. Rule source: all referenced engine documents.
+
+## Process-Compliance Checks (anti-drift; rule sources as noted)
+
+- **Template compliance**: Every rendered report file maps to a template in the path's registry `templates` field (or declared marker) — no ad-hoc layouts. Rule source: `dev/engine/work-path-registry.md` + `dev/templates/index.yaml`.
+- **Citation compliance**: Every numeric claim (threshold, weight, score, tier, rating) carries a `doc §section` citation or is marked `engine_undefined`. Rule source: AGENTS.md Non-Negotiables.
+- **Dimension compliance**: All analysis dimensions/metrics use engine vocabulary only (industry-framework D1-D10 + paradigm pyramids; concentration-framework five dimensions; contagion-matrix 19 industries; P1-P6 paradigms) — no invented dimensions or industries. Rule source: `dev/engine/industry-framework.md` + `dev/engine/contagion-matrix.md`.
+- **Chain compliance**: A Path Sheet exists for the `path_id`, and this QA Verdict is produced before delivery — no analysis ships without it. Rule source: `dev/engine/pipeline-contract.md`.
 
 ## QA Verdict Output
 

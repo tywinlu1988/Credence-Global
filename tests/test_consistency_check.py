@@ -506,3 +506,39 @@ def test_sri_track_b_check_scoped_to_definition_section(tmp_path, monkeypatch):
         encoding="utf-8",
     )
     assert any("orange penalty as both 0.5 and 1.0" in e for e in cc.check_sri_track_b_consistency())
+
+
+def test_playbooks_check_real_tree():
+    cc = _import_checker()
+    assert cc.check_playbooks() == []
+
+
+def test_playbooks_check_flags_drift(tmp_path, monkeypatch):
+    cc = _import_checker()
+    fake_engine = tmp_path / "engine"
+    (fake_engine / "path-playbooks").mkdir(parents=True)
+    (fake_engine / "work-path-registry.md").write_text(
+        "```yaml\nid: WP-RO-01\nstatus: active\nrole: risk-officer\n"
+        "engine_sequence:\n  - dev/engine/concentration-framework.md\n"
+        "templates:\n  - dev/templates/template-type14.html\n"
+        "quality_gates:\n  - \"Five-Dimension Concentration (dev/engine/concentration-framework.md §1)\"\n```\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(cc, "ENGINE_DIR", fake_engine)
+    # missing playbook -> error
+    assert any("WP-RO-01" in e and "missing" in e for e in cc.check_playbooks())
+    # playbook missing the template and a gate -> errors
+    (fake_engine / "path-playbooks" / "WP-RO-01.md").write_text(
+        "# WP-RO-01\ndev/engine/concentration-framework.md\n## 8. Drift Blacklist\n",
+        encoding="utf-8",
+    )
+    errors = cc.check_playbooks()
+    assert any("template-type14.html" in e for e in errors)
+    assert any("Five-Dimension Concentration" in e for e in errors)
+    # complete -> clean
+    (fake_engine / "path-playbooks" / "WP-RO-01.md").write_text(
+        "# WP-RO-01\ndev/engine/concentration-framework.md\ndev/templates/template-type14.html\n"
+        "Five-Dimension Concentration (dev/engine/concentration-framework.md §1)\n## 8. Drift Blacklist\n",
+        encoding="utf-8",
+    )
+    assert cc.check_playbooks() == []

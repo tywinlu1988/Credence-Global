@@ -7,6 +7,8 @@ description: Intake router for vague or compound fixed-income credit-analysis re
 
 **Engine version**: v0.0.6
 
+**Non-Negotiables (see AGENTS.md)**: no analysis without a Path Sheet · no numbers without a `doc §section` citation · no report outside `dev/templates/` · no delivery without a QA Verdict · no invented dimensions or vocabulary.
+
 Routing layer — does no analysis. Responsibility is three steps: interpret vague/compound needs → match a work path in `work-path-registry` → output a structured Path Sheet. This skill does not replicate any engine thresholds/weights/rating mappings; rule content uses engine documents as the single source of truth. After routing, hand off to the `fixed-income-credit-analysis` skill, which executes according to the Path Sheet's `engine_reading_order`.
 
 ## Intake Protocol (Four Questions, Progressive)
@@ -60,9 +62,12 @@ depth: ""                   # L0|L1|L2|special
 mode: ""                    # A=public data only / B=user explicitly provides external data sources
 path_id: ""                 # work path ID that exists in the registry
 engine_reading_order: []    # engine document sequence registered for this path (single source of truth)
+templates: []               # copied from the registry entry's templates field (no ad-hoc substitutes)
 quality_gates: []           # "rule name (dev/engine/<doc>.md §section)"
 notes: ""
 ```
+
+The `templates` field is **copied from the registry entry** — downstream stages render exactly these templates from `dev/templates/`; designing ad-hoc report layouts is a protocol violation (AGENTS.md Non-Negotiables #3).
 
 Example (Credit Selector single target, public data only, L2 Deep Report):
 
