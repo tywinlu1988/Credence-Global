@@ -28,7 +28,7 @@ templates:
     on_disk: true
   - type: 6
     file: dev/templates/template-type6.html
-    title: 'Mosaic Completeness Report · LONGi Green Energy · v0.0.6'
+    title: 'Mosaic Completeness Report · LONGi Green Energy · v0.0.7'
     used_by: [WP-CS-01]
     on_disk: true
   - type: 7
