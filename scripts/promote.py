@@ -172,6 +172,13 @@ def main() -> int:
         return 1
 
     changes = apply_rules(ROOT, old, args.new_version, apply=args.apply)
+    if args.apply:
+        # Regenerate template index: the templates-stamps rule rewrites version
+        # stamps in template <title> elements, so index.yaml must follow.
+        subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "build_template_index.py"), "--write"],
+            cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace",
+        )
     mode = "APPLY" if args.apply else "DRY-RUN"
     print(f"[{mode}] {old} -> {args.new_version}: {len(changes)} declaration rewrite(s)")
     for c in changes:
