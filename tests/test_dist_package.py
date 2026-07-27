@@ -45,6 +45,7 @@ GENERATED_FILES = [
     "GEMINI.md",
     "INSTALL.md",
     "README.md",
+    "LICENSE",
     ".claude-plugin/plugin.json",
     "adapters/codex.md",
 ]

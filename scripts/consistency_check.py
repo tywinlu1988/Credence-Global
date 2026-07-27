@@ -18,9 +18,9 @@ ROUTER_SKILL_FILE = ROOT / "dev" / ".claude" / "skills" / "credit-analysis-route
 SKILLS_DIR = ROOT / "dev" / ".claude" / "skills"
 AGENTS_MD = ROOT / "AGENTS.md"
 
-# Public READMEs (all language variants) must not restate methodology numbers; they point
+# Public READMEs must not restate methodology numbers; they point
 # to the engine documents instead. Patterns below are the known invented-value shapes.
-README_FILES = ["README.md", "README.zh.md", "README.ja.md", "README.ko.md", "README.fr.md"]
+README_FILES = ["README.md"]
 README_RATING_MAP_RE = re.compile(r"\|\s*1\.0\s*-\s*1\.5\s*\|\s*AAA")  # inverted map: SoT is 9.5-10.0 = AAA
 README_SRI_PCT_RE = re.compile(r"\|\s*(?:0-25|26-50|51-75|76-100)\s*\|")  # 0-100 SRI scale is prohibited
 README_CONC_THRESHOLD_RE = re.compile(r">\s*(?:30|35|40|50)%\s+flagged", re.IGNORECASE)
@@ -468,6 +468,21 @@ def check_release_artifacts() -> tuple[list[str], list[str]]:
 _DEP_NAME_MAP = {"yaml": "pyyaml"}
 
 
+def check_changelog_version() -> list[str]:
+    """CHANGELOG.md's top numbered version must equal EXPECTED_VERSION."""
+    path = ROOT / "CHANGELOG.md"
+    if not path.exists():
+        return [f"CHANGELOG: missing {path.name} (required for marketplace submission)"]
+    m = re.search(r"^## \[(\d+\.\d+\.\d+)\]", path.read_text(encoding="utf-8"), re.MULTILINE)
+    if not m:
+        return [f"CHANGELOG: no numbered version header found in {path.name}"]
+    top = m.group(1)
+    expected = EXPECTED_VERSION.lstrip("v")
+    if top != expected:
+        return [f"CHANGELOG: top version {top} != EXPECTED_VERSION {expected}"]
+    return []
+
+
 def check_dependency_completeness() -> list[str]:
     """Third-party imports in src/ and scripts/ must be declared in pyproject dependencies."""
     import ast
@@ -782,6 +797,7 @@ def collect_errors(only_links: bool = False) -> list[str]:
     errors.extend(check_readme_methodology())
     errors.extend(check_paradigm_coverage())
     errors.extend(check_dependency_completeness())
+    errors.extend(check_changelog_version())
     errors.extend(check_template_index())
     errors.extend(check_playbooks())
     # formerly warning-level; promoted to blocking after the underlying issues were fixed

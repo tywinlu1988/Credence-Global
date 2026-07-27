@@ -193,6 +193,8 @@ def main() -> int:
         print(f"  {path}:{line_no}")
     if not args.apply:
         print("\n(dry-run, not written to disk; add --apply to confirm)")
+    else:
+        print(f"\nREMINDER: add the {args.new_version} entry to CHANGELOG.md before committing (consistency gate will check it).")
     return 0
 
 

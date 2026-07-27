@@ -3,6 +3,14 @@ name: credit-qa-verifier
 description: Use when verifying a fixed-income credit report or analysis — checking a work path's quality gates, enforcing the mandatory signal-density rules (no numeric score below the density floor), the one-shot-veto CCC ceiling, Mode B anti-hallucination guardrails, and single-source-of-truth compliance (no invented thresholds). Triggers on 'QA check', 'review this report', 'check for issues', 'quality gate', or as the final step after report generation. Reads engine documents as the rule source; never relaxes a gate.
 ---
 
+## Path Resolution
+
+Paths written as `${CLAUDE_PLUGIN_ROOT}/engine/...` and `${CLAUDE_PLUGIN_ROOT}/templates/...` resolve to the package root:
+
+- **Plugin install** (Claude Code plugin/marketplace): `${CLAUDE_PLUGIN_ROOT}` is the package root inside the plugins directory — all references resolve automatically.
+- **Opened as a project** (downloaded zip / Model A): treat `${CLAUDE_PLUGIN_ROOT}` as the package root you opened (the directory holding the engine and templates folders).
+
+
 ## Purpose
 
 **Engine version**: v0.0.7

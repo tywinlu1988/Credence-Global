@@ -51,6 +51,19 @@ def templates_dir(root=None) -> Path:
     return flat if flat.is_dir() else base / "dev" / "templates"
 
 
+_PLUGIN_PREFIX = "${CLAUDE_PLUGIN_ROOT}/"
+
+
+def _strip_plugin_prefix(p: str) -> str:
+    """Strip the plugin-install prefix from registry/artifact paths.
+
+    The dist package rewrites `dev/engine/` and `dev/templates/` to
+    `${CLAUDE_PLUGIN_ROOT}/...` so skills resolve under plugin installs. Any code
+    resolving those paths against the package root must strip the prefix first.
+    """
+    return p[len(_PLUGIN_PREFIX):] if p.startswith(_PLUGIN_PREFIX) else p
+
+
 class Role(str, Enum):
     """Q1 Role: stakeholder identity (Credit Selector, Portfolio Manager, Risk Officer,
     Trader, Advisor, Individual Investor) or cross-role meta/specialized path."""
@@ -274,7 +287,7 @@ def validate_path_sheet(sheet: dict, registry_paths: dict, root=None) -> list[st
             for tmpl in path.get("templates") or []:
                 if is_template_marker(tmpl):
                     continue
-                if not (base / str(tmpl)).exists():
+                if not (base / _strip_plugin_prefix(str(tmpl))).exists():
                     errors.append(f"active path {pid!r} template missing on disk: {tmpl}")
 
     # Semantic consistency with the registry entry (only where the entry declares
@@ -321,10 +334,10 @@ def _check_semantic_consistency(sheet: dict, pid: str, path: dict, errors: list[
             f"is registered for depth {declared_depth!r}"
         )
 
-    declared_seq = [str(d) for d in (path.get("engine_sequence") or [])]
+    declared_seq = [_strip_plugin_prefix(str(d)) for d in (path.get("engine_sequence") or [])]
     sheet_seq = sheet.get("engine_reading_order")
     if declared_seq and isinstance(sheet_seq, (list, tuple)):
-        sheet_seq = [str(d) for d in sheet_seq]
+        sheet_seq = [_strip_plugin_prefix(str(d)) for d in sheet_seq]
         foreign = {d for d in sheet_seq if d not in declared_seq}
         for d in sorted(foreign):
             errors.append(

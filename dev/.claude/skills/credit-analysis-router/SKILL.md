@@ -3,6 +3,14 @@ name: credit-analysis-router
 description: Intake router for vague or compound fixed-income credit-analysis requests such as 'evaluate this company', 'check this portfolio for issues', 'what analysis should I run', 'where to start'. Use when the need is ambiguous, spans multiple roles (Credit Selector/Portfolio Manager/Advisor/Trader/Risk Officer/Individual Investor), or the user asks which analysis to run or where to start. If the user already names a concrete methodology task or engine path, use the fixed-income-credit-analysis skill instead.
 ---
 
+## Path Resolution
+
+Paths written as `${CLAUDE_PLUGIN_ROOT}/engine/...` and `${CLAUDE_PLUGIN_ROOT}/templates/...` resolve to the package root:
+
+- **Plugin install** (Claude Code plugin/marketplace): `${CLAUDE_PLUGIN_ROOT}` is the package root inside the plugins directory — all references resolve automatically.
+- **Opened as a project** (downloaded zip / Model A): treat `${CLAUDE_PLUGIN_ROOT}` as the package root you opened (the directory holding the engine and templates folders).
+
+
 ## Purpose
 
 **Engine version**: v0.0.7

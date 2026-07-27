@@ -41,8 +41,7 @@ def test_readme_methodology_check_flags_invented_values(tmp_path, monkeypatch):
         "Numbers live in the engine docs: dev/engine/dual-track-methodology.md, "
         "dev/engine/systemic-warning-framework.md, dev/engine/concentration-framework.md.\n"
     )
-    for name in ("README.zh.md", "README.ja.md", "README.ko.md", "README.fr.md"):
-        (tmp_path / name).write_text(compliant, encoding="utf-8")
+    (tmp_path / "README-alt.md").write_text(compliant, encoding="utf-8")
     monkeypatch.setattr(cc, "ROOT", tmp_path)
 
     errors = cc.check_readme_methodology()
@@ -51,8 +50,8 @@ def test_readme_methodology_check_flags_invented_values(tmp_path, monkeypatch):
     assert any("README_CONC_THRESHOLD" in e and "README.md" in e for e in errors)
     # the offending README also lacks the single-source-of-truth pointers
     assert any("README_SOT_POINTER" in e and "README.md" in e for e in errors)
-    # compliant translations produce no findings
-    assert not any("README.zh.md" in e for e in errors)
+    # non-listed README variants are out of scope (README_FILES = ["README.md"])
+    assert not any("README-alt.md" in e for e in errors)
 
 
 def test_readme_methodology_check_passes_real_tree():
@@ -542,3 +541,17 @@ def test_playbooks_check_flags_drift(tmp_path, monkeypatch):
         encoding="utf-8",
     )
     assert cc.check_playbooks() == []
+
+
+def test_changelog_version_check(tmp_path, monkeypatch):
+    cc = _import_checker()
+    monkeypatch.setattr(cc, "ROOT", tmp_path)
+    monkeypatch.setattr(cc, "EXPECTED_VERSION", "v0.0.8")
+    # missing CHANGELOG.md -> error
+    assert any("missing" in e and "CHANGELOG.md" in e for e in cc.check_changelog_version())
+    # top version mismatch -> error
+    (tmp_path / "CHANGELOG.md").write_text("## [0.0.7] - 2026-07-22\n", encoding="utf-8")
+    assert any("top version 0.0.7" in e and "0.0.8" in e for e in cc.check_changelog_version())
+    # matching top version -> clean
+    (tmp_path / "CHANGELOG.md").write_text("## [0.0.8] - 2026-07-22\n", encoding="utf-8")
+    assert cc.check_changelog_version() == []

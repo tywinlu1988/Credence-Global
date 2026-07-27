@@ -3,6 +3,14 @@ name: fixed-income-credit-analysis
 description: Use when analyzing industries or companies for credit decisions in fixed income markets, building industry analysis frameworks for lending or bond investment, evaluating credit quality via dual-track methodology, constructing investment dashboards from public data, validating frameworks against historical defaults, or assessing cross-industry contagion, portfolio concentration, and systemic risk via the system-intelligence layer. Route vague needs to the credit-analysis-router skill.
 ---
 
+## Path Resolution
+
+Paths written as `${CLAUDE_PLUGIN_ROOT}/engine/...` and `${CLAUDE_PLUGIN_ROOT}/templates/...` resolve to the package root:
+
+- **Plugin install** (Claude Code plugin/marketplace): `${CLAUDE_PLUGIN_ROOT}` is the package root inside the plugins directory — all references resolve automatically.
+- **Opened as a project** (downloaded zip / Model A): treat `${CLAUDE_PLUGIN_ROOT}` as the package root you opened (the directory holding the engine and templates folders).
+
+
 ## Invocation Protocol
 
 **Non-Negotiables (see AGENTS.md)**: no analysis without a Path Sheet · no numbers without a `doc §section` citation (`engine_undefined` otherwise) · no report outside `dev/templates/` · no delivery without a QA Verdict · no invented dimensions or vocabulary · follow the path's Playbook (`dev/engine/path-playbooks/<path_id>.md`).

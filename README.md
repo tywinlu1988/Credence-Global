@@ -4,17 +4,13 @@
 
 <p align="center">
   <strong>Version <code>v0.0.2</code></strong> ·
-  <strong>License</strong> Source-Available · Non-Commercial ·
+  <strong>License</strong> MIT ·
   <strong>Tests</strong> pytest regression suite + consistency gates · CI on Python 3.11 &amp; 3.12 ·
   <strong>27 methodology documents</strong>
 </p>
 
 <p align="center">
-  🌐 <a href="#"><strong>English</strong></a> ·
-  <a href="README.zh.md">中文</a> ·
-  <a href="README.ja.md">日本語</a> ·
-  <a href="README.ko.md">한국어</a> ·
-  <a href="README.fr.md">Français</a>
+  🌐 <strong>English</strong>
 </p>
 
 ---
@@ -536,7 +532,7 @@ credence-global/
 |-- version/                            # Locally built release zips (gitignored; shipped via GitHub Releases)
 |-- AGENTS.md                           # Cross-CLI universal entry point
 |-- DEVELOPMENT.md                      # Development guide
-|-- LICENSE                             # Source-available, non-commercial license
+|-- LICENSE                             # MIT License
 |-- pyproject.toml                      # Python project configuration
 |-- package.json                        # npm registry metadata
 ```
@@ -591,17 +587,16 @@ Four work paths have dedicated Python implementations (coded engines): concentra
 
 ### Q12: Can I use Credence for commercial purposes?
 
-Commercial use requires prior written permission from the copyright holder. See the [LICENSE](LICENSE) file for full terms. The engine is source-available for non-commercial evaluation, research, and internal assessment.
+Yes. Credence is released under the MIT License, which permits commercial and non-commercial use free of charge. See the [LICENSE](LICENSE) file for full terms.
 
 ---
 
 ## License & Disclaimer
 
-This repository is **source-available** under the Credence Source-Available Non-Commercial License. You may view, learn from, and use the work for non-commercial / internal evaluation purposes. **Any commercial use requires prior written permission** from the copyright holder.
+This repository is released under the **MIT License** — free for commercial and non-commercial use, modification, and redistribution, subject to preserving the copyright notice.
 
 **Key terms**:
-- Non-commercial use (research, teaching, internal evaluation) is free and permitted
-- Commercial use (SaaS, paid consulting, production systems, redistribution) requires a separate commercial license
+- Free for commercial and non-commercial use, modification, and redistribution (MIT)
 - The engine's output is a methodology demonstration and research artifact — **it is not investment advice**
 - No warranty is provided; the software is offered "as is"
 

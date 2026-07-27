@@ -3,6 +3,14 @@ name: credit-report-builder
 description: Use when turning a completed fixed-income credit analysis into a deliverable report — selecting the correct report template (Type 1–18), mapping findings to the L0/L1/L2 output tiers, rendering a multi-stakeholder dashboard, or assembling a layered credit report from an analysis artifact. Triggers on 'generate report', 'produce a credit approval report', 'build a dashboard', 'L0 signal card', or when a work-path sheet's templates must be produced. Requires an upstream analysis artifact; does not perform analysis itself.
 ---
 
+## Path Resolution
+
+Paths written as `${CLAUDE_PLUGIN_ROOT}/engine/...` and `${CLAUDE_PLUGIN_ROOT}/templates/...` resolve to the package root:
+
+- **Plugin install** (Claude Code plugin/marketplace): `${CLAUDE_PLUGIN_ROOT}` is the package root inside the plugins directory — all references resolve automatically.
+- **Opened as a project** (downloaded zip / Model A): treat `${CLAUDE_PLUGIN_ROOT}` as the package root you opened (the directory holding the engine and templates folders).
+
+
 ## Purpose
 
 **Engine version**: v0.0.7

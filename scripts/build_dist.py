@@ -20,8 +20,8 @@ dist/credence/
 
 ## Reference Rewrite Rules (ordered, longest prefix first; applied to every copied text file)
 1. `dev/.claude/skills/` -> `.claude/skills/`
-2. `dev/engine/`         -> `engine/`
-3. `dev/templates/`      -> `templates/`
+2. `dev/engine/`         -> `${CLAUDE_PLUGIN_ROOT}/engine/`
+3. `dev/templates/`      -> `${CLAUDE_PLUGIN_ROOT}/templates/`
 4. `../../src/`          -> `../src/`        (deep link fix for engine-overview.md)
 Note: `multi-stakeholder.md`'s `../engine/`, `../templates/` resolve in both layouts; left unchanged.
 
@@ -63,10 +63,24 @@ from consistency_check import CORE_DOCS  # noqa: E402  single source of truth, d
 # to cover both `dev/.claude/skills` and `dev/.claude/skills/...` forms.
 REWRITE_RULES = [
     ("dev/.claude/skills", ".claude/skills"),
-    ("dev/engine/", "engine/"),
-    ("dev/templates/", "templates/"),
+    ("dev/engine/", "${CLAUDE_PLUGIN_ROOT}/engine/"),
+    ("dev/templates/", "${CLAUDE_PLUGIN_ROOT}/templates/"),
     ("../../src/", "../src/"),
 ]
+
+# Prefix injected by the rules above for plugin installs; the link checker strips it
+# before resolving paths inside the package.
+_PLUGIN_PREFIX = "${CLAUDE_PLUGIN_ROOT}/"
+
+# Path Resolution note injected into generated entry docs and every SKILL.md. It tells
+# the agent how to resolve the ${CLAUDE_PLUGIN_ROOT} prefix in both install modes.
+_PATH_NOTE = """## Path Resolution
+
+Paths written as `${CLAUDE_PLUGIN_ROOT}/engine/...` and `${CLAUDE_PLUGIN_ROOT}/templates/...` resolve to the package root:
+
+- **Plugin install** (Claude Code plugin/marketplace): `${CLAUDE_PLUGIN_ROOT}` is the package root inside the plugins directory — all references resolve automatically.
+- **Opened as a project** (downloaded zip / Model A): treat `${CLAUDE_PLUGIN_ROOT}` as the package root you opened (the directory holding the engine and templates folders).
+"""
 
 TEXT_EXTS = {".md", ".py", ".html", ".css", ".yaml", ".yml", ".txt", ".json"}
 
@@ -164,6 +178,8 @@ A credit analysis engine for international fixed-income markets, organized into 
 
 **Thresholds, weights, and rating maps live only in `engine/*.md`.** This file and every skill never duplicate these values; any numerical judgment must reference the engine document and section.
 
+""" + _PATH_NOTE + """
+
 ## How to Use in Your Agent CLI
 
 This package is a self-contained installable agent package, with skills under `.claude/skills/`. **Simplest approach (Model A)**: Open the package root as your project and all references resolve automatically.
@@ -226,6 +242,8 @@ def _gen_claude_md() -> str:
 Read `AGENTS.md` first. Skills are in `.claude/skills/`.
 
 Thresholds, weights, and rating maps live only in `engine/*.md`; never fabricate values -- reference `engine/<doc>.md SS<section>`, output `engine_undefined` if not defined.
+
+""" + _PATH_NOTE + """
 """
 
 
@@ -235,6 +253,8 @@ def _gen_gemini_md() -> str:
 Read `AGENTS.md` first. Skills are in `.claude/skills/` (Gemini CLI compatibly reads this directory).
 
 Thresholds, weights, and rating maps live only in `engine/*.md`; never fabricate values -- reference `engine/<doc>.md SS<section>`, output `engine_undefined` if not defined.
+
+""" + _PATH_NOTE + """
 """
 
 
@@ -293,8 +313,9 @@ into the corresponding tool's global skills location for use across any project:
 ## Claude Code Plugin / Marketplace
 
 `.claude-plugin/plugin.json` is a minimal marketplace manifest enabling this package to be
-listed/installed as a plugin. Note: due to `engine/` single-source dependency, `engine/`
-must remain reachable from the agent's working directory -- Model A is the reliable path.
+listed/installed as a plugin. When installed as a plugin, the 4 skills under `.claude/skills/`
+are loaded by Claude Code, and `engine/` and `templates/` remain reachable via the
+`${{CLAUDE_PLUGIN_ROOT}}` prefix baked into every skill (see Path Resolution above).
 """
 
 
@@ -327,7 +348,15 @@ def _gen_plugin_json(v: str) -> str:
         "description": "Credence Fixed-Income Credit Analysis Engine: industry multi-layer "
         "pyramids + dual-track cross-validation + mosaic engine + system-intelligence layer. "
         "Four-stage skills: intake router / analysis / report / qa.",
-        "skills": ".claude/skills/",
+        "author": {
+            "name": "tywinlu1988",
+            "url": "https://github.com/tywinlu1988",
+        },
+        "homepage": "https://github.com/tywinlu1988/Credence-Global",
+        "repository": "https://github.com/tywinlu1988/Credence-Global",
+        "license": "MIT",
+        "keywords": ["credit-analysis", "fixed-income", "bond", "risk", "finance"],
+        "skills": "./.claude/skills/",
     }
     return json.dumps(manifest, ensure_ascii=False, indent=2) + "\n"
 
@@ -360,6 +389,8 @@ def _check_links(errors: list, base: Path) -> None:
             target = m.group(1).split("#")[0].strip()
             if not target or target.startswith(("http://", "https://", "mailto:")):
                 continue
+            if target.startswith(_PLUGIN_PREFIX):
+                target = target[len(_PLUGIN_PREFIX):]
             if (
                 (f.parent / target).exists()
                 or (base / target).exists()
@@ -413,6 +444,17 @@ def validate(out_dir=None) -> list:
     # (vi) src can locate engine/templates (flat dist layout)
     if not (base / "engine").is_dir() or not (base / "templates").is_dir():
         errors.append("LAYOUT: engine/ or templates/ missing at package root")
+
+    # (viii) LICENSE must ship with the package
+    if not (base / "LICENSE").is_file():
+        errors.append("MISSING_LICENSE: LICENSE file not present in dist package")
+
+    # (ix) skills must not carry bare engine/templates references (plugin installs
+    # resolve them from the user's project root, where they do not exist)
+    for f in sorted(base.rglob(".claude/skills/**/*.md")):
+        text = f.read_text(encoding="utf-8")
+        for m in re.finditer(r"`(engine|templates)/", text):
+            errors.append(f"BARE_REF: {f.relative_to(base)}: bare `{m.group(0)}` reference at offset {m.start()}")
 
     # (iii) links
     _check_links(errors, base)
@@ -484,6 +526,7 @@ def build(out_dir=None) -> list:
     _copy_and_transform(ROOT / "src", out / "src", log, scrub=False)
 
     v = _version()
+    shutil.copyfile(ROOT / "LICENSE", out / "LICENSE")
     _write_text(out / "AGENTS.md", _gen_agents_md(v))
     _write_text(out / "CLAUDE.md", _gen_claude_md())
     _write_text(out / "GEMINI.md", _gen_gemini_md())
