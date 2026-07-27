@@ -92,7 +92,9 @@ def publish(push: bool) -> None:
             _write_marketplace_json(tmp_path, version)
 
             _git("add", "-A", cwd=tmp_path)
-            if not _git("diff", "--cached", "--quiet", check=False, cwd=tmp_path).returncode:
+            # `git diff --cached` misbehaves on an unborn (orphan) HEAD;
+            # status --porcelain is reliable in both cases
+            if _git("status", "--porcelain", cwd=tmp_path).stdout.strip():
                 _git("commit", "-m", f"credence {version}: plugin package for marketplace", cwd=tmp_path)
                 print("committed package to", BRANCH)
             else:
