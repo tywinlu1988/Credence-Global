@@ -75,7 +75,10 @@ def publish(push: bool) -> None:
         if _git("branch", "--list", BRANCH).stdout.strip():
             _git("worktree", "add", str(tmp_path), BRANCH)
         else:
-            _git("worktree", "add", "--orphan", BRANCH, str(tmp_path))
+            # portable orphan creation: detached worktree + checkout --orphan
+            _git("worktree", "add", "--detach", str(tmp_path), "HEAD")
+            _git("checkout", "--orphan", BRANCH, cwd=tmp_path)
+            _git("rm", "-rf", "--quiet", ".", cwd=tmp_path)
         try:
             # wipe branch content, then copy the fresh package
             for item in tmp_path.iterdir():
