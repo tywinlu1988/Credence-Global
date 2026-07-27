@@ -1,0 +1,15 @@
+{
+  "name": "credence-marketplace",
+  "owner": {
+    "name": "tywinlu1988",
+    "url": "https://github.com/tywinlu1988"
+  },
+  "plugins": [
+    {
+      "name": "credence",
+      "source": "./",
+      "description": "Methodology-first fixed-income credit analysis engine (four-stage skill chain: router / analysis / report / qa)",
+      "version": "0.0.8"
+    }
+  ]
+}

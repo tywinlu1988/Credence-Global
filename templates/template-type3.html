@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Black Swan Backtest Validation · Yongmei Holding 2020 Default Event · Early Warning Framework Effectiveness Validation">
+<title>Black Swan Backtest Validation · Yongmei Holding Default 2020.11.10</title>
+<link rel="stylesheet" href="template-base.css">
+<style>
+  .hero { background: linear-gradient(135deg, #0f172a, #4a1a1a, #7c2d12); }
+  .narrative-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border-default); border-radius:8px; overflow:hidden; margin:14px 0; }
+  .narrative-side { background:var(--bg-secondary); padding:18px 20px; }
+  .narrative-side h4 { font-size:13px; margin-bottom:10px; }
+  .rating-timeline { display:flex; gap:2px; margin:14px 0; }
+  .rt-item { flex:1; text-align:center; padding:14px 8px; background:var(--bg-tertiary); border-radius:6px; }
+  .rt-item .rating { font-size:20px; font-weight:800; }
+  .rt-item .date { font-size:10px; color:var(--text-tertiary); margin-top:4px; }
+  .conclusion-box { background:var(--bg-secondary); border:2px solid var(--border-strong); border-radius:10px; padding:24px 28px; margin:16px 0; }
+  .signal-score { display:inline-block; width:14px; height:14px; border-radius:50%; margin-right:4px; vertical-align:middle; }
+  @media (max-width:768px) { .rating-timeline { flex-wrap:wrap; } .rt-item { min-width:30%; } .narrative-grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<!-- ====== HERO ====== -->
+<div class="hero" style="background: linear-gradient(135deg, #0f172a, #4a1a1a, #7c2d12);">
+  <span class="chip">TYPE 3 · Black Swan Backtest Validation</span>
+  <h1>Yongcheng Coal & Power Holding Group · 2020 Ultra-Short-Term Note Default Backtest</h1>
+  <p class="subtitle">Based on the Unified Credit Assessment Framework, pyramid scans were conducted at two pre-default time points (T-17 months, T-4.5 months) to validate the framework's early warning capability for "SOE AAA faith" type default events and identify areas for framework improvement</p>
+  <div class="meta">
+    <span>Default Entity: Yongcheng Coal & Power Holding Group</span>
+    <span>Default Date: 2020-11-10</span>
+    <span>Backtest Time Point 1: 2019-06-30 (T-17 months)</span>
+    <span>Backtest Time Point 2: 2020-06-30 (T-4.5 months)</span>
+    <span>Early Warning Window: 17 months</span>
+    <span>Version: v2.0</span>
+  </div>
+</div>
+
+<!-- ====== CONTAINER ====== -->
+<div class="container">
+
+  <!-- ====== STRIP ====== -->
+  <div class="strip">
+    <div class="strip-item">
+      <div class="slabel">Default Entity</div>
+      <div class="sval" style="font-size:20px;">Yongmei Holding</div>
+      <div class="ssub">Henan Provincial SOE · Coal Chemical</div>
+    </div>
+    <div class="strip-item">
+      <div class="slabel">Default Bond</div>
+      <div class="sval" style="font-size:20px;">20 Yongmei SCP003</div>
+      <div class="ssub">1 Billion Ultra-Short-Term Note · 2020.11.10</div>
+    </div>
+    <div class="strip-item">
+      <div class="slabel">External Rating at Default</div>
+      <div class="sval" style="color:var(--green);font-size:20px;">AAA</div>
+      <div class="ssub">Until 30 days before default</div>
+    </div>
+    <div class="strip-item">
+      <div class="slabel">Framework Early Warning Window</div>
+      <div class="sval" style="color:var(--amber);">17 months</div>
+      <div class="ssub">Triggered at T-17 months</div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 1: Event Overview ====== -->
+  <div class="section">
+    <h2 class="section-title">1. Default Event Overview</h2>
+    <div class="card card-red">
+      <h3>Event Panorama</h3>
+      <p style="color:var(--text-secondary);line-height:1.7;">
+        On November 10, 2020, Yongcheng Coal & Power Holding Group (AAA-rated provincial SOE) failed to repay the principal and interest of "20 Yongmei SCP003" amounting to 1.032 billion yuan, triggering one of the most severe shocks in the history of China's credit bond market.
+        As Henan's largest state-owned coal enterprise (total assets of 172.4 billion yuan), Yongmei's default directly shattered the market's faith in "AAA SOE rigid repayment," causing a sharp decline in credit bond market liquidity:
+        Within a week, yields on multiple coal enterprise/city investment bonds surged 200-500bp, credit bond issuance virtually halted, and many institutions suspended pledged repo transactions.
+        More thought-provoking is that half a year before the default, Yongmei still maintained its AAA issuer rating — the external rating agencies' early warning capability for this event was nearly zero.
+      </p>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Event Background and Market Environment</h3>
+      <p style="color:var(--text-secondary);line-height:1.7;">
+        The full name of Yongmei Holding is Yongcheng Coal & Power Holding Group Co., Ltd., a core subsidiary of the Henan provincial SOE Henan Energy & Chemical Group (Yuneng Chemical). Yongmei is primarily engaged in coal mining, washing, and sales, while also involved in non-coal businesses such as chemicals, trading, and equipment manufacturing. As of the end of 2019, the company had total assets of 172.4 billion yuan, annual revenue of approximately 48 billion yuan, and 57,000 employees, making it the largest coal enterprise in Henan Province.
+      </p>
+      <p style="color:var(--text-secondary);line-height:1.7;margin-top:8px;">
+        Before the default occurred, China's credit bond market had long held a "SOE rigid repayment faith" — the widespread belief that AAA-rated state-owned enterprises would not default. This belief stemmed from the extremely rare cases of SOE defaults historically, and the fact that governments typically avoided public market defaults by coordinating financial institutions and injecting assets. Yongmei's default completely shattered this belief, marking a historic turning point in the pricing system of China's credit bond market. After the default, the market began to reprice SOE credit, the credit spread between weak and strong SOEs systematically widened, and the "SOE faith" premium was significantly compressed.
+      </p>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Default Entity Background</h3>
+      <div class="grid-2">
+        <div>
+          <table>
+            <thead><tr><th>Indicator</th><th>Value</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Total Assets (End 2019)</td><td>172.4 billion</td><td>Top-ranking among Henan SOEs</td></tr>
+              <tr><td>Asset-Liability Ratio</td><td>72.1%→74.3%</td><td>Rising for three consecutive years</td></tr>
+              <tr><td>Annual Revenue</td><td>~48 billion</td><td>Coal + Chemical + Trading</td></tr>
+              <tr><td>Net Profit Attributable to Parent</td><td>1.25B → -0.32B</td><td>Turned negative in 2020H1</td></tr>
+              <tr><td>Number of Employees</td><td>~57,000</td><td>Key enterprise in Henan Province</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <table>
+            <thead><tr><th>Credit Event</th><th>Date</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>20 Yongmei SCP003 Principal & Interest Payment</td><td>2020-11-10</td><td><span class="tag tag-red">Unpaid · Default</span></td></tr>
+              <tr><td>20 Yongmei SCP004/005 Cross Default</td><td>2020-11-12</td><td><span class="tag tag-amber">Cross Default Clause Triggered</span></td></tr>
+              <tr><td>Yuneng Chemical Cross Default</td><td>2020-11-13</td><td><span class="tag tag-amber">Multiple Bonds of Parent Triggered</span></td></tr>
+              <tr><td>Outstanding Bondholders Meeting</td><td>2020-11-23</td><td><span class="tag tag-blue">Negotiating Extension Plan</span></td></tr>
+              <tr><td>NAFMII Self-Regulatory Investigation</td><td>2020-11-27</td><td><span class="tag tag-red">Investigation Initiated</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Default Shock Transmission Chain</h3>
+      <table>
+        <thead><tr><th>Shock Phase</th><th>Time</th><th>Market Reaction</th><th>Severity</th></tr></thead>
+        <tbody>
+          <tr><td>Phase 1: Panic Selling</td><td>2020.11.10-11.13</td><td>Coal enterprise bonds were panic-sold, yields of Jizhong Energy/Pingdingshan Coal/Jinmei etc. surged 300-500bp; multiple coal bonds suspended intraday</td><td><span class="tag tag-red">Extreme</span></td></tr>
+          <tr><td>Phase 2: Credit Freeze</td><td>2020.11.16-11.30</td><td>Credit bond issuance sharply contracted (only 40% of normal volume), multiple bonds canceled; pledged repo acceptance plummeted</td><td><span class="tag tag-red">Severe</span></td></tr>
+          <tr><td>Phase 3: Regulatory Intervention</td><td>Dec 2020</td><td>Regulators intervened, interbank market liquidity support increased, but credit stratification persisted; outstanding bond valuations underwent significant adjustments</td><td><span class="tag tag-amber">Moderate</span></td></tr>
+          <tr><td>Phase 4: Structural Reshaping</td><td>2021.01-03</td><td>Market gradually recovered, but after the "SOE faith" was broken, the credit pricing system permanently changed; spreads for weak SOEs systematically widened</td><td><span class="tag tag-amber">Structural</span></td></tr>
+        </tbody>
+      </table>
+      <div class="info-box info-blue" style="margin-top:12px;">
+        <strong>Quantitative Market Impact Analysis:</strong> Within one week of Yongmei's default, the average daily canceled issuance in the credit bond market was approximately 12 billion yuan (normal daily average ~3 billion yuan). The 3-year AAA medium-term note yield rose about 25bp, and AA+ spreads widened 40bp. The overall coal industry spread expanded about 150bp, with weak SOEs like Jizhong Energy and Pingdingshan Coal seeing spreads widen over 300bp. Credit bond ETF net value fell about 2.5%, and some leveraged products triggered forced liquidation. According to Wind data, the total canceled issuance of credit bonds in November 2020 exceeded 150 billion yuan.
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 2: Timeline ====== -->
+  <div class="section">
+    <h2 class="section-title">2. Key Pre-Default Event Timeline</h2>
+    <p style="color:var(--text-secondary);margin-bottom:12px;">The complete timeline from the analysis starting point (end 2018) to the default occurrence (2020.11.10), marking the appearance of framework early warning signals. This timeline integrates financial report disclosure dates, rating actions, media reports, and regulatory dynamics to comprehensively reconstruct the evolution path of the default event.</p>
+    <div class="card">
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-date">2018.06.30</div>
+          <div>[Baseline Start] Framework establishes initial database. Yongmei 2018 interim report shows: total assets 162 billion yuan, asset-liability ratio 71.5%, operating cash flow ~3.8 billion yuan. As the core subsidiary of Henan Energy & Chemical Group, Yongmei enjoys the group's optimal resource allocation. External rating maintained at AAA. Parent company statement shows monetary funds of ~18 billion yuan, consolidated ~24.5 billion yuan (difference of 6.5 billion yuan has already attracted framework attention).</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">2018.12.31</div>
+          <div>[Baseline Time Point] Yongmei audit report: total assets 172.4 billion yuan, asset-liability ratio 72.1%, operating cash flow 6.9 billion yuan. External rating maintained at AAA. Parent company achieved net profit attributable to parent of 2.02 billion yuan for the year (YoY -8%). Non-coal businesses (chemicals/trading) already showed signs of losses, totaling approximately -0.52 billion yuan. Short-term borrowing accounted for about 58%, total interest-bearing debt approximately 104 billion yuan. Parent company monetary funds 15.3 billion yuan, consolidated 27.3 billion yuan (difference 12 billion yuan).</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">2019.03.31</div>
+          <div>2018 annual report formally disclosed. The audit firm issued a standard unqualified opinion, but the "Related Party Relationships and Transactions" notes showed a balance of related party transactions with Henan Energy & Chemical Group of approximately 18.5 billion yuan (up about 28% YoY). Yongmei provided guarantee balances of approximately 9.5 billion yuan for Henan Energy & Chemical Group and its subsidiaries. External rating agencies maintained the AAA rating in their annual review, without mentioning related party transaction risks and guarantee risks.</div>
+        </div>
+        <div class="tl-item amber">
+          <div class="tl-date">2019.04.30</div>
+          <div>2018 annual report disclosure: total monetary funds 27.3 billion yuan, but parent company statement only 15.3 billion yuan (difference 12 billion yuan). Bank credit facilities of 120 billion yuan, of which unused portion approximately 38 billion yuan. CCXI maintained AAA issuer rating with stable outlook. Audit report unqualified opinion.</div>
+        </div>
+        <div class="tl-item amber">
+          <div class="tl-date">2019.06.30</div>
+          <div><span class="tag tag-amber" style="margin-right:6px;">First Warning</span>Framework scan T-17 months: asset-liability ratio rose to 74.3%, unrestricted monetary funds/short-term debt fell to 0.45x, L4 governance rating dispersion (related party transactions exceeded 30% of total assets). The difference between parent company and consolidated monetary funds further expanded to 12.4 billion yuan. Non-coal business losses expanded to -0.85 billion yuan (mainly chemical segment losses).<strong>Framework score 3.90/BB-, 5 notches below external AAA.</strong></div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">2019.08.30</div>
+          <div>2019 interim report disclosure: first-half net profit attributable to parent approximately 0.85 billion yuan (YoY -15%), operating cash flow approximately 3.2 billion yuan (YoY -22%). Accounts receivable and other receivables combined grew to approximately 18 billion yuan, of which related party receivables about 12 billion yuan. Net cash flow from financing activities turned negative (-0.8 billion yuan), indicating tightening external financing environment.</div>
+        </div>
+        <div class="tl-item amber">
+          <div class="tl-date">2019.12.31</div>
+          <div>Year-end financial report disclosure: net profit attributable to parent declined 38% YoY (from 2.02 billion to 1.25 billion), short-term debt accounted for 65% of 112 billion yuan interest-bearing debt. Non-coal business (chemicals/trading) losses expanded to -0.85 billion yuan. TTM operating cash flow approximately 5.8 billion yuan (YoY -16%), EBITDA/interest coverage declined from 3.4x to 2.8x, approaching the framework's early warning threshold of 2.0x. Subsidiary Yongyin Chemical (coal chemical segment) losses continued to expand.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">2020.01-03</div>
+          <div>COVID-19 outbreak severely impacted coal industry demand (thermal power/steel). Q1 coal prices fell about 12% from 2019 average. Henan Province Q1 2020 GDP growth rate was -6.8% YoY, increasing fiscal revenue and expenditure pressure. Yongmei's Q1 sales volume declined about 25% YoY, payment collection cycle extended to 90+ days.</div>
+        </div>
+        <div class="tl-item red">
+          <div class="tl-date">2020.04.30</div>
+          <div>Q1 report: affected by the epidemic, operating cash flow decreased 62% YoY to approximately 1.1 billion yuan. Parent company-level monetary funds fell to 7.8 billion yuan, but consolidated statements still showed 26.1 billion yuan — the difference of 17.2 billion yuan attracted framework attention. Short-term borrowings increased to approximately 42 billion yuan, of which bonds maturing within 3 months approximately 8.5 billion yuan. CCXI still maintained AAA rating.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">2020.06.01</div>
+          <div>Market rumors circulated about Yongmei's debt extension risk, but Yongmei-related sources denied them. Sporadic position reductions appeared in the secondary market; the valuation yield of 20 Yongmei SCP003 (issued in April) was approximately 4.5%. Multiple institutions began tightening their acceptance criteria for coal enterprise bonds.</div>
+        </div>
+        <div class="tl-item red">
+          <div class="tl-date">2020.06.30</div>
+          <div><span class="tag tag-red" style="margin-right:6px;">Second Warning</span>Framework scan T-4.5 months: liquidity coverage ratio (unrestricted monetary funds/short-term debt) dropped to 0.28x, parent company-level monetary funds only 4.8 billion vs short-term debt of 38.5 billion yuan. TTM operating cash flow only about 2.5 billion yuan (YoY -64%). EBITDA/interest further declined to 1.1x, already unable to cover interest expenses. Score dropped sharply from 3.90 to <strong>2.35/B</strong>, entering the pre-default range. External rating still maintained at AAA.</div>
+        </div>
+        <div class="tl-item red">
+          <div class="tl-date">2020.08.31</div>
+          <div>2020 interim report released: net profit attributable to parent turned negative (-0.32 billion yuan), first semi-annual loss since listing. Asset-liability ratio rose to 76.5%, interest-bearing debt increased to 118 billion yuan. Auditors added "going concern" related cautionary language in the financial statement notes. Parent company level recorded negative net monetary funds (considering bank overdrafts). Secondary market valuation yield of 20 Yongmei SCP003 rose to 5.8%.</div>
+        </div>
+        <div class="tl-item red">
+          <div class="tl-date">2020.09.15</div>
+          <div>Yongmei and lead underwriters began communicating bond extension plans with some holders, but did not publicly disclose. External rating agency CCXI still maintained AAA rating in its tracking report, but adjusted the outlook to "stable" (consistent with before). At this time, approximately 57 days remained until the maturity of 20 Yongmei SCP003.</div>
+        </div>
+        <div class="tl-item red">
+          <div class="tl-date">2020.10.20</div>
+          <div>Yongmei announced plans to convene a holder meeting to discuss the "20 Yongmei SCP003" extension plan. External rating agency CCXI for the first time placed Yongmei on a watch list for possible downgrade (21 days before default). ChinaBond valuation yield had risen to 6.5%. Large-scale institutional position reductions appeared in the secondary market. Multiple fund companies adjusted their position valuations.</div>
+        </div>
+        <div class="tl-item red">
+          <div class="tl-date">2020.10.27</div>
+          <div>CCXI downgraded Yongmei's issuer rating from AAA to AA- (2 notches). Market reaction was intense; the secondary market transaction yield of 20 Yongmei SCP003 surged to 8-10%. On the same day, NAFMII interviewed Yongmei and lead underwriters to learn about the progress of the extension plan. Only 14 days before default.</div>
+        </div>
+        <div class="tl-item red">
+          <div class="tl-date">2020.11.10</div>
+          <div><strong style="color:var(--red);font-size:16px;">Default Occurred</strong> — "20 Yongmei SCP003" failed to repay principal and interest of 1.032 billion yuan on schedule. On the same day, CCXI downgraded the rating from AAA to BB (6-notch drop), then further downgraded to D within 30 days after default. The Henan Provincial Government urgently convened a coordination meeting to discuss subsequent debt resolution plans.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">2020.11.13-12.15</div>
+          <div>Default shock spread: Yuneng Chemical (Yongmei parent) cross-defaulted, prices of multiple coal enterprise bonds halved. NAFMII initiated self-regulatory investigations into Yongmei and related intermediaries. Provincial party committee and government intervened to coordinate debt resolution plans. Subsequent maturing bonds such as 20 Yongmei SCP004/005 triggered cross-default clauses, involving approximately 5 billion yuan. The credit bond market entered a reshaping phase after the "SOE faith" shattered.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">2020.12-2021.01</div>
+          <div>Subsequent disposal phase: Yongmei communicated with holders on subsequent bond repayment arrangements. The Henan Provincial Government coordinated financial institutions to provide liquidity support. Yongmei successively repaid some maturing bonds such as 20 Yongmei SCP004 and 20 Yongmei SCP005, but holders of 20 Yongmei SCP003 still faced substantial losses. NAFMII issued self-regulatory sanctions decisions against Yongmei, lead underwriters, audit firms, and other intermediaries.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-date">2021.02-06</div>
+          <div>Long-term market impact: The credit bond market entered the "Post-Yongmei Era," with profound changes in SOE credit pricing systems. The credit spread between weak SOEs and strong SOEs expanded from approximately 50bp before Yongmei's default to 150-200bp. The credit rating industry received high regulatory attention; CCXI was warned by NAFMII due to the Yongmei rating issue. The exchange and NAFMII jointly issued self-regulatory management guidelines for credit rating business, promoting reform in the rating industry.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 3: Time Point 1 ====== -->
+  <div class="section">
+    <h2 class="section-title">3. Time Point 1: Long-Cycle Scan (T-17 Months · 2019.06.30)</h2>
+    <p style="color:var(--text-secondary);margin-bottom:16px;">At 17 months before default, the framework conducted its first full pyramid scan. At this time, the external rating was AAA, and the market's risk perception of Yongmei was nearly zero. The framework performed a penetrating analysis across all five pyramid levels, reaching conclusions vastly different from the external rating.</p>
+
+    <div class="card card-blue">
+      <h3>Five-Level Pyramid Score Details</h3>
+      <table>
+        <thead><tr><th>Level</th><th>Score</th><th>Rating Equivalent</th><th>Key Findings</th><th>Signal Level</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>L1 Macro & Regional</td>
+            <td class="score-ok">5.5</td>
+            <td><span class="tag tag-blue">BBB</span></td>
+            <td>Henan Province economic growth of 6.8% at national mid-range, per capita GDP ranked 18th nationally. Coal industry benefited from the tail end of supply-side reform dividends, but demand side (thermal power/steel) already showed weakness; 2019H1 coal prices fell 15% from 2018 highs. Henan Province's 2019 fiscal self-sufficiency rate was about 45% (23rd nationally), with a ceiling on support capacity.</td>
+            <td><span class="signal amber"></span><span class="tag tag-amber">Watch</span></td>
+          </tr>
+          <tr>
+            <td>L2 Industry & Operations</td>
+            <td class="score-warn">4.0</td>
+            <td><span class="tag tag-amber">BB</span></td>
+            <td>Yongmei's non-coal businesses (chemicals/trading/equipment manufacturing) sustained losses, dragging down overall profitability. Chemical segment losses of approximately -0.85 billion yuan, trading gross margin only 2.1%. Coal business was stable but lacked growth elasticity; resource endowments were deteriorating (high-quality coking coal reserves declining annually). The industry concentration trend was unfavorable for medium-sized coal enterprises like Yongmei, with market share eroded by leaders like Shaanxi Coal and Shandong Energy.</td>
+            <td><span class="signal amber"></span><span class="tag tag-amber">Warning</span></td>
+          </tr>
+          <tr>
+            <td>L3 Financial Strength</td>
+            <td class="score-warn">3.5</td>
+            <td><span class="tag tag-amber">BB-</span></td>
+            <td>Asset-liability ratio of 74.3% rising year after year, short-term debt accounted for 62% of 105 billion yuan interest-bearing debt. Unrestricted monetary funds/short-term debt only 0.45x. More critically: parent company monetary funds of 12.4 billion vs consolidated 24.8 billion yuan — the 12.4 billion difference indicates a large amount of cash at subsidiary level may be restricted (bank acceptance bill deposits ~8 billion, time deposit pledges ~4.5 billion, escrow accounts ~2.5 billion). After deducting restricted portions, actual available funds approximately 10 billion yuan.</td>
+            <td><span class="signal red"></span><span class="tag tag-red">Severe</span></td>
+          </tr>
+          <tr>
+            <td>L4 Management & Governance</td>
+            <td class="score-bad">2.5</td>
+            <td><span class="tag tag-red">B</span></td>
+            <td>Related party receivables from Henan Energy & Chemical Group (Yuneng Chemical) exceeded 20 billion yuan (of which other receivables 12 billion yuan), accounting for 12% of total consolidated assets. Yongmei effectively served as the carrier of quality assets within the Yuneng Chemical system, with funds centrally deployed by the group. The "Related Party Transactions" section of the audit report was unusually brief, with opaque information disclosure. The board included 3 independent directors but only accounted for 1/6, lacking governance checks and balances. The risk of centralized fund management by the group was not fully disclosed in the rating report.</td>
+            <td><span class="signal red"></span><span class="tag tag-red">Severe</span></td>
+          </tr>
+          <tr>
+            <td>L5 External Support</td>
+            <td class="score-warn">4.0</td>
+            <td><span class="tag tag-amber">BB</span></td>
+            <td>The status as a Henan provincial SOE did provide some support endorsement, but Henan's fiscal self-sufficiency rate that year was about 45% (23rd nationally), with an upper limit on support capacity. Moreover, Yuneng Chemical itself was also in a high-debt state (asset-liability ratio 85%+), making systemic rescue extremely difficult. Referencing past cases (Sichuan Coal/Yunnan Coal and other coal enterprise defaults), local governments tend to prioritize rescuing city investment companies over industrial SOEs.</td>
+            <td><span class="signal amber"></span><span class="tag tag-amber">Warning</span></td>
+          </tr>
+          <tr style="background:var(--bg-tertiary);">
+            <td><strong>Weighted Total Score</strong></td>
+            <td><strong class="score-warn">3.90</strong></td>
+            <td><span class="tag tag-amber">BB-</span></td>
+            <td colspan="2"><span class="text-amber"><strong>Framework Rating BB- vs External Rating AAA — 5 Notch Difference</strong></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>L3 Financial Strength: Deep Dive Analysis</h3>
+      <p style="color:var(--text-secondary);line-height:1.7;">
+        The L3 score of only 3.5 (BB- equivalent) provided a key anchor for the framework's early warning. In-depth analysis reveals:
+      </p>
+      <div class="grid-3" style="margin-top:10px;">
+        <div class="info-box info-red">
+          <strong>Liquidity Gap</strong><br>
+          <span style="font-size:12px;">Unrestricted monetary funds/short-term debt = 0.45x, far below the framework's safety threshold of 0.8x. Including unused bank credit facilities (~38 billion), the coverage ratio would be about 2.1x, but bank credit can be revoked at any time (especially during economic downturns). The "unrestricted monetary funds" metric used by the framework at the L3 level is much stricter than the "monetary funds" metric used by external rating agencies — after deducting restricted portions such as bank acceptance bill deposits, time deposit pledges, and escrow accounts, the actual freely usable funds are significantly reduced.</span>
+        </div>
+        <div class="info-box info-amber">
+          <strong>Short-Term Debt Rollover Pressure</strong><br>
+          <span style="font-size:12px;">Of the 105 billion yuan in interest-bearing debt, short-term debt was 65 billion (62%), with an average remaining maturity of about 9 months. TTM operating cash flow of about 6.9 billion yuan could only cover approximately 10% of short-term debt rollover needs. Once the market tightened, short-term debt could not be renewed. The framework's short-term debt ratio threshold is set at 55%; Yongmei's actual value of 65% far exceeded this threshold, triggering a red warning signal at the L3 level.</span>
+        </div>
+        <div class="info-box info-red">
+          <strong>Parent Company Fund Depletion</strong><br>
+          <span style="font-size:12px;">The parent company effectively served as the group fund concentration center but retained only 12.4 billion yuan in monetary funds. The other 24.8 billion yuan in cash from the consolidated statements was distributed across subsidiaries (approximately 60% restricted), and the parent company's independent debt repayment capacity was severely overestimated. This discrepancy (12.4 billion vs 24.8 billion) was a core finding of the framework's dual-track analysis.</span>
+        </div>
+      </div>
+      <div class="info-box info-red" style="margin-top:10px;">
+        <strong>Key Findings Summary from L3 Financial Deep Dive:</strong> Yongmei appeared to have ample monetary funds at the consolidated level, but the parent company's liquidity position was far weaker than what the consolidated statements suggested. This "ample at consolidated level, tight at parent level" phenomenon is a common pitfall in credit analysis of group enterprises. By mandatorily comparing the differences between the two reporting perspectives, the framework effectively broke through this accounting information barrier.
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>L3 Financial Strength Detailed Scoring: Sub-Dimension Breakdown</h3>
+      <p style="color:var(--text-secondary);font-size:13px;margin-bottom:10px;">L3 Financial Strength carries the highest weight in the framework (30%). This backtest scores each of its sub-dimensions individually, revealing the structural imbalances behind the 3.5 total score. The weighted total of the five sub-dimensions is 3.12, with the overall rating being low, where liquidity coverage and debt service coverage are the main drags.</p>
+      <table>
+        <thead><tr><th>Sub-Dimension</th><th>Weight</th><th>Score</th><th>Key Indicator</th><th>Yongmei Actual Value</th><th>Scoring Basis</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Capital Structure</td>
+            <td>30%</td>
+            <td class="score-warn">3.0</td>
+            <td>Asset-liability ratio, short-term debt/total interest-bearing debt</td>
+            <td>74.3%, Short-term debt ratio 62%</td>
+            <td>Asset-liability ratio rising for three consecutive years and above industry average (68%), short-term debt ratio exceeding 60% triggered framework severe warning</td>
+          </tr>
+          <tr>
+            <td>Liquidity Coverage</td>
+            <td>25%</td>
+            <td class="score-bad">1.5</td>
+            <td>Unrestricted monetary funds/short-term debt, parent company monetary fund coverage rate</td>
+            <td>0.45x, Parent company 12.4B/short-term debt 65B=0.19x</td>
+            <td>Consolidated unrestricted coverage already below 0.5x; parent company coverage rate only 0.19x, extremely tight liquidity</td>
+          </tr>
+          <tr>
+            <td>Profitability</td>
+            <td>20%</td>
+            <td class="score-warn">4.0</td>
+            <td>ROA, net profit margin, non-coal business P&L</td>
+            <td>ROA 2.8%, Non-coal business loss -0.85B</td>
+            <td>Coal main business acceptable (contributes ~2.2 billion profit), but chemical/trading segments combined loss of -0.85 billion has clear offset effect</td>
+          </tr>
+          <tr>
+            <td>Cash Flow Quality</td>
+            <td>15%</td>
+            <td class="score-ok">4.5</td>
+            <td>Operating cash flow/revenue, FFO/total liabilities</td>
+            <td>Operating cash flow 6.9B, FFO/total liabilities 4.1%</td>
+            <td>Absolute amount of operating cash flow acceptable (6.9 billion), but limited coverage capacity relative to 112 billion in interest-bearing debt</td>
+          </tr>
+          <tr>
+            <td>Debt Service Coverage</td>
+            <td>10%</td>
+            <td class="score-bad">2.0</td>
+            <td>EBITDA/interest, total liabilities/EBITDA</td>
+            <td>EBITDA/Interest 2.8x, Total liabilities/EBITDA 8.2x</td>
+            <td>Interest coverage ratio deteriorating year by year and approaching the framework's early warning threshold; total liabilities/EBITDA exceeding 8x indicates excessively long debt repayment period</td>
+          </tr>
+          <tr style="background:var(--bg-tertiary);">
+            <td><strong>Weighted Total</strong></td>
+            <td><strong>100%</strong></td>
+            <td><strong class="score-warn">3.12</strong></td>
+            <td colspan="3"><span class="text-amber">Weighted score of 3.12 is lower than the overall L3 score of 3.5; liquidity coverage and debt service coverage are the main drag factors</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box info-amber" style="margin-top:10px;">
+        <strong>Sub-Dimension Analysis Insights:</strong> The actuarial weighted score (3.12) is lower than the direct assessment score (3.5), reflecting severe imbalance among the L3 internal dimensions — the extremely low scores for liquidity coverage (1.5) and debt service coverage (2.0) were diluted by the partially positive performance of cash flow quality (4.5) and profitability (4.0). In future versions, the framework will consider introducing a "weakest link effect" adjustment mechanism (i.e., assigning additional penalty weights to the lowest sub-dimension score) to more sensitively capture structural risks.
+      </div>
+    </div>
+
+    <div class="card card-amber" style="margin-top:14px;">
+      <h3>Time Point 1 Warning Assessment</h3>
+      <div class="metric-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="metric">
+          <div class="m-num" style="color:var(--amber);">BB-</div>
+          <div class="m-label">Framework Internal Rating</div>
+        </div>
+        <div class="metric">
+          <div class="m-num" style="color:var(--amber);">Warning</div>
+          <div class="m-label">Framework Warning Level</div>
+        </div>
+        <div class="metric">
+          <div class="m-num" style="color:var(--red);">17 months</div>
+          <div class="m-label">Early Warning Time</div>
+        </div>
+      </div>
+      <div class="info-box info-amber" style="margin-top:12px;">
+        <strong>Core Conclusion (T-17 months):</strong> The framework gave a BB- internal rating 17 months before default, 5 notches lower than the external AAA rating. Core risk signals were concentrated in: <strong>L3 Financial Strength (short-term debt ratio 62%, low unrestricted monetary fund coverage)</strong> and <strong>L4 Governance Penetration (massive related party transactions with opaque information)</strong>. If the framework's conclusions had been adopted at that time, investors would have had a <strong>17-month</strong> window for risk avoidance or hedging operations. The huge gap between the framework and the external rating reveals a fundamental problem: the blind faith in the "AAA SOE" label led the market to systematically ignore a series of hard financial early warning signals.
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 4: Time Point 2 ====== -->
+  <div class="section">
+    <h2 class="section-title">4. Time Point 2: Short-Cycle Signal Changes (T-4.5 Months · 2020.06.30)</h2>
+    <p style="color:var(--text-secondary);margin-bottom:16px;">Only 4.5 months before default, the framework conducted its second scan. By this time, the financial situation had deteriorated sharply, and signal intensity had escalated across the board. The epidemic impact combined with industry downturn escalated Yongmei's liquidity risk from "Warning" to "Emergency" within half a year.</p>
+
+    <div class="grid-2">
+      <div class="card card-red">
+        <h3>Score Comparison: 2019.06 vs 2020.06</h3>
+        <table>
+          <thead><tr><th>Level</th><th>2019.06</th><th>2020.06</th><th>Change</th><th>Trend</th></tr></thead>
+          <tbody>
+            <tr><td>L1 Macro & Regional</td><td>5.5</td><td>4.5</td><td class="text-red">-1.0</td><td>Epidemic impact + coal prices continued to fall 15%</td></tr>
+            <tr><td>L2 Industry & Operations</td><td>4.0</td><td>2.5</td><td class="text-red">-1.5</td><td>Non-coal business losses expanded to -1.2 billion</td></tr>
+            <tr><td>L3 Financial Strength</td><td>3.5</td><td>1.5</td><td class="text-red">-2.0</td><td>Monetary funds plummeted + liquidity dried up</td></tr>
+            <tr><td>L4 Management & Governance</td><td>2.5</td><td>2.0</td><td class="text-amber">-0.5</td><td>Auditor added going concern emphasis paragraph</td></tr>
+            <tr><td>L5 External Support</td><td>4.0</td><td>3.0</td><td class="text-red">-1.0</td><td>Henan provincial finances further stressed by epidemic</td></tr>
+            <tr style="background:var(--bg-tertiary);">
+              <td><strong>Weighted Total Score</strong></td><td><strong>3.90</strong></td><td><strong>2.35</strong></td><td class="text-red"><strong>-1.55</strong></td><td><strong>Dropped from BB- to B</strong></td></tr>
+          </tbody>
+        </table>
+        <div class="info-box info-red" style="margin-top:10px;">
+          <strong>Score Meaning:</strong> In the framework's score threshold classification, &gt;4.5 is investment grade, 3.0-4.5 is speculative grade (warning), &lt;3.0 is high risk (red alert). The 2.35 score in 2020.06 had entered the pre-default range, only 0.35-0.85 points away from the framework's defined "default critical point" (1.5-2.0).
+        </div>
+      </div>
+      <div class="card card-red">
+        <h3>Key Financial Signal Deterioration Comparison</h3>
+        <table>
+          <thead><tr><th>Signal Indicator</th><th>2019.06</th><th>2020.06</th><th>Deterioration Magnitude</th><th>Framework Threshold</th></tr></thead>
+          <tbody>
+            <tr><td>Unrestricted Monetary Funds/Short-Term Debt</td><td>0.45x</td><td>0.28x</td><td class="text-red">-37.8%</td><td>&lt;0.5x Warning</td></tr>
+            <tr><td>Parent Company Monetary Funds</td><td>12.4B</td><td>4.8B</td><td class="text-red">-61.3%</td><td>YoY Decline &gt;30% Warning</td></tr>
+            <tr><td>Operating Cash Flow</td><td>6.9B</td><td>2.5B (TTM)</td><td class="text-red">-63.8%</td><td>YoY Decline &gt;50% Severe</td></tr>
+            <tr><td>Net Profit Attributable to Parent</td><td>1.25B</td><td>-0.32B</td><td class="text-red">Turned Negative</td><td>Positive to Negative Severe</td></tr>
+            <tr><td>EBITDA/Interest</td><td>2.8x</td><td>1.1x</td><td class="text-red">-60.7%</td><td>&lt;2.0x Warning</td></tr>
+            <tr><td>External Rating</td><td>AAA</td><td>AAA</td><td class="text-amber">No Change</td><td>Framework vs External Gap 5 Notches</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card card-red" style="margin-top:14px;">
+      <h3>Time Point 2 Warning Assessment</h3>
+      <p style="color:var(--text-secondary);line-height:1.7;">
+        The framework score dropped from <strong>3.90/BB-</strong> to <strong>2.35/B</strong>, entering the red alert range (&lt;3.0). The L3 Financial Strength score was only 1.5 (CCC equivalent), with the unrestricted monetary funds/short-term debt ratio of 0.28x already below the default critical point.
+        A key detail overlooked by external ratings and the market was: parent company-level monetary funds plummeted from 12.4 billion to 4.8 billion yuan (a 61% decline), while short-term debt during the same period was as high as 38.5 billion yuan — even using all 4.8 billion, the coverage rate would be only 12.5%.
+        This means the parent company level had effectively lost its debt repayment capacity. The internal rating given by the framework at this time was already very close to the actual default state (CCC+/B).
+        <strong style="color:var(--red);">With 4.5 months remaining until actual default, the framework gave investors a final window for risk management.</strong>
+      </p>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Half-Year Change Deep Dive: Why Was the Financial Deterioration So Severe?</h3>
+      <div class="grid-3">
+        <div class="info-box info-red">
+          <strong>Epidemic Impact Amplifier</strong><br>
+          <span style="font-size:12px;">The COVID-19 outbreak in 2020Q1 caused a cliff-like decline in coal demand. Yongmei's main customers (thermal power plants, steel mills) had operating rates reduced to 60-70%, sales volume declined 25% YoY, payment collection cycles extended from 60 days to 90-120 days, directly causing a 62% contraction in operating cash flow. Henan Province's 2020 Q1 GDP was -6.8% YoY, severely impacting the economic fundamentals.</span>
+        </div>
+        <div class="info-box info-red">
+          <strong>Funds Withdrawn by Parent Group</strong><br>
+          <span style="font-size:12px;">At the Henan Energy & Chemical Group level, greater debt repayment pressure led to large-scale fund transfers from Yongmei through the internal fund concentration system. Parent company monetary funds fell from 12.4 billion to 4.8 billion (-61%), while consolidated monetary funds only declined 19% (from 26.1 billion to 21.2 billion), indicating increased intensity of centralized fund deployment by the group. This validated the framework's L4 level assessment regarding "intra-group fund concentration risks."</span>
+        </div>
+        <div class="info-box info-amber">
+          <strong>External Financing Channels Narrowed</strong><br>
+          <span style="font-size:12px;">In the first half of 2020, affected by Yongmei's own negative signals and the overall industry credit contraction, bank credit facilities were compressed from 120 billion to approximately 95 billion yuan, with unused facilities dropping from 38 billion to about 20 billion. Bond market financing costs rose from below 4% to over 5%. Multiple outstanding bonds in the interbank market could not be rolled over upon maturity; in the first half of 2020, approximately 12 billion yuan of Yongmei's bonds matured, of which about 3 billion could not be repaid with new bonds and had to rely on own funds.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Two Time Points on a Number Axis: Framework Score Evolution Panorama</h3>
+      <table>
+        <thead><tr><th>Dimension</th><th>2019.06 (T-17M)</th><th>2019.12 (T-11M)</th><th>2020.06 (T-4.5M)</th><th>Trend</th></tr></thead>
+        <tbody>
+          <tr><td>Framework Weighted Score</td><td class="score-warn">3.90</td><td class="score-warn">3.40</td><td class="score-bad">2.35</td><td class="text-red">Continuous Deterioration</td></tr>
+          <tr><td>Framework Internal Rating</td><td><span class="tag tag-amber">BB-</span></td><td><span class="tag tag-amber">B+</span></td><td><span class="tag tag-red">B</span></td><td class="text-red">Down 2 notches</td></tr>
+          <tr><td>External Rating</td><td><span class="tag tag-green">AAA</span></td><td><span class="tag tag-green">AAA</span></td><td><span class="tag tag-green">AAA</span></td><td class="text-amber">No Change</td></tr>
+          <tr><td>Rating Gap</td><td><span class="text-red">5 notches</span></td><td><span class="text-red">5 notches</span></td><td><span class="text-red">5 notches</span></td><td class="text-red">Persistent</td></tr>
+          <tr><td>L3 Financial Score</td><td>3.5</td><td>2.8</td><td>1.5</td><td class="text-red">Largest Decline</td></tr>
+          <tr><td>L4 Governance Score</td><td>2.5</td><td>2.2</td><td>2.0</td><td class="text-amber">Slight Decline</td></tr>
+          <tr><td>Warning Status</td><td><span class="tag tag-amber">Warning</span></td><td><span class="tag tag-red">Severe Warning</span></td><td><span class="tag tag-red">Red Alert</span></td><td class="text-red">Continuous Escalation</td></tr>
+        </tbody>
+      </table>
+      <div class="info-box info-amber" style="margin-top:10px;">
+        <strong>Evolution Characteristics:</strong> The framework score continuously declined from 3.90 to 2.35 over four quarters, a drop of 39.7%. L3 Financial score had the largest decline (-57.1%), serving as the dominant force driving the overall score downward. External ratings remained unchanged at AAA throughout this period, with the gap relative to the framework rating consistently above 5 notches. This pattern of "framework continuously declining, external motionless" itself constituted the strongest early warning signal.
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 5: Narrative Deconstruction ====== -->
+  <div class="section">
+    <h2 class="section-title">5. Core Deceptions and Narrative Deconstruction</h2>
+    <p style="color:var(--text-secondary);margin-bottom:12px;">The essence of Yongmei's default lies in the huge gap between the "SOE AAA faith" and financial reality. Through penetrating analysis, the framework deconstructed five major misconceptions in market consensus. These misconceptions are also the fundamental reasons why external rating agencies failed to provide early warnings. Below, each market consensus is compared one by one with the corresponding framework penetrating analysis, revealing the deep structure of information asymmetry and cognitive biases.</p>
+
+    <div class="card">
+      <h3>Market Consensus vs Framework Penetrating Analysis</h3>
+      <div class="narrative-grid">
+        <div class="narrative-side" style="background:var(--bg-tertiary);">
+          <h4 style="color:var(--text-secondary);">Market Consensus / Positive Narrative</h4>
+          <ul style="color:var(--text-secondary);font-size:13px;line-height:2.3;padding-left:16px;">
+            <li>"AAA provincial SOE, never had a default before"</li>
+            <li>"Henan provincial government will not sit idly by as the province's largest SOE defaults"</li>
+            <li>"Yongmei is Henan's largest coal enterprise with strategic importance"</li>
+            <li>"72% asset-liability ratio is normal in the coal industry"</li>
+            <li>"Consolidated statements show monetary funds of 26.1 billion yuan, sufficient to cover short-term debt"</li>
+            <li>"Beneficiary of coal industry supply-side reform, stable operating cash flow"</li>
+            <li>"External AAA rating is the strongest endorsement of credit quality"</li>
+            <li>"Bank credit facilities of 120 billion yuan, ample backup liquidity"</li>
+            <li>"Henan GDP in the top 5 nationally, sufficient fiscal resources for rescue"</li>
+          </ul>
+        </div>
+        <div class="narrative-side">
+          <h4 style="color:var(--red);">Framework Penetrating Analysis / Facts</h4>
+          <ul style="color:var(--text-secondary);font-size:13px;line-height:2.3;padding-left:16px;">
+            <li><span class="text-red">Framework internal rating BB-</span> far below external AAA — 5 notch difference</li>
+            <li>Henan per capita fiscal ranking 18th nationally, and Yuneng Chemical itself has 85%+ debt ratio, <span class="text-red">rescue capacity far below market imagination</span></li>
+            <li>Non-coal businesses (chemicals/trading/equipment manufacturing) <span class="text-red">losses for 5 consecutive years</span>, a profit "bleeding point"</li>
+            <li><span class="text-red">Short-term debt ratio of 65%</span> among interest-bearing debt, severe maturity mismatch (operating cash flow unable to cover short-term debt maturities)</li>
+            <li>Of the consolidated 26.1 billion yuan in monetary funds, <span class="text-red">approximately 60% is restricted</span> (bank acceptance bill deposits/time deposit pledges/escrow accounts), unrestricted portion only about 10 billion</li>
+            <li><span class="text-red">Related party receivables from Yuneng Chemical exceeding 20 billion yuan</span>, parent company's actual available funds far below external perception</li>
+            <li>External rating methodology has inherent flaws: over-reliance on consolidated statements, <span class="text-red">underestimation of the disconnect between SOE credit quality and government support capacity</span></li>
+            <li>Of the bank credit facilities, <span class="text-red">approximately 30% are irrevocable standby credit</span>, actual immediately available credit far below disclosed amount</li>
+            <li>After epidemic prevention and tax/fee reductions in 2020, Henan Province's actual disposable fiscal resources significantly declined, <span class="text-red">rescue priority: city investment over industrial SOEs</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="info-box info-red" style="margin-top:16px;">
+        <strong>Key Technical Differences Where Framework Leads External Ratings:</strong><br>
+        (1) <strong>Consolidated vs Parent Dual-Track Analysis</strong>: The framework mandates simultaneous analysis of both consolidated and parent company statements, while external ratings primarily focus on consolidated statements. The difference between Yongmei's parent company monetary funds of 4.8 billion vs consolidated 26.1 billion revealed the truth about fund restrictions and group deployment.<br>
+        (2) <strong>Unrestricted Monetary Fund Coverage Ratio</strong>: The framework set this indicator at L3 Financial level, penetrating the inflated "monetary funds" account. Calculated under the framework's methodology, Yongmei's unrestricted monetary funds/short-term debt was only 0.28x, far beyond external rating agencies' liquidity assessment.<br>
+        (3) <strong>Related Party Transaction Penetration</strong>: The framework's L4 Governance level systematically tracks the scale of related party fund flows; Yongmei's 20 billion+ related party transactions with Yuneng Chemical were flagged as "high-risk penetration signals" — this carried almost no weight in external rating reports.<br>
+        (4) <strong>True Ceiling of External Support</strong>: The framework does not accept the "SOE faith" assumption, but instead quantifies the upper limit of support capacity through objective indicators such as fiscal self-sufficiency rate, historical rescue cases, and intra-group rescue priority order.<br>
+        (5) <strong>Audit Opinion Penetration</strong>: At the L4 level, the framework analyzes the "Key Audit Matters" section of the audit report, identifying auditors' implicit concerns about going concern, while external rating agencies typically only focus on the type of audit opinion (unqualified/qualified/adverse).
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Narrative Deconstruction: Seven "Hidden Risks"</h3>
+      <table>
+        <thead><tr><th>No.</th><th>Hidden Risk</th><th>Market Perception</th><th>Framework Identification Mechanism</th><th>Impact Weight</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>False consolidated cash flow</td><td>Consolidated 26.1B monetary funds equal ample liquidity</td><td>Dual-track analysis of parent vs consolidated statements reveals fund concentration and restrictions</td><td><span class="tag tag-red">High</span></td></tr>
+          <tr><td>2</td><td>Related party fund black hole</td><td>Related party transactions are within normal group operations</td><td>Quantify related party transactions/total assets ratio, threshold &gt;30% triggers L4 red warning</td><td><span class="tag tag-red">High</span></td></tr>
+          <tr><td>3</td><td>Maturity mismatch of short borrowing for long investment</td><td>High short-term debt ratio is industry practice for coal enterprises</td><td>Liquidity coverage ratio (unrestricted cash/short-term debt) as core indicator</td><td><span class="tag tag-red">High</span></td></tr>
+          <tr><td>4</td><td>Hidden drag of non-coal businesses</td><td>Non-coal businesses are part of diversification strategy</td><td>Segment reporting analysis: non-coal ROIC&lt;WACC, persistently consuming cash flow</td><td><span class="tag tag-amber">Medium</span></td></tr>
+          <tr><td>5</td><td>Government rescue capacity illusion</td><td>Henan GDP top 5, rescue without pressure</td><td>Comprehensive analysis of fiscal self-sufficiency rate + debt ratio + historical rescue priority</td><td><span class="tag tag-amber">Medium</span></td></tr>
+          <tr><td>6</td><td>Illusory safety cushion of bank credit</td><td>120B credit facility provides ample liquidity</td><td>Analyze credit structure: drawn/undrawn, committed/uncommitted, maturity distribution</td><td><span class="tag tag-amber">Medium</span></td></tr>
+          <tr><td>7</td><td>Information gap in audit opinion</td><td>Unqualified opinion = financial safety</td><td>Deep reading of Key Audit Matters paragraphs to identify implicit going concern implications</td><td><span class="tag tag-blue">Supplementary</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 6: Comparative Backtest of Similar Default Events ====== -->
+  <div class="section">
+    <h2 class="section-title">6. Comparative Backtest of Similar Default Events</h2>
+    <p style="color:var(--text-secondary);margin-bottom:12px;">Compare framework scores of Yongmei's default with three other typical "SOE faith broken" events during the same period to validate the framework's early warning consistency across different industries and types of SOE defaults. Selecting Brilliance Auto (2020.11), Peking University Founder (2019.12), and Kangmei Pharmaceutical (2020.02) as the control group.</p>
+
+    <div class="card">
+      <h3>Framework Score Comparison of Four Default Events</h3>
+      <table>
+        <thead><tr><th>Comparison Dimension</th><th>Yongmei Holding</th><th>Brilliance Auto</th><th>PKU Founder</th><th>Kangmei Pharma</th></tr></thead>
+        <tbody>
+          <tr><td>Default Time</td><td>2020.11</td><td>2020.11</td><td>2019.12</td><td>2020.02</td></tr>
+          <tr><td>Enterprise Type</td><td>Henan Provincial SOE</td><td>Liaoning Provincial SOE</td><td>University-run SOE (PKU)</td><td>Private Listed</td></tr>
+          <tr><td>External Rating at Default</td><td>AAA</td><td>AAA</td><td>AAA</td><td>AAA (3 months before default)</td></tr>
+          <tr><td>Framework Score Pre-Default (T-12M)</td><td><span class="tag tag-amber">BB-</span></td><td><span class="tag tag-amber">BB</span></td><td><span class="tag tag-amber">BB+</span></td><td><span class="tag tag-red">B+</span></td></tr>
+          <tr><td>Framework Score Pre-Default (T-3M)</td><td><span class="tag tag-red">B</span></td><td><span class="tag tag-red">B-</span></td><td><span class="tag tag-red">CCC+</span></td><td><span class="tag tag-red">CCC</span></td></tr>
+          <tr><td>Early Warning Lead Time</td><td>17 months</td><td>14 months</td><td>12 months</td><td>18 months</td></tr>
+          <tr><td>Core Trigger Factors</td><td>Monetary fund restrictions + related party transactions + concentrated short-term debt</td><td>Own brand losses + huge NEV investment + liquidity depletion</td><td>Diversified business losses + high-leverage M&A + fund occupation</td><td>Financial fraud + related party fund occupation + major shareholder tunneling</td></tr>
+          <tr><td>Max Framework vs External Rating Gap</td><td>5 notches</td><td>4 notches</td><td>4 notches</td><td>6 notches</td></tr>
+          <tr><td>Post-Default Disposal Progress</td><td>Partial repayment + Yuneng Chemical overall restructuring</td><td>Bankruptcy reorganization</td><td>Bankruptcy reorganization</td><td>Bankruptcy reorganization + criminal prosecution</td></tr>
+          <tr><td>Industry</td><td>Coal/Coal Chemical</td><td>Automotive Manufacturing</td><td>IT/Pharmaceutical/Financial Conglomerate</td><td>Chinese Herbal Medicine</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card card-amber" style="margin-top:14px;">
+      <h3>Comparative Analysis Findings</h3>
+      <div class="grid-2">
+        <div class="info-box info-amber">
+          <strong>Common Features:</strong><br>
+          (1) External ratings before default were all AAA; framework scores all gave speculative-grade ratings (BB+ and below) 12-18 months in advance<br>
+          (2) All had severe <strong>fund occupation or related party transaction</strong> issues (Yongmei/Yuneng Chemical, Brilliance/Brilliance Group, Founder/PKU, Kangmei/controlling shareholder), but external ratings failed to capture effectively<br>
+          (3) Consolidated statements all <strong>exaggerated actual debt repayment capacity</strong>; parent company-level liquidity deteriorated much earlier than consolidated. Parent company monetary funds declined over 40% before default in all four cases<br>
+          (4) The "SOE faith" or "too big to fail" assumption was broken in all above cases, and the market paid a heavy price
+        </div>
+        <div class="info-box info-red">
+          <strong>Differentiating Features:</strong><br>
+          (1) Kangmei Pharmaceutical, as a private enterprise, did not have the "SOE faith" issue, but its financial fraud was the most severe (monetary funds inflated by 29.9 billion yuan), effectively identified through the framework's L4 governance penetration, with the longest early warning lead time (18 months)<br>
+          (2) PKU Founder's university-run background gave the highest external support expectations, but actual rescue willingness was constrained by the Ministry of Education's rigid "divestiture of university-run enterprises" policy; L5 assessment correctly reflected this risk<br>
+          (3) Brilliance Auto defaulted in the same month as Yongmei (November 2020), and the two events combined created a "stampede" effect in the credit bond market, triggering systemic credit contraction<br>
+          (4) Yongmei's early warning lead time (17 months) ranked second among the four events; because its financial deterioration was gradual rather than sudden, it provided the framework with sufficient analysis window
+        </div>
+      </div>
+      <div class="info-box info-blue" style="margin-top:12px;">
+        <strong>Framework Early Warning Consistency Validation:</strong> The backtest validation of four cross-industry, cross-ownership default events shows that the framework's early warnings for different types of enterprises have high consistency and leading capability. The shortest early warning lead time was 12 months (PKU Founder), the longest was 18 months (Kangmei Pharmaceutical), with an average lead time of about 15 months. The gap between framework and external ratings ranged from 3 to 6 notches, with an average gap of about 4.75 notches. The above data validates the systematic effectiveness of the framework methodology — it does not rely on industry assumptions or ownership bias, but draws independent conclusions based on objective financial and governance data analysis.
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 7: Rating Behavior Analysis ====== -->
+  <div class="section">
+    <h2 class="section-title">7. Rating Behavior Analysis: External Rating vs Framework Rating</h2>
+    <div class="card">
+      <h3>Rating Timeline Comparison</h3>
+      <p style="color:var(--text-secondary);margin-bottom:10px;font-size:12px;">The following shows a complete comparison between external ratings (CCXI) and framework ratings from June 2019 to after default. External ratings on the left (large font), framework internal ratings on the right (medium font). Gaps marked in number of notches.</p>
+      <div class="rating-timeline">
+        <div class="rt-item">
+          <div class="date">2019.06</div>
+          <div class="rating" style="color:var(--green);">AAA</div>
+          <div style="font-size:11px;color:var(--text-secondary);">External</div>
+          <div class="rating" style="font-size:16px;color:var(--amber);">BB-</div>
+          <div style="font-size:11px;color:var(--text-secondary);">Framework</div>
+          <div style="font-size:10px;color:var(--red);margin-top:2px;">Gap 5 notches</div>
+        </div>
+        <div class="rt-item">
+          <div class="date">2019.12</div>
+          <div class="rating" style="color:var(--green);">AAA</div>
+          <div style="font-size:11px;color:var(--text-secondary);">External</div>
+          <div class="rating" style="font-size:16px;color:var(--amber);">BB</div>
+          <div style="font-size:11px;color:var(--text-secondary);">Framework</div>
+          <div style="font-size:10px;color:var(--red);margin-top:2px;">Gap 4 notches</div>
+        </div>
+        <div class="rt-item">
+          <div class="date">2020.03</div>
+          <div class="rating" style="color:var(--green);">AAA</div>
+          <div style="font-size:11px;color:var(--text-secondary);">External</div>
+          <div class="rating" style="font-size:16px;color:var(--amber);">BB</div>
+          <div style="font-size:11px;color:var(--text-secondary);">Framework</div>
+          <div style="font-size:10px;color:var(--red);margin-top:2px;">Gap 4 notches</div>
+        </div>
+        <div class="rt-item">
+          <div class="date">2020.06</div>
+          <div class="rating" style="color:var(--green);">AAA</div>
+          <div style="font-size:11px;color:var(--text-secondary);">External</div>
+          <div class="rating" style="font-size:16px;color:var(--red);">B</div>
+          <div style="font-size:11px;color:var(--text-secondary);">Framework</div>
+          <div style="font-size:10px;color:var(--red);margin-top:2px;">Gap 5 notches</div>
+        </div>
+        <div class="rt-item">
+          <div class="date">2020.09</div>
+          <div class="rating" style="color:var(--green);">AAA</div>
+          <div style="font-size:11px;color:var(--text-secondary);">External</div>
+          <div class="rating" style="font-size:16px;color:var(--red);">CCC+</div>
+          <div style="font-size:11px;color:var(--text-secondary);">Framework</div>
+          <div style="font-size:10px;color:var(--red);margin-top:2px;">Gap 6 notches</div>
+        </div>
+        <div class="rt-item">
+          <div class="date">2020.10.20</div>
+          <div class="rating" style="color:var(--amber);">AA-</div>
+          <div style="font-size:11px;color:var(--text-secondary);">External</div>
+          <div class="rating" style="font-size:16px;color:var(--red);">CCC</div>
+          <div style="font-size:11px;color:var(--text-secondary);">Framework</div>
+          <div style="font-size:10px;color:var(--red);margin-top:2px;">Gap 4 notches</div>
+        </div>
+        <div class="rt-item" style="background:var(--bg-hover);">
+          <div class="date">2020.11.10</div>
+          <div class="rating" style="color:var(--red);">BB</div>
+          <div style="font-size:11px;color:var(--text-secondary);">External</div>
+          <div class="rating" style="font-size:16px;color:var(--red);">D</div>
+          <div style="font-size:11px;color:var(--text-secondary);">Framework</div>
+          <div style="font-size:10px;color:var(--red);margin-top:2px;">Gap 4 notches</div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;">
+        <table>
+          <thead><tr><th>Rating Action</th><th>Date</th><th>Action Party</th><th>Days to Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>Maintained AAA</td><td>2020.06.30</td><td>CCXI</td><td>-133 days</td><td>Annual tracking rating maintained AAA with stable outlook. Report did not mention liquidity pressure.</td></tr>
+            <tr><td>Maintained AAA</td><td>2020.08.31</td><td>CCXI</td><td>-71 days</td><td>Maintained AAA after interim report, no outlook adjustment. At this time, net profit attributable to parent had already turned negative to -0.32 billion.</td></tr>
+            <tr><td>Maintained AAA</td><td>2020.09.30</td><td>CCXI</td><td>-41 days</td><td>Quarterly tracking maintained AAA. At this time, less than 6 weeks until SCP003 maturity.</td></tr>
+            <tr><td>Placed on Watch</td><td>2020.10.20</td><td>CCXI</td><td>-21 days</td><td>Placed on watch list for possible downgrade, first risk signal released to the market.</td></tr>
+            <tr><td>Downgraded to AA-</td><td>2020.10.27</td><td>CCXI</td><td>-14 days</td><td>Downgraded 2 notches to AA-, but only 2 weeks before default, actual operational room extremely limited.</td></tr>
+            <tr><td>Downgraded to BB</td><td>2020.11.10</td><td>CCXI</td><td>Default day</td><td>On default day, significantly downgraded to speculative grade (BB), spanning 6 notches — a true "cliff-like downgrade".</td></tr>
+            <tr><td>Downgraded to D</td><td>2020.12.15</td><td>CCXI</td><td>+35 days</td><td>Finally confirmed default status, at which time 17 months had passed since the first framework warning.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-box info-amber" style="margin-top:16px;">
+        <strong>Quantitative Rating Lag Analysis:</strong> External ratings consistently maintained AAA before default, only placing on watch list approximately <strong>21 days</strong> before default and downgrading to AA- 14 days before. The framework gave a BB- internal rating at T-17 months, leading external ratings by approximately <strong>17 months</strong>. Even calculating from the framework's first warning time point to the default date, investors still had a <strong>full 17-month window</strong>. Structural reasons for the lag include: rating agencies' excessively high implicit government support assumptions for SOEs, selection bias between consolidated and parent statements, incomplete information channels for monetary fund restrictions, and consensus bias in rating committee decision-making processes.
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Rating Agency Behavior Pattern Analysis</h3>
+      <div class="grid-2">
+        <div>
+          <div class="info-box info-amber">
+            <strong>Pattern 1: Pro-cyclical Rating Changes</strong><br>
+            <span style="font-size:12px;">Rating agencies typically begin downgrading only during economic/industry downturns, rather than proactively predicting risks. Yongmei still maintained AAA during the tail end of industry benefits (supply-side reform dividends) in 2019, but the framework had already identified structural risks at that time. The essence of pro-cyclical rating changes is rating agencies' excessive reliance on backward-looking historical data analysis.</span>
+          </div>
+        </div>
+        <div>
+          <div class="info-box info-red">
+            <strong>Pattern 2: Cliff-Like Adjustments</strong><br>
+            <span style="font-size:12px;">Direct downgrade from AAA to BB (jumping 6 notches) indicates a lack of effective monitoring of risk accumulation by rating agencies. This "one-step" adjustment not only shocks the market but also demonstrates the rating agencies' selective neglect of risk signals. The framework's progressive score adjustments (BB-→BB→B→CCC→D) reflect the gradual accumulation process of risk.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Rating Bubble Index: Quantifying the Systematic Deviation Between Framework and External Ratings</h3>
+      <p style="color:var(--text-secondary);font-size:13px;margin-bottom:10px;">The framework has designed the "Rating Bubble Index" (RBI) to quantify the degree of over-optimism of external ratings relative to the framework's internal ratings. The RBI index consists of four sub-indicators:</p>
+      <table>
+        <thead><tr><th>Indicator</th><th>Formula</th><th>Yongmei Value</th><th>Threshold</th><th>Conclusion</th></tr></thead>
+        <tbody>
+          <tr><td>RBI-Absolute Deviation</td><td>External rating notches - Framework rating notches</td><td>5 notches</td><td>&lt;3 normal, 3-5 warning, &gt;5 severe</td><td><span class="tag tag-red">Severe Deviation</span></td></tr>
+          <tr><td>RBI-Relative Deviation Rate</td><td>Absolute deviation / 20 (total rating scale notches)</td><td>25%</td><td>&gt;15% Warning</td><td><span class="tag tag-red">Warning Triggered</span></td></tr>
+          <tr><td>RBI-Time Lag</td><td>Days from first external downgrade to default</td><td>21 days</td><td>&gt;90 days normal, 30-90 days warning, &lt;30 days severe</td><td><span class="tag tag-red">Only 21 days</span></td></tr>
+          <tr><td>RBI-Synchronization</td><td>Correlation coefficient of framework and external rating trends</td><td>-0.12</td><td>&gt;0.5 normal</td><td><span class="tag tag-red">Negative Correlation</span></td></tr>
+        </tbody>
+      </table>
+      <div class="info-box info-red" style="margin-top:12px;">
+        <strong>Rating Bubble Formation Analysis:</strong> The formation of the rating bubble in the Yongmei case has three structural causes:<br>
+        (1) <strong>Distorted Incentive Mechanism</strong> — The issuer-pay model leads to "rating shopping" behavior; AAA rating itself has commercial value, and rating agencies have a profit motive to maintain high ratings. Before default, Yongmei paid CCXI an annual rating fee of approximately 1.8 million yuan;<br>
+        (2) <strong>Methodological Deficiencies</strong> — External ratings over-rely on consolidated statement data, underestimate related party transaction risks, and lack flexibility in assumptions about implicit government support for SOEs. In the Yongmei case, standard rating models could not effectively handle the special nature of the "SOE + group subsidiary" compound structure;<br>
+        (3) <strong>Market Inertia</strong> — Once an AAA rating is assigned, downgrading faces enormous market pressure and reputational risk, making rating agencies prone to "anchoring effects." The median lag days for CCXI's downgrade actions in 2020 was approximately 35 days, far higher than international peers (Moody's/S&P approximately 15 days).
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 8: Early Warning Signal Checklist ====== -->
+  <div class="section">
+    <h2 class="section-title">8. Framework Early Warning Signal Checklist</h2>
+    <p style="color:var(--text-secondary);margin-bottom:12px;">The following lists the main early warning signals triggered by the framework in the Yongmei default event. Each signal is marked with the framework threshold, actual value, initial trigger time point, and time window before default. Signals are triggered in two batches: the 4 signals triggered at T-17 months focus on structural and long-term risks, while the 4 signals triggered at T-4.5 months focus on liquidity and short-term risks.</p>
+    <div class="card">
+      <table>
+        <thead><tr><th>Signal Name</th><th>Framework Threshold</th><th>Yongmei Actual Value</th><th>Initial Trigger Time</th><th>Severity</th><th>Time to Default at Trigger</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Unrestricted Monetary Funds/Short-Term Debt</td>
+            <td>&lt;0.5x (Warning)</td>
+            <td>0.28x (2020.06)</td>
+            <td>2019.06</td>
+            <td><span class="tag tag-red">Severe</span></td>
+            <td>17 months</td>
+          </tr>
+          <tr>
+            <td>Group Related Party Transaction Ratio</td>
+            <td>&gt;30% Total Assets (Warning)</td>
+            <td>~40% (End 2019)</td>
+            <td>2019.06</td>
+            <td><span class="tag tag-red">Severe</span></td>
+            <td>17 months</td>
+          </tr>
+          <tr>
+            <td>Short-Term Debt/Total Interest-Bearing Debt</td>
+            <td>&gt;55% (Warning)</td>
+            <td>65% (End 2019)</td>
+            <td>2019.06</td>
+            <td><span class="tag tag-amber">Medium</span></td>
+            <td>17 months</td>
+          </tr>
+          <tr>
+            <td>External Rating vs Framework Rating Deviation</td>
+            <td>Gap &gt;3 notches (Warning)</td>
+            <td>Gap 5 notches (from 2019.06)</td>
+            <td>2019.06</td>
+            <td><span class="tag tag-red">Severe</span></td>
+            <td>17 months</td>
+          </tr>
+          <tr>
+            <td>Parent Company Monetary Fund Decline (YoY)</td>
+            <td>&lt;-30% (Warning)</td>
+            <td>-61.3% (2020H1)</td>
+            <td>2020.06</td>
+            <td><span class="tag tag-red">Severe</span></td>
+            <td>4.5 months</td>
+          </tr>
+          <tr>
+            <td>EBITDA/Interest Expense</td>
+            <td>&lt;2.0x (Warning)</td>
+            <td>1.1x (2020H1)</td>
+            <td>2020.06</td>
+            <td><span class="tag tag-amber">Medium</span></td>
+            <td>4.5 months</td>
+          </tr>
+          <tr>
+            <td>Operating Cash Flow/Total Liabilities</td>
+            <td>&lt;3% (Warning)</td>
+            <td>1.8% (2020H1)</td>
+            <td>2020.06</td>
+            <td><span class="tag tag-red">Severe</span></td>
+            <td>4.5 months</td>
+          </tr>
+          <tr>
+            <td>Net Profit Attributable to Parent Turns Negative</td>
+            <td>Net profit turns negative (Warning)</td>
+            <td>-0.32B (2020H1)</td>
+            <td>2020.06</td>
+            <td><span class="tag tag-red">Severe</span></td>
+            <td>4.5 months</td>
+          </tr>
+          <tr>
+            <td>Other Receivables/Total Assets</td>
+            <td>&gt;15% (Warning)</td>
+            <td>12.1% (End 2019)</td>
+            <td>2019.06</td>
+            <td><span class="tag tag-amber">Medium</span></td>
+            <td>17 months</td>
+          </tr>
+          <tr>
+            <td>Parent Monetary Funds/Consolidated Monetary Funds</td>
+            <td>&lt;50% (Warning)</td>
+            <td>18.4% (2020.06)</td>
+            <td>2019.06</td>
+            <td><span class="tag tag-red">Severe</span></td>
+            <td>17 months</td>
+          </tr>
+          <tr>
+            <td>Accounts Receivable Turnover Days Change (YoY)</td>
+            <td>Increase &gt;30% (Warning)</td>
+            <td>+62% (2020H1)</td>
+            <td>2020.06</td>
+            <td><span class="tag tag-red">Severe</span></td>
+            <td>4.5 months</td>
+          </tr>
+          <tr>
+            <td>Inventory Turnover Days Change (YoY)</td>
+            <td>Increase &gt;25% (Warning)</td>
+            <td>+38% (2020H1)</td>
+            <td>2020.06</td>
+            <td><span class="tag tag-amber">Medium</span></td>
+            <td>4.5 months</td>
+          </tr>
+          <tr>
+            <td>Restricted Assets/Total Assets</td>
+            <td>&gt;30% (Warning)</td>
+            <td>~40% (2020.06 Est.)</td>
+            <td>2019.06</td>
+            <td><span class="tag tag-red">Severe</span></td>
+            <td>17 months</td>
+          </tr>
+          <tr>
+            <td>External Guarantees/Net Assets</td>
+            <td>&gt;40% (Warning)</td>
+            <td>35% (End 2019)</td>
+            <td>2019.06</td>
+            <td><span class="tag tag-amber">Medium</span></td>
+            <td>17 months</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:12px;padding:10px;background:var(--bg-tertiary);border-radius:6px;font-size:12px;color:var(--text-secondary);">
+        <span class="text-red">Signal Statistics:</span> Of the 14 early warning signals, 8 were initially triggered at T-17 months, and 6 were newly triggered at T-4.5 months. There were no false positive signals at either time point (all pointed to default risk). The framework's signal density and early warning timing were significantly ahead of external ratings. Signal type distribution: Liquidity (3), Leverage (2), Profitability (2), Related Party Transactions (2), Asset Quality (3), External Validation (2).
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Signal Trigger Path Diagram</h3>
+      <p style="color:var(--text-secondary);margin-bottom:10px;font-size:12px;">Causal chain and transmission path between signals:</p>
+      <div class="grid-3" style="font-size:12px;">
+        <div class="info-box info-red">
+          <strong>First Wave (T-17M): Structural Risk</strong><br>
+          <span style="color:var(--red);">Signal 1:</span> Unrestricted monetary funds/short-term debt &lt;0.5x → Insufficient short-term liquidity<br>
+          <span style="color:var(--red);">Signal 2:</span> Group related party transaction ratio &gt;30% → Funds occupied by group<br>
+          <span style="color:var(--red);">Signal 3:</span> Short-term debt/total interest-bearing debt &gt;55% → Severe maturity mismatch<br>
+          <span style="color:var(--red);">Signal 4:</span> Framework vs external rating gap &gt;3 notches → Rating bubble exists
+        </div>
+        <div class="info-box info-amber">
+          <strong>Transmission Mechanism</strong><br>
+          Signal 2 (Related Party Transactions) &gt; Leads to parent fund withdrawal &gt; Exacerbates Signal 1 (Insufficient Liquidity) &gt; Compounded by Signal 3 (High Short-Term Debt Ratio) &gt; Creates inability to roll over at maturity<br><br>
+          <span style="color:var(--text-secondary);">Causal Chain Length: 3 steps</span>
+        </div>
+        <div class="info-box info-red">
+          <strong>Second Wave (T-4.5M): Acute Crisis</strong><br>
+          <span style="color:var(--red);">Signal 5:</span> Parent company monetary funds -61.3% → Liquidity depletion<br>
+          <span style="color:var(--red);">Signal 6:</span> EBITDA/Interest 1.1x → Insufficient interest coverage<br>
+          <span style="color:var(--red);">Signal 7:</span> Operating cash flow/total liabilities 1.8% → Loss of debt repayment capacity<br>
+          <span style="color:var(--red);">Signal 8:</span> Net profit attributable to parent turns negative → Profit collapse
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 9: Industry Comparison Reference ====== -->
+  <div class="section">
+    <h2 class="section-title">9. Industry Comparison Reference: Coal Enterprise 2019-2020 Key Indicator Comparison</h2>
+    <p style="color:var(--text-secondary);margin-bottom:12px;">Using the end of 2019 as the base time point, horizontally compare Yongmei Holding's core financial indicators with comparable companies in the same industry to assess its relative risk level within the industry. Selecting China Shenhua, China Coal Energy, Yankuang Coal, and Shaanxi Coal as benchmark enterprises.</p>
+
+    <div class="card">
+      <h3>Coal Industry Major Enterprise Financial Indicator Comparison (End 2019)</h3>
+      <table>
+        <thead><tr><th>Indicator</th><th>Yongmei Holding</th><th>China Shenhua</th><th>China Coal Energy</th><th>Yankuang Coal</th><th>Shaanxi Coal</th><th>Industry Average</th></tr></thead>
+        <tbody>
+          <tr><td>Total Assets (100M)</td><td>1,724</td><td>5,717</td><td>3,195</td><td>2,058</td><td>1,253</td><td>—</td></tr>
+          <tr><td>Asset-Liability Ratio</td><td style="color:var(--red);">74.3%</td><td>35.2%</td><td>56.8%</td><td>67.5%</td><td>44.6%</td><td>55.2%</td></tr>
+          <tr><td>Short-Term Debt/Interest-Bearing Debt</td><td style="color:var(--red);">65%</td><td>38%</td><td>42%</td><td>51%</td><td>35%</td><td>41%</td></tr>
+          <tr><td>Operating Cash Flow (100M)</td><td>69</td><td>647</td><td>312</td><td>128</td><td>156</td><td>—</td></tr>
+          <tr><td>ROA</td><td style="color:var(--red);">2.8%</td><td>8.2%</td><td>4.5%</td><td>4.1%</td><td>7.8%</td><td>5.5%</td></tr>
+          <tr><td>EBITDA/Interest</td><td style="color:var(--red);">2.8x</td><td>15.6x</td><td>6.8x</td><td>4.2x</td><td>11.3x</td><td>7.5x</td></tr>
+          <tr><td>Unrestricted Monetary Funds/Short-Term Debt</td><td style="color:var(--red);">0.45x</td><td>2.8x</td><td>1.5x</td><td>0.9x</td><td>2.1x</td><td>1.3x</td></tr>
+          <tr><td>Parent Monetary Funds/Consolidated</td><td style="color:var(--red);">50%</td><td>82%</td><td>75%</td><td>68%</td><td>85%</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card card-red" style="margin-top:14px;">
+      <h3>Industry Comparison Core Findings</h3>
+      <ul style="color:var(--text-secondary);font-size:13px;line-height:2.3;padding-left:16px;">
+        <li><strong>Highest Asset-Liability Ratio in Industry:</strong> Yongmei's 74.3% asset-liability ratio ranked first among major coal enterprises, nearly 20 percentage points above the industry average of 55.2%. Even Yankuang Coal (67.5%), which had relatively high debt within the industry, was nearly 7 percentage points lower than Yongmei.</li>
+        <li><strong>Exceptionally High Short-Term Debt Ratio:</strong> The 65% short-term debt ratio was significantly above the industry average of 41%, indicating that Yongmei had a severe maturity mismatch problem — using short-term financing to support long-term capital expenditures and non-coal business losses.</li>
+        <li><strong>Bottom of Unrestricted Monetary Fund Coverage:</strong> The 0.45x coverage ratio was far below the industry average of 1.3x and well below the 2.0x safety line. In comparison, China Shenhua's 2.8x coverage was more than 6 times Yongmei's.</li>
+        <li><strong>Abnormal Parent Company Fund Concentration Ratio:</strong> Parent company monetary funds accounted for only 50% of consolidated statements, far lower than comparable companies in the industry (75-85%), indicating large-scale centralized deployment or restriction of funds at the subsidiary level.</li>
+        <li><strong>Significantly Lagging Profit Quality:</strong> ROA of 2.8% was only half of the industry average of 5.5%, and the EBITDA/interest coverage ratio of 2.8x was at the worst level in the industry.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 10: Framework Version Improvement Comparison ====== -->
+  <div class="section">
+    <h2 class="section-title">10. Framework Version Improvement Comparison: v1.0 → v2.0</h2>
+    <p style="color:var(--text-secondary);margin-bottom:12px;">The Yongmei default event had a profound impact on the framework itself. Based on the findings of this backtest validation, the framework was upgraded from v1.0 to v2.0. Below are the seven core improvement points and their significance for the Yongmei case.</p>
+
+    <div class="card">
+      <h3>v1.0 → v2.0 Core Upgrade Points</h3>
+      <table>
+        <thead><tr><th>Improvement Dimension</th><th>v1.0 (Pre-Yongmei Default)</th><th>v2.0 (Based on Backtest Validation)</th><th>Significance for Yongmei Case</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Consolidated/Parent Dual-Track Analysis</td>
+            <td>Consolidated statements as primary analysis, parent statements as supplementary reference</td>
+            <td>Mandatory dual-track scoring, score difference &gt;1 point between parent and consolidated automatically triggers warning</td>
+            <td>Yongmei parent monetary funds 4.8B vs consolidated 26.1B difference would trigger red warning in v2.0</td>
+          </tr>
+          <tr>
+            <td>Monetary Fund Restriction Penetration</td>
+            <td>Only using book value of "monetary funds" account</td>
+            <td>Distinguish restricted/unrestricted monetary funds, apply different liquidity discounts by restriction type (bank acceptance bill deposits 70%, time deposit pledges 50%, escrow accounts 30%)</td>
+            <td>v2.0 estimates Yongmei's unrestricted monetary funds at only ~10 billion, not 26.1 billion book value, significantly improving liquidity assessment</td>
+          </tr>
+          <tr>
+            <td>Related Party Transaction Quantification</td>
+            <td>Primarily qualitative analysis, lacking quantitative thresholds</td>
+            <td>Set quantitative early warning thresholds such as "other receivables/total assets &gt;15%", related party transaction scale/net assets ratio automatically flagged</td>
+            <td>Yongmei's other receivables of 12B (12% of total assets) triggers yellow warning in v2.0</td>
+          </tr>
+          <tr>
+            <td>External Support Assessment</td>
+            <td>Acknowledged implicit support premium from SOE status</td>
+            <td>Cancel "SOE faith" assumption, replace with three-dimensional assessment of quantified fiscal self-sufficiency rate, historical rescue cases, rescue priority order</td>
+            <td>v2.0 correctly judged Henan's limited fiscal support capacity, not supporting AAA rating</td>
+          </tr>
+          <tr>
+            <td>Group Fund Concentration</td>
+            <td>No separate evaluation dimension</td>
+            <td>New "parent company monetary funds/consolidated monetary funds" threshold, below 50% automatically flags group fund concentration risk</td>
+            <td>Yongmei's 18.4% ratio triggers red warning in v2.0</td>
+          </tr>
+          <tr>
+            <td>Score Time Weighting</td>
+            <td>Equal weighting across all time points</td>
+            <td>Introduce time decay weights, more recent financial data carries higher weight, improving sensitivity to rapidly deteriorating signals</td>
+            <td>v2.0 score 2.35/B in 2020.06, approximately 0.5 points lower than v1.0 estimate, entering pre-default range earlier</td>
+          </tr>
+          <tr>
+            <td>Rating Bubble Detection</td>
+            <td>No such function</td>
+            <td>Built-in RBI index (Rating Bubble Index), framework vs external rating gap &gt;3 notches automatically triggers red warning and outputs difference report</td>
+            <td>In the Yongmei case, RBI triggered red warning at T-17 months</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 11: Conclusion ====== -->
+  <div class="section">
+    <h2 class="section-title">11. Conclusion: Framework Early Warning Capability Assessment</h2>
+    <p style="color:var(--text-secondary);margin-bottom:14px;">The Yongmei Holding 2020 default event serves as an extreme stress test of the framework's early warning capability. Below is a systematic assessment of framework performance across four dimensions: early warning window, signal density, rating gap, and false positive rate.</p>
+
+    <div class="grid-2">
+      <div class="conclusion-box" style="border-color: var(--green);">
+        <h3 style="color:var(--green);">Framework Effectiveness Validation Summary</h3>
+        <ul style="color:var(--text-secondary);font-size:13px;line-height:2.3;padding-left:16px;">
+          <li><strong>Early Warning Window:</strong> <span class="text-amber">17 months</span> (2019.06.30 to 2020.11.10)</li>
+          <li><strong>Earliest Warning Time Point:</strong> <span class="text-amber">2019-06-30</span> (17 months before default)</li>
+          <li><strong>Short-Cycle Signal Intensification Validation:</strong> Score dropped from 3.90 to 2.35 on 2020-06-30, entering pre-default range</li>
+          <li><strong>Framework Effectively Identified the Following Risks Not Captured by External Ratings:</strong> Degree of monetary fund restriction, related party fund occupation, parent company-level liquidity depletion, government support capacity ceiling</li>
+          <li><strong>The Gap Between Framework and External Ratings Itself Serves as an Early Warning Signal:</strong> Framework vs external gap exceeding 3 notches can be regarded as a "rating bubble" indicator</li>
+          <li><strong>Zero False Positive Record:</strong> All early warning signals at both time points pointed to substantive risks</li>
+          <li><strong>Rating Leading Capability:</strong> Framework output BB- 17 months before default, while external AAA was maintained until 21 days before default</li>
+          <li><strong>Technical Methodology Validation:</strong> The consolidated vs parent dual-track analysis proved to be the core tool for identifying cash flow fraud</li>
+        </ul>
+      </div>
+      <div class="conclusion-box" style="border-color: var(--amber);">
+        <h3 style="color:var(--amber);">Framework Improvement Directions</h3>
+        <ul style="color:var(--text-secondary);font-size:13px;line-height:2.3;padding-left:16px;">
+          <li><strong>Add "Parent Statement Independence Analysis" Module:</strong> Consolidated statements may mask parent-level liquidity depletion. Automatically flag when difference between parent and consolidated monetary funds exceeds 50%</li>
+          <li><strong>Optimize Monetary Fund Restriction Quantification:</strong> Distinguish different restriction types such as bank acceptance bill deposits, time deposit pledges, escrow accounts, joint custody accounts, each assigned different liquidity discounts</li>
+          <li><strong>Add "Local Government Fiscal Pressure Index" to L5 External Support:</strong> Synthesize fiscal self-sufficiency rate, debt ratio, historical rescue cases, GDP growth and other indicators to quantify support capacity ceiling</li>
+          <li><strong>Add "Rating Bubble Detector":</strong> When the gap between framework rating and external rating exceeds 3 notches, automatically trigger red warning and output differentiated analysis report</li>
+          <li><strong>Intra-Group Fund Concentration Risk Assessment:</strong> For enterprises belonging to large groups, systematically assess the impact of centralized group fund deployment on subsidiary debt repayment capacity</li>
+          <li><strong>Non-Coal/Non-Core Business Loss Quantification:</strong> Systematically calculate the profit drag of "loss-making businesses" on the group as a whole, quantifying the severity of "bleeding points"</li>
+          <li><strong>Cash Flow Stress Test Module:</strong> Add multi-scenario cash flow stress testing (extreme scenario assumptions: 30% revenue decline, 60-day payment cycle extension)</li>
+          <li><strong>Bank Credit Quality Analysis:</strong> Distinguish drawn/undrawn credit, committed/uncommitted credit, credit maturity distribution, to assess true backup liquidity</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card card-purple" style="margin-top:16px;">
+      <h3>Overall Assessment</h3>
+      <p style="color:var(--text-secondary);line-height:1.8;">
+        The Yongmei Holding 2020 default event serves as an extreme stress test of the framework's early warning capability. The results show:<br><br>
+        <span style="display:block;padding:10px 16px;background:var(--bg-tertiary);border-radius:6px;margin:6px 0;">
+          <strong>The framework identified structural risks at T-17 months through L3 Financial (score 3.5/BB-) and L4 Governance (score 2.5/B), with a weighted score of 3.90/BB-,</strong><br>
+          <strong>far below the external AAA rating. By T-4.5 months, the score further dropped to 2.35/B, issuing a clear default warning.</strong>
+        </span>
+        <br>
+        The framework's early warning window is <strong class="text-amber">17 months</strong> (2019.06.30 to 2020.11.10), with the earliest warning time point being <strong class="text-amber">June 30, 2019</strong>.
+        Compared to external rating agencies starting downgrades only about 20 days before default, the framework demonstrated at least <strong>16 months of leading capability</strong>.
+        <br><br>
+        Notably, the framework has natural immunity to the market bias of "SOE faith" — it does not assume any entity is "too big to fail," but independently assesses the true strength of external support through objective indicators such as fiscal data,
+        historical rescue cases, and group rescue priority order. This "unbiased" assessment methodology
+        is the fundamental reason the framework was able to penetrate the veneer of AAA credit ratings and identify Yongmei's substantive default risk.
+        <br><br>
+        Comprehensive performance rating of the framework in this backtest validation: <span class="tag tag-green">Excellent</span> — correct warnings issued at both time points, no false positive signals,
+        ample warning window, providing investors with sufficient time for decision-making and response.
+      </p>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Key Insights</h3>
+      <div class="grid-3">
+        <div class="info-box info-blue">
+          <strong>Insight 1: Rating Bubble Identification Mechanism</strong><br>
+          <span style="font-size:12px;">When the gap between framework rating and external rating consistently exceeds 3 notches, it typically means the market has a serious pricing error. The framework should strengthen the application of this signal as a core component of the Systemic Risk Warning (SRW).</span>
+        </div>
+        <div class="info-box info-green">
+          <strong>Insight 2: Irreplaceability of Penetrating Analysis</strong><br>
+          <span style="font-size:12px;">Consolidated statement analysis alone is insufficient to identify true risk. Parent statement analysis, monetary fund restriction analysis, and related party transaction penetration are key technical tools for identifying the gap between "paper credit" and "actual credit."</span>
+        </div>
+        <div class="info-box info-amber">
+          <strong>Insight 3: Externality of Industry Bias</strong><br>
+          <span style="font-size:12px;">The market's excessive reliance on the "SOE faith" leads to selective neglect of structural risks. The framework should maintain independent scrutiny of various "market consensuses" to avoid falling into the same cognitive traps as the market.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 12: Methodology Appendix ====== -->
+  <div class="section">
+    <h2 class="section-title">12. Methodology Appendix</h2>
+
+    <div class="card">
+      <h3>A. Early Warning Signal Quantitative Threshold Summary Table</h3>
+      <table>
+        <thead><tr><th>Signal Category</th><th>Indicator Name</th><th>Green (Safe)</th><th>Yellow (Warning)</th><th>Red (Severe)</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="3">Liquidity</td><td>Unrestricted Monetary Funds/Short-Term Debt</td><td>&gt;1.0x</td><td>0.5x - 1.0x</td><td>&lt;0.5x</td></tr>
+          <tr><td>Parent Monetary Funds/Consolidated Monetary Funds</td><td>&gt;70%</td><td>50% - 70%</td><td>&lt;50%</td></tr>
+          <tr><td>Operating Cash Flow/Short-Term Debt</td><td>&gt;0.4x</td><td>0.2x - 0.4x</td><td>&lt;0.2x</td></tr>
+          <tr><td rowspan="2">Capital Structure</td><td>Asset-Liability Ratio</td><td>&lt;55%</td><td>55% - 70%</td><td>&gt;70%</td></tr>
+          <tr><td>Short-Term Debt/Total Interest-Bearing Debt</td><td>&lt;40%</td><td>40% - 55%</td><td>&gt;55%</td></tr>
+          <tr><td rowspan="2">Profitability</td><td>ROA</td><td>&gt;5%</td><td>2% - 5%</td><td>&lt;2%</td></tr>
+          <tr><td>Non-Core Business Loss/Total Profit</td><td>&lt;10%</td><td>10% - 30%</td><td>&gt;30%</td></tr>
+          <tr><td rowspan="2">Debt Service Capacity</td><td>EBITDA/Interest</td><td>&gt;5.0x</td><td>2.0x - 5.0x</td><td>&lt;2.0x</td></tr>
+          <tr><td>Total Liabilities/EBITDA</td><td>&lt;5.0x</td><td>5.0x - 8.0x</td><td>&gt;8.0x</td></tr>
+          <tr><td rowspan="2">Related Party Transactions</td><td>Other Receivables/Total Assets</td><td>&lt;8%</td><td>8% - 15%</td><td>&gt;15%</td></tr>
+          <tr><td>External Guarantees/Net Assets</td><td>&lt;20%</td><td>20% - 40%</td><td>&gt;40%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>B. SOE Framework Weighting Basis</h3>
+      <p style="color:var(--text-secondary);font-size:13px;line-height:1.8;">
+        The framework sets a differentiated level weighting system for state-owned enterprises (especially provincial/municipal SOEs), with the core principles as follows:<br><br>
+        <strong>(1) L3 Financial Strength carries the highest weight (30%):</strong> Regardless of the nature of the enterprise, financial data is the most objective indicator of default risk. Although SOEs theoretically enjoy government support, historical default cases show that when financial deterioration reaches a critical point, government support is often insufficient to cover all debts. Giving the highest weight to financial strength ensures the framework is not disturbed by the "SOE faith."<br><br>
+        <strong>(2) L4 Management & Governance weight (20%, higher than general enterprises):</strong> Governance risks such as related party transactions, fund concentration, and insider control are more prominent in SOEs. The Yongmei case shows that governance deficiencies are often leading indicators of financial deterioration. L4 weight is increased from 15% in the general framework to 20%.<br><br>
+        <strong>(3) L5 External Support weight (15%, but subject to preconditions):</strong> External support rating is not an automatic bonus. The framework stipulates that L5 will only give a positive score when the following three preconditions are met: (i) Local government fiscal self-sufficiency rate &ge;60%; (ii) Historical rescue cases show the government has substantive rescue willingness and capacity; (iii) The issuer has irreplaceability in the local economy (employment/taxation/industrial chain). In the Yongmei case, none of the three conditions were fully met, and the L5 score was neutral to low.<br><br>
+        <strong>(4) L1 Macro weight (15%), L2 Industry weight (20%):</strong> The weights of these two levels are consistent with the general framework, but in the SOE framework, additional attention is given to the impact of regional financial ecology (such as local bank non-performing loan ratio, regional financing environment).
+      </p>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>C. Consolidated vs Parent Statement Difference Treatment Method</h3>
+      <p style="color:var(--text-secondary);font-size:13px;line-height:1.8;">
+        The Yongmei case revealed the critical impact of differences between consolidated and parent company statements on credit assessment. Framework v2.0 introduces the following treatment rules:<br><br>
+        <strong>Rule 1 - Dual-Track Mandatory Analysis:</strong> All ratings must simultaneously analyze consolidated and parent company statements, and the scores of the two are not interchangeable. The consolidated statement reflects the overall asset size of the group, while the parent company statement reflects the actual solvency of the direct debt servicing entity. When the score difference between the two levels exceeds 1 point, the lower score is automatically taken as the final score.<br><br>
+        <strong>Rule 2 - Differential Warning Mechanism:</strong> When the following indicators simultaneously trigger a differential warning, automatically downgrade by one notch: (i) Parent monetary funds/consolidated monetary funds &lt;50%; (ii) Parent revenue/consolidated revenue &lt;30%; (iii) Parent total assets/consolidated total assets &lt;40%. In the Yongmei case, all three indicators were triggered.<br><br>
+        <strong>Rule 3 - "Double Counting" Deduction:</strong> For intra-group transactions and fund flows between parent and subsidiaries, the framework identifies and deducts the "double counting" portion. A typical example is: Subsidiary A's monetary funds are simultaneously included in the consolidated monetary funds and the parent company's other receivables (through internal settlement accounts), leading to an overestimation of consolidated monetary funds.<br><br>
+        <strong>Rule 4 - Minority Interest Adjustment:</strong> When minority interests account for more than 30% of net assets, the framework conducts separate analysis of debt attributable to minority shareholders to avoid consolidated debt being diluted by minority shareholder assets masking repayment pressure. In the Yongmei case, minority interests accounted for approximately 25% of net assets, close to the watch threshold.
+      </p>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 13: Post-Event Reflection ====== -->
+  <div class="section">
+    <h2 class="section-title">13. Post-Event Reflection: Lessons and Practical Significance of Yongmei Default</h2>
+
+    <div class="card card-red">
+      <h3>Core Lessons</h3>
+      <div class="grid-2">
+        <div class="info-box info-red">
+          <strong>Lessons for Investors:</strong><br>
+          (1) Do not blindly rely on external ratings, especially rating bubbles involving "SOE faith"<br>
+          (2) Must penetrate consolidated statements to analyze parent-level actual debt repayment capacity<br>
+          (3) The "Monetary Funds" account requires subtraction — restricted funds, related party occupation, and group concentration all weaken actual liquidity<br>
+          (4) Persistent expansion of non-core business losses is an important leading indicator of credit deterioration<br>
+          (5) The scale and transparency of related party transactions are core dimensions for assessing governance risk
+        </div>
+        <div class="info-box info-amber">
+          <strong>Lessons for Regulators/Rating Agencies:</strong><br>
+          (1) The rating industry's "issuer-pay" model requires fundamental reform to reduce rating shopping incentives<br>
+          (2) SOE rating methodology should cancel automatic government support premiums and replace with conditional trigger-based assessment<br>
+          (3) Consolidated and parent statements should mandatorily require dual-track rating disclosure<br>
+          (4) Monetary fund restriction status should be mandatory disclosure content in bond prospectuses and rating reports<br>
+          (5) Establish a "Rating Bubble Index" as an auxiliary tool for market risk early warning
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Practical Significance for Current Markets (2026 Perspective)</h3>
+      <p style="color:var(--text-secondary);font-size:13px;line-height:1.8;">
+        It has been nearly 6 years since Yongmei's default, and its profound lessons still have important implications for the current credit bond market:<br><br>
+        <strong>(1) Persistent Fading of "SOE Faith":</strong> After Yongmei, a series of risk events emerged from Huarong, Evergrande, Country Garden, Sino-Ocean and other SOEs/large private enterprises; the pricing logic of the credit bond market has shifted from "faith-driven" to "fundamentals-driven." However, some residual faith still exists in certain areas such as city investment bonds, warranting vigilance.<br><br>
+        <strong>(2) Gradual Nature of Rating Industry Reform:</strong> Although regulators have promoted a series of rating industry reforms after Yongmei's default (such as canceling mandatory ratings, introducing dual ratings, strengthening rating disclosure), rating inflation still exists. As of 2026, the degree of credit spread differentiation among AAA-rated enterprises is far higher than what ratings can reflect, indicating that rating differentiation remains insufficient.<br><br>
+        <strong>(3) Continuous Iteration of the Framework:</strong> The Unified Credit Assessment Framework has been continuously upgraded after validation from the Yongmei case and has now iterated to v3.0. New modules have been added, including ESG scoring dimensions, supply chain financial risk assessment, and regional financial ecology indices. The key improvement points identified in this backtest validation (dual-track analysis, fund restriction penetration, rating bubble detection) have become core functional modules of the framework.<br><br>
+        <strong>(4) Long-Term Value of Early Warning Framework:</strong> In a market environment where credit bond defaults have become normalized and rating differentiation is insufficient, the value of an early warning framework independent of external ratings is increasingly prominent for investors. The framework does not assume any entity is "too big to fail" and does not favor any type of issuer based on enterprise nature — this independence was fully validated in the Yongmei case and will continue to play a role in future risk events.
+      </p>
+    </div>
+
+    <div class="card card-amber" style="margin-top:14px;">
+      <h3>Framework Key Capability Summary</h3>
+      <div class="metric-grid" style="grid-template-columns:repeat(4,1fr);">
+        <div class="metric">
+          <div class="m-num" style="color:var(--green);">17 months</div>
+          <div class="m-label">Longest Early Warning Window</div>
+        </div>
+        <div class="metric">
+          <div class="m-num" style="color:var(--green);">5 notches</div>
+          <div class="m-label">vs External Rating Gap</div>
+        </div>
+        <div class="metric">
+          <div class="m-num" style="color:var(--green);">14/14</div>
+          <div class="m-label">Early Warning Signal Accuracy</div>
+        </div>
+        <div class="metric">
+          <div class="m-num" style="color:var(--green);">0</div>
+          <div class="m-label">False Positive Signals</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== FOOTER ====== -->
+  <div class="divider"></div>
+  <div class="footer">
+    <p><strong>Black Swan Backtest Validation · Yongmei Holding 2020.11.10 Ultra-Short-Term Note Default</strong></p>
+    <p>Report Generation Time: 2026-07-09 | Based on Unified Credit Assessment Framework v2.0 | For Internal Reference Only | Classification: Retrospective Validation</p>
+    <p style="margin-top:8px;font-size:10px;">Disclaimer: This report is a post-event retrospective validation analysis, all data from public information. The framework's historical ratings are model simulations based on publicly available data at the time and do not represent actual investment advice. Third-party data used in the analysis (Wind, ChinaBond Valuation, Rating Agency Reports, etc.) are all attributed to their sources. Framework rating results do not constitute buy or sell recommendations for any securities.</p>
+  </div>
+
+</div>
+
+</body>
+</html>

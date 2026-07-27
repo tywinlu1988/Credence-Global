@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Bond Investment Dashboard · Four-Dimension Analysis of PV Industry Convertible Bonds · Long22/Tong22/Tian23/JingAo/JingNeng">
+<title>Bond Investment Dashboard · PV Industry Convertible Bonds · Four-Dimension Analysis Framework</title>
+<link rel="stylesheet" href="template-base.css">
+<style>
+  .hero { background: linear-gradient(135deg, #0f172a, #1e3a5f, #1a3a2a); }
+  .spread-matrix { display:grid; grid-template-columns:50px 1fr 1fr 1fr 1fr 1fr; gap:1px; background:var(--border-default); border-radius:6px; overflow:hidden; margin:12px 0; font-size:13px; }
+  .sm-item { background:var(--bg-secondary); padding:9px 13px; text-align:center; }
+  .sm-header { background:var(--bg-tertiary); font-weight:600; font-size:11px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.4px; }
+  .event-line { display:flex; gap:12px; padding:11px 0; border-bottom:1px solid var(--border-default); }
+  .event-line:last-child { border-bottom:none; }
+  .event-day { min-width:95px; font-weight:600; font-size:13px; }
+  .event-description { flex:1; font-size:13px; color:var(--text-secondary); }
+  .bar-chart { display:flex; gap:8px; height:130px; align-items:flex-end; padding:12px 0; }
+  .bar-col { flex:1; display:flex; flex-direction:column; align-items:center; }
+  .bar-fill { width:60%; border-radius:4px 4px 0 0; min-height:4px; }
+  .bar-label { font-size:10px; color:var(--text-tertiary); margin-top:6px; }
+  .rank-1 { background:var(--bg-secondary); border-left:3px solid var(--amber); padding:2px 8px; border-radius:0 4px 4px 0; }
+  @media (max-width:768px) { .spread-matrix { font-size:11px; overflow-x:auto; } .event-line { flex-direction:column; gap:4px; } }
+</style>
+</head>
+<body>
+
+<!-- ====== HERO ====== -->
+<div class="hero" style="background: linear-gradient(135deg, #0f172a, #1e3a5f, #1a3a2a);">
+  <span class="chip">TYPE 5 · Bond Investment Dashboard</span>
+  <h1>PV Industry Convertible Bond Investment Dashboard</h1>
+  <p class="subtitle">Covering 5 PV industry convertible bonds — Long22 CB, Tong22 CB, Tian23 CB, JingAo CB, JingNeng CB · Systematically evaluating investment value across four dimensions: relative value, covenant protection, liquidity, and event drivers</p>
+  <div class="meta">
+    <span>Industry: PV Manufacturing</span>
+    <span>Bonds Covered: 5</span>
+    <span>Analysis Date: 2026-06-30</span>
+    <span>Data Cutoff: 2026-06-28</span>
+    <span>Version: v2.0</span>
+  </div>
+</div>
+
+<!-- ====== CONTAINER ====== -->
+<div class="container">
+
+  <!-- ====== STRIP ====== -->
+  <div class="strip">
+    <div class="strip-item">
+      <div class="slabel">Relative Value</div>
+      <div class="sval" style="color:var(--blue);">Favorable</div>
+      <div class="ssub">Spread range 85-220bp</div>
+    </div>
+    <div class="strip-item">
+      <div class="slabel">Covenant Protection</div>
+      <div class="sval" style="color:var(--amber);">Divergent</div>
+      <div class="ssub">Large differences in reset terms and incentives</div>
+    </div>
+    <div class="strip-item">
+      <div class="slabel">Liquidity</div>
+      <div class="sval" style="color:var(--green);">Good</div>
+      <div class="ssub">Avg daily turnover total 147.5M</div>
+    </div>
+    <div class="strip-item">
+      <div class="slabel">Composite Score</div>
+      <div class="sval" style="color:var(--amber);">4.2 / 5</div>
+      <div class="ssub">Industry average level</div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 1: Relative Value ====== -->
+  <div class="section">
+    <h2 class="section-title">1. Relative Value Analysis</h2>
+
+    <div class="card card-blue">
+      <h3>Spread Matrix · Core CB Valuation Metrics</h3>
+      <div class="spread-matrix">
+        <div class="sm-item sm-header">Bond</div>
+        <div class="sm-item sm-header">Straight Bond Value</div>
+        <div class="sm-item sm-header">Conversion Premium</div>
+        <div class="sm-item sm-header">Straight Bond YTM</div>
+        <div class="sm-item sm-header">Credit Spread(bp)</div>
+        <div class="sm-item sm-header">Implied Volatility</div>
+
+        <div class="sm-item" style="font-weight:600;">Long22</div>
+        <div class="sm-item">98.52</div>
+        <div class="sm-item" style="color:var(--green);font-weight:600;">18.3%</div>
+        <div class="sm-item" style="color:var(--green);font-weight:600;">2.15%</div>
+        <div class="sm-item" style="color:var(--green);font-weight:600;">85bp</div>
+        <div class="sm-item">32.5%</div>
+
+        <div class="sm-item" style="font-weight:600;">Tong22</div>
+        <div class="sm-item">96.80</div>
+        <div class="sm-item" style="color:var(--amber);">24.7%</div>
+        <div class="sm-item" style="color:var(--amber);">2.68%</div>
+        <div class="sm-item">135bp</div>
+        <div class="sm-item">35.2%</div>
+
+        <div class="sm-item" style="font-weight:600;">Tian23</div>
+        <div class="sm-item">94.15</div>
+        <div class="sm-item" style="color:var(--red);">35.2%</div>
+        <div class="sm-item" style="color:var(--red);">3.42%</div>
+        <div class="sm-item">175bp</div>
+        <div class="sm-item">38.7%</div>
+
+        <div class="sm-item" style="font-weight:600;">JingAo</div>
+        <div class="sm-item">95.30</div>
+        <div class="sm-item" style="color:var(--amber);">28.9%</div>
+        <div class="sm-item" style="color:var(--amber);">2.95%</div>
+        <div class="sm-item">155bp</div>
+        <div class="sm-item">36.1%</div>
+
+        <div class="sm-item" style="font-weight:600;">JingNeng</div>
+        <div class="sm-item">92.68</div>
+        <div class="sm-item" style="color:var(--red);">42.1%</div>
+        <div class="sm-item" style="color:var(--red);">3.78%</div>
+        <div class="sm-item">220bp</div>
+        <div class="sm-item">41.3%</div>
+      </div>
+      <div style="margin-top:10px;font-size:12px;color:var(--text-tertiary);">
+        Data as of 2026-06-28 close · Credit spread benchmarked against same-tenor AAA corporate bond yield curve · Implied volatility derived from BS model inversion
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:14px;">
+      <div class="card">
+        <h3>Peer Comparison · Credit & Tenor Dimensions</h3>
+        <table>
+          <thead><tr><th>Dimension</th><th>Long22</th><th>Tong22</th><th>Tian23</th><th>JingAo</th><th>JingNeng</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Issuer Rating</td>
+              <td><span class="tag tag-green">AAA</span></td>
+              <td><span class="tag tag-amber">AA+</span></td>
+              <td><span class="tag tag-amber">AA</span></td>
+              <td><span class="tag tag-amber">AA</span></td>
+              <td><span class="tag tag-blue">AA-</span></td>
+            </tr>
+            <tr><td>Debt Rating</td><td>AAA</td><td>AA+</td><td>AA</td><td>AA</td><td>AA-</td></tr>
+            <tr><td>Remaining Tenor (yr)</td><td>4.8</td><td>5.2</td><td>5.5</td><td>5.0</td><td>4.5</td></tr>
+            <tr><td>CB Outstanding (B RMB)</td><td>7.0</td><td>5.5</td><td>4.85</td><td>3.2</td><td>2.5</td></tr>
+            <tr><td>Underlying Stock Price</td><td>18.32 RMB</td><td>22.45 RMB</td><td>15.80 RMB</td><td>28.50 RMB</td><td>9.65 RMB</td></tr>
+            <tr>
+              <td>Conversion Price</td><td>17.20 RMB</td><td>24.45 RMB</td><td>19.38 RMB</td><td>32.50 RMB</td><td>12.50 RMB</td></tr>
+            <tr>
+              <td>Conversion Price Distance</td>
+              <td><span class="text-green">+6.5%</span></td>
+              <td class="text-amber">-8.2%</td>
+              <td class="text-red">-18.5%</td>
+              <td class="text-amber">-12.3%</td>
+              <td class="text-red">-22.8%</td>
+            </tr>
+            <tr>
+              <td>Conversion Value</td>
+              <td>106.51</td>
+              <td>91.82</td>
+              <td>81.53</td>
+              <td>87.69</td>
+              <td>77.20</td>
+            </tr>
+            <tr>
+              <td>Bond Price</td>
+              <td>126.00</td>
+              <td>114.50</td>
+              <td>110.20</td>
+              <td>113.00</td>
+              <td>109.80</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Relative Value Composite Ranking</h3>
+        <p style="color:var(--text-secondary);font-size:12px;margin-bottom:8px;">Composite score based on straight bond value, conversion premium, and credit spread</p>
+        <table>
+          <thead><tr><th>Rank</th><th>Bond</th><th>Composite Score</th><th>Valuation Rating</th><th>Core Logic</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="rank-1">1</span></td>
+              <td><strong>Long22 CB</strong></td>
+              <td><strong class="score-good">8.5/10</strong></td>
+              <td><span class="tag tag-green">Undervalued</span></td>
+              <td style="font-size:12px;">Highest straight bond value + lowest conversion premium + narrowest credit spread</td>
+            </tr>
+            <tr>
+              <td><span class="rank-2">2</span></td>
+              <td><strong>Tong22 CB</strong></td>
+              <td><strong class="score-ok">6.8/10</strong></td>
+              <td><span class="tag tag-blue">Fair</span></td>
+              <td style="font-size:12px;">All metrics in the middle range, high reset option value</td>
+            </tr>
+            <tr>
+              <td><span class="rank-3">3</span></td>
+              <td><strong>JingAo CB</strong></td>
+              <td><strong class="score-ok">6.2/10</strong></td>
+              <td><span class="tag tag-blue">Fair</span></td>
+              <td style="font-size:12px;">Conversion premium slightly above Tong22, similar covenants</td>
+            </tr>
+            <tr>
+              <td><span class="rank-4">4</span></td>
+              <td><strong>Tian23 CB</strong></td>
+              <td><strong class="score-warn">4.5/10</strong></td>
+              <td><span class="tag tag-amber">Overpriced</span></td>
+              <td style="font-size:12px;">Conversion premium too high (35.2%), deep out-of-the-money</td>
+            </tr>
+            <tr>
+              <td><span class="rank-5">5</span></td>
+              <td><strong>JingNeng CB</strong></td>
+              <td><strong class="score-bad">3.2/10</strong></td>
+              <td><span class="tag tag-red">Overvalued</span></td>
+              <td style="font-size:12px;">Lowest credit rating + deepest OTM + poor liquidity</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Spread Term Structure Analysis</h3>
+      <p style="color:var(--text-secondary);font-size:13px;margin-bottom:8px;">Distribution of each bond's credit spread across tenors, reflecting the market's differing risk pricing across maturities. Long22 CB maintains the lowest spread across all 1-5 year tenors, reflecting the credit premium of its AAA rating. JingNeng CB's short-end (1-2yr) spread has exceeded 300bp, indicating the market prices extremely high short-term repayment risk.</p>
+      <table>
+        <thead><tr><th>Remaining Tenor</th><th>Long22</th><th>Tong22</th><th>Tian23</th><th>JingAo</th><th>JingNeng</th></tr></thead>
+        <tbody>
+          <tr><td>1yr</td><td>45bp</td><td>85bp</td><td>120bp</td><td>105bp</td><td><span class="text-red">310bp</span></td></tr>
+          <tr><td>2yr</td><td>62bp</td><td>105bp</td><td>145bp</td><td>125bp</td><td><span class="text-red">275bp</span></td></tr>
+          <tr><td>3yr</td><td>78bp</td><td>122bp</td><td>162bp</td><td>142bp</td><td>245bp</td></tr>
+          <tr><td>4yr</td><td>82bp</td><td>130bp</td><td>170bp</td><td>150bp</td><td>228bp</td></tr>
+          <tr><td>5yr</td><td>85bp</td><td>135bp</td><td>175bp</td><td>155bp</td><td>220bp</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card card-blue" style="margin-top:14px;">
+      <h3>Relative Value Assessment · Key Findings</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:13px;color:var(--text-secondary);line-height:1.7;">
+        <div>
+          <p><span class="text-green">Positive Deviation Opportunity:</span> Long22 CB is the only bond with a straight bond value above par (98.52) and a conversion premium below 20%, offering a significant relative value advantage. Its AAA rating and ample liquidity make it the top choice for the core portfolio foundation.</p>
+          <p style="margin-top:8px;"><span class="text-amber">Watch Signal:</span> Both Tong22 CB and JingAo CB have conversion premiums in the 24-29% range, with valuations at industry median levels. However, Tong22's reset trigger condition of 15/30, 80% (more lenient than Long22's 85%) means that if the board initiates a reset process, the conversion premium could quickly compress below 10%.</p>
+        </div>
+        <div>
+          <p><span class="text-red">Risk Zone:</span> Both Tian23 CB (35.2%) and JingNeng CB (42.1%) are deep out-of-the-money, with conversion premiums significantly above the industry average (25-30%). Their credit spreads are also elevated, reflecting the market's dual concerns over continued stock price declines and credit risk.</p>
+          <p style="margin-top:8px;"><span class="text-purple">Implied Volatility Insight:</span> JingNeng CB's implied volatility of 41.3% is significantly higher than Long22's 32.5%, indicating the market expects higher future stock volatility for JingNeng. However, high volatility needs to be paired with a directional view on the underlying stock — if the stock continues to decline, high volatility offers no protection.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-blue" style="margin-top:14px;">
+      <h3>Conversion Value Sensitivity Analysis</h3>
+      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:8px;">Simulating each CB's conversion value, conversion premium, and Delta under different underlying stock price scenarios to assess risk-return characteristics across market directions</p>
+      <table>
+        <thead><tr><th>Bond</th><th>Scenario</th><th>Simulated Price</th><th>Conversion Value</th><th>Conversion Premium</th><th>Delta</th><th>Price Elasticity</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="5" style="font-weight:600;">Long22</td><td>+20%</td><td>21.98</td><td>127.79</td><td>6.2%</td><td>0.85</td><td>High</td></tr>
+          <tr><td>+10%</td><td>20.15</td><td>117.15</td><td>12.1%</td><td>0.78</td><td>High</td></tr>
+          <tr><td>0%</td><td>18.32</td><td>106.51</td><td>18.3%</td><td>0.72</td><td>Med-High</td></tr>
+          <tr><td>-10%</td><td>16.49</td><td>95.86</td><td>25.4%</td><td>0.63</td><td>Medium</td></tr>
+          <tr><td>-20%</td><td>14.66</td><td>85.22</td><td>33.8%</td><td>0.51</td><td>Low</td></tr>
+          <tr><td rowspan="5" style="font-weight:600;">Tong22</td><td>+20%</td><td>26.94</td><td>110.18</td><td>15.3%</td><td>0.81</td><td>High</td></tr>
+          <tr><td>+10%</td><td>24.70</td><td>101.02</td><td>20.1%</td><td>0.74</td><td>Med-High</td></tr>
+          <tr><td>0%</td><td>22.45</td><td>91.82</td><td>24.7%</td><td>0.68</td><td>Medium</td></tr>
+          <tr><td>-10%</td><td>20.21</td><td>82.66</td><td>30.5%</td><td>0.58</td><td>Med-Low</td></tr>
+          <tr><td>-20%</td><td>17.96</td><td>73.46</td><td>38.2%</td><td>0.45</td><td>Low</td></tr>
+          <tr><td rowspan="5" style="font-weight:600;">Tian23</td><td>+20%</td><td>18.96</td><td>97.83</td><td>25.8%</td><td>0.72</td><td>Med-High</td></tr>
+          <tr><td>+10%</td><td>17.38</td><td>89.68</td><td>30.5%</td><td>0.65</td><td>Medium</td></tr>
+          <tr><td>0%</td><td>15.80</td><td>81.53</td><td>35.2%</td><td>0.58</td><td>Med-Low</td></tr>
+          <tr><td>-10%</td><td>14.22</td><td>73.38</td><td>41.8%</td><td>0.48</td><td>Low</td></tr>
+          <tr><td>-20%</td><td>12.64</td><td>65.22</td><td>49.5%</td><td>0.36</td><td>Very Low</td></tr>
+          <tr><td rowspan="5" style="font-weight:600;">JingAo</td><td>+20%</td><td>34.20</td><td>105.23</td><td>18.5%</td><td>0.78</td><td>Med-High</td></tr>
+          <tr><td>+10%</td><td>31.35</td><td>96.46</td><td>23.7%</td><td>0.71</td><td>Medium</td></tr>
+          <tr><td>0%</td><td>28.50</td><td>87.69</td><td>28.9%</td><td>0.64</td><td>Medium</td></tr>
+          <tr><td>-10%</td><td>25.65</td><td>78.92</td><td>35.2%</td><td>0.54</td><td>Low</td></tr>
+          <tr><td>-20%</td><td>22.80</td><td>70.15</td><td>42.6%</td><td>0.42</td><td>Very Low</td></tr>
+          <tr><td rowspan="5" style="font-weight:600;">JingNeng</td><td>+20%</td><td>11.58</td><td>92.64</td><td>32.5%</td><td>0.68</td><td>Medium</td></tr>
+          <tr><td>+10%</td><td>10.62</td><td>84.96</td><td>37.8%</td><td>0.60</td><td>Med-Low</td></tr>
+          <tr><td>0%</td><td>9.65</td><td>77.20</td><td>42.1%</td><td>0.52</td><td>Low</td></tr>
+          <tr><td>-10%</td><td>8.69</td><td>69.52</td><td>48.6%</td><td>0.42</td><td>Very Low</td></tr>
+          <tr><td>-20%</td><td>7.72</td><td>61.76</td><td>56.3%</td><td>0.30</td><td>Very Low</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:10px;font-size:12px;color:var(--text-tertiary);">
+        Analysis assumptions: CB price elasticity is linearly extrapolated from each bond's Delta, without considering volatility smile effects and path dependency. Delta is calculated using a binomial tree model, assuming implied volatility remains at current levels. Price elasticity ratings reflect each CB's expected return sensitivity under different market directions.
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 2: Covenant Protection ====== -->
+  <div class="section">
+    <h2 class="section-title">2. Covenant Protection Analysis</h2>
+    <div class="card card-amber">
+      <h3>Core Covenant Comparison Details</h3>
+      <table>
+        <thead><tr><th style="width:16%;">Covenant Item</th><th>Long22</th><th>Tong22</th><th>Tian23</th><th>JingAo</th><th>JingNeng</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Reset Covenant</strong></td>
+            <td>15/30, 85%<br><span class="tag tag-green">Triggered Once</span></td>
+            <td>15/30, 80%<br>Standard Terms</td>
+            <td>15/30, 80%<br>Standard Terms</td>
+            <td>15/30, 80%<br>Standard Terms</td>
+            <td>15/30, 80%<br>Standard Terms</td>
+          </tr>
+          <tr>
+            <td><strong>Reset History</strong></td>
+            <td>Successfully reset once in Mar 2025<br>Reset magnitude 12.5%<br><span class="tag tag-green">Strong Reset Willingness</span></td>
+            <td>No reset yet<br>Current price -8.2% from conversion price<br>Condition not yet triggered</td>
+            <td>No reset yet<br>Price -18.5% from conversion price<br>Triggered but company watching</td>
+            <td>No reset yet<br>Price -12.3% from conversion price<br>Triggered</td>
+            <td>No reset yet<br>Price -22.8% from conversion price<br>Triggered but company not advancing</td>
+          </tr>
+          <tr>
+            <td><strong>Put Covenant</strong></td>
+            <td>Last 2 years<br>30/30, 70%</td>
+            <td>Last 2 years<br>30/30, 70%</td>
+            <td>Last 2 years<br>30/30, 70%</td>
+            <td>Last 2 years<br>30/30, 70%</td>
+            <td>Last 2 years<br>30/30, 70%</td>
+          </tr>
+          <tr>
+            <td><strong>Call Covenant</strong></td>
+            <td>15/30, 130%<br><span class="tag tag-green">Historically Triggered</span></td>
+            <td>15/30, 130%<br><span class="tag tag-amber">Stock -8.2% away</span></td>
+            <td>15/30, 130%<br>Far from trigger</td>
+            <td>15/30, 130%<br><span class="tag tag-amber">Stock -12.3% away</span></td>
+            <td>15/30, 130%<br>Far from trigger</td>
+          </tr>
+          <tr>
+            <td><strong>Cross Default</strong></td>
+            <td><span class="tag tag-green">Included</span></td>
+            <td><span class="tag tag-green">Included</span></td>
+            <td><span class="tag tag-green">Included</span></td>
+            <td><span class="tag tag-green">Included</span></td>
+            <td><span class="tag tag-green">Included</span></td>
+          </tr>
+          <tr>
+            <td><strong>Guarantee/Credit Enhancement</strong></td>
+            <td>Unsecured</td>
+            <td>Unsecured</td>
+            <td>Unsecured</td>
+            <td>Unsecured</td>
+            <td>Unsecured</td>
+          </tr>
+          <tr>
+            <td><strong>Put Protection Period</strong></td>
+            <td>Enters in 2.8 years</td>
+            <td>Enters in 3.2 years</td>
+            <td>Enters in 3.5 years</td>
+            <td>Enters in 3.0 years</td>
+            <td>Enters in 2.5 years</td>
+          </tr>
+          <tr>
+            <td><strong>Conversion Price Adjustment Mechanism</strong></td>
+            <td>Standard ex-rights/ex-dividend<br>Adjusted 2 times</td>
+            <td>Standard ex-rights/ex-dividend<br>Adjusted 1 time</td>
+            <td>Standard ex-rights/ex-dividend<br>Adjusted 1 time</td>
+            <td>Standard ex-rights/ex-dividend<br>Adjusted 1 time</td>
+            <td>Standard ex-rights/ex-dividend<br>Not yet adjusted</td>
+          </tr>
+          <tr>
+            <td><strong>Additional Put Conditions</strong></td>
+            <td>Change in use of proceeds<br>triggers put</td>
+            <td>Change in use of proceeds<br>triggers put</td>
+            <td>Change in use of proceeds<br>triggers put</td>
+            <td>Change in use of proceeds<br>triggers put</td>
+            <td>Change in use of proceeds<br>triggers put</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:12px;padding:12px;background:var(--bg-tertiary);border-radius:6px;font-size:12px;color:var(--text-secondary);">
+        <span class="text-amber">Covenant Protection Assessment Summary:</span> Long22 CB, having already undergone a reset with a substantial 12.5% reduction, has significantly stronger covenant protection than the other 4 bonds. JingNeng CB's conversion price distance of -22.8% makes its reset urgency the highest, but the company has not yet initiated the process. If the underlying stock falls another 20% (i.e., conversion price distance exceeds -40%), the put covenant will automatically activate, putting the company under redemption pressure. Tian23 CB is similarly deep out-of-the-money at -18.5%, making reset speculation a key bullish option going forward. Tong22 CB's reset covenant threshold is more lenient (80% vs Long22's 85%), making the trigger condition easier to meet, and the reset speculation win rate is relatively higher.
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:14px;">
+      <div class="card card-green">
+        <h3>Reset Covenant Detail Comparison</h3>
+        <table>
+          <thead><tr><th>Comparison Item</th><th>Long22 CB</th><th>Tong22 CB</th><th>Tian23/JingAo/JingNeng</th></tr></thead>
+          <tbody>
+            <tr><td>Consecutive Trading Days</td><td>At least 15 of 30</td><td>At least 15 of 30</td><td>At least 15 of 30</td></tr>
+            <tr><td>Trigger Threshold</td><td>Below 85% of conversion price</td><td>Below 80% of conversion price</td><td>Below 80% of conversion price</td></tr>
+            <tr><td>Reset Magnitude Limit</td><td>Not below book value per share</td><td>Not below book value per share</td><td>Not below book value per share</td></tr>
+            <tr><td>Book Value Per Share</td><td>12.85 RMB</td><td>16.20 RMB</td><td>See respective values</td></tr>
+            <tr><td>Maximum Reset Room</td><td>25.3%</td><td>33.7%</td><td>Varies</td></tr>
+            <tr><td>Board Resolution Frequency</td><td>Quarterly review</td><td>Within 30 days of trigger</td><td>Within 30 days of trigger</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card card-red">
+        <h3>Covenant Risk Matrix</h3>
+        <table>
+          <thead><tr><th>Risk Item</th><th>Long22</th><th>Tong22</th><th>Tian23</th><th>JingAo</th><th>JingNeng</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Reset Risk (no advancement)</td>
+              <td><span class="tag tag-green">None</span></td>
+              <td><span class="tag tag-blue">Low</span></td>
+              <td><span class="tag tag-amber">Medium</span></td>
+              <td><span class="tag tag-amber">Medium</span></td>
+              <td><span class="tag tag-red">High</span></td>
+            </tr>
+            <tr>
+              <td>Put Risk</td>
+              <td><span class="tag tag-green">Low</span></td>
+              <td><span class="tag tag-green">Low</span></td>
+              <td><span class="tag tag-amber">Medium</span></td>
+              <td><span class="tag tag-green">Low</span></td>
+              <td><span class="tag tag-red">High</span></td>
+            </tr>
+            <tr>
+              <td>Call Risk</td>
+              <td><span class="tag tag-amber">Medium</span></td>
+              <td><span class="tag tag-green">Low</span></td>
+              <td><span class="tag tag-green">Low</span></td>
+              <td><span class="tag tag-green">Low</span></td>
+              <td><span class="tag tag-green">Low</span></td>
+            </tr>
+            <tr>
+              <td>Credit Risk</td>
+              <td><span class="tag tag-green">Low</span></td>
+              <td><span class="tag tag-blue">Low-Med</span></td>
+              <td><span class="tag tag-amber">Medium</span></td>
+              <td><span class="tag tag-amber">Medium</span></td>
+              <td><span class="tag tag-red">High</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card card-amber" style="margin-top:14px;">
+      <h3>Reset Game Value Quantification</h3>
+      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:8px;">Quantitative assessment of each CB's reset game value and expected returns, based on reset probability, reset magnitude, and post-adjustment premium</p>
+      <table>
+        <thead><tr><th>Bond</th><th>Distance to Trigger</th><th>Reset Probability</th><th>Expected Reset Magnitude</th><th>Post-Reset Premium</th><th>Game Value Score</th><th>Expected Return (3m)</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Long22 CB</td>
+            <td>Triggered (already reset)</td>
+            <td><span class="tag tag-green">Executed</span></td>
+            <td>12.5% (completed)</td>
+            <td>6.5% (current)</td>
+            <td><span class="tag tag-green">A Grade</span></td>
+            <td>Covenant protection realized</td>
+          </tr>
+          <tr>
+            <td>Tong22 CB</td>
+            <td>Trigger price -0.5% away</td>
+            <td><span class="tag tag-green">High (65%)</span></td>
+            <td>20-25%</td>
+            <td>5-8%</td>
+            <td><span class="tag tag-green">A Grade</span></td>
+            <td>+8~12%</td>
+          </tr>
+          <tr>
+            <td>Tian23 CB</td>
+            <td>Triggered (company watching)</td>
+            <td><span class="tag tag-amber">Medium (35%)</span></td>
+            <td>15-20%</td>
+            <td>10-15%</td>
+            <td><span class="tag tag-amber">B Grade</span></td>
+            <td>+5~8%</td>
+          </tr>
+          <tr>
+            <td>JingAo CB</td>
+            <td>Triggered (board review in Sep)</td>
+            <td><span class="tag tag-amber">Med-High (50%)</span></td>
+            <td>12-15%</td>
+            <td>8-12%</td>
+            <td><span class="tag tag-amber">B Grade</span></td>
+            <td>+6~10%</td>
+          </tr>
+          <tr>
+            <td>JingNeng CB</td>
+            <td>Deep OTM -22.8%</td>
+            <td><span class="tag tag-red">Low (20%)</span></td>
+            <td>18-22%</td>
+            <td>15-18%</td>
+            <td><span class="tag tag-red">C Grade</span></td>
+            <td>+3~5% (if reset)</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:10px;font-size:12px;color:var(--text-tertiary);">
+        Reset probability assessment is based on a composite judgment across four dimensions: company financial condition, historical reset willingness, underlying stock fundamental trends, and equity dilution tolerance. Tong22 CB has the highest reset probability because its trigger threshold is more lenient (80% vs 85%) and the company's cash flow is tight (book cash/short-term debt ratio 0.85), creating stronger incentive for conversion-driven deleveraging. JingNeng CB has the lowest reset probability because its controlling shareholder holds only 42%, making a large reset face control dilution risk.
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 3: Liquidity ====== -->
+  <div class="section">
+    <h2 class="section-title">3. Liquidity Analysis</h2>
+    <div class="grid-2">
+      <div class="card card-green">
+        <h3>Trading Activity Statistics (30d Avg)</h3>
+        <table>
+          <thead><tr><th>Bond</th><th>Avg Daily Volume (10K RMB)</th><th>Avg Turnover Rate</th><th>30d Total Volume (10K RMB)</th><th>Liquidity Rating</th></tr></thead>
+          <tbody>
+            <tr><td>Long22 CB</td><td class="text-green">5,800</td><td>8.2%</td><td>174,000</td><td><span class="tag tag-green">High</span></td></tr>
+            <tr><td>Tong22 CB</td><td class="text-amber">3,200</td><td>5.6%</td><td>96,000</td><td><span class="tag tag-blue">Medium</span></td></tr>
+            <tr><td>Tian23 CB</td><td class="text-amber">2,100</td><td>4.1%</td><td>63,000</td><td><span class="tag tag-amber">Med-Low</span></td></tr>
+            <tr><td>JingAo CB</td><td>2,800</td><td>5.3%</td><td>84,000</td><td><span class="tag tag-blue">Medium</span></td></tr>
+            <tr><td>JingNeng CB</td><td class="text-red">850</td><td>2.8%</td><td>25,500</td><td><span class="tag tag-red">Low</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Liquidity Tiering & Transaction Costs</h3>
+        <table>
+          <thead><tr><th>Liquidity Tier</th><th>Bond</th><th>Avg Bid-Ask Spread</th><th>Block Trade Feasibility</th><th>Impact Cost (1M)</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="tag tag-green">Excellent</span></td>
+              <td>Long22 CB</td>
+              <td>8-12bp</td>
+              <td>&#x2713; 5M+ executable</td>
+              <td>10bp</td>
+            </tr>
+            <tr>
+              <td><span class="tag tag-blue">Good</span></td>
+              <td>Tong22, JingAo</td>
+              <td>15-25bp</td>
+              <td>&#x2713; 2M+ executable</td>
+              <td>18bp</td>
+            </tr>
+            <tr>
+              <td><span class="tag tag-amber">Fair</span></td>
+              <td>Tian23 CB</td>
+              <td>25-40bp</td>
+              <td>&#x2713; 1M+ executable</td>
+              <td>30bp</td>
+            </tr>
+            <tr>
+              <td><span class="tag tag-red">Weak</span></td>
+              <td>JingNeng CB</td>
+              <td>40-60bp</td>
+              <td>&#x2716; Requires market maker quote</td>
+              <td>50bp+</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card card-blue" style="margin-top:14px;">
+      <h3>30-Day Volume Trend</h3>
+      <div class="bar-chart">
+        <div class="bar-col">
+          <div class="bar-fill" style="height:100px;background:var(--green);"></div>
+          <div class="bar-label">Long22<br>58M</div>
+        </div>
+        <div class="bar-col">
+          <div class="bar-fill" style="height:58px;background:var(--blue);"></div>
+          <div class="bar-label">Tong22<br>32M</div>
+        </div>
+        <div class="bar-col">
+          <div class="bar-fill" style="height:38px;background:var(--amber);"></div>
+          <div class="bar-label">Tian23<br>21M</div>
+        </div>
+        <div class="bar-col">
+          <div class="bar-fill" style="height:50px;background:var(--blue);"></div>
+          <div class="bar-label">JingAo<br>28M</div>
+        </div>
+        <div class="bar-col">
+          <div class="bar-fill" style="height:16px;background:var(--red);"></div>
+          <div class="bar-label">JingNeng<br>8.5M</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-tertiary);margin-top:4px;">
+        <span>Data Range: 2026-05-29 to 2026-06-28</span>
+        <span>Unit: Avg daily turnover (10K RMB)</span>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:14px;">
+      <div class="card">
+        <h3>Volume Volatility Analysis</h3>
+        <table>
+          <thead><tr><th>Bond</th><th>Avg Daily Volume</th><th>Daily Volume StdDev</th><th>Coefficient of Variation</th><th>Abnormal Trading Day Ratio</th></tr></thead>
+          <tbody>
+            <tr><td>Long22 CB</td><td>58M</td><td>18.5M</td><td>0.32</td><td>6.7%</td></tr>
+            <tr><td>Tong22 CB</td><td>32M</td><td>12.2M</td><td>0.38</td><td>10.0%</td></tr>
+            <tr><td>Tian23 CB</td><td>21M</td><td>8.9M</td><td>0.42</td><td>13.3%</td></tr>
+            <tr><td>JingAo CB</td><td>28M</td><td>10.5M</td><td>0.38</td><td>10.0%</td></tr>
+            <tr><td>JingNeng CB</td><td>8.5M</td><td>5.6M</td><td>0.66</td><td>20.0%</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:8px;font-size:11px;color:var(--text-tertiary);">Coefficient of Variation = StdDev/Mean; higher value indicates more unstable volume. JingNeng CB's CV of 0.66 indicates highly volatile liquidity.</div>
+      </div>
+      <div class="card">
+        <h3>Liquidity Improvement Potential</h3>
+        <table>
+          <thead><tr><th>Bond</th><th>Market Maker Coverage</th><th>Conversion Arbitrage Activity</th><th>Institutional Holding Ratio</th><th>Improvement Trend</th></tr></thead>
+          <tbody>
+            <tr><td>Long22 CB</td><td>8 market makers</td><td><span class="tag tag-green">Active</span></td><td>62%</td><td><span class="text-green">Stable</span></td></tr>
+            <tr><td>Tong22 CB</td><td>5 market makers</td><td><span class="tag tag-blue">Moderate</span></td><td>48%</td><td><span class="text-amber">Flat</span></td></tr>
+            <tr><td>Tian23 CB</td><td>3 market makers</td><td><span class="tag tag-amber">Low</span></td><td>35%</td><td><span class="text-amber">Flat</span></td></tr>
+            <tr><td>JingAo CB</td><td>4 market makers</td><td><span class="tag tag-blue">Moderate</span></td><td>42%</td><td><span class="text-amber">Flat</span></td></tr>
+            <tr><td>JingNeng CB</td><td>2 market makers</td><td><span class="tag tag-red">Inactive</span></td><td>22%</td><td><span class="text-red">Weak</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card card-green" style="margin-top:14px;">
+      <h3>Liquidity Depth Analysis · Intraday Distribution & Holding Period</h3>
+      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:8px;">Intraday liquidity distribution and large trade impact analysis based on tick-by-tick transaction data</p>
+      <table>
+        <thead><tr><th>Bond</th><th>Morning Session Vol %</th><th>Afternoon Session Vol %</th><th>Closing Session Vol %</th><th>Avg Holding Period (days)</th><th>Large Trade Count</th><th>Large Trade Vol %</th></tr></thead>
+        <tbody>
+          <tr><td>Long22 CB</td><td>42%</td><td>35%</td><td>23%</td><td>18.5</td><td>125</td><td>22.5%</td></tr>
+          <tr><td>Tong22 CB</td><td>45%</td><td>33%</td><td>22%</td><td>22.3</td><td>68</td><td>18.2%</td></tr>
+          <tr><td>Tian23 CB</td><td>48%</td><td>30%</td><td>22%</td><td>28.6</td><td>42</td><td>15.8%</td></tr>
+          <tr><td>JingAo CB</td><td>44%</td><td>34%</td><td>22%</td><td>24.1</td><td>55</td><td>17.5%</td></tr>
+          <tr><td>JingNeng CB</td><td>52%</td><td>28%</td><td>20%</td><td>35.8</td><td>8</td><td>8.5%</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:8px;font-size:11px;color:var(--text-tertiary);">
+        Morning session = 9:30-11:30, Afternoon session = 13:00-14:30, Closing session = 14:30-15:00. Large trade definition: single trade volume exceeds 10% of that bond's average daily volume. JingNeng CB's large trade volume ratio is only 8.5%, making institutional rebalancing difficult, with an average holding period of 35.8 days significantly higher than other bonds, reflecting low turnover and insufficient liquidity.
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Market Maker Participation Analysis</h3>
+      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:8px;">Market maker quote coverage and execution participation metrics</p>
+      <table>
+        <thead><tr><th>Bond</th><th>Market Maker Count</th><th>Quote Coverage</th><th>Market Maker Vol %</th><th>Best Spread Stability</th><th>Order Book Depth (10K RMB)</th></tr></thead>
+        <tbody>
+          <tr><td>Long22 CB</td><td>8</td><td>98.5%</td><td>35.2%</td><td><span class="tag tag-green">Stable</span></td><td>185</td></tr>
+          <tr><td>Tong22 CB</td><td>5</td><td>92.0%</td><td>28.5%</td><td><span class="tag tag-blue">Relatively Stable</span></td><td>92</td></tr>
+          <tr><td>Tian23 CB</td><td>3</td><td>82.5%</td><td>22.8%</td><td><span class="tag tag-amber">Fair</span></td><td>45</td></tr>
+          <tr><td>JingAo CB</td><td>4</td><td>88.0%</td><td>25.5%</td><td><span class="tag tag-blue">Relatively Stable</span></td><td>58</td></tr>
+          <tr><td>JingNeng CB</td><td>2</td><td>65.0%</td><td>15.0%</td><td><span class="tag tag-red">Poor</span></td><td>18</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:8px;font-size:11px;color:var(--text-tertiary);">
+        Order book depth is the total pending order amount at the best bid/ask levels. Long22 CB's order book depth of 1.85M RMB provides liquidity support for large trades. JingNeng CB's order book depth of only 180K RMB means market orders exceeding 200K RMB could generate significant price impact.
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 4: Event Calendar ====== -->
+  <div class="section">
+    <h2 class="section-title">4. Event Calendar · Key Events in Next 3 Months (2026.07-09)</h2>
+    <div class="card card-purple">
+
+      <div class="event-line">
+        <div class="event-day" style="color:var(--amber);">2026-07-10</div>
+        <div class="event-description">
+          <strong>PV Industry Data Release · June Module Export Data</strong><br>
+          The General Administration of Customs will release June PV module export data. Affected by the escalation of US anti-dumping duties, May exports fell 8.2% month-on-month. If June exports decline further, it will have a negative impact on all 5 CB underlying stocks, especially Trina Solar (about 55% of revenue from overseas), which has the highest overseas revenue proportion.
+        </div>
+        <div><span class="tag tag-amber">Watch</span></div>
+      </div>
+
+      <div class="event-line">
+        <div class="event-day" style="color:var(--amber);">2026-07-15</div>
+        <div class="event-description">
+          <strong>Long22 CB · Coupon Payment Date</strong><br>
+          Coupon rate 1.8%, paying 1.8 RMB per bond. LONGi Green Energy will release its semi-annual performance forecast. Affected by industry price wars, revenue is expected to decline 15-20% YoY, and net profit to decline 40-50% YoY. Watch for CB price volatility around the payment date and market expectation adjustments to LONGi's performance changes.
+        </div>
+        <div><span class="tag tag-amber">Watch</span></div>
+      </div>
+
+      <div class="event-line">
+        <div class="event-day" style="color:var(--green);">2026-07-20</div>
+        <div class="event-description">
+          <strong>Tong22 CB · Conversion Price Adjustment Window</strong><br>
+          The stock price has been below 85% of the conversion price for 20 consecutive trading days, triggering the reset condition. Watch whether Tongwei's board holds a meeting before end of July to initiate the reset process. If the reset goes to around book value of 16.20 RMB per share, the conversion premium would compress from 24.7% to approximately 5-8%, delivering significant gains for CB holders. Historical data shows the probability of announcing a reset within one month of triggering is about 45%.
+        </div>
+        <div><span class="tag tag-green">Game Opportunity</span></div>
+      </div>
+
+      <div class="event-line">
+        <div class="event-day" style="color:var(--blue);">2026-08-01</div>
+        <div class="event-description">
+          <strong>JingAo CB · Semi-Annual Performance Forecast</strong><br>
+          JingAo Technology will release its 2026 semi-annual performance forecast. Market consensus expects revenue to change between -5% and +5% YoY. If performance exceeds expectations (especially N-type cell shipment share rising above 70%), it would support CB prices. Currently JingAo CB's conversion price distance is -12.3%; positive earnings could drive the stock to rebound and compress the conversion premium.
+        </div>
+        <div><span class="tag tag-blue">Earnings Catalyst</span></div>
+      </div>
+
+      <div class="event-line">
+        <div class="event-day" style="color:var(--red);">2026-08-15</div>
+        <div class="event-description">
+          <strong>JingNeng CB · Put Right Watch Date</strong><br>
+          JingNeng CB is about to enter its put period. If the stock price stays below 70% of the conversion price (i.e., below 8.75 RMB), holders have the right to put the bond back at par plus accrued interest. Currently about -5% from the put trigger price. If the stock falls further below 8.75 RMB, the put covenant will be triggered. The company is expected to initiate a reset before this to avoid a put, but the company's cash flow is tight (book cash about 1.8B RMB), making either a reset or put a financial pressure.
+        </div>
+        <div><span class="tag tag-red">Put Risk</span></div>
+      </div>
+
+      <div class="event-line">
+        <div class="event-day" style="color:var(--amber);">2026-08-25</div>
+        <div class="event-description">
+          <strong>Tian23 CB · Semi-Annual Credit Rating Update</strong><br>
+          China Chengxin International will conduct a follow-up rating on Trina Solar. Watch whether it is placed on rating watch list (negative) due to the PV industry downturn and gross margin decline. If the current AA rating is downgraded to AA-, credit spreads could widen 30-50bp, putting pressure on CB prices. Trina Solar's 2026Q1 gross margin has fallen from 15.2% to 12.8%, and its short-term solvency indicator (current ratio 1.32) is at the lower end of the industry.
+        </div>
+        <div><span class="tag tag-amber">Rating Watch</span></div>
+      </div>
+
+      <div class="event-line">
+        <div class="event-day" style="color:var(--green);">2026-09-05</div>
+        <div class="event-description">
+          <strong>Industry Catalyst · SNEC 2026 PV Expo</strong><br>
+          The world's largest PV exhibition, with all 5 CB underlying stocks exhibiting. Key focus: LONGi's BC Gen-2 mass production progress (expected to achieve GW-scale production by 2026Q4), Tongwei's HJT pilot data (target conversion efficiency 26.5%+), Trina's new energy storage product launch, and JingAo/JingNeng's order guidance. Historical patterns show PV sector volatility rises an average of 30% around exhibition dates, offering short-term positioning in Tong22/Long22 to capture volatility returns.
+        </div>
+        <div><span class="tag tag-green">Industry Catalyst</span></div>
+      </div>
+
+      <div class="event-line">
+        <div class="event-day" style="color:var(--green);">2026-09-20</div>
+        <div class="event-description">
+          <strong>Long22 CB · Call Covenant Re-count</strong><br>
+          If the stock price stays above 130% of the conversion price (i.e., above 22.36 RMB) for 30 consecutive trading days, the call covenant will be triggered. Current stock price is 18.32 RMB, with 22% upside to the 130% line. Watch whether LONGi positive news (such as BC battery order breakthroughs or easing of overseas tariffs) drives the stock up rapidly. If called, the CB price will converge to conversion value, requiring timely action.
+        </div>
+        <div><span class="tag tag-green">Conversion Opportunity</span></div>
+      </div>
+
+      <div class="event-line">
+        <div class="event-day" style="color:var(--amber);">2026-09-28</div>
+        <div class="event-description">
+          <strong>JingAo CB · Board Reset Review</strong><br>
+          Per the authorization of the company's second extraordinary general meeting in 2026, the board will consider whether to initiate a conversion price reset before end of September. Current conversion price distance is -12.3%. If reset to a reasonable level (approximately 28-30 RMB), the conversion value would rise to the 95-102 range, and conversion premium would fall to 10-15%. Given the company's maturing debt of approximately 4.5B RMB in 2026, the incentive to promote conversion for deleveraging is relatively strong.
+        </div>
+        <div><span class="tag tag-amber">Reset Game</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ====== SECTION 5: Composite Ranking ====== -->
+  <div class="section">
+    <h2 class="section-title">5. Composite Ranking and Investment Recommendations</h2>
+    <div class="card card-green">
+      <h3>Four-Dimension Composite Score Ranking</h3>
+      <table>
+        <thead><tr><th>Rank</th><th>Bond</th><th>Relative Value</th><th>Covenant Protection</th><th>Liquidity</th><th>Credit Quality</th><th>Composite Score</th><th>Investment Recommendation</th><th>Allocation Ratio</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="rank-1">1</span></td>
+            <td><strong>Long22 CB</strong></td>
+            <td class="score-good">9</td>
+            <td class="score-good">9</td>
+            <td class="score-good">9</td>
+            <td class="score-good">8</td>
+            <td><strong class="score-good">8.8</strong></td>
+            <td><span class="tag tag-green">Recommended Core</span></td>
+            <td>40%</td>
+          </tr>
+          <tr>
+            <td><span class="rank-2">2</span></td>
+            <td><strong>Tong22 CB</strong></td>
+            <td class="score-ok">7</td>
+            <td class="score-ok">6</td>
+            <td class="score-ok">7</td>
+            <td class="score-ok">7</td>
+            <td><strong class="score-ok">6.8</strong></td>
+            <td><span class="tag tag-blue">Standard Allocation</span></td>
+            <td>20%</td>
+          </tr>
+          <tr>
+            <td><span class="rank-3">3</span></td>
+            <td><strong>JingAo CB</strong></td>
+            <td class="score-ok">6</td>
+            <td class="score-ok">6</td>
+            <td class="score-ok">6</td>
+            <td class="score-ok">6</td>
+            <td><strong class="score-ok">6.0</strong></td>
+            <td><span class="tag tag-blue">Standard Allocation</span></td>
+            <td>15%</td>
+          </tr>
+          <tr>
+            <td><span class="rank-4">4</span></td>
+            <td><strong>Tian23 CB</strong></td>
+            <td class="score-warn">5</td>
+            <td class="score-warn">5</td>
+            <td class="score-warn">4</td>
+            <td class="score-warn">5</td>
+            <td><strong class="score-warn">4.8</strong></td>
+            <td><span class="tag tag-amber">Underweight/Trading</span></td>
+            <td>15%</td>
+          </tr>
+          <tr>
+            <td><span class="rank-5">5</span></td>
+            <td><strong>JingNeng CB</strong></td>
+            <td class="score-bad">3</td>
+            <td class="score-warn">4</td>
+            <td class="score-bad">2</td>
+            <td class="score-bad">3</td>
+            <td><strong class="score-bad">3.0</strong></td>
+            <td><span class="tag tag-red">Avoid/Trade Only</span></td>
+            <td>10%</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:12px;padding:10px;background:var(--bg-tertiary);border-radius:6px;font-size:12px;color:var(--text-secondary);">
+        <span class="text-green">Recommended Allocation Logic:</span> Core position (Long22) based on "Three Excellences" — AAA credit + lowest conversion premium + best liquidity; Satellite positions (Tong22 + JingAo) provide reset game optionality; Trading position (Tian23) awaiting catalyst signals; JingNeng retained only as a minimal exposure for liquidity premium capture.
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:14px;">
+      <div class="card card-green">
+        <h3>Recommended Allocation Plan</h3>
+        <ul style="color:var(--text-secondary);font-size:13px;line-height:2.2;padding-left:16px;">
+          <li><strong>Core Position (40%): Long22 CB</strong>
+            <br>Rationale: Best liquidity, strongest covenant protection, lowest conversion premium (18.3%), AAA credit rating</li>
+          <li><strong>Satellite Positions (35%): Tong22 CB (20%) + JingAo CB (15%)</strong>
+            <br>Rationale: Fair valuation, reset game value, adequate liquidity</li>
+          <li><strong>Trading Position (15%): Tian23 CB</strong>
+            <br>Rationale: Wait for August rating adjustment and reset catalyst signals before short-term participation</li>
+          <li><strong>Minimal Position (10%): JingNeng CB</strong>
+            <br>Rationale: Only for liquidity premium strategy with strict stop-loss levels</li>
+        </ul>
+      </div>
+      <div class="card card-red">
+        <h3>Risk Warnings & Stop-Loss Settings</h3>
+        <ul style="color:var(--text-secondary);font-size:13px;line-height:2.2;padding-left:16px;">
+          <li><span class="text-amber">Industry Risk:</span> Escalating PV overcapacity could drive underlying stocks down another 15-20%, dragging all CB prices</li>
+          <li><span class="text-red">JingNeng Liquidity Risk:</span> Average daily turnover of only 8.5M RMB may make timely exit impossible under extreme conditions</li>
+          <li><span class="text-amber">Tian23 Put Risk:</span> If the August rating is downgraded and the company does not initiate a reset, put pressure could push prices below 95</li>
+          <li><span class="text-blue">Long22 Call Risk:</span> If the stock rises more than 22%, triggering the call covenant, timely conversion or sale is needed</li>
+          <li style="margin-top:8px;padding:8px;background:var(--bg-tertiary);border-radius:4px;">
+            <strong>Overall Stop-Loss Recommendation:</strong> Reduce Tong22/JingAo when portfolio drawdown exceeds 5%; liquidate Tian23/JingNeng when drawdown exceeds 8%.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Scenario Analysis · Expected Performance of Each Bond Under Different Market Scenarios</h3>
+      <table>
+        <thead><tr><th>Scenario</th><th>Probability</th><th>Long22</th><th>Tong22</th><th>Tian23</th><th>JingAo</th><th>JingNeng</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="tag tag-green">Optimistic: Industry demand recovery +20%</span></td>
+            <td>15%</td>
+            <td class="text-green">+15-20%</td>
+            <td class="text-green">+20-25%</td>
+            <td class="text-green">+18-22%</td>
+            <td class="text-green">+18-23%</td>
+            <td class="text-green">+22-28%</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-blue">Base Case: Range-bound</span></td>
+            <td>50%</td>
+            <td>0-5%</td>
+            <td>-2-3%</td>
+            <td>-5-0%</td>
+            <td>-2-3%</td>
+            <td class="text-red">-5-0%</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-amber">Pessimistic: Price war intensifies -15%</span></td>
+            <td>25%</td>
+            <td class="text-amber">-8-12%</td>
+            <td class="text-amber">-12-18%</td>
+            <td class="text-red">-15-22%</td>
+            <td class="text-amber">-12-18%</td>
+            <td class="text-red">-20-28%</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-red">Extreme: Credit event shock</span></td>
+            <td>10%</td>
+            <td class="text-amber">-12-15%</td>
+            <td class="text-red">-18-25%</td>
+            <td class="text-red">-25-35%</td>
+            <td class="text-red">-20-28%</td>
+            <td class="text-red">-30-40%</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:8px;font-size:11px;color:var(--text-tertiary);">Note: Expected returns are based on current CB prices and stock price assumptions, and do not consider non-linear effects after reset/call covenant triggers.</div>
+    </div>
+
+    <div class="card card-blue" style="margin-top:14px;">
+      <h3>Term Structure Deep Dive · Duration & Convexity Comparison</h3>
+      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:8px;">Yield curve shape, modified duration, and convexity comparison for each CB, along with effective duration adjusted for embedded options</p>
+      <table>
+        <thead><tr><th>Bond</th><th>Maturity YTM</th><th>Modified Duration</th><th>Convexity</th><th>Effective Duration (w/ options)</th><th>Option-Adjusted Convexity</th><th>Adjustment Magnitude</th></tr></thead>
+        <tbody>
+          <tr><td>Long22 CB</td><td>2.15%</td><td>4.21</td><td>22.5</td><td>3.85</td><td>28.2</td><td class="text-amber">-8.6%</td></tr>
+          <tr><td>Tong22 CB</td><td>2.68%</td><td>4.58</td><td>24.8</td><td>4.12</td><td>30.5</td><td class="text-amber">-10.0%</td></tr>
+          <tr><td>Tian23 CB</td><td>3.42%</td><td>4.85</td><td>26.3</td><td>4.45</td><td>32.8</td><td class="text-amber">-8.2%</td></tr>
+          <tr><td>JingAo CB</td><td>2.95%</td><td>4.42</td><td>23.8</td><td>4.02</td><td>29.6</td><td class="text-amber">-9.0%</td></tr>
+          <tr><td>JingNeng CB</td><td>3.78%</td><td>3.95</td><td>20.2</td><td>3.68</td><td>25.4</td><td class="text-amber">-6.8%</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:10px;font-size:12px;color:var(--text-tertiary);">
+        Effective duration is adjusted using a binomial tree model, accounting for the path dependency of reset options and put options. Long22 CB has the largest adjustment (-8.6%) due to its lowest conversion premium and strongest equity-like characteristics. JingNeng CB has the smallest adjustment (-6.8%), as deep OTM status makes the CB more bond-like. Higher convexity values indicate greater bond price curvature in response to interest rate changes; high-convexity bonds have an advantage in volatile interest rate environments.
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Yield Curve Comparison · Option-Adjusted</h3>
+      <table>
+        <thead><tr><th>Remaining Tenor</th><th>Treasury Yield</th><th>Long22</th><th>Tong22</th><th>Tian23</th><th>JingAo</th><th>JingNeng</th></tr></thead>
+        <tbody>
+          <tr><td>1yr</td><td>1.52%</td><td>1.97%</td><td>2.37%</td><td>2.72%</td><td>2.57%</td><td>4.62%</td></tr>
+          <tr><td>2yr</td><td>1.68%</td><td>2.30%</td><td>2.73%</td><td>3.13%</td><td>2.93%</td><td>4.43%</td></tr>
+          <tr><td>3yr</td><td>1.85%</td><td>2.63%</td><td>3.07%</td><td>3.47%</td><td>3.27%</td><td>4.30%</td></tr>
+          <tr><td>4yr</td><td>1.95%</td><td>2.77%</td><td>3.25%</td><td>3.65%</td><td>3.45%</td><td>4.23%</td></tr>
+          <tr><td>5yr</td><td>2.05%</td><td>2.92%</td><td>3.40%</td><td>3.80%</td><td>3.60%</td><td>4.25%</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:8px;font-size:11px;color:var(--text-tertiary);">
+        JingNeng CB's yield curve is steep at the short end, with a 1-year yield of 4.62% reflecting the market's high pricing of its short-term credit risk premium. Long22's curve is flat and at a low level, with a clear AAA advantage. All curves include the value compensation from reset options; actual credit spreads should have option values deducted for pure bond spread comparison.
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 6: Data Gaps ====== -->
+  <div class="section">
+    <h2 class="section-title">6. Data Gaps and Quality Assessment</h2>
+    <div class="card card-purple">
+      <table>
+        <thead><tr><th style="width:18%;">Gap Type</th><th style="width:38%;">Details</th><th style="width:18%;">Impact Level</th><th>Priority</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Block Trade Data</td>
+            <td>JingNeng CB lacks block trade records, making it impossible to accurately assess institutional holding costs and potential liquidation pressure. Current top-10 holder position changes for CBs are updated with T+5 trading day lag.</td>
+            <td><span class="tag tag-red">High</span></td>
+            <td><span class="tag tag-red">High</span></td>
+          </tr>
+          <tr>
+            <td>Implied Volatility Surface</td>
+            <td>All 5 CBs lack complete individual stock option implied volatility data. Current BS model inversion of implied volatility does not account for term structure and skew. Implied volatility differences across tenors could be 10-15 percentage points, introducing bias in single-point estimates.</td>
+            <td><span class="tag tag-amber">Medium</span></td>
+            <td><span class="tag tag-amber">Medium</span></td>
+          </tr>
+          <tr>
+            <td>Institutional Holding Details</td>
+            <td>CB holder structure quarterly reports are updated infrequently, making it impossible to track institutional position changes in real time for insurers, funds, and wealth management subsidiaries. Estimated institutional holding ratios for Long22 and Tong22 may have errors of 5-10 percentage points.</td>
+            <td><span class="tag tag-amber">Medium</span></td>
+            <td><span class="tag tag-blue">Low</span></td>
+          </tr>
+          <tr>
+            <td>Credit Assessment Data</td>
+            <td>Complete financial statements and notes (especially related-party transactions and guarantee information) needed for Tian23 and JingNeng's internal credit assessment models have not been fully extracted. Trina Solar's overseas subsidiary guarantee details and Jinko Energy's accounts receivable aging distribution data are missing.</td>
+            <td><span class="tag tag-amber">Medium</span></td>
+            <td><span class="tag tag-amber">Medium</span></td>
+          </tr>
+          <tr>
+            <td>Covenant Prospectus</td>
+            <td>Details of put trigger conditions in each CB's prospectus (such as whether ex-rights/ex-dividend adjustment mechanisms are included, and whether the company has the right to waive after triggering) need to be confirmed item by item. Interpretation of Article 37 special clause in JingNeng CB's prospectus has ambiguity.</td>
+            <td><span class="tag tag-blue">Low</span></td>
+            <td><span class="tag tag-green">Low</span></td>
+          </tr>
+          <tr>
+            <td>Market Maker Quotes</td>
+            <td>No access to exchange market maker quote data; currently only using transaction prices for liquidity assessment, without distinguishing between active buy/sell directions. Intraday bid-ask spread time series data is missing, making it impossible to assess intraday liquidity variation patterns.</td>
+            <td><span class="tag tag-amber">Medium</span></td>
+            <td><span class="tag tag-amber">Medium</span></td>
+          </tr>
+          <tr>
+            <td>Underlying Derivatives Data</td>
+            <td>Short balance and OTC derivative transaction data for all 5 underlying stocks are unavailable, preventing assessment of the transmission effect of short-selling pressure on CB pricing. In particular, Jinko Energy's short balance has recently increased by 32%, potentially suppressing JingNeng CB prices.</td>
+            <td><span class="tag tag-amber">Medium</span></td>
+            <td><span class="tag tag-amber">Medium</span></td>
+          </tr>
+          <tr>
+            <td>Industry Comparable Data</td>
+            <td>Historical conversion and exit path data for other matured PV industry CBs (such as Shanying CB, Linyang CB, etc.) has not been systematically organized, lacking an industry statistical benchmark for reset game success rates.</td>
+            <td><span class="tag tag-blue">Low</span></td>
+            <td><span class="tag tag-blue">Low</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:12px;padding:10px;background:var(--bg-tertiary);border-radius:6px;font-size:12px;color:var(--text-secondary);">
+        <span class="text-purple">Data Quality Improvement Plan:</span> It is recommended to supplement JingNeng CB's block trade and historical transaction detail data before the next dashboard update, and establish contact with exchange market makers to obtain liquidity depth information.
+        It is also recommended to add a real-time conversion premium monitoring panel and an automatic reset condition detection module to the CB dashboard to improve response speed to key covenant trigger events.
+        Supplement the statistical dataset of historical CB exits in the PV industry to provide a more reliable industry benchmark for reset game probability and return distribution analysis.
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 7: Methodology Appendix ====== -->
+  <div class="section">
+    <h2 class="section-title">7. Methodology Notes</h2>
+    <div class="card">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:13px;color:var(--text-secondary);line-height:1.7;">
+        <div>
+          <h4 style="color:var(--text-primary);margin-bottom:8px;">Four-Dimension Scoring Method</h4>
+          <p><strong>Relative Value (Weight 30%):</strong> Straight Bond Value (40%) + Conversion Premium (30%) + Credit Spread (30%)</p>
+          <p><strong>Covenant Protection (Weight 25%):</strong> Reset Covenant (40%) + Put Protection (25%) + Call Covenant (25%) + Other (10%)</p>
+          <p><strong>Liquidity (Weight 25%):</strong> Avg Daily Volume (40%) + Turnover Rate (20%) + Bid-Ask Spread (25%) + Block Trade Feasibility (15%)</p>
+          <p><strong>Credit Quality (Weight 20%):</strong> Issuer Rating (40%) + Debt Rating (30%) + Stock Quality (30%)</p>
+          <p style="margin-top:12px;"><strong>Scoring Standards:</strong> Each dimension scored out of 10, weighted sum gives composite score (out of 10). Top 2 bonds (score > 6.5) recommended for standard or overweight allocation. Bonds scoring 4.5-6.5 recommended for underweight or trading primarily. Bonds scoring < 4.5 recommended for avoidance.</p>
+        </div>
+        <div>
+          <h4 style="color:var(--text-primary);margin-bottom:8px;">Data Sources & Update Frequency</h4>
+          <p>Valuation Data: Wind Financial Terminal (Daily)</p>
+          <p>Liquidity Data: Exchange tick-by-tick transaction data (Daily)</p>
+          <p>Credit Data: Rating agency announcements, quarterly/annual reports (Event-driven)</p>
+          <p>Covenant Data: Prospectuses, board announcements (Event-driven)</p>
+          <p>Industry Data: China Photovoltaic Industry Association CPIA monthly report (Monthly)</p>
+          <p>Stock Data: Exchange market data (Daily)</p>
+          <p style="margin-top:8px;">Dashboard expected update frequency: Weekly on Mondays</p>
+          <p>Major events (reset announcement/rating adjustment/earnings release) trigger immediate updates</p>
+        </div>
+      </div>
+      <div style="margin-top:14px;padding:10px;background:var(--bg-tertiary);border-radius:6px;font-size:11px;color:var(--text-tertiary);">
+        <strong>Disclaimer:</strong> The analysis, ratings, and investment recommendations in this report represent framework output only and do not constitute investment advice. Convertible bond investments are subject to underlying stock volatility, credit events, liquidity changes, and other risks.
+        All data is sourced from public market information; past performance does not predict future results. Allocation ratios are framework model calculations; investors should adjust based on their own risk preferences. Industry forecasts and scenario analyses in this report are based on current market conditions, and actual results may differ materially from expectations.
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Key Indicator Formulas</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px;color:var(--text-secondary);line-height:1.8;">
+        <div>
+          <p><strong>Straight Bond Value:</strong> Sum of present values of future coupon and principal discounted at same-tenor treasury yield + credit spread</p>
+          <p><strong>Conversion Premium:</strong> (CB Price - Conversion Value) / Conversion Value x 100%</p>
+          <p><strong>Conversion Value:</strong> 100 / Conversion Price x Underlying Stock Price</p>
+          <p><strong>Straight Bond YTM:</strong> Yield to maturity that equates the present value of future bond cash flows to the straight bond value (i.e., excluding conversion option value)</p>
+        </div>
+        <div>
+          <p><strong>Credit Spread:</strong> Straight Bond YTM - Same-tenor Treasury Bond Yield to Maturity</p>
+          <p><strong>Implied Volatility:</strong> Volatility parameter derived from BS model inversion by decomposing CB price into straight bond value + conversion option value</p>
+          <p><strong>Bid-Ask Spread:</strong> (Best Ask - Best Bid) / Mid Price x 10000 (unit: bp)</p>
+          <p><strong>Impact Cost:</strong> Deviation between actual average execution price and pre-order mid price for a given trade size (unit: bp)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Rating Benchmarks & Adjustment Factors</h3>
+      <table>
+        <thead><tr><th>Rating</th><th>Credit Spread Reference Range</th><th>Liquidity Premium Score Adjustment</th><th>Covenant Protection Weighting Factor</th></tr></thead>
+        <tbody>
+          <tr><td>AAA</td><td>80-120bp</td><td>Liquidity Score +1</td><td>1.0 (Standard Weight)</td></tr>
+          <tr><td>AA+</td><td>120-160bp</td><td>Liquidity Score No Adjustment</td><td>1.0 (Standard Weight)</td></tr>
+          <tr><td>AA</td><td>150-200bp</td><td>Liquidity Score -0.5</td><td>1.1 (Covenant Weight +10%)</td></tr>
+          <tr><td>AA-</td><td>190-250bp</td><td>Liquidity Score -1</td><td>1.2 (Covenant Weight +20%)</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:8px;font-size:11px;color:var(--text-tertiary);">Note: The lower the rating, the more the liquidity score is deducted, and the higher the covenant protection weight. Investors in lower-rated CBs should rely more on covenant protection rather than credit quality.</div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 8: Credit Risk Deep Dive ====== -->
+  <div class="section">
+    <h2 class="section-title">8. Credit Risk Deep Dive</h2>
+    <div class="card card-red">
+      <h3>Issuer Credit Fundamentals Comparison</h3>
+      <table>
+        <thead><tr><th>Company</th><th>CB Ticker</th><th>Issuer Rating</th><th>Total Assets (B RMB)</th><th>Debt Ratio</th><th>2026Q1 Revenue (B RMB)</th><th>Net Profit Margin</th><th>Operating Cash Flow (B RMB)</th></tr></thead>
+        <tbody>
+          <tr><td>LONGi Green Energy</td><td>Long22 CB</td><td><span class="tag tag-green">AAA</span></td><td>128.5</td><td>58.2%</td><td>18.50</td><td>5.2%</td><td>2.25</td></tr>
+          <tr><td>Tongwei Co.</td><td>Tong22 CB</td><td><span class="tag tag-amber">AA+</span></td><td>98.5</td><td>62.5%</td><td>14.20</td><td>3.8%</td><td>1.48</td></tr>
+          <tr><td>Trina Solar</td><td>Tian23 CB</td><td><span class="tag tag-amber">AA</span></td><td>72.8</td><td>65.8%</td><td>9.85</td><td>2.5%</td><td>0.62</td></tr>
+          <tr><td>JingAo Technology</td><td>JingAo CB</td><td><span class="tag tag-amber">AA</span></td><td>62.0</td><td>60.4%</td><td>8.52</td><td>3.1%</td><td>0.85</td></tr>
+          <tr><td>Jinko Energy</td><td>JingNeng CB</td><td><span class="tag tag-blue">AA-</span></td><td>51.8</td><td>68.5%</td><td>7.28</td><td>1.2%</td><td>-0.35</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2" style="margin-top:14px;">
+      <div class="card">
+        <h3>Credit Spread Sensitivity Analysis</h3>
+        <p style="color:var(--text-secondary);font-size:12px;margin-bottom:8px;">Sensitivity of each CB's straight bond value to credit spread changes (impact of 50bp spread shift on straight bond value)</p>
+        <table>
+          <thead><tr><th>Bond</th><th>Spread -50bp</th><th>Current Spread</th><th>Spread +50bp</th><th>Straight Bond Value Range</th></tr></thead>
+          <tbody>
+            <tr><td>Long22 CB</td><td>101.35</td><td>98.52</td><td>95.82</td><td>95.82-101.35</td></tr>
+            <tr><td>Tong22 CB</td><td>100.10</td><td>96.80</td><td>93.60</td><td>93.60-100.10</td></tr>
+            <tr><td>Tian23 CB</td><td>97.85</td><td>94.15</td><td>90.55</td><td>90.55-97.85</td></tr>
+            <tr><td>JingAo CB</td><td>99.20</td><td>95.30</td><td>91.50</td><td>91.50-99.20</td></tr>
+            <tr><td>JingNeng CB</td><td>96.50</td><td>92.68</td><td>88.85</td><td>88.85-96.50</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card card-amber">
+        <h3>Industry Competitive Position Assessment</h3>
+        <table>
+          <thead><tr><th>Company</th><th>Technology Path</th><th>Industry Position</th><th>Capacity (GW)</th><th>Technology Advantage</th><th>Competitive Risk</th></tr></thead>
+          <tbody>
+            <tr><td>LONGi Green Energy</td><td>BC Battery</td><td>Mono Wafer Leader</td><td>180</td><td>HPBC technology efficiency 26.5%</td><td>Industry overcapacity</td></tr>
+            <tr><td>Tongwei Co.</td><td>HJT/TOPCon</td><td>Polysilicon + Cell Dual Leader</td><td>120</td><td>Integrated cost advantage</td><td>Polysilicon price decline</td></tr>
+            <tr><td>Trina Solar</td><td>TOPCon</td><td>Module Shipment Top 5</td><td>95</td><td>Strong distribution brand</td><td>Overseas trade barriers</td></tr>
+            <tr><td>JingAo Technology</td><td>TOPCon</td><td>Vertically Integrated</td><td>80</td><td>Leading overseas capacity layout</td><td>Above-average debt ratio</td></tr>
+            <tr><td>Jinko Energy</td><td>TOPCon</td><td>N-type Shipment Leader</td><td>75</td><td>N-type TOPCon efficiency #1</td><td>Negative operating cash flow</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 9: Industry Benchmark Analysis ====== -->
+  <div class="section">
+    <h2 class="section-title">9. Industry Benchmark Analysis</h2>
+    <div class="card card-blue">
+      <h3>PV Industry CB Comprehensive Comparison Matrix</h3>
+      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:8px;">Comparing the 5 covered CBs with industry peers to assess relative positioning</p>
+      <table>
+        <thead><tr><th>CB Name</th><th>Issuer</th><th>Rating</th><th>Balance (B RMB)</th><th>Conversion Premium</th><th>Straight Bond YTM</th><th>Avg Daily Volume</th><th>Composite Score</th></tr></thead>
+        <tbody>
+          <tr style="background:var(--bg-tertiary);"><td><strong>Long22 CB</strong></td><td>LONGi Green Energy</td><td>AAA</td><td>7.0</td><td>18.3%</td><td>2.15%</td><td>58M</td><td><strong>8.8</strong></td></tr>
+          <tr style="background:var(--bg-tertiary);"><td><strong>Tong22 CB</strong></td><td>Tongwei Co.</td><td>AA+</td><td>5.5</td><td>24.7%</td><td>2.68%</td><td>32M</td><td><strong>6.8</strong></td></tr>
+          <tr style="background:var(--bg-tertiary);"><td><strong>Tian23 CB</strong></td><td>Trina Solar</td><td>AA</td><td>4.85</td><td>35.2%</td><td>3.42%</td><td>21M</td><td><strong>4.8</strong></td></tr>
+          <tr style="background:var(--bg-tertiary);"><td><strong>JingAo CB</strong></td><td>JingAo Technology</td><td>AA</td><td>3.2</td><td>28.9%</td><td>2.95%</td><td>28M</td><td><strong>6.0</strong></td></tr>
+          <tr style="background:var(--bg-tertiary);"><td><strong>JingNeng CB</strong></td><td>Jinko Energy</td><td>AA-</td><td>2.5</td><td>42.1%</td><td>3.78%</td><td>8.5M</td><td><strong>3.0</strong></td></tr>
+          <tr><td>Flat Glass CB</td><td>Flat Glass</td><td>AA</td><td>4.0</td><td>32.5%</td><td>3.15%</td><td>15M</td><td>4.5</td></tr>
+          <tr><td>Shangji CB</td><td>Shangji CNC</td><td>AA-</td><td>2.45</td><td>38.2%</td><td>3.55%</td><td>6.8M</td><td>3.5</td></tr>
+          <tr><td>Jinbo CB</td><td>Jinbo Shares</td><td>A+</td><td>0.8</td><td>45.6%</td><td>4.20%</td><td>3.2M</td><td>2.0</td></tr>
+          <tr><td>Dier CB</td><td>Dier Laser</td><td>AA-</td><td>1.2</td><td>36.8%</td><td>3.45%</td><td>5.2M</td><td>3.2</td></tr>
+          <tr><td>Aote CB</td><td>Aotewei</td><td>AA-</td><td>1.05</td><td>33.5%</td><td>3.30%</td><td>4.8M</td><td>3.8</td></tr>
+          <tr><td>Meichang CB</td><td>Meichang Shares</td><td>AA</td><td>1.5</td><td>30.2%</td><td>3.05%</td><td>6.8M</td><td>4.2</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:10px;font-size:12px;color:var(--text-tertiary);">
+        Dark rows are the 5 core targets covered by this dashboard. Flat Glass CB and Shangji CB are included as auxiliary benchmarks due to similar underlying fundamentals. Small-scale CBs like Jinbo CB and Dier CB have notably insufficient liquidity and generally score lower than the core coverage targets. Long22 CB holds a significant composite score advantage among its peers.
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 10: Risk Scenario Simulation ====== -->
+  <div class="section">
+    <h2 class="section-title">10. Risk Scenario Simulation</h2>
+
+    <div class="card card-red">
+      <h3>Credit Downgrade Scenario</h3>
+      <table>
+        <thead><tr><th>Scenario Element</th><th>Tian23 CB</th><th>JingNeng CB</th><th>Tong22 CB</th><th>Portfolio Impact Estimate</th></tr></thead>
+        <tbody>
+          <tr><td>Rating Change</td><td>AA → AA-</td><td>AA- → A+</td><td>AA+ → AA (Watch)</td><td>--</td></tr>
+          <tr><td>Spread Widening</td><td>+45bp</td><td>+80bp</td><td>+25bp</td><td>--</td></tr>
+          <tr><td>Straight Bond Value Decline</td><td>-3.2%</td><td>-5.8%</td><td>-1.5%</td><td>-2.8%</td></tr>
+          <tr><td>Estimated Price Impact</td><td>-4.5%~-6.0%</td><td>-7.0%~-10.0%</td><td>-2.0%~-3.5%</td><td>-3.5%~-5.0%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2" style="margin-top:14px;">
+      <div class="card card-amber">
+        <h3>Liquidity Crisis Scenario</h3>
+        <p style="color:var(--text-secondary);font-size:12px;margin-bottom:6px;">Assuming market volume drops 60%, bid-ask spreads triple</p>
+        <table>
+          <thead><tr><th>Metric</th><th>Long22</th><th>Tong22</th><th>Tian23</th></tr></thead>
+          <tbody>
+            <tr><td>Simulated Avg Daily Volume</td><td>23.2M</td><td>12.8M</td><td>8.4M</td></tr>
+            <tr><td>Bid-Ask Spread (simulated)</td><td>25-35bp</td><td>45-70bp</td><td>75-120bp</td></tr>
+            <tr><td>Impact Cost (1M)</td><td>30bp</td><td>55bp</td><td>90bp</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card card-blue">
+        <h3>Interest Rate Shock Scenario</h3>
+        <p style="color:var(--text-secondary);font-size:12px;margin-bottom:6px;">Assuming 10-year treasury yield rises 50bp pass-through impact</p>
+        <table>
+          <thead><tr><th>Metric</th><th>Long22</th><th>Tong22</th><th>Tian23</th><th>JingAo</th><th>JingNeng</th></tr></thead>
+          <tbody>
+            <tr><td>Duration Effect</td><td>-3.5%</td><td>-3.8%</td><td>-4.2%</td><td>-3.6%</td><td>-3.2%</td></tr>
+            <tr><td>Spread Widening</td><td>+15bp</td><td>+25bp</td><td>+35bp</td><td>+30bp</td><td>+40bp</td></tr>
+            <tr><td>Total Price Impact</td><td>-2.8%</td><td>-3.5%</td><td>-4.8%</td><td>-4.0%</td><td>-5.5%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card card-red" style="margin-top:14px;">
+      <h3>Comprehensive Extreme Scenario · Industry Downturn + Credit Event</h3>
+      <p style="color:var(--text-secondary);font-size:12px;margin-bottom:6px;">Assuming PV industry revenue declines 30% YoY, average gross margin falls below 5%, with JingNeng/Tian23 experiencing rating downgrades</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:13px;color:var(--text-secondary);line-height:1.8;">
+        <div>
+          <h4 style="color:var(--text-primary);margin-bottom:6px;">Industry Shock Transmission Path</h4>
+          <p>1. Industry price war intensifies → Underlying stock EPS down 30-50%</p>
+          <p>2. Stock price down 25-35% → Conversion value shrinks</p>
+          <p>3. Credit rating under pressure → Straight bond value down 3-8%</p>
+          <p>4. Investor panic selling → Liquidity premium spikes</p>
+        </div>
+        <div>
+          <h4 style="color:var(--text-primary);margin-bottom:6px;">Estimated Portfolio Impact</h4>
+          <p>Long22 CB: Estimated drawdown -8%~-10%</p>
+          <p>Tong22/JingAo: Estimated drawdown -12%~-18%</p>
+          <p>Tian23 CB: Estimated drawdown -18%~-25%</p>
+          <p>JingNeng CB: Estimated drawdown -25%~-35%</p>
+          <p style="margin-top:6px;color:var(--text-red);"><strong>Portfolio Total Drawdown Estimate: 12-18%</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SECTION 11: Appendix: Data Limitations ====== -->
+  <div class="section">
+    <h2 class="section-title">11. Appendix: Data Limitations</h2>
+    <div class="card card-purple">
+      <h3>Data Sources & Quality Grading</h3>
+      <table>
+        <thead><tr><th>Data Category</th><th>Source</th><th>Update Frequency</th><th>Reliability</th><th>Limitation Description</th></tr></thead>
+        <tbody>
+          <tr><td>Bond Quotes</td><td>SSE/SZSE</td><td>Real-time</td><td><span class="tag tag-green">High</span></td><td>Block trades disclosed after hours; large order splitting may obscure true flow</td></tr>
+          <tr><td>Stock Quotes</td><td>Wind/East Money</td><td>Real-time</td><td><span class="tag tag-green">High</span></td><td>Adjustment method affects conversion price distance calculation accuracy</td></tr>
+          <tr><td>Credit Ratings</td><td>CCXI/Lianhe etc.</td><td>Event-driven</td><td><span class="tag tag-amber">Medium</span></td><td>Rating adjustments lag; agency standards are not uniform</td></tr>
+          <tr><td>Financial Statements</td><td>Listed company quarterly/annual reports</td><td>Quarterly</td><td><span class="tag tag-amber">Medium</span></td><td>Disclosed with 1-4 month lag; latest data may be preliminary</td></tr>
+          <tr><td>Implied Volatility</td><td>BS model inversion</td><td>Daily</td><td><span class="tag tag-amber">Medium</span></td><td>BS assumptions do not fit option-embedded features, introducing systematic bias</td></tr>
+          <tr><td>Holder Structure</td><td>Quarterly reports</td><td>Quarterly</td><td><span class="tag tag-red">Low</span></td><td>Top-10 holders data lags significantly; full distribution is missing</td></tr>
+          <tr><td>Market Maker Quotes</td><td>Exchange interfaces</td><td>Real-time</td><td><span class="tag tag-red">Low</span></td><td>Deep quote data not accessed; liquidity analysis is incomplete</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:12px;padding:10px;background:var(--bg-tertiary);border-radius:6px;font-size:12px;color:var(--text-secondary);">
+        <span class="text-purple">Data Improvement Roadmap:</span> Short-term (within 1 month) access market maker quote interfaces; Medium-term (1-3 months) build implied volatility surface model; Long-term (3-6 months) integrate real-time issuer industry chain data. All analysis in this report is based on public market information; past performance does not predict future results.
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== FOOTER ====== -->
+  <div class="divider"></div>
+  <div class="footer">
+    <p><strong>Bond Investment Dashboard · PV Industry CB Four-Dimension Analysis · Long22/Tong22/Tian23/JingAo/JingNeng</strong></p>
+    <p>Report Generation Time: 2026-07-09 | Based on Unified Credit Assessment Framework v2.0 | For Internal Reference Only | Classification: Investment Dashboard</p>
+    <p style="margin-top:8px;font-size:10px;">Confidential · This report contains framework-identifiable non-public information. Do not forward or cite without authorization.</p>
+  </div>
+
+</div>
+
+</body>
+</html>

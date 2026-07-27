@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stress Test Report | LONGi Green Energy · Severe Scenario</title>
+  <link rel="stylesheet" href="template-base.css">
+  <!-- Type-11 specific: Hero gradient -->
+  <style>
+    .hero { background: linear-gradient(135deg, #0f172a, #991b1b); }
+  </style>
+</head>
+<body>
+
+<!-- ================================================================ -->
+<!-- HERO -->
+<!-- ================================================================ -->
+<div class="hero">
+  <span class="chip">Stress Test Report</span>
+  <h1>LONGi Green Energy Technology Co., Ltd.</h1>
+  <p class="subtitle">
+    Three-Scenario Stress Test · Base / Bear / Severe · Credit Resilience Assessment
+  </p>
+  <div class="meta">
+    <span>Test Date: 2026-07-08</span>
+    <span>Report ID: STRESS-2026-Q3-011</span>
+    <span>Severe Parameters: Revenue -30% / Gross Margin -15pp / Financing Cost +200bp</span>
+    <span>Analyst: Li Mingyuan</span>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- CONTAINER -->
+<!-- ================================================================ -->
+<div class="container">
+
+  <!-- ================================================================ -->
+  <!-- STRIP — Three-Scenario Core Conclusions -->
+  <!-- ================================================================ -->
+  <div class="strip cols-3">
+    <div class="strip-item">
+      <div class="slabel">Base</div>
+      <div class="sval score-good">AAA</div>
+      <div class="ssub">Rating Unchanged · Cash Coverage 2.8x</div>
+    </div>
+    <div class="strip-item">
+      <div class="slabel">Bear</div>
+      <div class="sval score-ok">AA+</div>
+      <div class="ssub">Downgrade -1 notch · Cash Coverage 1.5x</div>
+    </div>
+    <div class="strip-item">
+      <div class="slabel">Severe</div>
+      <div class="sval score-warn">A</div>
+      <div class="ssub">Downgrade -3 notch · Critical Monitoring Triggered</div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- Test Scenario Overview -->
+  <!-- ================================================================ -->
+  <div class="info-box info-blue">
+    <strong>Stress Test Objective:</strong> Assess LONGi Green Energy's credit
+    resilience under different macroeconomic and industry scenarios. Stress parameters are based on 2025 actual operating data (revenue RMB 135 billion, gross margin 18%, financing cost
+    3.5%), with varying degrees of downward shocks applied. Severe scenario parameters are calibrated with reference to the historical extremes of the 2011-2013 photovoltaic anti-dumping crisis.
+    The test window covers 12 months (2026Q3-2027Q2).
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 1 — Three-Scenario Parameter Comparison -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">Three-Scenario Parameter Comparison</h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:14px;">
+      The following parameters are extrapolated from 2025 actual operating data, combined with industry cycle judgment and macroeconomic scenario assumptions.
+      The Base scenario assumes the industry maintains its current stable operation; the Bear scenario assumes worsening overcapacity and moderate module price
+      declines; the Severe scenario assumes escalating global trade frictions, a sudden demand drop, and sharply tightening credit conditions.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th class="ct">Base</th>
+          <th class="ct">Bear</th>
+          <th class="ct">Severe</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Revenue Growth Change</td>
+          <td class="ct">0% (Flat)</td>
+          <td class="ct">-12%</td>
+          <td class="ct"><span class="text-red">-30%</span></td>
+        </tr>
+        <tr>
+          <td>Gross Margin Change</td>
+          <td class="ct">-3pp (to 15%)</td>
+          <td class="ct">-8pp (to 10%)</td>
+          <td class="ct"><span class="text-red">-15pp (to 3%)</span></td>
+        </tr>
+        <tr>
+          <td>Financing Cost Change</td>
+          <td class="ct">+50bp</td>
+          <td class="ct">+100bp</td>
+          <td class="ct"><span class="text-red">+200bp</span></td>
+        </tr>
+        <tr>
+          <td>Inventory Turnover Days</td>
+          <td class="ct">+10 days</td>
+          <td class="ct">+30 days</td>
+          <td class="ct"><span class="text-red">+60 days</span></td>
+        </tr>
+        <tr>
+          <td>Accounts Receivable Turnover Days</td>
+          <td class="ct">+5 days</td>
+          <td class="ct">+20 days</td>
+          <td class="ct"><span class="text-red">+45 days</span></td>
+        </tr>
+        <tr>
+          <td>Capital Expenditure Reduction</td>
+          <td class="ct">0% (As Budgeted)</td>
+          <td class="ct">-20%</td>
+          <td class="ct"><span class="text-red">-40%</span></td>
+        </tr>
+        <tr>
+          <td>Asset Impairment Loss as % of Revenue</td>
+          <td class="ct">1.5%</td>
+          <td class="ct">3.0%</td>
+          <td class="ct"><span class="text-red">6.0%</span></td>
+        </tr>
+        <tr>
+          <td>Exchange Rate Assumption (CNY/EUR)</td>
+          <td class="ct">7.8</td>
+          <td class="ct">8.2</td>
+          <td class="ct"><span class="text-red">8.8</span></td>
+        </tr>
+        <tr>
+          <td>Trade Friction Additional Tariffs</td>
+          <td class="ct">Status Quo</td>
+          <td class="ct">U.S. +10%</td>
+          <td class="ct"><span class="text-red">EU +15% + U.S. +25%</span></td>
+        </tr>
+        <tr>
+          <td>Probability of Occurrence</td>
+          <td class="ct"><span class="score-good">55%</span></td>
+          <td class="ct"><span class="score-ok">30%</span></td>
+          <td class="ct"><span class="score-bad">15%</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card card-purple" style="margin-top:14px;">
+      <h3>Parameter Selection Rationale</h3>
+      <p style="font-size:13px; color:var(--text-secondary);">
+        Revenue decline: Severe scenario -30% references the 2011-2013 anti-dumping crisis (max decline -38%), with an 8%
+        safety margin. Gross margin compression of -15pp is higher than the 531 policy shock (-8pp) but lower than the anti-dumping crisis (-22pp).
+        Financing cost +200bp references the credit spread widening during the Fed's aggressive rate hiking cycle in 2022. Overall,
+        the Severe scenario parameters are set at the "80th percentile of worst historical conditions" — sufficiently stressful but not excessively extreme.
+      </p>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 2 — Financial Indicator Changes by Scenario -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">Key Financial Metric Sensitivity Analysis</h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:14px;">
+      The following analysis covers three core credit metrics: interest coverage ratio, cash runway, and debt-to-asset ratio.
+      Each metric shows its trajectory under the three scenarios and trigger thresholds.
+    </p>
+
+    <div class="card card-blue">
+      <h3>Interest Coverage Ratio (EBIT / Interest Expense)</h3>
+      <p style="font-size:13px; color:var(--text-secondary); margin-bottom:10px;">
+        Under the Base scenario, EBIT is approximately RMB 6.8 billion (EBIT margin ~5.0%), interest expense is approximately RMB 1.4 billion (financing cost ~
+        4.0%), resulting in a coverage ratio of <strong>4.9x</strong>, well above the 2.5x warning line. EBIT provides ample buffer
+        over interest expense, with operating profit fully covering debt costs.
+      </p>
+      <p style="font-size:13px; color:var(--text-secondary); margin-bottom:10px;">
+        Under the Bear scenario, revenue declines to RMB 118.8 billion, gross margin compresses to 10%, and EBIT drops to approximately RMB 3.8 billion.
+        Financing cost rises to 4.5%, and interest expense increases to approximately RMB 1.6 billion. The coverage ratio is <strong>2.7x</strong>,
+        still above the 2.5x warning line, but the safety margin narrows significantly. If the second-order impact of asset impairment
+        losses on EBIT is considered, the actual ratio could further decline to 2.2x.
+      </p>
+      <p style="font-size:13px; color:var(--text-secondary);">
+        Under the Severe scenario, revenue drops to RMB 94.5 billion, gross margin is only 3%, and EBIT plummets to RMB 1.2 billion. Financing cost
+        rises to 5.5%, and interest expense increases to approximately RMB 1.9 billion due to new borrowings. The coverage ratio collapses to
+        <strong>0.6x</strong>, breaching the 1.0x technical default threshold. EBIT can no longer cover current
+        interest expense, requiring external financing or asset disposals to bridge the interest gap.
+      </p>
+      <div style="margin-top:10px; display:flex; gap:12px; flex-wrap:wrap;">
+        <span class="tag tag-green">Base: 4.9x</span>
+        <span class="tag tag-amber">Bear: 2.7x</span>
+        <span class="tag tag-red">Severe: 0.6x</span>
+        <span class="tag tag-purple">Warning Line: 2.5x</span>
+        <span class="tag tag-purple">Default Line: 1.0x</span>
+      </div>
+    </div>
+
+    <div class="card card-amber">
+      <h3>Cash Runway (Available Cash / Monthly Operating Expenditure)</h3>
+      <p style="font-size:13px; color:var(--text-secondary); margin-bottom:10px;">
+        Ending available cash and equivalents are approximately RMB 19.8 billion (including approximately RMB 1.5 billion in restricted funds). Additionally, the company holds
+        approximately RMB 8.5 billion in unused bank credit lines, bringing total available liquidity to approximately RMB 26.8 billion.
+      </p>
+      <p style="font-size:13px; color:var(--text-secondary); margin-bottom:10px;">
+        Under the Base scenario, monthly operating expenditure is approximately RMB 3.2 billion (including procurement, wages, and taxes), providing a cash runway of
+        <strong>6.2 months</strong>. The liquidity position is healthy, capable of sustaining at least six months of operations without external refinancing.
+      </p>
+      <p style="font-size:13px; color:var(--text-secondary); margin-bottom:10px;">
+        Under the Bear scenario, monthly expenditure increases to RMB 3.8 billion (the combined effect of declining revenue and higher fixed cost ratios),
+        reducing the cash runway to <strong>5.2 months</strong>. Note that in this scenario, bank credit lines
+        may be partially frozen (assumed 30% reduction), with actual available liquidity of approximately RMB 24.2 billion.
+      </p>
+      <p style="font-size:13px; color:var(--text-secondary);">
+        Under the Severe scenario, operating cash is further frozen — some customers delay payments, suppliers tighten credit terms,
+        and bank credit lines are reduced by 50%, with monthly net expenditure rising to RMB 4.5 billion. The cash runway collapses to
+        <strong>4.4 months</strong>, below the industry safety line of 6 months. Considering second-order effects of cash freezes
+        (additional working capital tied up by extended receivable collection periods), the effective runway may be only 3.5 months.
+      </p>
+      <div style="margin-top:10px; display:flex; gap:12px; flex-wrap:wrap;">
+        <span class="tag tag-green">Base: 6.2 months</span>
+        <span class="tag tag-amber">Bear: 5.2 months</span>
+        <span class="tag tag-red">Severe: 4.4 months</span>
+        <span class="tag tag-purple">Safety Line: 6.0 months</span>
+      </div>
+    </div>
+
+    <div class="card card-red">
+      <h3>Debt-to-Asset Ratio Change</h3>
+      <p style="font-size:13px; color:var(--text-secondary); margin-bottom:10px;">
+        The current debt-to-asset ratio is 62.5%, which is relatively low in the photovoltaic industry (industry median ~68%).
+        Interest-bearing debt accounts for approximately 42% of total liabilities, mainly consisting of long-term bank borrowings and corporate bonds. Short-term debt accounts for
+        only 28%, indicating a favorable debt maturity structure.
+      </p>
+      <p style="font-size:13px; color:var(--text-secondary); margin-bottom:10px;">
+        Under the Base scenario, assuming no significant new debt, equity attributable to the parent company increases slightly due to profit accumulation, and the ratio edges down to
+        <strong>61.8%</strong>. At this level, debt security is relatively high and financing capacity is ample.
+      </p>
+      <p style="font-size:13px; color:var(--text-secondary); margin-bottom:10px;">
+        Under the Bear scenario, due to a sharp decline in profit (net income approximately RMB 1.8 billion) and increased working capital requirements
+        (receivables and inventory consuming approximately RMB 3 billion more in funds), the debt ratio rises to <strong>67.3%</strong>,
+        still within a manageable range for the industry.
+      </p>
+      <p style="font-size:13px; color:var(--text-secondary);">
+        Under the Severe scenario, asset impairment losses (approximately RMB 5.7 billion) directly erode equity, combined with new financing
+        (approximately RMB 3.5 billion) to sustain operations, the debt ratio surges to <strong>79.1%</strong>, approaching the 80%
+        industry crisis line. A debt-to-asset ratio above 75% is generally considered a catalyst indicator for credit rating downgrades.
+      </p>
+      <div style="margin-top:10px; display:flex; gap:12px; flex-wrap:wrap;">
+        <span class="tag tag-green">Base: 61.8%</span>
+        <span class="tag tag-amber">Bear: 67.3%</span>
+        <span class="tag tag-red">Severe: 79.1%</span>
+        <span class="tag tag-purple">Crisis Line: 80%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 3 — Three-Scenario Indicator Summary Table -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">Three-Scenario Key Indicator Summary</h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:14px;">
+      The following table summarizes the changes in LONGi Green Energy's main credit and financial indicators under the three stress scenarios.
+      Color coding reflects the risk level of each indicator under each scenario (Green=Safe, Blue=Watch, Amber=Warning, Red=Danger).
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Indicator</th>
+          <th class="ct">Current (2025A)</th>
+          <th class="ct">Base</th>
+          <th class="ct">Bear</th>
+          <th class="ct">Severe</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Operating Revenue (RMB bn)</td>
+          <td class="ct">1,350</td>
+          <td class="ct">1,350</td>
+          <td class="ct">1,188</td>
+          <td class="ct score-bad">945</td>
+        </tr>
+        <tr>
+          <td>Gross Margin</td>
+          <td class="ct">18.0%</td>
+          <td class="ct">15.0%</td>
+          <td class="ct">10.0%</td>
+          <td class="ct score-bad">3.0%</td>
+        </tr>
+        <tr>
+          <td>EBIT (RMB bn)</td>
+          <td class="ct">93</td>
+          <td class="ct">68</td>
+          <td class="ct">38</td>
+          <td class="ct score-bad">12</td>
+        </tr>
+        <tr>
+          <td>Net Income (RMB bn)</td>
+          <td class="ct">72</td>
+          <td class="ct">45</td>
+          <td class="ct">18</td>
+          <td class="ct score-bad">-12</td>
+        </tr>
+        <tr>
+          <td>Operating Cash Flow (RMB bn)</td>
+          <td class="ct">85</td>
+          <td class="ct">52</td>
+          <td class="ct">20</td>
+          <td class="ct score-bad">-25</td>
+        </tr>
+        <tr>
+          <td>Interest Coverage Ratio</td>
+          <td class="ct">6.4x</td>
+          <td class="ct score-good">4.9x</td>
+          <td class="ct score-ok">2.7x</td>
+          <td class="ct score-bad">0.6x</td>
+        </tr>
+        <tr>
+          <td>Cash Runway (months)</td>
+          <td class="ct">7.1</td>
+          <td class="ct score-good">6.2</td>
+          <td class="ct score-ok">5.2</td>
+          <td class="ct score-bad">4.4</td>
+        </tr>
+        <tr>
+          <td>Debt-to-Asset Ratio</td>
+          <td class="ct">62.5%</td>
+          <td class="ct score-good">61.8%</td>
+          <td class="ct score-ok">67.3%</td>
+          <td class="ct score-bad">79.1%</td>
+        </tr>
+        <tr>
+          <td>Liquidity Ratio (Quick)</td>
+          <td class="ct">0.92</td>
+          <td class="ct score-good">0.88</td>
+          <td class="ct score-ok">0.72</td>
+          <td class="ct score-bad">0.51</td>
+        </tr>
+        <tr>
+          <td>Effective Debt/EBITDA</td>
+          <td class="ct">2.8x</td>
+          <td class="ct score-good">3.2x</td>
+          <td class="ct score-ok">5.1x</td>
+          <td class="ct score-bad">12.8x</td>
+        </tr>
+        <tr>
+          <td>Total Debt/Total Capital</td>
+          <td class="ct">42.0%</td>
+          <td class="ct score-good">41.5%</td>
+          <td class="ct score-ok">48.2%</td>
+          <td class="ct score-bad">62.5%</td>
+        </tr>
+        <tr>
+          <td>Asset Impairment Loss (RMB bn)</td>
+          <td class="ct">8</td>
+          <td class="ct">20</td>
+          <td class="ct">36</td>
+          <td class="ct score-bad">57</td>
+        </tr>
+        <tr>
+          <td>Free Cash Flow (RMB bn)</td>
+          <td class="ct">22</td>
+          <td class="ct score-good">12</td>
+          <td class="ct score-ok">-18</td>
+          <td class="ct score-bad">-68</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="info-box info-amber" style="margin-top:14px;">
+      <strong>Key Indicator Analysis Findings:</strong> (1) Under the Severe scenario, all major credit indicators breach
+      warning lines, indicating that LONGi, under its current capital structure, cannot withstand such a shock without technical default;
+      (2) The Bear scenario falls into a "gray zone" — some indicators approach but do not fully breach warning lines; the final
+      credit quality outcome will depend on management's contingency response and the availability of external financing support;
+      (3) Under the Base scenario, the credit safety margin is ample, with all indicators within healthy ranges.
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 4 — Second-Order Effects -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">Second-Order Effect Analysis</h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:14px;">
+      The transmission of stress scenarios is not limited to first-order financial indicators. The following secondary transmission effects may further amplify
+      credit shocks. Second-order effects represent "stress within stress," and their quantification requires consideration of industry structural characteristics and the company's
+      own supply chain and financing ecosystem.
+    </p>
+
+    <div class="grid-3">
+      <div class="card card-amber">
+        <h3>
+          <span class="signal signal-amber"></span>
+          Inventory Write-Down Spiral
+        </h3>
+        <p style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">
+          In a down cycle for PV module prices, inventory write-down risk exhibits a self-reinforcing trend. The Severe scenario assumes
+          module prices fall another 15% in 2026, requiring impairment provisions of approximately RMB 2.2-2.8 billion on cost-basis inventories,
+          further eroding profits and net capital. More critically, inventory write-downs may trigger creditors to revalue
+          collateral, potentially leading to demands for additional guarantees or early repayment.
+        </p>
+        <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="tag tag-amber">Potential Impairment: 2.2-2.8 bn</span>
+          <span class="tag tag-red">Triggers Negative Profit</span>
+          <span class="tag tag-amber">Collateral Revaluation Risk</span>
+        </div>
+        <p style="font-size:12px; color:var(--text-tertiary); margin-top:8px;">
+          Approximately 65% of LONGi's inventory consists of finished goods and goods in transit. For every 1% decline in module prices, inventory impairment is approximately
+          RMB 150-180 million. LONGi's inventory turnover days are 78, and whether price decline risk can be released through sales in the short term is uncertain.
+        </p>
+      </div>
+
+      <div class="card card-red">
+        <h3>
+          <span class="signal signal-red"></span>
+          Working Capital Freeze
+        </h3>
+        <p style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">
+          Downstream customers' willingness to delay payments increases during industry downturns. Accounts receivable turnover days extend to 125 days (+45 days) under the Severe
+          scenario, combined with inventory turnover slowing to 140 days, tying up additional working capital
+          of approximately RMB 5.5-7.0 billion. Some banks may freeze credit lines upon seeing deteriorating liquidity indicators
+          (assuming a 50% reduction in credit availability under the Severe scenario).
+        </p>
+        <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="tag tag-red">Funds Tied Up: 5.5-7.0 bn</span>
+          <span class="tag tag-amber">Credit Freeze Risk</span>
+          <span class="tag tag-amber">Upstream/Downstream Payment Term Squeeze</span>
+        </div>
+        <p style="font-size:12px; color:var(--text-tertiary); margin-top:8px;">
+          Approximately 35% of downstream customers are small-to-medium EPC contractors, whose credit quality typically deteriorates first during economic downturns.
+          It is recommended to establish a customer credit rating management system and maintain asset monetization tools such as receivables ABS.
+        </p>
+      </div>
+
+      <div class="card card-red">
+        <h3>
+          <span class="signal signal-red"></span>
+          Second-Order Financing Cost Increase
+        </h3>
+        <p style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">
+          The Severe scenario assumes a one-time financing cost increase of +200bp. However, if the rating is downgraded by two notches (AAA to A),
+          subsequent refinancing costs could rise further to base +350bp or more. Corporate bond prices are expected to decline
+          by 5-8 yuan (per 100 yuan face value), potentially triggering institutional position reductions and a negative feedback
+          loop from the secondary market to the primary market.
+        </p>
+        <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="tag tag-red">Refinancing Cost: +350bp</span>
+          <span class="tag tag-amber">Negative Feedback Loop Risk</span>
+          <span class="tag tag-amber">Bond Price Decline 5-8 yuan</span>
+        </div>
+        <p style="font-size:12px; color:var(--text-tertiary); margin-top:8px;">
+          LONGi's outstanding bonds total approximately RMB 10.5 billion, of which 65% are held by institutions. If bond prices fall sharply and
+          dealer market-making willingness is insufficient, it could trigger holders' risk control warnings and passive position reductions.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:14px;">
+      <div class="card card-amber">
+        <h3>Second-Order Effect: Supplier Credit Contraction</h3>
+        <p style="font-size:13px; color:var(--text-secondary);">
+          During industry downturns, upstream silicon material and auxiliary material suppliers may tighten credit terms for LONGi (from an average of 45 days
+          to 30 days or less), while demanding cash-on-delivery or advance payment. This would consume an additional approximately
+          RMB 0.8-1.2 billion in working capital. As an industry leader, LONGi has relatively strong bargaining power with suppliers, but small-to-medium suppliers under
+          funding pressure will also prioritize their own liquidity.
+        </p>
+        <div style="margin-top:8px;">
+          <span class="tag tag-amber">Additional Fund Tie-Up: 0.8-1.2 bn</span>
+        </div>
+      </div>
+      <div class="card card-amber">
+        <h3>Second-Order Effect: Exchange Rate &amp; Cross-Border Funds</h3>
+        <p style="font-size:13px; color:var(--text-secondary);">
+          The Severe scenario assumes CNY depreciation against EUR to 8.8 (currently 7.8). Approximately 35% of LONGi's revenue comes from
+          overseas markets, so CNY depreciation would generate exchange gains (positive impact). However, cross-border capital flows may
+          be affected by increased foreign exchange controls — extended approval cycles for capital outflows would affect overseas subsidiary financing
+          and dividend repatriation. Overseas liabilities total approximately RMB 3.8 billion, assuming rising rollover costs.
+        </p>
+        <div style="margin-top:8px;">
+          <span class="tag tag-green">Exchange Gain: approx. +0.3 bn</span>
+          <span class="tag tag-amber">Cross-Border Funds: Extended Repatriation Cycle</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box info-red" style="margin-top:14px;">
+      <strong>Second-Order Effect Composite Assessment:</strong> Under the Severe scenario, second-order effects could amplify the actual credit impact
+      by approximately <strong>1.3-1.5x</strong> compared to first-order estimates. The largest amplification factor is working capital freeze
+      (incremental fund demand of RMB 5.5-7.0 billion), followed by inventory write-down spiral (RMB 2.2-2.8 billion) and second-order financing cost increase
+      (additional RMB 150-200 million in interest expense). It is recommended to prepare at least RMB 3.0 billion in additional standby
+      liquidity in the liquidity management plan, and proactively communicate emergency credit arrangements with major lending banks.
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 5 — Reverse Stress Test -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">Reverse Stress Test</h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:14px;">
+      The reverse stress test aims to answer: <strong>"What level of deterioration would trigger a default?"</strong>
+      Rather than presetting parameters, we work backwards: what level of deterioration in which key indicators would cause LONGi
+      to experience technical default or substantive default.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Default Trigger Condition</th>
+          <th>Critical Threshold</th>
+          <th>Distance from Base</th>
+          <th>Likelihood of Occurrence</th>
+          <th>Expected Credit Loss After Trigger</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Interest Coverage Ratio &lt; 1.0x</td>
+          <td>EBIT drops to ~RMB 1.9 billion</td>
+          <td>~RMB 4.9 billion gap (72% decline)</td>
+          <td><span class="tag tag-amber">Moderately Low</span></td>
+          <td>Loss Given Default ~45-55%</td>
+        </tr>
+        <tr>
+          <td>Cash Runway &lt; 3 months</td>
+          <td>Available cash drops to ~RMB 9.5 billion</td>
+          <td>~RMB 10.3 billion gap (52% decline)</td>
+          <td><span class="tag tag-green">Low</span></td>
+          <td>Emergency refinancing needed, high rollover risk</td>
+        </tr>
+        <tr>
+          <td>Debt-to-Asset Ratio &gt; 85%</td>
+          <td>Equity erosion of ~RMB 7.5 billion</td>
+          <td>~RMB 4.5 billion gap (assuming equity unchanged)</td>
+          <td><span class="tag tag-amber">Moderately Low</span></td>
+          <td>Debt restructuring or technical default</td>
+        </tr>
+        <tr>
+          <td>External Financing Channels Closed</td>
+          <td>Bank loans + bond market simultaneously tighten</td>
+          <td>Extreme systemic risk event</td>
+          <td><span class="tag tag-red">Low but not negligible</span></td>
+          <td>Liquidity crisis &rarr; Full default</td>
+        </tr>
+        <tr>
+          <td>Revenue Decline &gt; 45%</td>
+          <td>Revenue drops to ~RMB 74 billion</td>
+          <td>~RMB 61 billion gap</td>
+          <td><span class="tag tag-green">Very Low</span></td>
+          <td>Sustained losses from structural issues</td>
+        </tr>
+        <tr>
+          <td>Negative Operating Cash Flow for 2 Consecutive Quarters</td>
+          <td>Operating CF &lt;0 for &gt;6 months</td>
+          <td>Currently positive, ~2 quarters of deterioration gap</td>
+          <td><span class="tag tag-amber">Medium</span></td>
+          <td>Loss of operational cash generation, requiring asset disposals</td>
+        </tr>
+        <tr>
+          <td>Cross-Default Clause Triggered</td>
+          <td>Any debt default triggers cross-default on all debt</td>
+          <td>~3-4 notch gap from current AAA issuer rating</td>
+          <td><span class="tag tag-green">Low</span></td>
+          <td>Concentrated maturity pressure, EAD ~RMB 20 billion</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card card-blue" style="margin-top:14px;">
+      <h3>Reverse Stress Test Conclusion</h3>
+      <p style="font-size:13px; color:var(--text-secondary);">
+        A default trigger for LONGi Green Energy requires multiple conditions to occur simultaneously: revenue decline exceeding 30% + gross margin falling below 3%
+        + significant increase in financing costs. No single indicator deterioration would directly trigger a default. The most likely default
+        path: <strong>overcapacity leading to sustained module price decline</strong> &rarr; inventory write-downs eroding profits
+        &rarr; interest coverage ratio falling below 1.0x &rarr; cross-default clause triggered. This path is estimated to take at least
+        2-3 quarters to evolve into a substantive default. Considering LONGi's current liquidity reserves and financing capabilities,
+        even the Severe scenario still retains a 4.4-month cash runway, providing the company with a sufficient time window to implement
+        contingency plans (reducing capital expenditure, disposing of non-core assets, seeking equity financing).
+      </p>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 6 — Trigger Point Identification -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">Trigger Point Identification &amp; Warning Signals</h2>
+
+    <div class="info-box info-amber" style="margin-bottom:16px;">
+      <strong>Monitoring Framework:</strong> The following trigger point indicators should be incorporated into the regular credit monitoring dashboard.
+      Once triggered, initiate a stress scenario escalation assessment. Two levels: Level 1 is "Watch" level — initiate in-depth
+      analysis process; Level 2 is "Action" level — convene the credit committee for decision-making.
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Trigger Indicator</th>
+          <th class="ct">Current Value</th>
+          <th class="ct">Level 1 Warning Line</th>
+          <th class="ct">Level 2 Warning Line</th>
+          <th>Trigger Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Quarterly Gross Margin</td>
+          <td class="ct">17.2%</td>
+          <td class="ct">&lt; 12%</td>
+          <td class="ct">&lt; 8%</td>
+          <td>Initiate Bear/Severe scenario reassessment</td>
+        </tr>
+        <tr>
+          <td>Interest Coverage Ratio</td>
+          <td class="ct">6.4x</td>
+          <td class="ct">&lt; 3.5x</td>
+          <td class="ct">&lt; 2.0x</td>
+          <td>Convene credit committee emergency meeting</td>
+        </tr>
+        <tr>
+          <td>Inventory Turnover Days</td>
+          <td class="ct">78 days</td>
+          <td class="ct">&gt; 100 days</td>
+          <td class="ct">&gt; 130 days</td>
+          <td>Initiate inventory write-down stress test</td>
+        </tr>
+        <tr>
+          <td>Accounts Receivable Turnover Days</td>
+          <td class="ct">82 days</td>
+          <td class="ct">&gt; 100 days</td>
+          <td class="ct">&gt; 120 days</td>
+          <td>Assess customer concentration risk</td>
+        </tr>
+        <tr>
+          <td>Operating Cash Flow / Total Debt</td>
+          <td class="ct">0.21x</td>
+          <td class="ct">&lt; 0.12x</td>
+          <td class="ct">&lt; 0.08x</td>
+          <td>Liquidity risk review</td>
+        </tr>
+        <tr>
+          <td>Available Undrawn Credit Facilities</td>
+          <td class="ct">RMB 8.5 billion</td>
+          <td class="ct">&lt; RMB 4.0 billion</td>
+          <td class="ct">&lt; RMB 2.0 billion</td>
+          <td>Financing channel stability assessment</td>
+        </tr>
+        <tr>
+          <td>Bond Secondary Market Yield</td>
+          <td class="ct">3.2%</td>
+          <td class="ct">&gt; 5.0%</td>
+          <td class="ct">&gt; 7.5%</td>
+          <td>Market sentiment monitoring + investor communication</td>
+        </tr>
+        <tr>
+          <td>External Rating (Issuer)</td>
+          <td class="ct">AAA</td>
+          <td class="ct">Negative Outlook</td>
+          <td class="ct">Downgraded to AA+</td>
+          <td>Trigger investor protection clause review</td>
+        </tr>
+        <tr>
+          <td>Overseas Revenue Share Change</td>
+          <td class="ct">35%</td>
+          <td class="ct">Decline to &lt; 28%</td>
+          <td class="ct">Decline to &lt; 22%</td>
+          <td>Assess trade friction escalation impact</td>
+        </tr>
+        <tr>
+          <td>Capital Expenditure / Depreciation Ratio</td>
+          <td class="ct">1.5x</td>
+          <td class="ct">&lt; 0.8x</td>
+          <td class="ct">&lt; 0.5x</td>
+          <td>Assess long-term competitiveness maintenance capacity</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card card-red" style="margin-top:14px;">
+      <h3>Trigger Point Monitoring Recommendations</h3>
+      <p style="font-size:13px; color:var(--text-secondary);">
+        The above 10 trigger indicators should be incorporated into a monthly tracking dashboard, updated in sync with the financial reporting cycle. Key focus areas:
+        (1) Interest coverage ratio — the most sensitive "canary in the coal mine"; (2) Accounts receivable turnover days —
+        the earliest reflection of customer credit quality; (3) Bond yield — a leading signal of market pricing.
+        If any indicator remains in the Level 1 warning range for two consecutive months, initiate a stress scenario escalation assessment.
+      </p>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 7 — Industry Historical Max Drawdown Calibration -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">Industry Historical Max Drawdown Calibration</h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:14px;">
+      Calibrating stress test parameters against historical peak drawdown data from the photovoltaic industry cycle to verify whether the scenario settings fall
+      within historical experience boundaries. By comparing the financial drawdown data of large photovoltaic companies in history, we assess
+      the extremity and likelihood of the Severe scenario.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Cycle Event</th>
+          <th class="ct">Period</th>
+          <th class="ct">Max Revenue Decline</th>
+          <th class="ct">Max Gross Margin Compression</th>
+          <th class="ct">Industry Default Rate Peak</th>
+          <th class="ct">Recovery Period</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2011-2013 Anti-Dumping Crisis</td>
+          <td class="ct">2011Q3-2013Q1</td>
+          <td class="ct">-38%</td>
+          <td class="ct">-22pp</td>
+          <td class="ct">18.2%</td>
+          <td class="ct">6 quarters</td>
+        </tr>
+        <tr>
+          <td>2018 531 Policy</td>
+          <td class="ct">2018Q2-2018Q4</td>
+          <td class="ct">-15%</td>
+          <td class="ct">-8pp</td>
+          <td class="ct">5.6%</td>
+          <td class="ct">3 quarters</td>
+        </tr>
+        <tr>
+          <td>2020 COVID-19 Shock</td>
+          <td class="ct">2020Q1-2020Q3</td>
+          <td class="ct">-12%</td>
+          <td class="ct">-5pp</td>
+          <td class="ct">3.1%</td>
+          <td class="ct">2 quarters</td>
+        </tr>
+        <tr>
+          <td>2023-2024 Overcapacity Cycle</td>
+          <td class="ct">2023Q4-2025Q1</td>
+          <td class="ct">-22%</td>
+          <td class="ct">-12pp</td>
+          <td class="ct">8.5%</td>
+          <td class="ct">5 quarters</td>
+        </tr>
+        <tr>
+          <td><strong>This Bear Scenario</strong></td>
+          <td class="ct">—</td>
+          <td class="ct"><span class="text-amber">-12%</span></td>
+          <td class="ct"><span class="text-amber">-8pp</span></td>
+          <td class="ct"><span class="text-amber">~6%</span></td>
+          <td class="ct">3-4 quarters</td>
+        </tr>
+        <tr>
+          <td><strong>This Severe Scenario</strong></td>
+          <td class="ct">—</td>
+          <td class="ct"><span class="text-red">-30%</span></td>
+          <td class="ct"><span class="text-red">-15pp</span></td>
+          <td class="ct"><span class="text-red">~15%</span></td>
+          <td class="ct">5-7 quarters</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card card-purple" style="margin-top:14px;">
+      <h3>Historical Calibration Conclusion</h3>
+      <p style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">
+        <strong>Bear Scenario</strong> parameters (revenue -12%, gross margin -8pp) are broadly comparable to the 2018 531 policy
+        shock, representing a stress level that has actually occurred in history.
+        <span class="text-green">The scenario is reasonable and relatively moderate</span>.
+      </p>
+      <p style="font-size:13px; color:var(--text-secondary); margin-bottom:8px;">
+        <strong>Severe Scenario</strong> parameters (revenue -30%, gross margin -15pp) approach the severity of the 2011-2013
+        anti-dumping crisis but do not exceed historical extremes (-38%/-22pp).
+        <span class="text-amber">Although extreme, the scenario is within historical experience bounds</span>.
+      </p>
+      <p style="font-size:13px; color:var(--text-secondary);">
+        <strong>Important Note:</strong> Current industry overcapacity (global capacity exceeds demand by ~60%)
+        is more severe than in 2011 (~40%), but LONGi's market position (global market share ~25%) and cost
+        advantage are significantly stronger than in 2011. These two factors offset each other, meaning actual credit resilience may be slightly better than historical benchmarks.
+        However, caution is warranted: this overcapacity cycle is compounded by geopolitical risks (U.S. IRA policy uncertainty, EU
+        carbon tariffs), potentially creating a "gray rhino" combination never seen before in history.
+      </p>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 8 — Stress Test Conclusion -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">Composite Stress Test Conclusion</h2>
+
+    <div class="grid-3">
+      <div class="card card-green">
+        <h3>Base</h3>
+        <div style="text-align:center; margin:12px 0;">
+          <span style="font-size:36px; font-weight:800; color:var(--green);">AAA</span>
+        </div>
+        <p style="font-size:13px; color:var(--text-secondary);">
+          Current operating fundamentals can support stable credit quality. No rating adjustment needed.
+          Key focus: whether gross margin can stabilize above 15%, and whether the pace of new industry capacity
+          additions exceeds expectations.
+        </p>
+      </div>
+      <div class="card card-amber">
+        <h3>Bear</h3>
+        <div style="text-align:center; margin:12px 0;">
+          <span style="font-size:36px; font-weight:800; color:var(--amber);">AA+</span>
+        </div>
+        <p style="font-size:13px; color:var(--text-secondary);">
+          Working capital management will face pressure but still has buffer room. Recommend a 1-notch downgrade.
+          Standby liquidity instruments (undrawn credit facilities, receivables factoring, etc.) should be arranged in advance.
+          Expected to navigate the stress period in 3-4 quarters.
+        </p>
+      </div>
+      <div class="card card-red">
+        <h3>Severe</h3>
+        <div style="text-align:center; margin:12px 0;">
+          <span style="font-size:36px; font-weight:800; color:var(--red);">A</span>
+        </div>
+        <p style="font-size:13px; color:var(--text-secondary);">
+          Rating may be downgraded 2-3 notches and may trigger investor protection clauses. Estimated probability of default
+          (PD) is approximately 8-12%. Heavily dependent on the availability of external financing support and the speed of management's
+          contingency response. Recommend preparing an emergency financing plan in advance.
+        </p>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="info-box info-blue" style="margin-top:14px;">
+      <strong>Final Conclusion:</strong> LONGi Green Energy's credit quality is sound under the Base and Bear scenarios.
+      Under the Severe scenario, substantive risk exists but default is not inevitable. The company's core credit strengths are:
+      (1) RMB 20+ billion in liquidity reserves providing substantial buffer time;
+      (2) Global leadership position ensuring "survival of the fittest" long-term logic during industry consolidation;
+      (3) Continuously optimizing cost structure strengthening competitive barriers.
+      The main credit vulnerabilities are: (1) high capital intensity creating depreciation and impairment pressure at the cycle bottom;
+      (2) high overseas revenue exposure introducing geopolitical uncertainty;
+      (3) governance dimension (especially related-party transactions and information disclosure) potentially affecting market confidence.
+      Recommendation: maintain issuer "AAA" rating, outlook <span class="text-amber">Stable</span>,
+      while establishing a quarterly stress test rolling update mechanism.
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<!-- ================================================================ -->
+<!-- FOOTER -->
+<!-- ================================================================ -->
+<div class="footer">
+  <p><strong>Credence Report System</strong> — Stress Test Report</p>
+  <p>Report ID STRESS-2026-Q3-011 · Generated on 2026-07-08 · For Internal Reference Only</p>
+  <p>This report is generated based on LONGi Green Energy 2025 Annual Report, 2026Q1 Quarterly Report, and industry cycle data analysis</p>
+  <p style="margin-top:6px; font-size:10px; color:var(--text-tertiary);">
+    Stress Model Version v1.2 · Parameter Base Date 2026-07-01 · Historical Data Window 15 years · Next Update 2026-10-01
+  </p>
+</div>
+
+</body>
+</html>

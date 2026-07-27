@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<!-- @template: ${CLAUDE_PLUGIN_ROOT}/templates/template-type15.html -->
+<!-- @engine-version: v0.0.8 -->
+<html lang="en">
+<!-- Sample Report: systemic-warning-2026q2.html -->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Systemic Risk Alert Report Template Type 15 · SRI Index · Thermometer · Red Industry List · Top 5 Contagion Risks · Concentration Warning · Quarter-over-Quarter Comparison · Action Recommendations · Systemic Risk Control Intelligence Layer">
+<title>Systemic Risk Alert Report · Type 15 Template</title>
+<link rel="stylesheet" href="template-base.css">
+<style>
+.hero { background: linear-gradient(135deg, #0f172a, #4a1a1a, #991b1b); }
+.hero .chip { background: rgba(153,27,27,0.25); color: #fca5a5; border-color: rgba(153,27,27,0.4); }
+.thermometer-wrapper { display:flex; align-items:center; gap:30px; justify-content:center; margin:24px 0; }
+.thermometer-icon { font-size:64px; line-height:1; }
+.thermometer-scale { flex:1; max-width:500px; }
+.thermo-track { height:32px; border-radius:16px; background:var(--bg-tertiary); overflow:hidden; position:relative; display:flex; }
+.thermo-segment { flex:1; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#fff; }
+.thermo-segment.green { background:var(--green); }
+.thermo-segment.yellow { background:var(--amber); }
+.thermo-segment.orange { background:#ea580c; }
+.thermo-segment.red { background:var(--red); }
+.thermo-marker { position:relative; height:20px; margin-top:8px; }
+.thermo-marker .arrow { position:absolute; top:0; transform:translateX(-50%); font-size:18px; line-height:1; }
+.thermo-labels { display:flex; justify-content:space-between; margin-top:6px; font-size:11px; color:var(--text-tertiary); }
+.thermo-current-label { text-align:center; margin-top:12px; font-size:16px; font-weight:800; }
+.thermo-current-label .sri-val { font-size:28px; }
+.red-industry-card { background:var(--bg-secondary); border-radius:var(--radius); padding:18px 22px; margin:14px 0; border:1px solid var(--border-default); border-left:4px solid var(--red); }
+.red-industry-card h4 { font-size:14px; margin-bottom:8px; color:var(--red); }
+.red-industry-card .industry-tag { font-size:11px; color:var(--text-tertiary); margin-bottom:6px; }
+.red-industry-card .industry-desc { font-size:13px; color:var(--text-secondary); line-height:1.7; }
+.contagion-chain-card { background:var(--bg-secondary); border-radius:var(--radius); padding:18px 22px; margin:12px 0; border:1px solid var(--border-default); border-left:4px solid var(--purple); }
+.contagion-chain-card h4 { font-size:14px; margin-bottom:8px; color:var(--purple); }
+.contagion-chain-card .chain-tag { font-size:11px; color:var(--text-tertiary); margin-bottom:6px; }
+.contagion-chain-card .chain-desc { font-size:13px; color:var(--text-secondary); line-height:1.7; }
+.concentration-warn-card { background:var(--bg-secondary); border-radius:var(--radius); padding:18px 22px; margin:14px 0; border:1px solid var(--border-default); border-left:4px solid var(--red); }
+.concentration-warn-card h4 { font-size:14px; margin-bottom:8px; color:var(--red); }
+.concentration-warn-card .cw-tag { font-size:11px; color:var(--text-tertiary); margin-bottom:6px; }
+.concentration-warn-card .cw-desc { font-size:13px; color:var(--text-secondary); line-height:1.7; }
+.trend-card { background:var(--bg-secondary); border-radius:var(--radius); padding:18px 22px; margin:14px 0; border:1px solid var(--border-default); border-left:4px solid var(--amber); }
+.trend-card h4 { font-size:14px; margin-bottom:8px; color:var(--amber); }
+.action-card { background:var(--bg-secondary); border-radius:var(--radius); padding:18px 22px; margin:14px 0; border:1px solid var(--border-default); border-left:4px solid var(--blue); }
+.action-card h4 { font-size:14px; margin-bottom:8px; color:var(--blue); }
+.action-card .action-tag { font-size:11px; color:var(--text-tertiary); margin-bottom:6px; }
+.action-card .action-desc { font-size:13px; color:var(--text-secondary); line-height:1.7; }
+.completeness-bar { background:var(--bg-tertiary); border-radius:4px; height:20px; overflow:hidden; margin:6px 0; }
+.completeness-fill { height:100%; border-radius:4px; text-align:center; font-size:10px; line-height:20px; font-weight:600; }
+.heat-map { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:2px; margin:12px 0; }
+.heat-item { padding:12px 8px; text-align:center; border-radius:4px; font-size:11px; }
+.signal-dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+.signal-dot.red { background:var(--red); }
+.signal-dot.amber { background:var(--amber); }
+.signal-dot.green { background:var(--green); }
+.signal-dot.blue { background:var(--blue); }
+.signal-dot.purple { background:var(--purple); }
+.warning-tier { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; }
+.warn-badge { padding:4px 12px; border-radius:4px; font-size:11px; font-weight:600; }
+.warn-badge.red { background:rgba(239,68,68,0.15); color:var(--red); border:1px solid rgba(239,68,68,0.3); }
+.warn-badge.amber { background:rgba(245,158,11,0.15); color:var(--amber); border:1px solid rgba(245,158,11,0.3); }
+.warn-badge.green { background:rgba(34,197,94,0.15); color:var(--green); border:1px solid rgba(34,197,94,0.3); }
+.warn-badge.blue { background:rgba(99,102,241,0.15); color:var(--blue); border:1px solid rgba(99,102,241,0.3); }
+.warn-badge.purple { background:rgba(168,85,247,0.15); color:var(--purple); border:1px solid rgba(168,85,247,0.3); }
+.comparison-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border-default); border-radius:8px; overflow:hidden; margin:14px 0; }
+.comparison-item { background:var(--bg-secondary); padding:14px 18px; }
+.comparison-item h5 { font-size:13px; margin-bottom:6px; }
+.comparison-item .c-stat { font-size:20px; font-weight:800; color:var(--red); }
+.action-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border-default); border-radius:8px; overflow:hidden; margin:14px 0; }
+.action-grid-item { background:var(--bg-secondary); padding:16px 18px; }
+.action-grid-item h5 { font-size:13px; margin-bottom:6px; color:var(--blue); }
+.action-grid-item .ag-desc { font-size:12px; color:var(--text-secondary); line-height:1.7; }
+.priority-tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; }
+.priority-tag.p0 { background:rgba(239,68,68,0.15); color:var(--red); border:1px solid rgba(239,68,68,0.3); }
+.priority-tag.p1 { background:rgba(245,158,11,0.15); color:var(--amber); border:1px solid rgba(245,158,11,0.3); }
+.priority-tag.p2 { background:rgba(99,102,241,0.15); color:var(--blue); border:1px solid rgba(99,102,241,0.3); }
+.threshold-vis { display:flex; align-items:center; gap:6px; margin:8px 0; }
+.threshold-track { flex:1; height:8px; background:var(--bg-tertiary); border-radius:4px; position:relative; overflow:visible; }
+.threshold-marker { position:absolute; top:-6px; width:2px; height:20px; border-radius:1px; }
+.threshold-label { position:absolute; top:-22px; font-size:9px; color:var(--text-tertiary); white-space:nowrap; transform:translateX(-50%); }
+.threshold-current { position:absolute; top:-6px; width:12px; height:20px; border-radius:2px; transform:translateX(-50%); }
+.threshold-arrow { position:absolute; top:-24px; font-size:10px; font-weight:700; white-space:nowrap; transform:translateX(-50%); }
+@media (max-width:768px) { .thermometer-wrapper { flex-direction:column; gap:16px; } .action-grid { grid-template-columns:1fr; } .comparison-grid { grid-template-columns:1fr; } .heat-map { grid-template-columns:repeat(3,1fr); } }
+</style>
+</head>
+<body>
+
+<!-- ================================================================ -->
+<!-- HERO -- Dark Red Crisis Warning Theme Gradient -->
+<!-- ================================================================ -->
+<div class="hero">
+  <span class="chip">Systemic Risk Alert Report · TYPE 15</span>
+  <h1>{report_title_systemic_risk_alert}</h1>
+  <p class="subtitle">
+    SRI Systemic Risk Index · Four-Level Thermometer Classification · Red Industry List · Top 5 Contagion Risks · Concentration Warning · Quarter-over-Quarter Comparison · Action Recommendations
+  </p>
+  <div class="meta">
+    <span>Analysis Date: {analysis_date}</span>
+    <span>SRI Index: {sri_reading}</span>
+    <span>Thermometer Level: {thermometer_level}</span>
+    <span>Number of Red Industries: {red_industry_count}</span>
+    <span>Report Version: v0.0.8 · Type 15 Systemic Risk Alert</span>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- CONTAINER -->
+<!-- ================================================================ -->
+<div class="container">
+
+  <!-- ================================================================ -->
+  <!-- STRIP -- 4-Column Core Metrics -->
+  <!-- ================================================================ -->
+  <div class="strip cols-4">
+    <div class="strip-item">
+      <div class="slabel">SRI Systemic Risk Index</div>
+      <div class="sval" style="color:var(--red);">{sri_reading}</div>
+      <div class="ssub">Range 0-3+ · Higher means greater risk</div>
+    </div>
+    <div class="strip-item">
+      <div class="slabel">Thermometer Level</div>
+      <div class="sval" style="color:var(--{thermometer_color});">{thermometer_level}</div>
+      <div class="ssub">{thermometer_level_name} · SRI {sri_range}</div>
+    </div>
+    <div class="strip-item">
+      <div class="slabel">Number of Red Industries</div>
+      <div class="sval" style="color:var(--red);">{red_industry_count}</div>
+      <div class="ssub">Industries with Risk Score &ge; 2.0</div>
+    </div>
+    <div class="strip-item">
+      <div class="slabel">Trend (vs Previous Quarter)</div>
+      <div class="sval" style="color:var(--{trend_color});">{trend_arrow} {sri_change}</div>
+      <div class="ssub">Change from Previous Quarter SRI</div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 1 — Thermometer Visualization -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--red);"></span>
+      1. Thermometer Visualization
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      The thermometer maps the SRI reading to a four-level color scale, visualizing the current systemic risk level.
+      The thresholds are: 🟢 Normal (SRI&lt;0.5) · 🟡 Watch (0.5&le;SRI&lt;1.0) · 🟠 Caution (1.0&le;SRI&lt;1.8) · 🔴 Danger (SRI&ge;1.8).
+    </p>
+
+    <div class="card">
+      <div class="thermometer-wrapper">
+        <div class="thermometer-icon">{thermometer_icon_char}</div>
+        <div class="thermometer-scale">
+          <div class="thermo-track">
+            <div class="thermo-segment green">Normal</div>
+            <div class="thermo-segment yellow">Watch</div>
+            <div class="thermo-segment orange">Caution</div>
+            <div class="thermo-segment red">Danger</div>
+          </div>
+          <div class="thermo-marker">
+            <span class="arrow" style="left:{sri_pct_position}%;color:var(--{thermometer_color});">▼</span>
+          </div>
+          <div class="thermo-labels">
+            <span>0</span>
+            <span>0.5</span>
+            <span>1.0</span>
+            <span>1.8</span>
+            <span>4.0</span>
+          </div>
+          <div class="thermo-current-label">
+            <span style="color:var(--{thermometer_color});">Current SRI = <span class="sri-val">{sri_reading}</span></span>
+            <span style="color:var(--text-tertiary);font-size:13px;font-weight:400;display:block;margin-top:4px;">
+              In the {thermometer_level_name} range{threshold_relationship_desc}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;justify-content:center;font-size:12px;margin-top:8px;">
+        <span><span class="signal-dot green"></span>SRI&lt;0.5 Normal</span>
+        <span><span class="signal-dot amber"></span>0.5&le;SRI&lt;1.0 Watch</span>
+        <span><span class="signal-dot" style="background:#ea580c;"></span>1.0&le;SRI&lt;1.8 Caution</span>
+        <span><span class="signal-dot red"></span>SRI&ge;1.8 Danger</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Thermometer Level Definitions & Current Match</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>SRI Range</th>
+            <th>Color</th>
+            <th>Meaning</th>
+            <th>Current Match</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Normal</td>
+            <td>SRI &lt; 0.5</td>
+            <td><span class="signal-dot green"></span> 🟢</td>
+            <td>&lt;20% industries red simultaneously · or &gt;70% industries green</td>
+            <td>{current_normal_match}</td>
+          </tr>
+          <tr>
+            <td>Watch</td>
+            <td>0.5 &le; SRI &lt; 1.0</td>
+            <td><span class="signal-dot amber"></span> 🟡</td>
+            <td>20-30% industries red simultaneously · or 2-3 overlapping industry signals</td>
+            <td><span class="warn-badge amber">{current_watch_match}</span></td>
+          </tr>
+          <tr>
+            <td>Caution</td>
+            <td>1.0 &le; SRI &lt; 1.8</td>
+            <td><span class="signal-dot" style="background:#ea580c;"></span> 🟠</td>
+            <td>30-50% industries red simultaneously · or high-contagion industries in trouble</td>
+            <td>{current_caution_match}</td>
+          </tr>
+          <tr>
+            <td>Danger</td>
+            <td>SRI &ge; 1.8</td>
+            <td><span class="signal-dot red"></span> 🔴</td>
+            <td>&gt;50% industries red simultaneously · or multiple high-contagion industries triggered simultaneously</td>
+            <td>{current_danger_match}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box info-{thermometer_info_type}" style="margin-top:10px;">
+        <strong>Thermometer Interpretation:</strong>{thermometer_detail}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 2 — Red Industry List -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--red);"></span>
+      2. Red Industry List
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      List of industries with risk score &ge; 2.0 (triggering red signal), with trigger factors, core issues, and contribution to SRI noted per industry.
+      Red industries are the main contributors to systemic risk and require focused monitoring of their contagion chains and concentration exposure.
+    </p>
+
+    <div class="red-industry-card">
+      <span class="industry-tag">Red Industry #1 · Risk Score: {red_industry_1_risk_score}</span>
+      <h4>{red_industry_1_name}</h4>
+      <p class="industry-desc">
+        <strong>Track-A Rating:</strong>{red_industry_1_track_a_rating}<br>
+        <strong>Outlook Direction:</strong>{red_industry_1_outlook}<br>
+        <strong>Track-B Signal:</strong>{red_industry_1_track_b_signal}<br>
+        <strong>Veto Triggered:</strong>{red_industry_1_veto_status}<br>
+        <strong>Core Issue:</strong>{red_industry_1_core_issue_desc}<br>
+        <strong>SRI Contribution:</strong>{red_industry_1_sri_contribution} (Share of SRI {red_industry_1_contribution_pct}%)<br>
+        <strong>Contagion Risk:</strong>{red_industry_1_contagion_chain_desc}
+      </p>
+      <div class="warning-tier" style="margin-top:8px;">
+        <span class="warn-badge red">Base Score: {red_industry_1_base_score}</span>
+        <span class="warn-badge amber">Outlook Penalty: {red_industry_1_outlook_penalty}</span>
+        <span class="warn-badge amber">Track-B Penalty: {red_industry_1_track_b_penalty}</span>
+        <span class="warn-badge red">Total Risk Score: {red_industry_1_total_score}</span>
+      </div>
+    </div>
+
+    <div class="red-industry-card">
+      <span class="industry-tag">Red Industry #2 · Risk Score: {red_industry_2_risk_score}</span>
+      <h4>{red_industry_2_name}</h4>
+      <p class="industry-desc">
+        <strong>Track-A Rating:</strong>{red_industry_2_track_a_rating}<br>
+        <strong>Outlook Direction:</strong>{red_industry_2_outlook}<br>
+        <strong>Track-B Signal:</strong>{red_industry_2_track_b_signal}<br>
+        <strong>Veto Triggered:</strong>{red_industry_2_veto_status}<br>
+        <strong>Core Issue:</strong>{red_industry_2_core_issue_desc}<br>
+        <strong>SRI Contribution:</strong>{red_industry_2_sri_contribution} (Share of SRI {red_industry_2_contribution_pct}%)<br>
+        <strong>Contagion Risk:</strong>{red_industry_2_contagion_chain_desc}
+      </p>
+      <div class="warning-tier" style="margin-top:8px;">
+        <span class="warn-badge red">Base Score: {red_industry_2_base_score}</span>
+        <span class="warn-badge amber">Outlook Penalty: {red_industry_2_outlook_penalty}</span>
+        <span class="warn-badge amber">Track-B Penalty: {red_industry_2_track_b_penalty}</span>
+        <span class="warn-badge red">Total Risk Score: {red_industry_2_total_score}</span>
+      </div>
+    </div>
+
+    <div class="red-industry-card">
+      <span class="industry-tag">Red Industry #3 · Risk Score: {red_industry_3_risk_score}</span>
+      <h4>{red_industry_3_name}</h4>
+      <p class="industry-desc">
+        <strong>Track-A Rating:</strong>{red_industry_3_track_a_rating}<br>
+        <strong>Outlook Direction:</strong>{red_industry_3_outlook}<br>
+        <strong>Track-B Signal:</strong>{red_industry_3_track_b_signal}<br>
+        <strong>Veto Triggered:</strong>{red_industry_3_veto_status}<br>
+        <strong>Core Issue:</strong>{red_industry_3_core_issue_desc}<br>
+        <strong>SRI Contribution:</strong>{red_industry_3_sri_contribution} (Share of SRI {red_industry_3_contribution_pct}%)<br>
+        <strong>Contagion Risk:</strong>{red_industry_3_contagion_chain_desc}
+      </p>
+      <div class="warning-tier" style="margin-top:8px;">
+        <span class="warn-badge red">Base Score: {red_industry_3_base_score}</span>
+        <span class="warn-badge amber">Outlook Penalty: {red_industry_3_outlook_penalty}</span>
+        <span class="warn-badge amber">Track-B Penalty: {red_industry_3_track_b_penalty}</span>
+        <span class="warn-badge red">Total Risk Score: {red_industry_3_total_score}</span>
+      </div>
+    </div>
+
+    <div class="red-industry-card">
+      <span class="industry-tag">Red Industry #4 · Risk Score: {red_industry_4_risk_score}</span>
+      <h4>{red_industry_4_name}</h4>
+      <p class="industry-desc">
+        <strong>Track-A Rating:</strong>{red_industry_4_track_a_rating}<br>
+        <strong>Outlook Direction:</strong>{red_industry_4_outlook}<br>
+        <strong>Track-B Signal:</strong>{red_industry_4_track_b_signal}<br>
+        <strong>Veto Triggered:</strong>{red_industry_4_veto_status}<br>
+        <strong>Core Issue:</strong>{red_industry_4_core_issue_desc}<br>
+        <strong>SRI Contribution:</strong>{red_industry_4_sri_contribution} (Share of SRI {red_industry_4_contribution_pct}%)<br>
+        <strong>Contagion Risk:</strong>{red_industry_4_contagion_chain_desc}
+      </p>
+      <div class="warning-tier" style="margin-top:8px;">
+        <span class="warn-badge red">Base Score: {red_industry_4_base_score}</span>
+        <span class="warn-badge amber">Outlook Penalty: {red_industry_4_outlook_penalty}</span>
+        <span class="warn-badge amber">Track-B Penalty: {red_industry_4_track_b_penalty}</span>
+        <span class="warn-badge red">Total Risk Score: {red_industry_4_total_score}</span>
+      </div>
+    </div>
+
+    <div class="red-industry-card">
+      <span class="industry-tag">Red Industry #5 · Risk Score: {red_industry_5_risk_score}</span>
+      <h4>{red_industry_5_name}</h4>
+      <p class="industry-desc">
+        <strong>Track-A Rating:</strong>{red_industry_5_track_a_rating}<br>
+        <strong>Outlook Direction:</strong>{red_industry_5_outlook}<br>
+        <strong>Track-B Signal:</strong>{red_industry_5_track_b_signal}<br>
+        <strong>Veto Triggered:</strong>{red_industry_5_veto_status}<br>
+        <strong>Core Issue:</strong>{red_industry_5_core_issue_desc}<br>
+        <strong>SRI Contribution:</strong>{red_industry_5_sri_contribution} (Share of SRI {red_industry_5_contribution_pct}%)<br>
+        <strong>Contagion Risk:</strong>{red_industry_5_contagion_chain_desc}
+      </p>
+      <div class="warning-tier" style="margin-top:8px;">
+        <span class="warn-badge red">Base Score: {red_industry_5_base_score}</span>
+        <span class="warn-badge amber">Outlook Penalty: {red_industry_5_outlook_penalty}</span>
+        <span class="warn-badge amber">Track-B Penalty: {red_industry_5_track_b_penalty}</span>
+        <span class="warn-badge red">Total Risk Score: {red_industry_5_total_score}</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Red Industry Summary Table</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Industry</th>
+            <th>Risk Score</th>
+            <th>Track-A Rating</th>
+            <th>Outlook</th>
+            <th>Track-B</th>
+            <th>Veto</th>
+            <th>SRI Contribution</th>
+            <th>Data Source</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{red_industry_1_name}</td>
+            <td><span class="tag tag-red">{red_industry_1_risk_score}</span></td>
+            <td>{red_industry_1_track_a_rating}</td>
+            <td><span class="tag tag-red">{red_industry_1_outlook}</span></td>
+            <td><span class="tag tag-red">{red_industry_1_track_b}</span></td>
+            <td><span class="tag tag-{red_industry_1_veto_tag}">{red_industry_1_veto}</span></td>
+            <td class="text-red">{red_industry_1_sri_contribution_value}</td>
+            <td>{red_industry_1_data_source}</td>
+          </tr>
+          <tr>
+            <td>{red_industry_2_name}</td>
+            <td><span class="tag tag-red">{red_industry_2_risk_score}</span></td>
+            <td>{red_industry_2_track_a_rating}</td>
+            <td><span class="tag tag-red">{red_industry_2_outlook}</span></td>
+            <td><span class="tag tag-red">{red_industry_2_track_b}</span></td>
+            <td><span class="tag tag-{red_industry_2_veto_tag}">{red_industry_2_veto}</span></td>
+            <td class="text-red">{red_industry_2_sri_contribution_value}</td>
+            <td>{red_industry_2_data_source}</td>
+          </tr>
+          <tr>
+            <td>{red_industry_3_name}</td>
+            <td><span class="tag tag-red">{red_industry_3_risk_score}</span></td>
+            <td>{red_industry_3_track_a_rating}</td>
+            <td><span class="tag tag-red">{red_industry_3_outlook}</span></td>
+            <td><span class="tag tag-red">{red_industry_3_track_b}</span></td>
+            <td><span class="tag tag-{red_industry_3_veto_tag}">{red_industry_3_veto}</span></td>
+            <td class="text-red">{red_industry_3_sri_contribution_value}</td>
+            <td>{red_industry_3_data_source}</td>
+          </tr>
+          <tr>
+            <td>{red_industry_4_name}</td>
+            <td><span class="tag tag-red">{red_industry_4_risk_score}</span></td>
+            <td>{red_industry_4_track_a_rating}</td>
+            <td><span class="tag tag-red">{red_industry_4_outlook}</span></td>
+            <td><span class="tag tag-red">{red_industry_4_track_b}</span></td>
+            <td><span class="tag tag-{red_industry_4_veto_tag}">{red_industry_4_veto}</span></td>
+            <td class="text-red">{red_industry_4_sri_contribution_value}</td>
+            <td>{red_industry_4_data_source}</td>
+          </tr>
+          <tr>
+            <td>{red_industry_5_name}</td>
+            <td><span class="tag tag-red">{red_industry_5_risk_score}</span></td>
+            <td>{red_industry_5_track_a_rating}</td>
+            <td><span class="tag tag-red">{red_industry_5_outlook}</span></td>
+            <td><span class="tag tag-red">{red_industry_5_track_b}</span></td>
+            <td><span class="tag tag-{red_industry_5_veto_tag}">{red_industry_5_veto}</span></td>
+            <td class="text-red">{red_industry_5_sri_contribution_value}</td>
+            <td>{red_industry_5_data_source}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box info-red" style="margin-top:10px;">
+        <strong>Red Industry Overview:</strong>{red_industry_overview}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 3 — Top 5 Contagion Risks -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--purple);"></span>
+      3. Top 5 Contagion Risks
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Based on the contagion matrix (contagion-matrix.md) strength data, identifies the highest-risk contagion chains under the current environment.
+      Ranking basis: Contagion Strength &times; Source Industry Risk Score &times; Target Industry Vulnerability. Strength data references inter-industry correlation scores (Level 1-5) from the contagion matrix.
+    </p>
+
+    <div class="contagion-chain-card">
+      <span class="chain-tag">Contagion Chain #1 · Contagion Strength: {contagion_chain_1_strength}/5</span>
+      <h4>{contagion_chain_1_name}</h4>
+      <p class="chain-desc">
+        <strong>Path:</strong>{contagion_chain_1_path}<br>
+        <strong>Contagion Type:</strong>{contagion_chain_1_type}<br>
+        <strong>Contagion Matrix Reference:</strong>{contagion_chain_1_matrix_reference}<br>
+        <strong>Source Industry Risk Score:</strong>{contagion_chain_1_source_score}<br>
+        <strong>Target Industry Vulnerability:</strong>{contagion_chain_1_target_vulnerability}<br>
+        <strong>Escalation Factor Trigger Status:</strong>{contagion_chain_1_escalation_factor_status}<br>
+        <strong>Potential Impact Magnitude:</strong>{contagion_chain_1_impact_magnitude}
+      </p>
+      <div class="warning-tier" style="margin-top:8px;">
+        <span class="warn-badge red">Strength {contagion_chain_1_strength}/5</span>
+        <span class="warn-badge amber">Source Risk {contagion_chain_1_source_level}</span>
+        <span class="warn-badge amber">Target Vulnerability {contagion_chain_1_target_level}</span>
+        <span class="warn-badge red">Composite Rating: {contagion_chain_1_composite_rating}</span>
+      </div>
+    </div>
+
+    <div class="contagion-chain-card">
+      <span class="chain-tag">Contagion Chain #2 · Contagion Strength: {contagion_chain_2_strength}/5</span>
+      <h4>{contagion_chain_2_name}</h4>
+      <p class="chain-desc">
+        <strong>Path:</strong>{contagion_chain_2_path}<br>
+        <strong>Contagion Type:</strong>{contagion_chain_2_type}<br>
+        <strong>Contagion Matrix Reference:</strong>{contagion_chain_2_matrix_reference}<br>
+        <strong>Source Industry Risk Score:</strong>{contagion_chain_2_source_score}<br>
+        <strong>Target Industry Vulnerability:</strong>{contagion_chain_2_target_vulnerability}<br>
+        <strong>Escalation Factor Trigger Status:</strong>{contagion_chain_2_escalation_factor_status}<br>
+        <strong>Potential Impact Magnitude:</strong>{contagion_chain_2_impact_magnitude}
+      </p>
+      <div class="warning-tier" style="margin-top:8px;">
+        <span class="warn-badge red">Strength {contagion_chain_2_strength}/5</span>
+        <span class="warn-badge amber">Source Risk {contagion_chain_2_source_level}</span>
+        <span class="warn-badge amber">Target Vulnerability {contagion_chain_2_target_level}</span>
+        <span class="warn-badge red">Composite Rating: {contagion_chain_2_composite_rating}</span>
+      </div>
+    </div>
+
+    <div class="contagion-chain-card">
+      <span class="chain-tag">Contagion Chain #3 · Contagion Strength: {contagion_chain_3_strength}/5</span>
+      <h4>{contagion_chain_3_name}</h4>
+      <p class="chain-desc">
+        <strong>Path:</strong>{contagion_chain_3_path}<br>
+        <strong>Contagion Type:</strong>{contagion_chain_3_type}<br>
+        <strong>Contagion Matrix Reference:</strong>{contagion_chain_3_matrix_reference}<br>
+        <strong>Source Industry Risk Score:</strong>{contagion_chain_3_source_score}<br>
+        <strong>Target Industry Vulnerability:</strong>{contagion_chain_3_target_vulnerability}<br>
+        <strong>Escalation Factor Trigger Status:</strong>{contagion_chain_3_escalation_factor_status}<br>
+        <strong>Potential Impact Magnitude:</strong>{contagion_chain_3_impact_magnitude}
+      </p>
+      <div class="warning-tier" style="margin-top:8px;">
+        <span class="warn-badge red">Strength {contagion_chain_3_strength}/5</span>
+        <span class="warn-badge amber">Source Risk {contagion_chain_3_source_level}</span>
+        <span class="warn-badge amber">Target Vulnerability {contagion_chain_3_target_level}</span>
+        <span class="warn-badge red">Composite Rating: {contagion_chain_3_composite_rating}</span>
+      </div>
+    </div>
+
+    <div class="contagion-chain-card">
+      <span class="chain-tag">Contagion Chain #4 · Contagion Strength: {contagion_chain_4_strength}/5</span>
+      <h4>{contagion_chain_4_name}</h4>
+      <p class="chain-desc">
+        <strong>Path:</strong>{contagion_chain_4_path}<br>
+        <strong>Contagion Type:</strong>{contagion_chain_4_type}<br>
+        <strong>Contagion Matrix Reference:</strong>{contagion_chain_4_matrix_reference}<br>
+        <strong>Source Industry Risk Score:</strong>{contagion_chain_4_source_score}<br>
+        <strong>Target Industry Vulnerability:</strong>{contagion_chain_4_target_vulnerability}<br>
+        <strong>Escalation Factor Trigger Status:</strong>{contagion_chain_4_escalation_factor_status}<br>
+        <strong>Potential Impact Magnitude:</strong>{contagion_chain_4_impact_magnitude}
+      </p>
+      <div class="warning-tier" style="margin-top:8px;">
+        <span class="warn-badge red">Strength {contagion_chain_4_strength}/5</span>
+        <span class="warn-badge amber">Source Risk {contagion_chain_4_source_level}</span>
+        <span class="warn-badge amber">Target Vulnerability {contagion_chain_4_target_level}</span>
+        <span class="warn-badge red">Composite Rating: {contagion_chain_4_composite_rating}</span>
+      </div>
+    </div>
+
+    <div class="contagion-chain-card">
+      <span class="chain-tag">Contagion Chain #5 · Contagion Strength: {contagion_chain_5_strength}/5</span>
+      <h4>{contagion_chain_5_name}</h4>
+      <p class="chain-desc">
+        <strong>Path:</strong>{contagion_chain_5_path}<br>
+        <strong>Contagion Type:</strong>{contagion_chain_5_type}<br>
+        <strong>Contagion Matrix Reference:</strong>{contagion_chain_5_matrix_reference}<br>
+        <strong>Source Industry Risk Score:</strong>{contagion_chain_5_source_score}<br>
+        <strong>Target Industry Vulnerability:</strong>{contagion_chain_5_target_vulnerability}<br>
+        <strong>Escalation Factor Trigger Status:</strong>{contagion_chain_5_escalation_factor_status}<br>
+        <strong>Potential Impact Magnitude:</strong>{contagion_chain_5_impact_magnitude}
+      </p>
+      <div class="warning-tier" style="margin-top:8px;">
+        <span class="warn-badge red">Strength {contagion_chain_5_strength}/5</span>
+        <span class="warn-badge amber">Source Risk {contagion_chain_5_source_level}</span>
+        <span class="warn-badge amber">Target Vulnerability {contagion_chain_5_target_level}</span>
+        <span class="warn-badge red">Composite Rating: {contagion_chain_5_composite_rating}</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Contagion Risk Summary</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Contagion Chain</th>
+            <th>Contagion Strength</th>
+            <th>Contagion Type</th>
+            <th>Composite Alert</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>{contagion_chain_1_name}</td>
+            <td><span class="tag tag-red">{contagion_chain_1_strength}/5</span></td>
+            <td>{contagion_chain_1_type}</td>
+            <td><span class="tag tag-red">{contagion_chain_1_composite_rating}</span></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>{contagion_chain_2_name}</td>
+            <td><span class="tag tag-red">{contagion_chain_2_strength}/5</span></td>
+            <td>{contagion_chain_2_type}</td>
+            <td><span class="tag tag-red">{contagion_chain_2_composite_rating}</span></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>{contagion_chain_3_name}</td>
+            <td><span class="tag tag-amber">{contagion_chain_3_strength}/5</span></td>
+            <td>{contagion_chain_3_type}</td>
+            <td><span class="tag tag-amber">{contagion_chain_3_composite_rating}</span></td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>{contagion_chain_4_name}</td>
+            <td><span class="tag tag-amber">{contagion_chain_4_strength}/5</span></td>
+            <td>{contagion_chain_4_type}</td>
+            <td><span class="tag tag-amber">{contagion_chain_4_composite_rating}</span></td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>{contagion_chain_5_name}</td>
+            <td><span class="tag tag-amber">{contagion_chain_5_strength}/5</span></td>
+            <td>{contagion_chain_5_type}</td>
+            <td><span class="tag tag-amber">{contagion_chain_5_composite_rating}</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box info-purple" style="margin-top:10px;">
+        <strong>Contagion Risk Overview:</strong>{contagion_risk_overview}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 4 — Concentration Warning -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--amber);"></span>
+      4. Concentration Warning
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Identifies which concentration risk dimensions are most threatening under the current systemic risk environment.
+      Cross-analysis of industry concentration, regional concentration, rating concentration, maturity concentration, and funding channel concentration,
+      highlighting high-concentration exposures requiring immediate attention.
+    </p>
+
+    <div class="concentration-warn-card">
+      <span class="cw-tag">Concentration Risk #1 · Priority P0</span>
+      <h4>{concentration_risk_1_name}</h4>
+      <p class="cw-desc">
+        <strong>Concentration Dimension:</strong>{concentration_risk_1_dimension}<br>
+        <strong>Current Exposure Level:</strong>{concentration_risk_1_exposure}<br>
+        <strong>Threshold Position:</strong>{concentration_risk_1_threshold}<br>
+        <strong>Correlation with SRI:</strong>{concentration_risk_1_sri_correlation}<br>
+        <strong>Contagion Amplification Effect:</strong>{concentration_risk_1_contagion_amplification}<br>
+        <strong>Recommended Monitoring Metrics:</strong>{concentration_risk_1_monitoring_metrics}
+      </p>
+      <div class="warning-tier" style="margin-top:8px;">
+        <span class="warn-badge red">Impact Magnitude: {concentration_risk_1_magnitude}</span>
+        <span class="warn-badge amber">Trigger Probability: {concentration_risk_1_probability}</span>
+        <span class="warn-badge red">Priority P0</span>
+      </div>
+    </div>
+
+    <div class="concentration-warn-card">
+      <span class="cw-tag">Concentration Risk #2 · Priority P1</span>
+      <h4>{concentration_risk_2_name}</h4>
+      <p class="cw-desc">
+        <strong>Concentration Dimension:</strong>{concentration_risk_2_dimension}<br>
+        <strong>Current Exposure Level:</strong>{concentration_risk_2_exposure}<br>
+        <strong>Threshold Position:</strong>{concentration_risk_2_threshold}<br>
+        <strong>Correlation with SRI:</strong>{concentration_risk_2_sri_correlation}<br>
+        <strong>Contagion Amplification Effect:</strong>{concentration_risk_2_contagion_amplification}<br>
+        <strong>Recommended Monitoring Metrics:</strong>{concentration_risk_2_monitoring_metrics}
+      </p>
+      <div class="warning-tier" style="margin-top:8px;">
+        <span class="warn-badge amber">Impact Magnitude: {concentration_risk_2_magnitude}</span>
+        <span class="warn-badge amber">Trigger Probability: {concentration_risk_2_probability}</span>
+        <span class="warn-badge amber">Priority P1</span>
+      </div>
+    </div>
+
+    <div class="concentration-warn-card">
+      <span class="cw-tag">Concentration Risk #3 · Priority P1</span>
+      <h4>{concentration_risk_3_name}</h4>
+      <p class="cw-desc">
+        <strong>Concentration Dimension:</strong>{concentration_risk_3_dimension}<br>
+        <strong>Current Exposure Level:</strong>{concentration_risk_3_exposure}<br>
+        <strong>Threshold Position:</strong>{concentration_risk_3_threshold}<br>
+        <strong>Correlation with SRI:</strong>{concentration_risk_3_sri_correlation}<br>
+        <strong>Contagion Amplification Effect:</strong>{concentration_risk_3_contagion_amplification}<br>
+        <strong>Recommended Monitoring Metrics:</strong>{concentration_risk_3_monitoring_metrics}
+      </p>
+      <div class="warning-tier" style="margin-top:8px;">
+        <span class="warn-badge amber">Impact Magnitude: {concentration_risk_3_magnitude}</span>
+        <span class="warn-badge green">Trigger Probability: {concentration_risk_3_probability}</span>
+        <span class="warn-badge amber">Priority P1</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Five-Dimension Concentration Risk Matrix</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Concentration Dimension</th>
+            <th>Current Risk Level</th>
+            <th>SRI Correlation Strength</th>
+            <th>Contagion Amplification Risk</th>
+            <th>Recommended Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Industry Concentration</td>
+            <td><span class="tag tag-red">{industry_concentration_risk_level}</span></td>
+            <td><span class="tag tag-red">{industry_concentration_sri_linkage}</span></td>
+            <td><span class="tag tag-red">{industry_concentration_contagion_amplification}</span></td>
+            <td>{industry_concentration_action}</td>
+          </tr>
+          <tr>
+            <td>Regional Concentration</td>
+            <td><span class="tag tag-amber">{regional_concentration_risk_level}</span></td>
+            <td><span class="tag tag-amber">{regional_concentration_sri_linkage}</span></td>
+            <td><span class="tag tag-amber">{regional_concentration_contagion_amplification}</span></td>
+            <td>{regional_concentration_action}</td>
+          </tr>
+          <tr>
+            <td>Rating Concentration</td>
+            <td><span class="tag tag-{rating_concentration_tag_color}">{rating_concentration_risk_level}</span></td>
+            <td><span class="tag tag-{rating_concentration_sri_tag}">{rating_concentration_sri_linkage}</span></td>
+            <td><span class="tag tag-{rating_concentration_contagion_tag}">{rating_concentration_contagion_amplification}</span></td>
+            <td>{rating_concentration_action}</td>
+          </tr>
+          <tr>
+            <td>Maturity Concentration</td>
+            <td><span class="tag tag-{maturity_concentration_tag_color}">{maturity_concentration_risk_level}</span></td>
+            <td><span class="tag tag-{maturity_concentration_sri_tag}">{maturity_concentration_sri_linkage}</span></td>
+            <td><span class="tag tag-{maturity_concentration_contagion_tag}">{maturity_concentration_contagion_amplification}</span></td>
+            <td>{maturity_concentration_action}</td>
+          </tr>
+          <tr>
+            <td>Funding Channel Concentration</td>
+            <td><span class="tag tag-{funding_channel_tag_color}">{funding_channel_risk_level}</span></td>
+            <td><span class="tag tag-{funding_channel_sri_tag}">{funding_channel_sri_linkage}</span></td>
+            <td><span class="tag tag-{funding_channel_contagion_tag}">{funding_channel_contagion_amplification}</span></td>
+            <td>{funding_channel_action}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box info-amber" style="margin-top:10px;">
+        <strong>Concentration Overview:</strong>{concentration_overview}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 5 — Quarter-over-Quarter Comparison -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--amber);"></span>
+      5. Quarter-over-Quarter Comparison
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Comparison of SRI trends between the current quarter and the previous quarter, newly added red industries, and industries that have exited the red zone.
+      Trend analysis is a key basis for judging the direction of systemic risk -- two consecutive periods of rising indicate accelerating risk accumulation.
+    </p>
+
+    <div class="trend-card">
+      <h4>SRI Trend</h4>
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.7;">
+        <strong>Current Quarter SRI:</strong><span class="text-red">{current_sri_reading}</span><br>
+        <strong>Previous Quarter SRI:</strong>{prev_quarter_sri}<br>
+        <strong>Direction of Change:</strong><span class="text-red">{trend_arrow} {sri_change}</span><br>
+        <strong>Percentage Change:</strong>{sri_change_pct}%<br>
+        <strong>Trend Assessment:</strong>{trend_assessment_desc}<br>
+        <strong>Key Drivers:</strong>{trend_drivers_desc}
+      </p>
+      <div class="threshold-vis">
+        <span style="font-size:11px;color:var(--text-tertiary);min-width:40px;">SRI Trajectory:</span>
+        <div class="threshold-track">
+          <div class="threshold-label" style="left:0%;">Prev Quarter</div>
+          <div class="threshold-label" style="left:100%;">Current Quarter</div>
+          <div class="threshold-marker" style="left:{prev_quarter_sri_position}%;background:var(--{prev_quarter_color});"></div>
+          <div class="threshold-marker" style="left:{current_quarter_sri_position}%;background:var(--{current_quarter_color});"></div>
+          <div class="threshold-current" style="left:{current_quarter_sri_position}%;background:var(--{current_quarter_color});"></div>
+        </div>
+        <span style="font-size:11px;font-weight:700;color:var(--text-secondary);min-width:60px;">SRI: {current_sri_reading}</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Newly Red Industries (Industries entering risk score &ge; 2.0 this quarter)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Industry</th>
+            <th>Current Quarter Risk Score</th>
+            <th>Previous Quarter Risk Score</th>
+            <th>Change</th>
+            <th>Cause of Turning Red</th>
+            <th>Impact Assessment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{new_red_industry_1_name}</td>
+            <td><span class="tag tag-red">{new_1_current_quarter_score}</span></td>
+            <td>{new_1_prev_quarter_score}</td>
+            <td class="text-red">+{new_1_change_value}</td>
+            <td>{new_1_cause_of_turning_red}</td>
+            <td><span class="tag tag-red">{new_1_impact_assessment}</span></td>
+          </tr>
+          <tr>
+            <td>{new_red_industry_2_name}</td>
+            <td><span class="tag tag-red">{new_2_current_quarter_score}</span></td>
+            <td>{new_2_prev_quarter_score}</td>
+            <td class="text-red">+{new_2_change_value}</td>
+            <td>{new_2_cause_of_turning_red}</td>
+            <td><span class="tag tag-red">{new_2_impact_assessment}</span></td>
+          </tr>
+          <tr>
+            <td>{new_red_industry_3_name}</td>
+            <td><span class="tag tag-red">{new_3_current_quarter_score}</span></td>
+            <td>{new_3_prev_quarter_score}</td>
+            <td class="text-red">+{new_3_change_value}</td>
+            <td>{new_3_cause_of_turning_red}</td>
+            <td><span class="tag tag-amber">{new_3_impact_assessment}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Industries No Longer Red (Industries with risk score falling below 2.0 this quarter)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Industry</th>
+            <th>Current Quarter Risk Score</th>
+            <th>Previous Quarter Risk Score</th>
+            <th>Change</th>
+            <th>Reason for Exit</th>
+            <th>Persistence Assessment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{exited_red_industry_1_name}</td>
+            <td><span class="tag tag-green">{exited_1_current_score}</span></td>
+            <td>{exited_1_prev_score}</td>
+            <td class="text-green">-{exited_1_change}</td>
+            <td>{exited_1_reason}</td>
+            <td><span class="tag tag-{exited_1_persistence_tag}">{exited_1_persistence_assessment}</span></td>
+          </tr>
+          <tr>
+            <td>{exited_red_industry_2_name}</td>
+            <td><span class="tag tag-green">{exited_2_current_score}</span></td>
+            <td>{exited_2_prev_score}</td>
+            <td class="text-green">-{exited_2_change}</td>
+            <td>{exited_2_reason}</td>
+            <td><span class="tag tag-{exited_2_persistence_tag}">{exited_2_persistence_assessment}</span></td>
+          </tr>
+          <tr>
+            <td>{exited_red_industry_3_name}</td>
+            <td><span class="tag tag-green">{exited_3_current_score}</span></td>
+            <td>{exited_3_prev_score}</td>
+            <td class="text-green">-{exited_3_change}</td>
+            <td>{exited_3_reason}</td>
+            <td><span class="tag tag-{exited_3_persistence_tag}">{exited_3_persistence_assessment}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Quarter-over-Quarter SRI Contribution Changes</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Industry</th>
+            <th>Current Quarter Contribution</th>
+            <th>Previous Quarter Contribution</th>
+            <th>Contribution Change</th>
+            <th>Reason for Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{contribution_change_industry_1}</td>
+            <td class="text-red">{contribution_change_1_current}</td>
+            <td>{contribution_change_1_prev}</td>
+            <td class="text-red">{contribution_change_1_change}</td>
+            <td>{contribution_change_1_reason}</td>
+          </tr>
+          <tr>
+            <td>{contribution_change_industry_2}</td>
+            <td class="text-red">{contribution_change_2_current}</td>
+            <td>{contribution_change_2_prev}</td>
+            <td class="text-amber">{contribution_change_2_change}</td>
+            <td>{contribution_change_2_reason}</td>
+          </tr>
+          <tr>
+            <td>{contribution_change_industry_3}</td>
+            <td class="text-green">{contribution_change_3_current}</td>
+            <td>{contribution_change_3_prev}</td>
+            <td class="text-green">{contribution_change_3_change}</td>
+            <td>{contribution_change_3_reason}</td>
+          </tr>
+          <tr>
+            <td>{contribution_change_industry_4}</td>
+            <td class="text-amber">{contribution_change_4_current}</td>
+            <td>{contribution_change_4_prev}</td>
+            <td class="text-amber">{contribution_change_4_change}</td>
+            <td>{contribution_change_4_reason}</td>
+          </tr>
+          <tr>
+            <td>{contribution_change_industry_5}</td>
+            <td class="text-green">{contribution_change_5_current}</td>
+            <td>{contribution_change_5_prev}</td>
+            <td class="text-green">{contribution_change_5_change}</td>
+            <td>{contribution_change_5_reason}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box info-amber" style="margin-top:10px;">
+        <strong>Quarterly Comparison Summary:</strong>{quarterly_comparison_summary}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 6 — Action Recommendations -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--blue);"></span>
+      6. Action Recommendations
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      This document does not provide "what to buy" investment advice, but rather proposes from a risk control perspective: which concentrations need to be reduced, which industries require increased monitoring frequency, which contagion chains need focused attention, and the portfolio defense strategy under the current thermometer level.
+      All recommendations are based on the current SRI reading of {current_sri_reading} ({thermometer_level}) and the distribution of red industries.
+    </p>
+
+    <div class="action-grid">
+      <div class="action-grid-item">
+        <span class="priority-tag p0">P0</span>
+        <h5>{action_1_title}</h5>
+        <p class="ag-desc">
+          {action_1_detail}
+        </p>
+      </div>
+      <div class="action-grid-item">
+        <span class="priority-tag p0">P0</span>
+        <h5>{action_2_title}</h5>
+        <p class="ag-desc">
+          {action_2_detail}
+        </p>
+      </div>
+      <div class="action-grid-item">
+        <span class="priority-tag p1">P1</span>
+        <h5>{action_3_title}</h5>
+        <p class="ag-desc">
+          {action_3_detail}
+        </p>
+      </div>
+      <div class="action-grid-item">
+        <span class="priority-tag p1">P1</span>
+        <h5>{action_4_title}</h5>
+        <p class="ag-desc">
+          {action_4_detail}
+        </p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Action Recommendation Summary</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Priority</th>
+            <th>Action Category</th>
+            <th>Specific Action</th>
+            <th>Target</th>
+            <th>Timeline</th>
+            <th>Expected Effect</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="priority-tag p0">P0</span></td>
+            <td>{action_1_category}</td>
+            <td>{action_1_specific}</td>
+            <td>{action_1_target}</td>
+            <td>{action_1_timeline}</td>
+            <td>{action_1_effect}</td>
+          </tr>
+          <tr>
+            <td><span class="priority-tag p0">P0</span></td>
+            <td>{action_2_category}</td>
+            <td>{action_2_specific}</td>
+            <td>{action_2_target}</td>
+            <td>{action_2_timeline}</td>
+            <td>{action_2_effect}</td>
+          </tr>
+          <tr>
+            <td><span class="priority-tag p1">P1</span></td>
+            <td>{action_3_category}</td>
+            <td>{action_3_specific}</td>
+            <td>{action_3_target}</td>
+            <td>{action_3_timeline}</td>
+            <td>{action_3_effect}</td>
+          </tr>
+          <tr>
+            <td><span class="priority-tag p1">P1</span></td>
+            <td>{action_4_category}</td>
+            <td>{action_4_specific}</td>
+            <td>{action_4_target}</td>
+            <td>{action_4_timeline}</td>
+            <td>{action_4_effect}</td>
+          </tr>
+          <tr>
+            <td><span class="priority-tag p2">P2</span></td>
+            <td>{action_5_category}</td>
+            <td>{action_5_specific}</td>
+            <td>{action_5_target}</td>
+            <td>{action_5_timeline}</td>
+            <td>{action_5_effect}</td>
+          </tr>
+          <tr>
+            <td><span class="priority-tag p2">P2</span></td>
+            <td>{action_6_category}</td>
+            <td>{action_6_specific}</td>
+            <td>{action_6_target}</td>
+            <td>{action_6_timeline}</td>
+            <td>{action_6_effect}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Thermometer Upgrade Contingency</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Upgrade Path</th>
+            <th>Trigger Condition</th>
+            <th>Probability Assessment</th>
+            <th>Preparatory Actions Required</th>
+            <th>Preparation Timeline</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{thermometer_level} &rarr; 🟠 Caution</td>
+            <td>{caution_upgrade_trigger}</td>
+            <td><span class="tag tag-{caution_upgrade_probability_tag}">{caution_upgrade_probability}</span></td>
+            <td>{caution_upgrade_preparation}</td>
+            <td>{caution_upgrade_timeline}</td>
+          </tr>
+          <tr>
+            <td>🟡 Watch &rarr; 🔴 Danger</td>
+            <td>{danger_upgrade_trigger}</td>
+            <td><span class="tag tag-{danger_upgrade_probability_tag}">{danger_upgrade_probability}</span></td>
+            <td>{danger_upgrade_preparation}</td>
+            <td>{danger_upgrade_timeline}</td>
+          </tr>
+          <tr>
+            <td>🟡 Watch &rarr; 🟢 Normal</td>
+            <td>{downgrade_trigger}</td>
+            <td><span class="tag tag-{downgrade_probability_tag}">{downgrade_probability}</span></td>
+            <td>{downgrade_preparation}</td>
+            <td>{downgrade_timeline}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box info-blue" style="margin-top:10px;">
+        <strong>Core Principles for Action Recommendations:</strong>{action_core_principles}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 7 — Thermometer and Contagion Matrix Escalation Factor Linkage -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--purple);"></span>
+      7. Thermometer and Contagion Matrix Escalation Factor Linkage
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Linkage analysis between thermometer levels and contagion matrix escalation factors (panic sentiment, regulatory policy vacuum, high leverage environment, information asymmetry, timing effect).
+      When the thermometer enters 🟠 or 🔴, systemic risk itself acts as a global escalation factor, increasing all contagion matrix link strengths by +1 to +2.
+    </p>
+
+    <div class="card">
+      <h3>Escalation Factor Activation Status</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Escalation Factor</th>
+            <th>Current Status</th>
+            <th>Activation Level</th>
+            <th>SRI Linkage Effect</th>
+            <th>Contagion Matrix Impact</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Market Panic Sentiment</td>
+            <td>{panic_sentiment_status}</td>
+            <td><span class="tag tag-{panic_level_tag}">{panic_level}</span></td>
+            <td>{panic_sri_linkage}</td>
+            <td>{panic_contagion_impact}</td>
+          </tr>
+          <tr>
+            <td>Regulatory Policy Vacuum or Lag</td>
+            <td>{policy_status}</td>
+            <td><span class="tag tag-{policy_level_tag}">{policy_level}</span></td>
+            <td>{policy_sri_linkage}</td>
+            <td>{policy_contagion_impact}</td>
+          </tr>
+          <tr>
+            <td>High Leverage Environment</td>
+            <td>{leverage_status}</td>
+            <td><span class="tag tag-{leverage_level_tag}">{leverage_level}</span></td>
+            <td>{leverage_sri_linkage}</td>
+            <td>{leverage_contagion_impact}</td>
+          </tr>
+          <tr>
+            <td>Information Asymmetry</td>
+            <td>{information_asymmetry_status}</td>
+            <td><span class="tag tag-{information_asymmetry_level_tag}">{information_asymmetry_level}</span></td>
+            <td>{information_asymmetry_sri_linkage}</td>
+            <td>{information_asymmetry_contagion_impact}</td>
+          </tr>
+          <tr>
+            <td>Timing Effect</td>
+            <td>{timing_status}</td>
+            <td><span class="tag tag-{timing_level_tag}">{timing_level}</span></td>
+            <td>{timing_sri_linkage}</td>
+            <td>{timing_contagion_impact}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box info-purple" style="margin-top:10px;">
+        <strong>Escalation Factor Synergy Assessment:</strong>{escalation_synergy_assessment}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 8 — Historical Comparable Scenarios -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--green);"></span>
+      8. Historical Comparable Scenarios
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Comparing the current SRI reading with key historical points to assess where the current systemic risk sits on the historical spectrum.
+      References historical backtest data from the systemic warning framework (systemic-warning-framework.md).
+    </p>
+
+    <div class="card">
+      <h3>SRI Historical Comparison Table</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Historical Scenario</th>
+            <th>Time Window</th>
+            <th>SRI Estimate</th>
+            <th>Thermometer</th>
+            <th>Comparison to Current</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Before Yongmei Default</td>
+            <td>August 2020</td>
+            <td class="text-amber">0.58</td>
+            <td><span class="tag tag-amber">🟡 Watch</span></td>
+            <td>{comparison_yongmei}</td>
+          </tr>
+          <tr>
+            <td>Before Property Crisis</td>
+            <td>March 2021</td>
+            <td class="text-amber">0.97</td>
+            <td><span class="tag tag-amber">🟡 Watch (Upper Edge)</span></td>
+            <td>{comparison_realestate}</td>
+          </tr>
+          <tr>
+            <td>COVID-19 Impact</td>
+            <td>February 2020</td>
+            <td class="text-red">1.83</td>
+            <td><span class="tag tag-red">🔴 Danger</span></td>
+            <td>{comparison_covid}</td>
+          </tr>
+          <tr>
+            <td><strong>Current Period</strong></td>
+            <td><strong>{current_time}</strong></td>
+            <td class="text-red"><strong>{current_sri_reading}</strong></td>
+            <td><span class="tag tag-{current_temp_tag}"><strong>{thermometer_level}</strong></span></td>
+            <td><strong>{current_self_assessment}</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Historical Lessons</h3>
+      <div class="comparison-grid">
+        <div class="comparison-item" style="border-left:3px solid var(--amber);">
+          <h5>Lessons from Yongmei Default</h5>
+          <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
+            <strong>SRI Leading Indicator:</strong> 3 months before Yongmei's default, the SRI had already entered the 🟡 Watch range (0.58), close to the current reading.<br>
+            <strong>Key Difference:</strong> At that time, risk was concentrated in coal/cyclical industries; currently it is concentrated in LGFV bonds + photovoltaic + new energy vehicles.<br>
+            <strong>Current Takeaway:</strong>{yongmei_lesson}
+          </p>
+        </div>
+        <div class="comparison-item" style="border-left:3px solid var(--red);">
+          <h5>Lessons from the Property Crisis</h5>
+          <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
+            <strong>SRI Leading Indicator:</strong> 6 months before the property crisis erupted, the SRI was 0.97, close to the 🟠 Caution threshold.<br>
+            <strong>Key Difference:</strong> At that time, a super-spreader signal (real estate through LGFV indirect channels) had appeared; currently the super-spreader is still stable.<br>
+            <strong>Current Takeaway:</strong>{realestate_lesson}
+          </p>
+        </div>
+      </div>
+      <div class="info-box info-green" style="margin-top:10px;">
+        <strong>Core Conclusion from Historical Comparison:</strong>{historical_comparison_conclusion}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 9 — Completeness Report -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--green);"></span>
+      9. Completeness Report
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Completeness check for this report -- covering various dimensions of systemic risk alerting, data sources, methodological limitations, and subsequent update plans.
+    </p>
+
+    <div class="card">
+      <h3>9.1 Coverage Dimension Check</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Analysis Dimension</th>
+            <th>Coverage Status</th>
+            <th>Data Source</th>
+            <th>Confidence</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>SRI Index Calculation</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{sri_data_source}</td>
+            <td><span class="text-green">High</span></td>
+            <td>{sri_note}</td>
+          </tr>
+          <tr>
+            <td>Thermometer Visualization</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{thermometer_data_source}</td>
+            <td><span class="text-green">High</span></td>
+            <td>{thermometer_note}</td>
+          </tr>
+          <tr>
+            <td>Red Industry List</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{red_industry_data_source}</td>
+            <td><span class="text-green">High</span></td>
+            <td>{red_industry_note}</td>
+          </tr>
+          <tr>
+            <td>Top 5 Contagion Risks</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{contagion_risk_data_source}</td>
+            <td><span class="text-amber">Medium-High</span></td>
+            <td>{contagion_risk_note}</td>
+          </tr>
+          <tr>
+            <td>Concentration Warning</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{concentration_data_source}</td>
+            <td><span class="text-amber">Medium-High</span></td>
+            <td>{concentration_note}</td>
+          </tr>
+          <tr>
+            <td>Quarter-over-Quarter Comparison</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{quarterly_comparison_data_source}</td>
+            <td><span class="text-green">High</span></td>
+            <td>{quarterly_comparison_note}</td>
+          </tr>
+          <tr>
+            <td>Action Recommendations</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{action_recommendation_data_source}</td>
+            <td><span class="text-amber">Medium</span></td>
+            <td>{action_recommendation_note}</td>
+          </tr>
+          <tr>
+            <td>Escalation Factor Linkage</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{escalation_factor_data_source}</td>
+            <td><span class="text-amber">Medium-High</span></td>
+            <td>{escalation_factor_note}</td>
+          </tr>
+          <tr>
+            <td>Historical Comparable Scenarios</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{historical_data_source}</td>
+            <td><span class="text-green">High</span></td>
+            <td>{historical_note}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>9.2 Data Quality and Limitations</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Data Category</th>
+            <th>Data Quality</th>
+            <th>Completeness</th>
+            <th>Timeliness</th>
+            <th>Limitation Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Track-A Industry Rating</td>
+            <td><span class="tag tag-green">Good</span></td>
+            <td>95%</td>
+            <td>T+7 days</td>
+            <td>{track_a_limitation}</td>
+          </tr>
+          <tr>
+            <td>Track-B Market Signal</td>
+            <td><span class="tag tag-green">Good</span></td>
+            <td>95%</td>
+            <td>T+1 day</td>
+            <td>{track_b_limitation}</td>
+          </tr>
+          <tr>
+            <td>Contagion Matrix Strength</td>
+            <td><span class="tag tag-amber">Moderate</span></td>
+            <td>80%</td>
+            <td>T+30 days</td>
+            <td>{contagion_matrix_limitation}</td>
+          </tr>
+          <tr>
+            <td>Industry Weight Data</td>
+            <td><span class="tag tag-amber">Moderate</span></td>
+            <td>85%</td>
+            <td>T+30 days</td>
+            <td>{weight_limitation}</td>
+          </tr>
+          <tr>
+            <td>Credit Bond Outstanding Data</td>
+            <td><span class="tag tag-amber">Moderate</span></td>
+            <td>75%</td>
+            <td>T+90 days</td>
+            <td>{outstanding_data_limitation}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>9.3 Methodological Limitation Statement</h3>
+      <div class="card card-amber">
+        <h4>Limitation 1: Signal Quality Dependency</h4>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
+          The calculation quality of the SRI depends on the accuracy of the input Track-A ratings and Track-B signals. If these underlying signals themselves have biases (e.g., inflated ratings), the SRI will also be distorted. References the engine's "pseudo-high rating" identification mechanism as auxiliary verification of SRI quality.
+        </p>
+      </div>
+      <div class="card card-amber" style="margin-top:10px;">
+        <h4>Limitation 2: Lag Behind Exogenous Shocks</h4>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
+          The SRI framework is based on industry fundamental signals and cannot provide early warning for exogenous, non-credit shocks (e.g., pandemics, natural disasters, geopolitical conflicts). For known external risks (e.g., trade frictions, regulatory policy changes), these can be reflected in advance through the outlook assessment, partially mitigating the lag.
+        </p>
+      </div>
+      <div class="card card-amber" style="margin-top:10px;">
+        <h4>Limitation 3: Incomplete Industry Coverage</h4>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
+          The framework aggregates at the level of 19 GICS-based industries; intra-industry divergence (e.g., IG vs HY issuers within one sector) is averaged out. Pair SRI with single-issuer Track A analysis for issuer-level differentiation.
+        </p>
+      </div>
+      <div class="card card-amber" style="margin-top:10px;">
+        <h4>Limitation 4: Parameter Subjectivity</h4>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
+          The industry risk score thresholds (3.0/5.0/6.0), penalty factors (0.5 points), and thermometer thresholds (0.5/1.0/1.8) are all based on subjective judgment and historical calibration, not statistical optimization. Three parameter versions (pessimistic/baseline/optimistic) are available for users to choose based on risk appetite, with annual backtesting for parameter calibration.
+        </p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>9.4 Completeness Score</h3>
+      <!-- BEFORE outputting any rating in this template, confirm that all dimensions used meet the density rules in mosaic-engine.md §4. If not, output 'Insufficient information, cannot assess' instead. -->
+      <table>
+        <thead>
+          <tr>
+            <th>Assessment Dimension</th>
+            <th>Rating</th>
+            <th>Completeness Percentage</th>
+            <th>Items to Improve</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>SRI Calculation Coverage</td>
+            <td><span class="tag tag-green">{sri_rating}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{sri_pct}%;background:var(--green);">{sri_pct}%</div>
+              </div>
+            </td>
+            <td>{sri_improvement}</td>
+          </tr>
+          <tr>
+            <td>Red Industry Analysis Depth</td>
+            <td><span class="tag tag-green">{red_industry_rating}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{red_industry_pct}%;background:var(--green);">{red_industry_pct}%</div>
+              </div>
+            </td>
+            <td>{red_industry_improvement}</td>
+          </tr>
+          <tr>
+            <td>Contagion Chain Coverage</td>
+            <td><span class="tag tag-amber">{contagion_chain_rating}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{contagion_chain_pct}%;background:var(--amber);">{contagion_chain_pct}%</div>
+              </div>
+            </td>
+            <td>{contagion_chain_improvement}</td>
+          </tr>
+          <tr>
+            <td>Concentration Warning Depth</td>
+            <td><span class="tag tag-amber">{concentration_warning_rating}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{concentration_warning_pct}%;background:var(--amber);">{concentration_warning_pct}%</div>
+              </div>
+            </td>
+            <td>{concentration_warning_improvement}</td>
+          </tr>
+          <tr>
+            <td>Quarterly Comparison Precision</td>
+            <td><span class="tag tag-green">{quarterly_comparison_rating}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{quarterly_comparison_pct}%;background:var(--green);">{quarterly_comparison_pct}%</div>
+              </div>
+            </td>
+            <td>{quarterly_comparison_improvement}</td>
+          </tr>
+          <tr>
+            <td>Action Recommendation Operability</td>
+            <td><span class="tag tag-amber">{action_recommendation_rating}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{action_recommendation_pct}%;background:var(--amber);">{action_recommendation_pct}%</div>
+              </div>
+            </td>
+            <td>{action_recommendation_improvement}</td>
+          </tr>
+          <tr>
+            <td>Escalation Factor Linkage Depth</td>
+            <td><span class="tag tag-amber">{escalation_factor_rating}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{escalation_factor_pct}%;background:var(--amber);">{escalation_factor_pct}%</div>
+              </div>
+            </td>
+            <td>{escalation_factor_improvement}</td>
+          </tr>
+          <tr>
+            <td>Historical Comparison Adequacy</td>
+            <td><span class="tag tag-green">{historical_rating}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{historical_pct}%;background:var(--green);">{historical_pct}%</div>
+              </div>
+            </td>
+            <td>{historical_improvement}</td>
+          </tr>
+          <tr>
+            <td><strong>Overall Completeness</strong></td>
+            <td><span class="tag tag-amber">{overall_rating}</span></td>
+            <td>
+              <div class="completeness-bar" style="height:24px;">
+                <div class="completeness-fill" style="width:{overall_pct}%;background:var(--blue);font-size:12px;line-height:24px;">{overall_pct}%</div>
+              </div>
+            </td>
+            <td>{overall_improvement_items}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>9.5 Update Plan</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Update Content</th>
+            <th>Expected Update Time</th>
+            <th>Trigger Condition</th>
+            <th>Responsible Party</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{update_content_1}</td>
+            <td>{expected_update_time_1}</td>
+            <td>{trigger_condition_1}</td>
+            <td>{responsible_party_1}</td>
+          </tr>
+          <tr>
+            <td>{update_content_2}</td>
+            <td>{expected_update_time_2}</td>
+            <td>{trigger_condition_2}</td>
+            <td>{responsible_party_2}</td>
+          </tr>
+          <tr>
+            <td>{update_content_3}</td>
+            <td>{expected_update_time_3}</td>
+            <td>{trigger_condition_3}</td>
+            <td>{responsible_party_3}</td>
+          </tr>
+          <tr>
+            <td>{update_content_4}</td>
+            <td>{expected_update_time_4}</td>
+            <td>{trigger_condition_4}</td>
+            <td>{responsible_party_4}</td>
+          </tr>
+          <tr>
+            <td>{update_content_5}</td>
+            <td>{expected_update_time_5}</td>
+            <td>{trigger_condition_5}</td>
+            <td>{responsible_party_5}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box info-blue" style="margin-top:12px;">
+        <strong>Completeness Summary:</strong>{completeness_summary}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- DISCLAIMER -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <div class="card card-red">
+      <h3>Disclaimer</h3>
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.7;">
+        This Systemic Risk Alert Report (Type 15) is for internal risk assessment reference only. The SRI Systemic Risk Index, Thermometer Level,
+        Red Industry List, Contagion Risk Rankings, Concentration Warnings, Action Recommendations, etc. in this report are all preliminary judgments
+        based on public information and model simulations, and do not constitute any investment advice or credit decision basis. Systemic risk analysis
+        involves numerous assumptions and simplifications; actual risks may deviate significantly from the analysis results due to market environment,
+        policy changes, entity behavior, external shocks, and other factors. The SRI index cannot predict exogenous shocks (such as pandemics,
+        geopolitical conflicts, natural disasters, etc.). Before making any investment or credit decisions, a comprehensive assessment should be
+        made combining the latest market information and professional judgment.
+      </p>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<!-- ================================================================ -->
+<!-- FOOTER -->
+<!-- ================================================================ -->
+<div class="footer">
+  <p><strong>Systemic Risk Alert Report</strong> — Type 15 Template</p>
+  <p>Report No. T15-{report_number} · Version v0.0.8 · Generated on {generation_date} · For Internal Risk Assessment Only</p>
+  <p style="margin-top:6px; font-size:10px; color:var(--text-tertiary);">
+    Based on Unified Credit Assessment Framework v0.0.8 · Systemic Warning Framework v0.0.8 · All analyses are internal simulations and do not constitute investment advice
+  </p>
+</div>
+
+</body>
+</html>

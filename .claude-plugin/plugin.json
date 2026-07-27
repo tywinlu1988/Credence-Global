@@ -1,0 +1,20 @@
+{
+  "name": "credence",
+  "version": "0.0.8",
+  "description": "Credence Fixed-Income Credit Analysis Engine: industry multi-layer pyramids + dual-track cross-validation + mosaic engine + system-intelligence layer. Four-stage skills: intake router / analysis / report / qa.",
+  "author": {
+    "name": "tywinlu1988",
+    "url": "https://github.com/tywinlu1988"
+  },
+  "homepage": "https://github.com/tywinlu1988/Credence-Global",
+  "repository": "https://github.com/tywinlu1988/Credence-Global",
+  "license": "MIT",
+  "keywords": [
+    "credit-analysis",
+    "fixed-income",
+    "bond",
+    "risk",
+    "finance"
+  ],
+  "skills": "./.claude/skills/"
+}

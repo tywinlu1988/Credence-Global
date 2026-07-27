@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<!-- @template: ${CLAUDE_PLUGIN_ROOT}/templates/template-type14.html -->
+<!-- @engine-version: v0.0.8 -->
+<html lang="en">
+<!-- Sample reports: concentration-pv-heavy.html, concentration-liaoning-heavy.html, concentration-ideal.html -->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Portfolio Concentration Analysis Report Template Type 14 · Five-Dimension Concentration Assessment · Heatmap · Rating Adjustment · Diversification Path · Contagion Matrix Integration · Systemic Risk Control Intelligence Layer">
+<title>Portfolio Concentration Analysis Report · Type 14 Template</title>
+<link rel="stylesheet" href="template-base.css">
+<style>
+.hero { background: linear-gradient(135deg, #0f172a, #1e3a5f, #312e81); }
+.hero .chip { background: rgba(99,102,241,0.2); color: #818cf8; border-color: rgba(99,102,241,0.35); }
+.concentration-source-card { background:var(--bg-secondary); border-radius:var(--radius); padding:20px 24px; margin:12px 0; border:1px solid var(--border-default); border-left:4px solid var(--blue); }
+.concentration-source-card h3 { font-size:15px; font-weight:600; margin-bottom:10px; color:var(--blue); }
+.dim-card { background:var(--bg-secondary); border-radius:var(--radius); padding:18px 22px; margin:14px 0; border:1px solid var(--border-default); border-left:4px solid var(--border-default); }
+.dim-card h4 { font-size:14px; margin-bottom:8px; }
+.dim-card .dim-tag { font-size:11px; color:var(--text-tertiary); margin-bottom:6px; }
+.bar-chart { display:flex; align-items:center; gap:10px; margin:6px 0; }
+.bar-track { flex:1; height:22px; background:var(--bg-tertiary); border-radius:4px; overflow:hidden; position:relative; }
+.bar-fill { height:100%; border-radius:4px; transition:width 0.4s; display:flex; align-items:center; padding-left:10px; font-size:11px; font-weight:700; color:#fff; }
+.bar-label { min-width:80px; font-size:12px; font-weight:600; color:var(--text-secondary); }
+.bar-value { min-width:40px; font-size:12px; font-weight:700; text-align:right; }
+.concentration-map { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border-default); border-radius:8px; overflow:hidden; margin:14px 0; }
+.concentration-item { background:var(--bg-secondary); padding:14px 18px; }
+.concentration-item h5 { font-size:13px; margin-bottom:6px; }
+.risk-card { background:var(--bg-secondary); border-radius:var(--radius); padding:18px 22px; margin:14px 0; border:1px solid var(--border-default); border-left:4px solid var(--red); }
+.risk-card h4 { font-size:14px; margin-bottom:8px; color:var(--red); }
+.risk-card .risk-tag { font-size:11px; color:var(--text-tertiary); margin-bottom:6px; }
+.risk-card .risk-desc { font-size:13px; color:var(--text-secondary); line-height:1.7; }
+.path-suggest { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border-default); border-radius:8px; overflow:hidden; margin:14px 0; }
+.path-suggest-item { background:var(--bg-secondary); padding:16px 18px; }
+.path-suggest-item h5 { font-size:13px; margin-bottom:6px; }
+.path-suggest-item .p-stat { font-size:20px; font-weight:800; color:var(--blue); }
+.heat-map { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:2px; margin:12px 0; }
+.heat-item { padding:12px 8px; text-align:center; border-radius:4px; font-size:11px; }
+.rating-matrix { display:grid; grid-template-columns:repeat(auto-fill,minmax(80px,1fr)); gap:4px; margin:12px 0; }
+.rating-cell { padding:8px 6px; text-align:center; border-radius:4px; font-size:11px; font-weight:600; }
+.completeness-bar { background:var(--bg-tertiary); border-radius:4px; height:20px; overflow:hidden; margin:6px 0; }
+.completeness-fill { height:100%; border-radius:4px; text-align:center; font-size:10px; line-height:20px; font-weight:600; }
+.threshold-vis { display:flex; align-items:center; gap:6px; margin:8px 0; }
+.threshold-track { flex:1; height:8px; background:var(--bg-tertiary); border-radius:4px; position:relative; overflow:visible; }
+.threshold-marker { position:absolute; top:-6px; width:2px; height:20px; border-radius:1px; }
+.threshold-label { position:absolute; top:-22px; font-size:9px; color:var(--text-tertiary); white-space:nowrap; transform:translateX(-50%); }
+.threshold-current { position:absolute; top:-6px; width:12px; height:20px; border-radius:2px; transform:translateX(-50%); }
+.threshold-arrow { position:absolute; top:-24px; font-size:10px; font-weight:700; white-space:nowrap; transform:translateX(-50%); }
+.warning-tier { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; }
+.warn-badge { padding:4px 12px; border-radius:4px; font-size:11px; font-weight:600; }
+.warn-badge.red { background:rgba(239,68,68,0.15); color:var(--red); border:1px solid rgba(239,68,68,0.3); }
+.warn-badge.amber { background:rgba(245,158,11,0.15); color:var(--amber); border:1px solid rgba(245,158,11,0.3); }
+.warn-badge.green { background:rgba(34,197,94,0.15); color:var(--green); border:1px solid rgba(34,197,94,0.3); }
+.warn-badge.blue { background:rgba(99,102,241,0.15); color:var(--blue); border:1px solid rgba(99,102,241,0.3); }
+.warn-badge.purple { background:rgba(168,85,247,0.15); color:var(--purple); border:1px solid rgba(168,85,247,0.3); }
+.contagion-link { background:var(--bg-secondary); border-radius:var(--radius); padding:18px 22px; margin:14px 0; border:1px solid var(--border-default); border-left:4px solid var(--purple); }
+.contagion-link h4 { font-size:14px; margin-bottom:8px; color:var(--purple); }
+.comparison-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border-default); border-radius:8px; overflow:hidden; margin:14px 0; }
+.comparison-item { background:var(--bg-secondary); padding:14px 18px; }
+.comparison-item h5 { font-size:13px; margin-bottom:6px; }
+.comparison-item .c-stat { font-size:20px; font-weight:800; color:var(--red); }
+@media (max-width:768px) { .concentration-map { grid-template-columns:1fr; } .path-suggest { grid-template-columns:1fr; } .comparison-grid { grid-template-columns:1fr; } .heat-map { grid-template-columns:repeat(3,1fr); } }
+</style>
+</head>
+<body>
+
+<!-- ================================================================ -->
+<!-- HERO -- Dark Blue/Indigo Risk Control Theme Gradient -->
+<!-- ================================================================ -->
+<div class="hero">
+  <span class="chip">Portfolio Concentration Analysis Report · TYPE 14</span>
+  <h1>{portfolio_name}</h1>
+  <p class="subtitle">
+    Five-Dimension Concentration Assessment · Heatmap Analysis · Rating Adjustment Impact · Diversification Recommendation Path · Contagion Matrix Integration · Systemic Risk Control Intelligence Layer
+  </p>
+  <div class="meta">
+    <span>Analysis Date: {analysis_date}</span>
+    <span>Portfolio Size: {portfolio_size}</span>
+    <span>Industries Covered: {industry_count}</span>
+    <span>Number of Issuers: {issuer_count}</span>
+    <span>Report Version: v0.0.8 · Type 14 Concentration Analysis</span>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- CONTAINER -->
+<!-- ================================================================ -->
+<div class="container">
+
+  <!-- ================================================================ -->
+  <!-- STRIP -- 5-Column Core Metrics -->
+  <!-- ================================================================ -->
+  <div class="strip cols-5">
+    <div class="strip-item">
+      <div class="slabel">Composite Concentration Score</div>
+      <div class="sval" style="color:var(--blue);">{composite_concentration_score}/10</div>
+      <div class="ssub">1=Very Low Concentration Risk · 10=Very High Concentration Risk</div>
+    </div>
+    <div class="strip-item">
+      <div class="slabel">High-Dimension Count</div>
+      <div class="sval">{high_dimension_count}/5</div>
+      <div class="ssub">Number of Dimensions with Concentration Warning</div>
+    </div>
+    <div class="strip-item">
+      <div class="slabel">Extreme Concentration Flag</div>
+      <div class="sval" style="color:var(--red);">{extreme_concentration_flag}</div>
+      <div class="ssub">Present/Absent Extreme Concentration</div>
+    </div>
+    <div class="strip-item">
+      <div class="slabel">Adjustment Magnitude</div>
+      <div class="sval" style="color:var(--amber);">{adjustment_magnitude}</div>
+      <div class="ssub">Composite Rating Adjustment Magnitude (Notches)</div>
+    </div>
+    <div class="strip-item">
+      <div class="slabel">Confidence Level</div>
+      <div class="sval" style="color:var(--green);">{confidence_level}</div>
+      <div class="ssub">Confidence Level of Concentration Assessment Data</div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 1 -- Five-Dimension Concentration Heatmap -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--blue);"></span>
+      1. Five-Dimension Concentration Heatmap
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Evaluate portfolio concentration risk across five dimensions: Industry/Rating/Region/Maturity/Funding Channel. Green/Yellow/Orange/Red indicate increasing risk levels.
+      Bar chart proportions reflect the degree to which each dimension's actual concentration deviates from the baseline.
+    </p>
+
+    <div class="card">
+      <h3>Five-Dimension Concentration Overview</h3>
+      <div class="bar-chart">
+        <span class="bar-label">Industry Concentration</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:{industry_concentration_pct}%;background:{industry_concentration_color};">{industry_concentration_level}</div>
+        </div>
+        <span class="bar-value" style="color:{industry_concentration_color};">{industry_concentration_score}</span>
+      </div>
+      <div class="bar-chart">
+        <span class="bar-label">Rating Concentration</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:{rating_concentration_pct}%;background:{rating_concentration_color};">{rating_concentration_level}</div>
+        </div>
+        <span class="bar-value" style="color:{rating_concentration_color};">{rating_concentration_score}</span>
+      </div>
+      <div class="bar-chart">
+        <span class="bar-label">Regional Concentration</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:{regional_concentration_pct}%;background:{regional_concentration_color};">{regional_concentration_level}</div>
+        </div>
+        <span class="bar-value" style="color:{regional_concentration_color};">{regional_concentration_score}</span>
+      </div>
+      <div class="bar-chart">
+        <span class="bar-label">Maturity Concentration</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:{maturity_concentration_pct}%;background:{maturity_concentration_color};">{maturity_concentration_level}</div>
+        </div>
+        <span class="bar-value" style="color:{maturity_concentration_color};">{maturity_concentration_score}</span>
+      </div>
+      <div class="bar-chart">
+        <span class="bar-label">Funding Channel Concentration</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:{funding_channel_concentration_pct}%;background:{funding_channel_concentration_color};">{funding_channel_concentration_level}</div>
+        </div>
+        <span class="bar-value" style="color:{funding_channel_concentration_color};">{funding_channel_concentration_score}</span>
+      </div>
+      <div style="margin-top:12px; display:flex; gap:16px; justify-content:center; font-size:12px;">
+        <span><span class="signal" style="background:var(--green);"></span> Low Risk</span>
+        <span><span class="signal" style="background:var(--blue);"></span> Medium-Low Risk</span>
+        <span><span class="signal" style="background:var(--amber);"></span> Medium Risk</span>
+        <span><span class="signal" style="background:var(--red);"></span> High Risk</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Concentration Score Matrix</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Assessment Dimension</th>
+            <th>Current Value</th>
+            <th>Threshold Position</th>
+            <th>Distance to Next Tier</th>
+            <th>Rating Impact</th>
+            <th>Risk Level</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Industry Concentration</td>
+            <td>{industry_concentration_current_value}</td>
+            <td>{industry_concentration_threshold_position}</td>
+            <td>{industry_concentration_distance}</td>
+            <td>{industry_concentration_rating_impact}</td>
+            <td><span class="tag tag-{industry_concentration_tag_color}">{industry_concentration_risk_level}</span></td>
+          </tr>
+          <tr>
+            <td>Rating Concentration</td>
+            <td>{rating_concentration_current_value}</td>
+            <td>{rating_concentration_threshold_position}</td>
+            <td>{rating_concentration_distance}</td>
+            <td>{rating_concentration_rating_impact}</td>
+            <td><span class="tag tag-{rating_concentration_tag_color}">{rating_concentration_risk_level}</span></td>
+          </tr>
+          <tr>
+            <td>Regional Concentration</td>
+            <td>{regional_concentration_current_value}</td>
+            <td>{regional_concentration_threshold_position}</td>
+            <td>{regional_concentration_distance}</td>
+            <td>{regional_concentration_rating_impact}</td>
+            <td><span class="tag tag-{regional_concentration_tag_color}">{regional_concentration_risk_level}</span></td>
+          </tr>
+          <tr>
+            <td>Maturity Concentration</td>
+            <td>{maturity_concentration_current_value}</td>
+            <td>{maturity_concentration_threshold_position}</td>
+            <td>{maturity_concentration_distance}</td>
+            <td>{maturity_concentration_rating_impact}</td>
+            <td><span class="tag tag-{maturity_concentration_tag_color}">{maturity_concentration_risk_level}</span></td>
+          </tr>
+          <tr>
+            <td>Funding Channel Concentration</td>
+            <td>{funding_channel_concentration_current_value}</td>
+            <td>{funding_channel_concentration_threshold_position}</td>
+            <td>{funding_channel_concentration_distance}</td>
+            <td>{funding_channel_concentration_rating_impact}</td>
+            <td><span class="tag tag-{funding_channel_concentration_tag_color}">{funding_channel_concentration_risk_level}</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box info-blue" style="margin-top:10px;">
+        <strong>Composite Assessment:</strong>{composite_assessment_desc——Extract the highest risk dimension from the five dimensions and cross-impact analysis. When multiple dimensions warn simultaneously, the concentration adjustment magnitude must consider the superposition effect.}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 2 -- Dimension-Level Detailed Analysis -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--blue);"></span>
+      2. Dimension-Level Detailed Analysis
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Each dimension is presented in its own card showing current value, threshold position, distance to the next tier, and industry/entity distribution details.
+      Quantitative assessment is based on the industry concentration model, regional economic data, and rating migration matrix.
+    </p>
+
+    <div class="dim-card" style="border-left-color:var(--red);">
+      <h4>2.1 Industry Concentration</h4>
+      <span class="dim-tag">Shenwan Secondary Industry Classification · HHI Index Monitoring · Industry Beta Adjustment</span>
+      <div class="threshold-vis">
+        <span style="font-size:11px;color:var(--text-tertiary);min-width:40px;">Threshold: </span>
+        <div class="threshold-track">
+          <div class="threshold-label" style="left:25%;">Diversified</div>
+          <div class="threshold-label" style="left:50%;">Neutral</div>
+          <div class="threshold-label" style="left:75%;">Concentrated</div>
+          <div class="threshold-label" style="left:95%;">Extreme</div>
+          <div class="threshold-marker" style="left:25%;background:var(--green);"></div>
+          <div class="threshold-marker" style="left:50%;background:var(--blue);"></div>
+          <div class="threshold-marker" style="left:75%;background:var(--amber);"></div>
+          <div class="threshold-marker" style="left:95%;background:var(--red);"></div>
+          <div class="threshold-current" style="left:{industry_concentration_threshold_position_pct}%;background:var(--{industry_concentration_threshold_color});"></div>
+        </div>
+        <span style="font-size:11px;font-weight:700;color:var(--text-secondary);min-width:60px;">Current: {industry_concentration_current_value}</span>
+      </div>
+      <table style="margin-top:8px;">
+        <thead>
+          <tr>
+            <th>Industry</th>
+            <th>Exposure Ratio</th>
+            <th>Concentration Contribution</th>
+            <th>Industry Rating</th>
+            <th>Industry Outlook</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{industry_1_name}</td>
+            <td>{industry_1_exposure_pct}%</td>
+            <td>{industry_1_concentration_contribution}</td>
+            <td><span class="rating-badge" style="background:rgba(239,68,68,0.15);color:var(--red);">{industry_1_industry_rating}</span></td>
+            <td><span class="tag tag-{industry_1_outlook_tag}">{industry_1_outlook}</span></td>
+          </tr>
+          <tr>
+            <td>{industry_2_name}</td>
+            <td>{industry_2_exposure_pct}%</td>
+            <td>{industry_2_concentration_contribution}</td>
+            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">{industry_2_industry_rating}</span></td>
+            <td><span class="tag tag-{industry_2_outlook_tag}">{industry_2_outlook}</span></td>
+          </tr>
+          <tr>
+            <td>{industry_3_name}</td>
+            <td>{industry_3_exposure_pct}%</td>
+            <td>{industry_3_concentration_contribution}</td>
+            <td><span class="rating-badge" style="background:rgba(34,197,94,0.15);color:var(--green);">{industry_3_industry_rating}</span></td>
+            <td><span class="tag tag-{industry_3_outlook_tag}">{industry_3_outlook}</span></td>
+          </tr>
+          <tr>
+            <td>{industry_4_name}</td>
+            <td>{industry_4_exposure_pct}%</td>
+            <td>{industry_4_concentration_contribution}</td>
+            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{industry_4_industry_rating}</span></td>
+            <td><span class="tag tag-{industry_4_outlook_tag}">{industry_4_outlook}</span></td>
+          </tr>
+          <tr>
+            <td>{industry_5_name}</td>
+            <td>{industry_5_exposure_pct}%</td>
+            <td>{industry_5_concentration_contribution}</td>
+            <td><span class="rating-badge" style="background:rgba(168,85,247,0.15);color:var(--purple);">{industry_5_industry_rating}</span></td>
+            <td><span class="tag tag-{industry_5_outlook_tag}">{industry_5_outlook}</span></td>
+          </tr>
+          <tr>
+            <td>{other_industries}</td>
+            <td>{other_exposure_pct}%</td>
+            <td>{other_concentration_contribution}</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box info-{industry_concentration_info_type}" style="margin-top:8px;">
+        <strong>Industry Concentration Assessment:</strong>{industry_concentration_detailed_assessment——HHI index level, largest industry exposure ratio, industry correlation impact, concentration adjustment recommendation.}
+      </div>
+    </div>
+
+    <div class="dim-card" style="border-left-color:var(--{rating_concentration_border_color});">
+      <h4>2.2 Rating Concentration</h4>
+      <span class="dim-tag">Internal Rating Distribution · Rating Concentration HHI · Rating Migration Risk</span>
+      <div class="threshold-vis">
+        <span style="font-size:11px;color:var(--text-tertiary);min-width:40px;">Threshold: </span>
+        <div class="threshold-track">
+          <div class="threshold-label" style="left:25%;">Diversified</div>
+          <div class="threshold-label" style="left:50%;">Neutral</div>
+          <div class="threshold-label" style="left:75%;">Concentrated</div>
+          <div class="threshold-label" style="left:95%;">Extreme</div>
+          <div class="threshold-marker" style="left:25%;background:var(--green);"></div>
+          <div class="threshold-marker" style="left:50%;background:var(--blue);"></div>
+          <div class="threshold-marker" style="left:75%;background:var(--amber);"></div>
+          <div class="threshold-marker" style="left:95%;background:var(--red);"></div>
+          <div class="threshold-current" style="left:{rating_concentration_threshold_position_pct}%;background:var(--{rating_concentration_threshold_color});"></div>
+        </div>
+        <span style="font-size:11px;font-weight:700;color:var(--text-secondary);min-width:60px;">Current: {rating_concentration_current_value}</span>
+      </div>
+      <table style="margin-top:8px;">
+        <thead>
+          <tr>
+            <th>Internal Rating</th>
+            <th>Number of Issuers</th>
+            <th>Exposure Ratio</th>
+            <th>Cumulative Ratio</th>
+            <th>Rating Migration Risk</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="rating-badge" style="background:rgba(34,197,94,0.15);color:var(--green);">AAA</span></td>
+            <td>{AAA_issuer_count}</td>
+            <td>{AAA_exposure_pct}%</td>
+            <td>{AAA_cumulative_pct}%</td>
+            <td><span class="tag tag-{AAA_migration_tag}">{AAA_migration_risk}</span></td>
+          </tr>
+          <tr>
+            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">AA</span></td>
+            <td>{AA_issuer_count}</td>
+            <td>{AA_exposure_pct}%</td>
+            <td>{AA_cumulative_pct}%</td>
+            <td><span class="tag tag-{AA_migration_tag}">{AA_migration_risk}</span></td>
+          </tr>
+          <tr>
+            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">A</span></td>
+            <td>{A_issuer_count}</td>
+            <td>{A_exposure_pct}%</td>
+            <td>{A_cumulative_pct}%</td>
+            <td><span class="tag tag-{A_migration_tag}">{A_migration_risk}</span></td>
+          </tr>
+          <tr>
+            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">BBB</span></td>
+            <td>{BBB_issuer_count}</td>
+            <td>{BBB_exposure_pct}%</td>
+            <td>{BBB_cumulative_pct}%</td>
+            <td><span class="tag tag-{BBB_migration_tag}">{BBB_migration_risk}</span></td>
+          </tr>
+          <tr>
+            <td><span class="rating-badge" style="background:rgba(239,68,68,0.15);color:var(--red);">BB and Below</span></td>
+            <td>{BB_issuer_count}</td>
+            <td>{BB_exposure_pct}%</td>
+            <td>{BB_cumulative_pct}%</td>
+            <td><span class="tag tag-{BB_migration_tag}">{BB_migration_risk}</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box info-{rating_concentration_info_type}" style="margin-top:8px;">
+        <strong>Rating Concentration Assessment:</strong>{rating_concentration_detailed_assessment——AAA/AA concentration level, rating migration probability, rating inflation risk, adjustment recommendation.}
+      </div>
+    </div>
+
+    <div class="dim-card" style="border-left-color:var(--{regional_concentration_border_color});">
+      <h4>2.3 Regional Concentration</h4>
+      <span class="dim-tag">Province/Prefecture Distribution · Regional Economic Strength Index · Regional Funding Environment</span>
+      <div class="threshold-vis">
+        <span style="font-size:11px;color:var(--text-tertiary);min-width:40px;">Threshold: </span>
+        <div class="threshold-track">
+          <div class="threshold-label" style="left:25%;">Diversified</div>
+          <div class="threshold-label" style="left:50%;">Neutral</div>
+          <div class="threshold-label" style="left:75%;">Concentrated</div>
+          <div class="threshold-label" style="left:95%;">Extreme</div>
+          <div class="threshold-marker" style="left:25%;background:var(--green);"></div>
+          <div class="threshold-marker" style="left:50%;background:var(--blue);"></div>
+          <div class="threshold-marker" style="left:75%;background:var(--amber);"></div>
+          <div class="threshold-marker" style="left:95%;background:var(--red);"></div>
+          <div class="threshold-current" style="left:{regional_concentration_threshold_position_pct}%;background:var(--{regional_concentration_threshold_color});"></div>
+        </div>
+        <span style="font-size:11px;font-weight:700;color:var(--text-secondary);min-width:60px;">Current: {regional_concentration_current_value}</span>
+      </div>
+      <table style="margin-top:8px;">
+        <thead>
+          <tr>
+            <th>Region</th>
+            <th>Exposure Ratio</th>
+            <th>Regional Economic Strength</th>
+            <th>Regional Funding Environment</th>
+            <th>Concentration Adjustment Factor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{region_1_name}</td>
+            <td>{region_1_exposure_pct}%</td>
+            <td>{region_1_economic_strength}</td>
+            <td><span class="tag tag-{region_1_funding_tag}">{region_1_funding_environment}</span></td>
+            <td>{region_1_adjustment_factor}</td>
+          </tr>
+          <tr>
+            <td>{region_2_name}</td>
+            <td>{region_2_exposure_pct}%</td>
+            <td>{region_2_economic_strength}</td>
+            <td><span class="tag tag-{region_2_funding_tag}">{region_2_funding_environment}</span></td>
+            <td>{region_2_adjustment_factor}</td>
+          </tr>
+          <tr>
+            <td>{region_3_name}</td>
+            <td>{region_3_exposure_pct}%</td>
+            <td>{region_3_economic_strength}</td>
+            <td><span class="tag tag-{region_3_funding_tag}">{region_3_funding_environment}</span></td>
+            <td>{region_3_adjustment_factor}</td>
+          </tr>
+          <tr>
+            <td>{region_4_name}</td>
+            <td>{region_4_exposure_pct}%</td>
+            <td>{region_4_economic_strength}</td>
+            <td><span class="tag tag-{region_4_funding_tag}">{region_4_funding_environment}</span></td>
+            <td>{region_4_adjustment_factor}</td>
+          </tr>
+          <tr>
+            <td>{other_regions}</td>
+            <td>{other_regions_exposure_pct}%</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box info-{regional_concentration_info_type}" style="margin-top:8px;">
+        <strong>Regional Concentration Assessment:</strong>{regional_concentration_detailed_assessment——Largest regional exposure ratio, regional economic strength weighted, regional risk contagion path, adjustment recommendation.}
+      </div>
+    </div>
+
+    <div class="dim-card" style="border-left-color:var(--{maturity_concentration_border_color});">
+      <h4>2.4 Maturity Concentration</h4>
+      <span class="dim-tag">Maturity Distribution · Maturity Concentration HHI · Maturity Concentration Stress Test</span>
+      <div class="threshold-vis">
+        <span style="font-size:11px;color:var(--text-tertiary);min-width:40px;">Threshold: </span>
+        <div class="threshold-track">
+          <div class="threshold-label" style="left:25%;">Diversified</div>
+          <div class="threshold-label" style="left:50%;">Neutral</div>
+          <div class="threshold-label" style="left:75%;">Concentrated</div>
+          <div class="threshold-label" style="left:95%;">Extreme</div>
+          <div class="threshold-marker" style="left:25%;background:var(--green);"></div>
+          <div class="threshold-marker" style="left:50%;background:var(--blue);"></div>
+          <div class="threshold-marker" style="left:75%;background:var(--amber);"></div>
+          <div class="threshold-marker" style="left:95%;background:var(--red);"></div>
+          <div class="threshold-current" style="left:{maturity_concentration_threshold_position_pct}%;background:var(--{maturity_concentration_threshold_color});"></div>
+        </div>
+        <span style="font-size:11px;font-weight:700;color:var(--text-secondary);min-width:60px;">Current: {maturity_concentration_current_value}</span>
+      </div>
+      <table style="margin-top:8px;">
+        <thead>
+          <tr>
+            <th>Maturity Bucket</th>
+            <th>Exposure Ratio</th>
+            <th>Maturing Amount</th>
+            <th>Refinancing Risk</th>
+            <th>Adjustment Factor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Within 1 Year</td>
+            <td>{short_term_exposure_pct}%</td>
+            <td>{short_term_maturity_amount}</td>
+            <td><span class="tag tag-{short_term_refinancing_tag}">{short_term_refinancing_risk}</span></td>
+            <td>{short_term_adjustment_factor}</td>
+          </tr>
+          <tr>
+            <td>1-3 Years</td>
+            <td>{medium_term_exposure_pct}%</td>
+            <td>{medium_term_maturity_amount}</td>
+            <td><span class="tag tag-{medium_term_refinancing_tag}">{medium_term_refinancing_risk}</span></td>
+            <td>{medium_term_adjustment_factor}</td>
+          </tr>
+          <tr>
+            <td>3-5 Years</td>
+            <td>{medium_long_term_exposure_pct}%</td>
+            <td>{medium_long_term_maturity_amount}</td>
+            <td><span class="tag tag-{medium_long_term_refinancing_tag}">{medium_long_term_refinancing_risk}</span></td>
+            <td>{medium_long_term_adjustment_factor}</td>
+          </tr>
+          <tr>
+            <td>Above 5 Years</td>
+            <td>{long_term_exposure_pct}%</td>
+            <td>{long_term_maturity_amount}</td>
+            <td><span class="tag tag-{long_term_refinancing_tag}">{long_term_refinancing_risk}</span></td>
+            <td>{long_term_adjustment_factor}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box info-{maturity_concentration_info_type}" style="margin-top:8px;">
+        <strong>Maturity Concentration Assessment:</strong>{maturity_concentration_detailed_assessment——Peak maturity concentration months, refinancing window congestion, interest rate risk exposure, adjustment recommendation.}
+      </div>
+    </div>
+
+    <div class="dim-card" style="border-left-color:var(--{funding_channel_concentration_border_color});">
+      <h4>2.5 Funding Channel Concentration</h4>
+      <span class="dim-tag">Funding Channel Diversity · Channel Dependency · Channel Liquidity Differences</span>
+      <div class="threshold-vis">
+        <span style="font-size:11px;color:var(--text-tertiary);min-width:40px;">Threshold: </span>
+        <div class="threshold-track">
+          <div class="threshold-label" style="left:25%;">Diversified</div>
+          <div class="threshold-label" style="left:50%;">Neutral</div>
+          <div class="threshold-label" style="left:75%;">Concentrated</div>
+          <div class="threshold-label" style="left:95%;">Extreme</div>
+          <div class="threshold-marker" style="left:25%;background:var(--green);"></div>
+          <div class="threshold-marker" style="left:50%;background:var(--blue);"></div>
+          <div class="threshold-marker" style="left:75%;background:var(--amber);"></div>
+          <div class="threshold-marker" style="left:95%;background:var(--red);"></div>
+          <div class="threshold-current" style="left:{funding_channel_concentration_threshold_position_pct}%;background:var(--{funding_channel_concentration_threshold_color});"></div>
+        </div>
+        <span style="font-size:11px;font-weight:700;color:var(--text-secondary);min-width:60px;">Current: {funding_channel_concentration_current_value}</span>
+      </div>
+      <table style="margin-top:8px;">
+        <thead>
+          <tr>
+            <th>Funding Channel</th>
+            <th>Exposure Ratio</th>
+            <th>Channel Liquidity Rating</th>
+            <th>Channel Stability</th>
+            <th>Adjustment Factor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Credit Bond Financing</td>
+            <td>{credit_bond_exposure_pct}%</td>
+            <td><span class="tag tag-green">{credit_bond_liquidity_rating}</span></td>
+            <td><span class="tag tag-{credit_bond_stability_tag}">{credit_bond_stability}</span></td>
+            <td>{credit_bond_adjustment_factor}</td>
+          </tr>
+          <tr>
+            <td>Bank Loans</td>
+            <td>{bank_loan_exposure_pct}%</td>
+            <td><span class="tag tag-{bank_loan_liquidity_tag}">{bank_loan_liquidity_rating}</span></td>
+            <td><span class="tag tag-{bank_loan_stability_tag}">{bank_loan_stability}</span></td>
+            <td>{bank_loan_adjustment_factor}</td>
+          </tr>
+          <tr>
+            <td>Non-Standard Financing</td>
+            <td>{non_standard_exposure_pct}%</td>
+            <td><span class="tag tag-{non_standard_liquidity_tag}">{non_standard_liquidity_rating}</span></td>
+            <td><span class="tag tag-{non_standard_stability_tag}">{non_standard_stability}</span></td>
+            <td>{non_standard_adjustment_factor}</td>
+          </tr>
+          <tr>
+            <td>Offshore Financing</td>
+            <td>{offshore_exposure_pct}%</td>
+            <td><span class="tag tag-{offshore_liquidity_tag}">{offshore_liquidity_rating}</span></td>
+            <td><span class="tag tag-{offshore_stability_tag}">{offshore_stability}</span></td>
+            <td>{offshore_adjustment_factor}</td>
+          </tr>
+          <tr>
+            <td>Equity Financing</td>
+            <td>{equity_exposure_pct}%</td>
+            <td><span class="tag tag-{equity_liquidity_tag}">{equity_liquidity_rating}</span></td>
+            <td><span class="tag tag-{equity_stability_tag}">{equity_stability}</span></td>
+            <td>{equity_adjustment_factor}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box info-{funding_channel_concentration_info_type}" style="margin-top:8px;">
+        <strong>Funding Channel Concentration Assessment:</strong>{funding_channel_concentration_detailed_assessment——Channel diversity score, single channel dependency, channel freeze risk exposure, adjustment recommendation.}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 3 -- High-Risk Concentration Item Identification -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--red);"></span>
+      3. High-Risk Concentration Item Identification
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Based on the five-dimension concentration analysis, identify the TOP 3 concentration risk items. Each item is annotated with impact magnitude, trigger conditions, and recommended actions.
+      High-risk concentration items are core input factors for rating adjustments and require focused monitoring and management.
+    </p>
+
+    <div class="risk-card" style="border-left-color:var(--red);">
+      <span class="risk-tag">Concentration Risk #1 · Priority P0</span>
+      <h4>{high_risk_item_1_name}</h4>
+      <p class="risk-desc">
+        <strong>Concentration Dimension:</strong>{high_risk_item_1_dimension}<br>
+        <strong>Current Exposure:</strong>{high_risk_item_1_current_exposure}<br>
+        <strong>Threshold Comparison:</strong>{high_risk_item_1_threshold_comparison}<br>
+        <strong>Impact Magnitude:</strong>{high_risk_item_1_impact_magnitude}<br>
+        <strong>Trigger Conditions:</strong>{high_risk_item_1_trigger_condition}<br>
+        <strong>Recommended Action:</strong>{high_risk_item_1_recommended_action}
+      </p>
+      <div class="warning-tier" style="margin-top:8px;">
+        <span class="warn-badge red">Impact Magnitude: {high_risk_item_1_magnitude_level}</span>
+        <span class="warn-badge amber">Trigger Probability: {high_risk_item_1_trigger_probability}</span>
+        <span class="warn-badge red">{high_risk_item_1_urgency_flag}</span>
+      </div>
+    </div>
+
+    <div class="risk-card" style="border-left-color:var(--amber);">
+      <span class="risk-tag">Concentration Risk #2 · Priority P1</span>
+      <h4>{high_risk_item_2_name}</h4>
+      <p class="risk-desc">
+        <strong>Concentration Dimension:</strong>{high_risk_item_2_dimension}<br>
+        <strong>Current Exposure:</strong>{high_risk_item_2_current_exposure}<br>
+        <strong>Threshold Comparison:</strong>{high_risk_item_2_threshold_comparison}<br>
+        <strong>Impact Magnitude:</strong>{high_risk_item_2_impact_magnitude}<br>
+        <strong>Trigger Conditions:</strong>{high_risk_item_2_trigger_condition}<br>
+        <strong>Recommended Action:</strong>{high_risk_item_2_recommended_action}
+      </p>
+      <div class="warning-tier" style="margin-top:8px;">
+        <span class="warn-badge amber">Impact Magnitude: {high_risk_item_2_magnitude_level}</span>
+        <span class="warn-badge amber">Trigger Probability: {high_risk_item_2_trigger_probability}</span>
+        <span class="warn-badge amber">{high_risk_item_2_urgency_flag}</span>
+      </div>
+    </div>
+
+    <div class="risk-card" style="border-left-color:var(--blue);">
+      <span class="risk-tag">Concentration Risk #3 · Priority P2</span>
+      <h4>{high_risk_item_3_name}</h4>
+      <p class="risk-desc">
+        <strong>Concentration Dimension:</strong>{high_risk_item_3_dimension}<br>
+        <strong>Current Exposure:</strong>{high_risk_item_3_current_exposure}<br>
+        <strong>Threshold Comparison:</strong>{high_risk_item_3_threshold_comparison}<br>
+        <strong>Impact Magnitude:</strong>{high_risk_item_3_impact_magnitude}<br>
+        <strong>Trigger Conditions:</strong>{high_risk_item_3_trigger_condition}<br>
+        <strong>Recommended Action:</strong>{high_risk_item_3_recommended_action}
+      </p>
+      <div class="warning-tier" style="margin-top:8px;">
+        <span class="warn-badge blue">Impact Magnitude: {high_risk_item_3_magnitude_level}</span>
+        <span class="warn-badge green">Trigger Probability: {high_risk_item_3_trigger_probability}</span>
+        <span class="warn-badge blue">{high_risk_item_3_urgency_flag}</span>
+      </div>
+    </div>
+
+    <div class="info-box info-red" style="margin-top:10px;">
+      <strong>Concentration Risk Summary:</strong>{concentration_risk_assessment——Superposition effect of each risk item, cross-risk transmission path, confirmation basis for the composite adjustment magnitude. When multiple concentration risks exist simultaneously, the synergistic amplification effect on the adjustment magnitude must be considered.}
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 4 -- Rating Adjustment Impact -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--amber);"></span>
+      4. Rating Adjustment Impact
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Displays the distribution changes of issuer ratings within the portfolio before and after concentration adjustments.
+      Simulates the impact of concentration adjustments on portfolio credit quality through the rating migration matrix.
+    </p>
+
+    <div class="card">
+      <h3>4.1 Pre- and Post-Adjustment Rating Distribution Comparison</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Internal Rating</th>
+            <th>Pre-Adjustment Count</th>
+            <th>Pre-Adjustment Ratio</th>
+            <th>Post-Adjustment Count</th>
+            <th>Post-Adjustment Ratio</th>
+            <th>Count Change</th>
+            <th>Ratio Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="rating-badge" style="background:rgba(34,197,94,0.15);color:var(--green);">AAA</span></td>
+            <td>{pre_adjustment_AAA_count}</td>
+            <td>{pre_adjustment_AAA_ratio}%</td>
+            <td>{post_adjustment_AAA_count}</td>
+            <td>{post_adjustment_AAA_ratio}%</td>
+            <td class="{AAA_change_color}">{AAA_count_change}</td>
+            <td class="{AAA_change_color}">{AAA_ratio_change}pp</td>
+          </tr>
+          <tr>
+            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">AA</span></td>
+            <td>{pre_adjustment_AA_count}</td>
+            <td>{pre_adjustment_AA_ratio}%</td>
+            <td>{post_adjustment_AA_count}</td>
+            <td>{post_adjustment_AA_ratio}%</td>
+            <td class="{AA_change_color}">{AA_count_change}</td>
+            <td class="{AA_change_color}">{AA_ratio_change}pp</td>
+          </tr>
+          <tr>
+            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">A</span></td>
+            <td>{pre_adjustment_A_count}</td>
+            <td>{pre_adjustment_A_ratio}%</td>
+            <td>{post_adjustment_A_count}</td>
+            <td>{post_adjustment_A_ratio}%</td>
+            <td class="{A_change_color}">{A_count_change}</td>
+            <td class="{A_change_color}">{A_ratio_change}pp</td>
+          </tr>
+          <tr>
+            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">BBB</span></td>
+            <td>{pre_adjustment_BBB_count}</td>
+            <td>{pre_adjustment_BBB_ratio}%</td>
+            <td>{post_adjustment_BBB_count}</td>
+            <td>{post_adjustment_BBB_ratio}%</td>
+            <td class="{BBB_change_color}">{BBB_count_change}</td>
+            <td class="{BBB_change_color}">{BBB_ratio_change}pp</td>
+          </tr>
+          <tr>
+            <td><span class="rating-badge" style="background:rgba(239,68,68,0.15);color:var(--red);">BB and Below</span></td>
+            <td>{pre_adjustment_BB_count}</td>
+            <td>{pre_adjustment_BB_ratio}%</td>
+            <td>{post_adjustment_BB_count}</td>
+            <td>{post_adjustment_BB_ratio}%</td>
+            <td class="{BB_change_color}">{BB_count_change}</td>
+            <td class="{BB_change_color}">{BB_ratio_change}pp</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>4.2 Main Issuers Affected by Adjustment</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Issuer</th>
+            <th>Pre-Adjustment Rating</th>
+            <th>Post-Adjustment Rating</th>
+            <th>Adjustment Magnitude</th>
+            <th>Adjustment Reason</th>
+            <th>Exposure Ratio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{adjusted_issuer_1}</td>
+            <td><span class="rating-badge" style="background:rgba(34,197,94,0.15);color:var(--green);">{pre_adjustment_rating_1}</span></td>
+            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{post_adjustment_rating_1}</span></td>
+            <td class="text-red">{adjustment_magnitude_1}</td>
+            <td>{adjustment_reason_1}</td>
+            <td>{issuer_exposure_pct_1}%</td>
+          </tr>
+          <tr>
+            <td>{adjusted_issuer_2}</td>
+            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{pre_adjustment_rating_2}</span></td>
+            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{post_adjustment_rating_2}</span></td>
+            <td class="text-amber">{adjustment_magnitude_2}</td>
+            <td>{adjustment_reason_2}</td>
+            <td>{issuer_exposure_pct_2}%</td>
+          </tr>
+          <tr>
+            <td>{adjusted_issuer_3}</td>
+            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{pre_adjustment_rating_3}</span></td>
+            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">{post_adjustment_rating_3}</span></td>
+            <td class="text-red">{adjustment_magnitude_3}</td>
+            <td>{adjustment_reason_3}</td>
+            <td>{issuer_exposure_pct_3}%</td>
+          </tr>
+          <tr>
+            <td>{adjusted_issuer_4}</td>
+            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">{pre_adjustment_rating_4}</span></td>
+            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">{post_adjustment_rating_4}</span></td>
+            <td class="text-amber">{adjustment_magnitude_4}</td>
+            <td>{adjustment_reason_4}</td>
+            <td>{issuer_exposure_pct_4}%</td>
+          </tr>
+          <tr>
+            <td>{adjusted_issuer_5}</td>
+            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">{pre_adjustment_rating_5}</span></td>
+            <td><span class="rating-badge" style="background:rgba(239,68,68,0.15);color:var(--red);">{post_adjustment_rating_5}</span></td>
+            <td class="text-red">{adjustment_magnitude_5}</td>
+            <td>{adjustment_reason_5}</td>
+            <td>{issuer_exposure_pct_5}%</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box info-amber" style="margin-top:8px;">
+        <strong>Rating Adjustment Impact Summary:</strong>{rating_adjustment_impact_summary_desc——Pre- and post-adjustment portfolio weighted rating change, rating distribution morphology change, number of adjusted issuers and exposure ratio, overall impact on portfolio credit risk.}
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>4.3 Post-Adjustment Portfolio Credit Score Changes</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Indicator</th>
+            <th>Pre-Adjustment</th>
+            <th>Post-Adjustment</th>
+            <th>Change</th>
+            <th>Assessment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Portfolio Weighted Rating</td>
+            <td>{pre_adjustment_weighted_rating}</td>
+            <td>{post_adjustment_weighted_rating}</td>
+            <td class="{weighted_rating_change_color}">{weighted_rating_change}</td>
+            <td><span class="tag tag-{weighted_rating_tag}">{weighted_rating_assessment}</span></td>
+          </tr>
+          <tr>
+            <td>AAA Ratio</td>
+            <td>{pre_adjustment_AAA_ratio}%</td>
+            <td>{post_adjustment_AAA_ratio}%</td>
+            <td class="{AAA_ratio_change_color}">{AAA_ratio_change}pp</td>
+            <td><span class="tag tag-{AAA_ratio_tag}">{AAA_ratio_assessment}</span></td>
+          </tr>
+          <tr>
+            <td>Investment Grade Ratio</td>
+            <td>{pre_adjustment_investment_grade_ratio}%</td>
+            <td>{post_adjustment_investment_grade_ratio}%</td>
+            <td class="{investment_grade_ratio_change_color}">{investment_grade_ratio_change}pp</td>
+            <td><span class="tag tag-{investment_grade_ratio_tag}">{investment_grade_ratio_assessment}</span></td>
+          </tr>
+          <tr>
+            <td>Credit Risk Value</td>
+            <td>{pre_adjustment_credit_risk_value}</td>
+            <td>{post_adjustment_credit_risk_value}</td>
+            <td class="{credit_risk_change_color}">{credit_risk_change}</td>
+            <td><span class="tag tag-{credit_risk_tag}">{credit_risk_assessment}</span></td>
+          </tr>
+          <tr>
+            <td>Expected Loss Rate</td>
+            <td>{pre_adjustment_expected_loss_rate}%</td>
+            <td>{post_adjustment_expected_loss_rate}%</td>
+            <td class="{expected_loss_change_color}">{expected_loss_change}pp</td>
+            <td><span class="tag tag-{expected_loss_tag}">{expected_loss_assessment}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 5 -- Diversification Recommendation Path -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--green);"></span>
+      5. Diversification Recommendation Path
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Propose specific diversification plans targeting concentration risk. Specify which concentrated industries/regions to reduce, which diversified industries/regions to increase,
+      along with expected diversification effects and implementation paths.
+    </p>
+
+    <div class="card">
+      <h3>5.1 Reduce Allocation -- High-Risk Concentration Items</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Reduction Target</th>
+            <th>Current Exposure</th>
+            <th>Target Exposure</th>
+            <th>Reduction Magnitude</th>
+            <th>Expected Effect</th>
+            <th>Priority</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{reduction_target_1_name}</td>
+            <td>{reduction_target_1_current_exposure}%</td>
+            <td>{reduction_target_1_target_exposure}%</td>
+            <td>{reduction_target_1_reduction_magnitude}pp</td>
+            <td>{reduction_target_1_expected_effect}</td>
+            <td><span class="tag tag-red">P0</span></td>
+          </tr>
+          <tr>
+            <td>{reduction_target_2_name}</td>
+            <td>{reduction_target_2_current_exposure}%</td>
+            <td>{reduction_target_2_target_exposure}%</td>
+            <td>{reduction_target_2_reduction_magnitude}pp</td>
+            <td>{reduction_target_2_expected_effect}</td>
+            <td><span class="tag tag-red">P0</span></td>
+          </tr>
+          <tr>
+            <td>{reduction_target_3_name}</td>
+            <td>{reduction_target_3_current_exposure}%</td>
+            <td>{reduction_target_3_target_exposure}%</td>
+            <td>{reduction_target_3_reduction_magnitude}pp</td>
+            <td>{reduction_target_3_expected_effect}</td>
+            <td><span class="tag tag-amber">P1</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>5.2 Increase Allocation -- Diversification Recommendations</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Increase Target</th>
+            <th>Target Exposure</th>
+            <th>Increase Magnitude</th>
+            <th>Diversification Value</th>
+            <th>Recommendation Rationale</th>
+            <th>Priority</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{increase_target_1_name}</td>
+            <td>{increase_target_1_target_exposure}%</td>
+            <td>{increase_target_1_increase_magnitude}pp</td>
+            <td>{increase_target_1_diversification_value}</td>
+            <td>{increase_target_1_recommendation_rationale}</td>
+            <td><span class="tag tag-green">P0</span></td>
+          </tr>
+          <tr>
+            <td>{increase_target_2_name}</td>
+            <td>{increase_target_2_target_exposure}%</td>
+            <td>{increase_target_2_increase_magnitude}pp</td>
+            <td>{increase_target_2_diversification_value}</td>
+            <td>{increase_target_2_recommendation_rationale}</td>
+            <td><span class="tag tag-green">P0</span></td>
+          </tr>
+          <tr>
+            <td>{increase_target_3_name}</td>
+            <td>{increase_target_3_target_exposure}%</td>
+            <td>{increase_target_3_increase_magnitude}pp</td>
+            <td>{increase_target_3_diversification_value}</td>
+            <td>{increase_target_3_recommendation_rationale}</td>
+            <td><span class="tag tag-blue">P1</span></td>
+          </tr>
+          <tr>
+            <td>{increase_target_4_name}</td>
+            <td>{increase_target_4_target_exposure}%</td>
+            <td>{increase_target_4_increase_magnitude}pp</td>
+            <td>{increase_target_4_diversification_value}</td>
+            <td>{increase_target_4_recommendation_rationale}</td>
+            <td><span class="tag tag-blue">P1</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>5.3 Diversification Path Simulation</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Simulation Stage</th>
+            <th>Operation Details</th>
+            <th>Completion Timeline</th>
+            <th>Concentration Score Improvement</th>
+            <th>Post-Adjustment Rating Impact</th>
+            <th>Risk Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Stage 1</td>
+            <td>{stage_1_operation_detail}</td>
+            <td>{stage_1_timeline}</td>
+            <td>{stage_1_score_improvement}/10</td>
+            <td>{stage_1_rating_impact}</td>
+            <td><span class="tag tag-amber">{stage_1_risk_note}</span></td>
+          </tr>
+          <tr>
+            <td>Stage 2</td>
+            <td>{stage_2_operation_detail}</td>
+            <td>{stage_2_timeline}</td>
+            <td>{stage_2_score_improvement}/10</td>
+            <td>{stage_2_rating_impact}</td>
+            <td><span class="tag tag-amber">{stage_2_risk_note}</span></td>
+          </tr>
+          <tr>
+            <td>Stage 3</td>
+            <td>{stage_3_operation_detail}</td>
+            <td>{stage_3_timeline}</td>
+            <td>{stage_3_score_improvement}/10</td>
+            <td>{stage_3_rating_impact}</td>
+            <td><span class="tag tag-green">{stage_3_risk_note}</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box info-green" style="margin-top:10px;">
+        <strong>Diversification Path Summary:</strong>{diversification_path_summary——Expected improvement in portfolio concentration score through phased operations, the narrowing space for rating adjustments, and execution risks requiring attention. It is recommended to regularly review and adjust the diversification effects.}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 6 -- Contagion Matrix Integration -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--purple);"></span>
+      6. Contagion Matrix Integration
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Project the current portfolio's concentration items into the contagion matrix to identify the worst-case scenarios and propagation paths of concentration risk under contagion scenarios.
+      Calculate the portfolio loss distribution after concentration item fission through the industry correlation matrix.
+    </p>
+
+    <div class="contagion-link">
+      <h4>Position of Concentration Items in the Contagion Matrix</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>Concentration Item</th>
+            <th>Contagion Matrix Node</th>
+            <th>Contagion Fan-Out Degree</th>
+            <th>Number of Related Industries</th>
+            <th>Worst-Case Contagion Scenario</th>
+            <th>Estimated Loss</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{contagion_concentration_item_1_name}</td>
+            <td>{contagion_concentration_item_1_node}</td>
+            <td><span class="tag tag-red">{contagion_concentration_item_1_fan_out}</span></td>
+            <td>{contagion_concentration_item_1_related_industry_count}</td>
+            <td>{contagion_concentration_item_1_worst_case_scenario}</td>
+            <td class="text-red">{contagion_concentration_item_1_estimated_loss}</td>
+          </tr>
+          <tr>
+            <td>{contagion_concentration_item_2_name}</td>
+            <td>{contagion_concentration_item_2_node}</td>
+            <td><span class="tag tag-amber">{contagion_concentration_item_2_fan_out}</span></td>
+            <td>{contagion_concentration_item_2_related_industry_count}</td>
+            <td>{contagion_concentration_item_2_worst_case_scenario}</td>
+            <td class="text-red">{contagion_concentration_item_2_estimated_loss}</td>
+          </tr>
+          <tr>
+            <td>{contagion_concentration_item_3_name}</td>
+            <td>{contagion_concentration_item_3_node}</td>
+            <td><span class="tag tag-amber">{contagion_concentration_item_3_fan_out}</span></td>
+            <td>{contagion_concentration_item_3_related_industry_count}</td>
+            <td>{contagion_concentration_item_3_worst_case_scenario}</td>
+            <td class="text-amber">{contagion_concentration_item_3_estimated_loss}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="contagion-link" style="margin-top:12px;">
+      <h4>Industry Correlation Contagion Matrix</h4>
+      <p style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;">
+        Constructed based on Shenwan secondary industry upstream-downstream correlation data. The row-column intersection represents contagion intensity between industries (0-1),
+        where values closer to 1 indicate stronger correlation and higher contagion risk.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Industry</th>
+            <th>{related_industry_1}</th>
+            <th>{related_industry_2}</th>
+            <th>{related_industry_3}</th>
+            <th>{related_industry_4}</th>
+            <th>{related_industry_5}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{related_industry_1}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_1_1}</td>
+            <td style="background:rgba(245,158,11,0.15);color:var(--amber);text-align:center;">{correlation_1_2}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_1_3}</td>
+            <td style="background:rgba(239,68,68,0.15);color:var(--red);text-align:center;">{correlation_1_4}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_1_5}</td>
+          </tr>
+          <tr>
+            <td>{related_industry_2}</td>
+            <td style="background:rgba(245,158,11,0.15);color:var(--amber);text-align:center;">{correlation_2_1}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_2_2}</td>
+            <td style="background:rgba(239,68,68,0.15);color:var(--red);text-align:center;">{correlation_2_3}</td>
+            <td style="background:rgba(245,158,11,0.15);color:var(--amber);text-align:center;">{correlation_2_4}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_2_5}</td>
+          </tr>
+          <tr>
+            <td>{related_industry_3}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_3_1}</td>
+            <td style="background:rgba(239,68,68,0.15);color:var(--red);text-align:center;">{correlation_3_2}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_3_3}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_3_4}</td>
+            <td style="background:rgba(245,158,11,0.15);color:var(--amber);text-align:center;">{correlation_3_5}</td>
+          </tr>
+          <tr>
+            <td>{related_industry_4}</td>
+            <td style="background:rgba(239,68,68,0.15);color:var(--red);text-align:center;">{correlation_4_1}</td>
+            <td style="background:rgba(245,158,11,0.15);color:var(--amber);text-align:center;">{correlation_4_2}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_4_3}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_4_4}</td>
+            <td style="background:rgba(239,68,68,0.15);color:var(--red);text-align:center;">{correlation_4_5}</td>
+          </tr>
+          <tr>
+            <td>{related_industry_5}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_5_1}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_5_2}</td>
+            <td style="background:rgba(245,158,11,0.15);color:var(--amber);text-align:center;">{correlation_5_3}</td>
+            <td style="background:rgba(239,68,68,0.15);color:var(--red);text-align:center;">{correlation_5_4}</td>
+            <td style="background:rgba(34,197,94,0.15);color:var(--green);text-align:center;">{correlation_5_5}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="contagion-link" style="margin-top:12px;">
+      <h4>Worst-Case Contagion Scenario Simulation</h4>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border-default); border-radius:8px; overflow:hidden; margin:14px 0;">
+        <div class="concentration-item" style="border-left:3px solid var(--red);">
+          <h5 style="color:var(--red);">Scenario 1: {worst_case_scenario_1_name}</h5>
+          <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
+            <strong>Trigger Conditions:</strong>{worst_case_scenario_1_trigger_condition}<br>
+            <strong>Contagion Path:</strong>{worst_case_scenario_1_contagion_path}<br>
+            <strong>Contagion Depth:</strong>{worst_case_scenario_1_contagion_depth}<br>
+            <strong>Estimated Loss:</strong><span class="c-stat" style="font-size:18px;">{worst_case_scenario_1_estimated_loss}</span>
+          </p>
+        </div>
+        <div class="concentration-item" style="border-left:3px solid var(--amber);">
+          <h5 style="color:var(--amber);">Scenario 2: {worst_case_scenario_2_name}</h5>
+          <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
+            <strong>Trigger Conditions:</strong>{worst_case_scenario_2_trigger_condition}<br>
+            <strong>Contagion Path:</strong>{worst_case_scenario_2_contagion_path}<br>
+            <strong>Contagion Depth:</strong>{worst_case_scenario_2_contagion_depth}<br>
+            <strong>Estimated Loss:</strong><span class="c-stat" style="font-size:18px;">{worst_case_scenario_2_estimated_loss}</span>
+          </p>
+        </div>
+      </div>
+      <div class="info-box info-purple" style="margin-top:8px;">
+        <strong>Contagion Integration Composite Assessment:</strong>{contagion_linkage_assessment——Risk exposure of concentration items in the contagion matrix, impact of industry correlation on risk diffusion, mitigation effect of diversification actions on contagion risk.}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 7 -- Diversification Plan Detailed Implementation -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--green);"></span>
+      7. Diversification Plan Detailed Implementation
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Translate diversification recommendations into executable operational plans. Including specific rebalancing ratios, recommended substitute instruments,
+      execution pace, and expected effect assessment.
+    </p>
+
+    <div class="card">
+      <h3>7.1 Reduction Execution Plan</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Instrument/Industry to Reduce</th>
+            <th>Current Holdings</th>
+            <th>Target Holdings</th>
+            <th>Reduction Size</th>
+            <th>Execution Method</th>
+            <th>Pace Recommendation</th>
+            <th>Market Impact Assessment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{reduce_instrument_1}</td>
+            <td>{reduce_instrument_1_current} hundred million</td>
+            <td>{reduce_instrument_1_target} hundred million</td>
+            <td>{reduce_instrument_1_size} hundred million</td>
+            <td>{reduce_instrument_1_method}</td>
+            <td>{reduce_instrument_1_pace}</td>
+            <td><span class="tag tag-{reduce_instrument_1_impact_tag}">{reduce_instrument_1_impact}</span></td>
+          </tr>
+          <tr>
+            <td>{reduce_instrument_2}</td>
+            <td>{reduce_instrument_2_current} hundred million</td>
+            <td>{reduce_instrument_2_target} hundred million</td>
+            <td>{reduce_instrument_2_size} hundred million</td>
+            <td>{reduce_instrument_2_method}</td>
+            <td>{reduce_instrument_2_pace}</td>
+            <td><span class="tag tag-{reduce_instrument_2_impact_tag}">{reduce_instrument_2_impact}</span></td>
+          </tr>
+          <tr>
+            <td>{reduce_instrument_3}</td>
+            <td>{reduce_instrument_3_current} hundred million</td>
+            <td>{reduce_instrument_3_target} hundred million</td>
+            <td>{reduce_instrument_3_size} hundred million</td>
+            <td>{reduce_instrument_3_method}</td>
+            <td>{reduce_instrument_3_pace}</td>
+            <td><span class="tag tag-{reduce_instrument_3_impact_tag}">{reduce_instrument_3_impact}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>7.2 Increase Execution Plan</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Instrument/Industry to Increase</th>
+            <th>Target Holdings</th>
+            <th>Increase Size</th>
+            <th>Recommended Instruments</th>
+            <th>Credit Quality</th>
+            <th>Execution Pace</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{increase_instrument_1}</td>
+            <td>{increase_instrument_1_target} hundred million</td>
+            <td>{increase_instrument_1_size} hundred million</td>
+            <td>{increase_instrument_1_target_instrument}</td>
+            <td><span class="rating-badge" style="background:rgba(34,197,94,0.15);color:var(--green);">{increase_instrument_1_rating}</span></td>
+            <td>{increase_instrument_1_pace}</td>
+          </tr>
+          <tr>
+            <td>{increase_instrument_2}</td>
+            <td>{increase_instrument_2_target} hundred million</td>
+            <td>{increase_instrument_2_size} hundred million</td>
+            <td>{increase_instrument_2_target_instrument}</td>
+            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{increase_instrument_2_rating}</span></td>
+            <td>{increase_instrument_2_pace}</td>
+          </tr>
+          <tr>
+            <td>{increase_instrument_3}</td>
+            <td>{increase_instrument_3_target} hundred million</td>
+            <td>{increase_instrument_3_size} hundred million</td>
+            <td>{increase_instrument_3_target_instrument}</td>
+            <td><span class="rating-badge" style="background:rgba(99,102,241,0.15);color:var(--blue);">{increase_instrument_3_rating}</span></td>
+            <td>{increase_instrument_3_pace}</td>
+          </tr>
+          <tr>
+            <td>{increase_instrument_4}</td>
+            <td>{increase_instrument_4_target} hundred million</td>
+            <td>{increase_instrument_4_size} hundred million</td>
+            <td>{increase_instrument_4_target_instrument}</td>
+            <td><span class="rating-badge" style="background:rgba(245,158,11,0.15);color:var(--amber);">{increase_instrument_4_rating}</span></td>
+            <td>{increase_instrument_4_pace}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>7.3 Pre- and Post-Diversification Comparison</h3>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1px; background:var(--border-default); border-radius:8px; overflow:hidden; margin:14px 0;">
+        <div class="concentration-item">
+          <h5>Indicator</h5>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:2;">
+            <div>Industry HHI Index</div>
+            <div>Largest Industry Exposure</div>
+            <div>Rating HHI Index</div>
+            <div>Number of Regions</div>
+            <div>Maturity Diversification</div>
+            <div>Channel Diversity</div>
+            <div><strong>Composite Concentration Score</strong></div>
+          </div>
+        </div>
+        <div class="concentration-item">
+          <h5>Pre-Diversification</h5>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:2;">
+            <div>{pre_industry_hhi}</div>
+            <div>{pre_max_industry_exposure}%</div>
+            <div>{pre_rating_hhi}</div>
+            <div>{pre_region_count}</div>
+            <div>{pre_maturity_diversification}</div>
+            <div>{pre_channel_diversity}</div>
+            <div><strong>{pre_composite_score}/10</strong></div>
+          </div>
+        </div>
+        <div class="concentration-item">
+          <h5>Post-Diversification</h5>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:2;">
+            <div>{post_industry_hhi}</div>
+            <div>{post_max_industry_exposure}%</div>
+            <div>{post_rating_hhi}</div>
+            <div>{post_region_count}</div>
+            <div>{post_maturity_diversification}</div>
+            <div>{post_channel_diversity}</div>
+            <div><strong>{post_composite_score}/10</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="info-box info-green" style="margin-top:8px;">
+        <strong>Diversification Effect Assessment:</strong>{diversification_effect_assessment——Improvement in concentration indicators after diversification operations, potential risks requiring attention, and subsequent tracking recommendations.}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 8 -- Sensitivity Analysis -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--amber);"></span>
+      8. Sensitivity Analysis
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Conduct sensitivity tests on key concentration parameters to assess the impact of parameter changes on the concentration score and rating adjustment magnitude.
+      Identify key sensitivity factors and threshold breach risks.
+    </p>
+
+    <div class="card">
+      <h3>8.1 Industry Concentration Sensitivity</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Scenario Parameter</th>
+            <th>Parameter Change</th>
+            <th>Concentration Score Change</th>
+            <th>Rating Adjustment Change</th>
+            <th>Threshold Breach</th>
+            <th>Probability Assessment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Largest Industry Exposure +5%</td>
+            <td>{parameter_change_1}</td>
+            <td class="text-red">{sensitivity_1_score_change}</td>
+            <td class="text-red">{sensitivity_1_rating_change}</td>
+            <td><span class="tag tag-{sensitivity_1_threshold_tag}">{sensitivity_1_threshold}</span></td>
+            <td><span class="tag tag-{sensitivity_1_probability_tag}">{sensitivity_1_probability}</span></td>
+          </tr>
+          <tr>
+            <td>Largest Industry Exposure -10%</td>
+            <td>{parameter_change_2}</td>
+            <td class="text-green">{sensitivity_2_score_change}</td>
+            <td class="text-green">{sensitivity_2_rating_change}</td>
+            <td><span class="tag tag-{sensitivity_2_threshold_tag}">{sensitivity_2_threshold}</span></td>
+            <td><span class="tag tag-{sensitivity_2_probability_tag}">{sensitivity_2_probability}</span></td>
+          </tr>
+          <tr>
+            <td>Second Largest Industry Exposure +8%</td>
+            <td>{parameter_change_3}</td>
+            <td class="text-amber">{sensitivity_3_score_change}</td>
+            <td class="text-amber">{sensitivity_3_rating_change}</td>
+            <td><span class="tag tag-{sensitivity_3_threshold_tag}">{sensitivity_3_threshold}</span></td>
+            <td><span class="tag tag-{sensitivity_3_probability_tag}">{sensitivity_3_probability}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>8.2 Regional Concentration Sensitivity</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Scenario Parameter</th>
+            <th>Parameter Change</th>
+            <th>Concentration Score Change</th>
+            <th>Rating Adjustment Change</th>
+            <th>Threshold Breach</th>
+            <th>Probability Assessment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Largest Regional Exposure +5%</td>
+            <td>{regional_sensitivity_1_parameter}</td>
+            <td class="text-red">{regional_sensitivity_1_score}</td>
+            <td class="text-red">{regional_sensitivity_1_rating}</td>
+            <td><span class="tag tag-{regional_sensitivity_1_threshold_tag}">{regional_sensitivity_1_threshold}</span></td>
+            <td><span class="tag tag-{regional_sensitivity_1_probability_tag}">{regional_sensitivity_1_probability}</span></td>
+          </tr>
+          <tr>
+            <td>Largest Regional Exposure -8%</td>
+            <td>{regional_sensitivity_2_parameter}</td>
+            <td class="text-green">{regional_sensitivity_2_score}</td>
+            <td class="text-green">{regional_sensitivity_2_rating}</td>
+            <td><span class="tag tag-{regional_sensitivity_2_threshold_tag}">{regional_sensitivity_2_threshold}</span></td>
+            <td><span class="tag tag-{regional_sensitivity_2_probability_tag}">{regional_sensitivity_2_probability}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>8.3 Key Sensitivity Factor Identification</h3>
+      <div class="heat-map">
+        <div class="heat-item" style="background:rgba(239,68,68,0.2);border:1px solid var(--red);">
+          <strong style="color:var(--red);">Most Sensitive Factor</strong><br>
+          <span style="font-size:18px;font-weight:800;color:var(--red);">{most_sensitive_factor_name}</span><br>
+          <span style="font-size:10px;color:var(--text-tertiary);">Sensitivity Coefficient: {most_sensitive_factor_coefficient}</span>
+        </div>
+        <div class="heat-item" style="background:rgba(245,158,11,0.15);border:1px solid var(--amber);">
+          <strong style="color:var(--amber);">Second Most Sensitive Factor</strong><br>
+          <span style="font-size:18px;font-weight:800;color:var(--amber);">{second_most_sensitive_factor_name}</span><br>
+          <span style="font-size:10px;color:var(--text-tertiary);">Sensitivity Coefficient: {second_most_sensitive_factor_coefficient}</span>
+        </div>
+        <div class="heat-item" style="background:rgba(99,102,241,0.15);border:1px solid var(--blue);">
+          <strong style="color:var(--blue);">Closest to Threshold Factor</strong><br>
+          <span style="font-size:18px;font-weight:800;color:var(--blue);">{closest_to_threshold_factor_name}</span><br>
+          <span style="font-size:10px;color:var(--text-tertiary);">Distance to Threshold: {closest_to_threshold_factor_distance}</span>
+        </div>
+      </div>
+      <div class="info-box info-amber" style="margin-top:8px;">
+        <strong>Sensitivity Analysis Summary:</strong>{sensitivity_analysis_summary——Sensitivity coefficient ranking of each parameter, identification of critical conditions for threshold breach, and key parameters requiring focused monitoring along with early warning line setting recommendations.}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 9 -- Completeness Report -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--green);"></span>
+      9. Completeness Report
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Completeness check for this report -- covering all dimensions of concentration analysis, data sources, methodological limitations, and subsequent update plans.
+    </p>
+
+    <div class="card">
+      <h3>9.1 Dimension Coverage Check</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Analysis Dimension</th>
+            <th>Coverage Status</th>
+            <th>Data Source</th>
+            <th>Confidence Level</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Industry Concentration Analysis</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{industry_concentration_data_source}</td>
+            <td><span class="text-green">High</span></td>
+            <td>{industry_concentration_notes}</td>
+          </tr>
+          <tr>
+            <td>Rating Concentration Analysis</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{rating_concentration_data_source}</td>
+            <td><span class="text-green">High</span></td>
+            <td>{rating_concentration_notes}</td>
+          </tr>
+          <tr>
+            <td>Regional Concentration Analysis</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{regional_concentration_data_source}</td>
+            <td><span class="text-amber">Medium-High</span></td>
+            <td>{regional_concentration_notes}</td>
+          </tr>
+          <tr>
+            <td>Maturity Concentration Analysis</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{maturity_concentration_data_source}</td>
+            <td><span class="text-green">High</span></td>
+            <td>{maturity_concentration_notes}</td>
+          </tr>
+          <tr>
+            <td>Funding Channel Concentration Analysis</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{funding_channel_data_source}</td>
+            <td><span class="text-amber">Medium</span></td>
+            <td>{funding_channel_notes}</td>
+          </tr>
+          <tr>
+            <td>Rating Adjustment Impact</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{rating_adjustment_data_source}</td>
+            <td><span class="text-amber">Medium-High</span></td>
+            <td>{rating_adjustment_notes}</td>
+          </tr>
+          <tr>
+            <td>Diversification Recommendation Path</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{diversification_data_source}</td>
+            <td><span class="text-amber">Medium</span></td>
+            <td>{diversification_notes}</td>
+          </tr>
+          <tr>
+            <td>Contagion Matrix Integration</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{contagion_matrix_data_source}</td>
+            <td><span class="text-amber">Medium</span></td>
+            <td>{contagion_matrix_notes}</td>
+          </tr>
+          <tr>
+            <td>Sensitivity Analysis</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{sensitivity_data_source}</td>
+            <td><span class="text-amber">Medium-High</span></td>
+            <td>{sensitivity_notes}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>9.2 Data Quality and Limitations</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Data Category</th>
+            <th>Data Quality</th>
+            <th>Completeness</th>
+            <th>Timeliness</th>
+            <th>Limitation Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Industry Exposure Data</td>
+            <td><span class="tag tag-green">Good</span></td>
+            <td>95%</td>
+            <td>T+1 day</td>
+            <td>{industry_data_limitation_detail}</td>
+          </tr>
+          <tr>
+            <td>Rating Data</td>
+            <td><span class="tag tag-green">Good</span></td>
+            <td>95%</td>
+            <td>T+7 days</td>
+            <td>{rating_data_limitation_detail}</td>
+          </tr>
+          <tr>
+            <td>Regional Economic Data</td>
+            <td><span class="tag tag-amber">Medium</span></td>
+            <td>70%</td>
+            <td>T+90 days</td>
+            <td>{regional_data_limitation_detail}</td>
+          </tr>
+          <tr>
+            <td>Maturity Distribution Data</td>
+            <td><span class="tag tag-green">Good</span></td>
+            <td>95%</td>
+            <td>T+1 day</td>
+            <td>{maturity_data_limitation_detail}</td>
+          </tr>
+          <tr>
+            <td>Funding Channel Data</td>
+            <td><span class="tag tag-amber">Medium</span></td>
+            <td>75%</td>
+            <td>T+30 days</td>
+            <td>{channel_data_limitation_detail}</td>
+          </tr>
+          <tr>
+            <td>Contagion Matrix Data</td>
+            <td><span class="tag tag-amber">Medium</span></td>
+            <td>70%</td>
+            <td>T+30 days</td>
+            <td>{contagion_data_limitation_detail}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>9.3 Methodological Limitation Statement</h3>
+      <div class="card card-amber">
+        <h4>Limitation 1: {limitation_title_1}</h4>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
+          {limitation_detail_1}
+        </p>
+      </div>
+      <div class="card card-amber" style="margin-top:10px;">
+        <h4>Limitation 2: {limitation_title_2}</h4>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
+          {limitation_detail_2}
+        </p>
+      </div>
+      <div class="card card-amber" style="margin-top:10px;">
+        <h4>Limitation 3: {limitation_title_3}</h4>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
+          {limitation_detail_3}
+        </p>
+      </div>
+      <div class="card card-amber" style="margin-top:10px;">
+        <h4>Limitation 4: {limitation_title_4}</h4>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
+          {limitation_detail_4}
+        </p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>9.4 Completeness Score</h3>
+      <!-- BEFORE outputting any rating in this template, confirm that all dimensions used meet the density rules in mosaic-engine.md §4. If not, output 'Insufficient information to assess' instead. -->
+      <table>
+        <thead>
+          <tr>
+            <th>Assessment Dimension</th>
+            <th>Score</th>
+            <th>Completeness Percentage</th>
+            <th>Items to Improve</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Five-Dimension Concentration Coverage</td>
+            <td><span class="tag tag-green">{five_dim_coverage_score}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{five_dim_coverage_pct}%;background:var(--green);">{five_dim_coverage_pct}%</div>
+              </div>
+            </td>
+            <td>{five_dim_coverage_to_improve}</td>
+          </tr>
+          <tr>
+            <td>Data Support Strength</td>
+            <td><span class="tag tag-amber">{data_support_score}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{data_support_pct}%;background:var(--amber);">{data_support_pct}%</div>
+              </div>
+            </td>
+            <td>{data_support_to_improve}</td>
+          </tr>
+          <tr>
+            <td>Rating Adjustment Precision</td>
+            <td><span class="tag tag-amber">{rating_adjustment_score}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{rating_adjustment_pct}%;background:var(--amber);">{rating_adjustment_pct}%</div>
+              </div>
+            </td>
+            <td>{rating_adjustment_to_improve}</td>
+          </tr>
+          <tr>
+            <td>Diversification Recommendation Operability</td>
+            <td><span class="tag tag-green">{diversification_score}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{diversification_pct}%;background:var(--green);">{diversification_pct}%</div>
+              </div>
+            </td>
+            <td>{diversification_to_improve}</td>
+          </tr>
+          <tr>
+            <td>Contagion Integration Depth</td>
+            <td><span class="tag tag-amber">{contagion_linkage_score}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{contagion_linkage_pct}%;background:var(--amber);">{contagion_linkage_pct}%</div>
+              </div>
+            </td>
+            <td>{contagion_linkage_to_improve}</td>
+          </tr>
+          <tr>
+            <td>Sensitivity Analysis Coverage</td>
+            <td><span class="tag tag-amber">{sensitivity_score}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{sensitivity_pct}%;background:var(--amber);">{sensitivity_pct}%</div>
+              </div>
+            </td>
+            <td>{sensitivity_to_improve}</td>
+          </tr>
+          <tr>
+            <td><strong>Overall Completeness</strong></td>
+            <td><span class="tag tag-amber">{composite_score}</span></td>
+            <td>
+              <div class="completeness-bar" style="height:24px;">
+                <div class="completeness-fill" style="width:{composite_pct}%;background:var(--blue);font-size:12px;line-height:24px;">{composite_pct}%</div>
+              </div>
+            </td>
+            <td>{composite_improvement_items}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>9.5 Update Plan</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Update Content</th>
+            <th>Estimated Update Time</th>
+            <th>Trigger Condition</th>
+            <th>Responsible Party</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{update_content_1}</td>
+            <td>{expected_update_time_1}</td>
+            <td>{trigger_condition_1}</td>
+            <td>{responsible_party_1}</td>
+          </tr>
+          <tr>
+            <td>{update_content_2}</td>
+            <td>{expected_update_time_2}</td>
+            <td>{trigger_condition_2}</td>
+            <td>{responsible_party_2}</td>
+          </tr>
+          <tr>
+            <td>{update_content_3}</td>
+            <td>{expected_update_time_3}</td>
+            <td>{trigger_condition_3}</td>
+            <td>{responsible_party_3}</td>
+          </tr>
+          <tr>
+            <td>{update_content_4}</td>
+            <td>{expected_update_time_4}</td>
+            <td>{trigger_condition_4}</td>
+            <td>{responsible_party_4}</td>
+          </tr>
+          <tr>
+            <td>{update_content_5}</td>
+            <td>{expected_update_time_5}</td>
+            <td>{trigger_condition_5}</td>
+            <td>{responsible_party_5}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box info-blue" style="margin-top:12px;">
+        <strong>Completeness Summary:</strong>{completeness_summary——Evaluate the overall completeness of this report, which dimensions meet expected standards, which need supplementation, and the key directions for the next update round.}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- DISCLAIMER -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <div class="card card-red">
+      <h3>Disclaimer</h3>
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.7;">
+        This Portfolio Concentration Analysis Report (Type 14) is for internal risk assessment reference only. The concentration scores, rating adjustment magnitudes,
+        diversification recommendations, and other content herein are preliminary judgments based on public information and model simulations, and do not constitute any investment advice or credit decision basis.
+        Concentration analysis involves numerous assumptions and simplifications; actual risks may deviate significantly from the analysis results due to market conditions, policy changes,
+        entity behavior, and other factors. Before making any investment or credit decisions, a comprehensive assessment should be conducted in conjunction with the latest market information
+        and professional judgment.
+      </p>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<!-- ================================================================ -->
+<!-- FOOTER -->
+<!-- ================================================================ -->
+<div class="footer">
+  <p><strong>Portfolio Concentration Analysis Report</strong> -- Type 14 Template</p>
+  <p>Report ID T14-{report_number} · Version v0.0.8 · Generated on {generation_date} · For internal risk assessment only</p>
+  <p style="margin-top:6px; font-size:10px; color:var(--text-tertiary);">
+    Based on Unified Credit Assessment Framework v0.0.8 · Concentration Analysis Model v0.0.8 · All analysis is internal simulation and does not constitute investment advice
+  </p>
+</div>
+
+</body>
+</html>

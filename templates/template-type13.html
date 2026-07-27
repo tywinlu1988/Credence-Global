@@ -1,0 +1,1429 @@
+﻿<!DOCTYPE html>
+<!-- @template: ${CLAUDE_PLUGIN_ROOT}/templates/template-type13.html -->
+<!-- @engine-version: v0.0.8 -->
+<html lang="en">
+<!-- Sample reports: contagion-solar-overcapacity.html, contagion-yongmei-2020.html, contagion-realestate-2021.html, contagion-ziguang-2020.html -->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Contagion Analysis Report Template Type 13 &middot; Source &rarr; Transmission Path &rarr; Affected Entities &rarr; Timeline &rarr; Magnitude Estimation &middot; Systematic Smart Warning Layer">
+<title>Contagion Analysis Report &middot; Type 13 Template</title>
+<link rel="stylesheet" href="template-base.css">
+<style>
+  .hero { background: linear-gradient(135deg, #0f172a, #4a1a1a, #7c2d12); }
+  .contagion-source-card { background:var(--bg-secondary); border-radius:var(--radius); padding:20px 24px; margin:12px 0; border:1px solid var(--border-default); border-left:4px solid var(--red); }
+  .contagion-source-card h3 { font-size:15px; font-weight:600; margin-bottom:10px; color:var(--red); }
+  .path-card { background:var(--bg-secondary); border-radius:var(--radius); padding:18px 22px; margin:14px 0; border:1px solid var(--border-default); border-left:4px solid var(--red); }
+  .path-card h4 { font-size:14px; margin-bottom:8px; color:var(--red); }
+  .path-card .path-type { font-size:11px; color:var(--text-tertiary); margin-bottom:6px; }
+  .path-card .path-desc { font-size:13px; color:var(--text-secondary); line-height:1.7; }
+  .node-chain { display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding:10px 0; font-size:12px; }
+  .node-chain .node { background:var(--bg-tertiary); padding:5px 12px; border-radius:4px; border:1px solid var(--border-default); }
+  .node-chain .arrow { color:var(--text-tertiary); font-size:16px; }
+  .quant-box { background:var(--bg-tertiary); border-radius:6px; padding:14px 18px; margin:8px 0; border-left:3px solid var(--amber); }
+  .quant-box .q-stat { font-size:22px; font-weight:800; color:var(--red); }
+  .quant-box .q-label { font-size:11px; color:var(--text-secondary); }
+  .contagion-map { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border-default); border-radius:8px; overflow:hidden; margin:14px 0; }
+  .contagion-item { background:var(--bg-secondary); padding:14px 18px; }
+  .contagion-item h5 { font-size:13px; margin-bottom:6px; }
+  .timeline-phase { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--border-default); border-radius:8px; overflow:hidden; margin:14px 0; }
+  .tl-phase { background:var(--bg-secondary); padding:16px 18px; }
+  .tl-phase h4 { font-size:13px; margin-bottom:6px; color:var(--red); }
+  .tl-phase ul { font-size:12px; color:var(--text-secondary); line-height:1.8; padding-left:14px; }
+  .heat-map { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:2px; margin:12px 0; }
+  .heat-item { padding:12px 8px; text-align:center; border-radius:4px; font-size:11px; }
+  .completeness-bar { background:var(--bg-tertiary); border-radius:4px; height:20px; overflow:hidden; margin:6px 0; }
+  .completeness-fill { height:100%; border-radius:4px; text-align:center; font-size:10px; line-height:20px; font-weight:600; }
+  .comparison-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border-default); border-radius:8px; overflow:hidden; margin:14px 0; }
+  .comparison-item { background:var(--bg-secondary); padding:14px 18px; }
+  .comparison-item h5 { font-size:13px; margin-bottom:6px; }
+  .comparison-item .c-stat { font-size:20px; font-weight:800; color:var(--red); }
+  .warning-tier { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; }
+  .warn-badge { padding:4px 12px; border-radius:4px; font-size:11px; font-weight:600; }
+  .warn-badge.red { background:rgba(239,68,68,0.15); color:var(--red); border:1px solid rgba(239,68,68,0.3); }
+  .warn-badge.amber { background:rgba(245,158,11,0.15); color:var(--amber); border:1px solid rgba(245,158,11,0.3); }
+  .warn-badge.green { background:rgba(34,197,94,0.15); color:var(--green); border:1px solid rgba(34,197,94,0.3); }
+  .warn-badge.blue { background:rgba(99,102,241,0.15); color:var(--blue); border:1px solid rgba(99,102,241,0.3); }
+  @media (max-width:768px) { .contagion-map { grid-template-columns:1fr; } .timeline-phase { grid-template-columns:1fr; } .comparison-grid { grid-template-columns:1fr; } .heat-map { grid-template-columns:repeat(3,1fr); } }
+</style>
+</head>
+<body>
+
+<!-- ================================================================ -->
+<!-- HERO -->
+<!-- ================================================================ -->
+<div class="hero">
+  <span class="chip">Contagion Analysis Report &middot; TYPE 13</span>
+  <h1>Contagion Analysis Report</h1>
+  <p class="subtitle">
+    Source Identification &middot; Transmission Path Tracing &middot; Affected Entity List &middot; Timeline Projection &middot; Magnitude Estimation &middot; Historical Comparable Cases &middot; Systematic Smart Warning
+  </p>
+  <div class="meta">
+    <span>Source Industry: {source_industry}</span>
+    <span>Source Entity: {source_entity}</span>
+    <span>Trigger Event: {contagion_trigger}</span>
+    <span>Analysis Date: {analysis_date}</span>
+    <span>Report Version: v0.0.8 &middot; Type 13 Contagion Analysis</span>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- CONTAINER -->
+<!-- ================================================================ -->
+<div class="container">
+
+  <!-- ================================================================ -->
+  <!-- STRIP -- 4-column core metrics -->
+  <!-- ================================================================ -->
+  <div class="strip cols-4">
+    <div class="strip-item">
+      <div class="slabel">Contagion Intensity Level</div>
+      <div class="sval" style="color:var(--red);">{contagion_intensity}</div>
+      <div class="ssub">1-5 scale &middot; Based on scope and impact depth</div>
+    </div>
+    <div class="strip-item">
+      <div class="slabel">Affected Industries Count</div>
+      <div class="sval" style="color:var(--red);">{affected_industries}</div>
+      <div class="ssub">SWS Level-2 industry classification</div>
+    </div>
+    <div class="strip-item">
+      <div class="slabel">Contagion Speed Rating</div>
+      <div class="sval" style="color:var(--amber);">{contagion_speed}</div>
+      <div class="ssub">Fast / Moderate / Slow</div>
+    </div>
+    <div class="strip-item">
+      <div class="slabel">Systemic Risk Temperature</div>
+      <div class="sval" style="color:var(--red);">{systemic_risk_temp}</div>
+      <div class="ssub">Normal / Watch / Alert / Danger</div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 1 -- Source Analysis -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--red);"></span>
+      1. Source Analysis
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      This section provides a summary analysis of the credit profile of the source industry/entity, drawing on
+      core conclusions from the Credit Analysis Report (Type 1), identifying key factors that trigger contagion
+      and the potential for escalation.
+    </p>
+
+    <div class="contagion-source-card">
+      <h3>Source Credit Profile Summary</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Dimension</th>
+            <th>Characteristics</th>
+            <th>Escalation Potential</th>
+            <th>Trigger Threshold</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Entity Nature</td>
+            <td>{source_entity_nature}</td>
+            <td><span class="tag tag-red">{escalation_level}</span></td>
+            <td>{threshold_desc}</td>
+          </tr>
+          <tr>
+            <td>Debt Scale</td>
+            <td>{debt_profile}</td>
+            <td><span class="tag tag-red">{escalation_level}</span></td>
+            <td>{threshold_desc}</td>
+          </tr>
+          <tr>
+            <td>Industry Chain Linkage</td>
+            <td>{industry_linkage}</td>
+            <td><span class="tag tag-red">{escalation_level}</span></td>
+            <td>{threshold_desc}</td>
+          </tr>
+          <tr>
+            <td>Regional Distribution</td>
+            <td>{regional_distribution}</td>
+            <td><span class="tag tag-amber">{escalation_level}</span></td>
+            <td>{threshold_desc}</td>
+          </tr>
+          <tr>
+            <td>Financing Channel Diversity</td>
+            <td>{funding_channels}</td>
+            <td><span class="tag tag-red">{escalation_level}</span></td>
+            <td>{threshold_desc}</td>
+          </tr>
+          <tr>
+            <td>Information Transparency</td>
+            <td>{transparency_desc}</td>
+            <td><span class="tag tag-red">{escalation_level}</span></td>
+            <td>{threshold_desc}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box info-red" style="margin-top:12px;">
+        <strong>Type 1 Credit Analysis Conclusion Reference:</strong>{credit_analysis_reference}
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Trigger Events &amp; Escalation Factors</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Trigger Event</th>
+            <th>Date</th>
+            <th>Event Type</th>
+            <th>Severity</th>
+            <th>Escalation Factor Activated?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{trigger_name}</td>
+            <td>{event_date}</td>
+            <td>{event_type}</td>
+            <td><span class="tag tag-red">Severe</span></td>
+            <td><span class="tag tag-red">{yes_no}</span></td>
+          </tr>
+          <tr>
+            <td>{secondary_trigger}</td>
+            <td>{event_date}</td>
+            <td>{event_market_reaction}</td>
+            <td><span class="tag tag-amber">Moderate</span></td>
+            <td><span class="tag tag-amber">{yes_no}</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="info-box info-amber" style="margin-top:10px;">
+        <strong>Escalation Factor Synergy Assessment:</strong>{escalation_synergy_assessment}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 2 -- Transmission Path Map -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--amber);"></span>
+      2. Transmission Path Map
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Arrow visualization of each transmission path -- starting from the source, tracing step by step to
+      first-level and second-level affected entities. Arrow direction indicates the forward flow of contagion,
+      with the nature of the impact annotated.
+    </p>
+
+    <div class="path-card">
+      <span class="path-type">Contagion Type: {contagion_type_name}</span>
+      <h4>Path 1: {path_title} &middot; {source_industry}&rarr;{first_tier_industry}&rarr;{second_tier_industry}</h4>
+      <p class="path-desc">
+        {path_detail}
+      </p>
+      <div class="node-chain">
+        <span class="node" style="background:rgba(239,68,68,0.15);color:var(--red);font-weight:700;">{source_node}</span>
+        <span class="arrow">&rarr;</span>
+        <span class="node">{ft_node_1}</span>
+        <span class="arrow">&rarr;</span>
+        <span class="node">{st_node_1}</span>
+        <span class="arrow">&rarr;</span>
+        <span class="node" style="color:var(--text-tertiary);">{third_tier_node}</span>
+      </div>
+      <div class="quant-box">
+        <div style="display:flex;gap:20px;flex-wrap:wrap;">
+          <div><span class="q-stat">{impact_data_1}</span><br><span class="q-label">{impact_metric_1}</span></div>
+          <div><span class="q-stat">{impact_data_2}</span><br><span class="q-label">{impact_metric_2}</span></div>
+          <div><span class="q-stat">{impact_data_3}</span><br><span class="q-label">{impact_metric_3}</span></div>
+          <div><span class="q-stat">{impact_data_4}</span><br><span class="q-label">{impact_metric_4}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="path-card">
+      <span class="path-type">Contagion Type: {contagion_type_name}</span>
+      <h4>Path 2: {path_title} &middot; {source_industry}&rarr;{first_tier_industry}&rarr;{second_tier_industry}</h4>
+      <p class="path-desc">
+        {path_detail}
+      </p>
+      <div class="node-chain">
+        <span class="node" style="background:rgba(239,68,68,0.15);color:var(--red);font-weight:700;">{source_node}</span>
+        <span class="arrow">&rarr;</span>
+        <span class="node">{ft_node_1}</span>
+        <span class="arrow">&rarr;</span>
+        <span class="node">{ft_node_2}</span>
+        <span class="arrow">&rarr;</span>
+        <span class="node">{st_node}</span>
+      </div>
+      <div class="quant-box">
+        <div style="display:flex;gap:20px;flex-wrap:wrap;">
+          <div><span class="q-stat">{impact_data_1}</span><br><span class="q-label">{impact_metric_1}</span></div>
+          <div><span class="q-stat">{impact_data_2}</span><br><span class="q-label">{impact_metric_2}</span></div>
+          <div><span class="q-stat">{impact_data_3}</span><br><span class="q-label">{impact_metric_3}</span></div>
+          <div><span class="q-stat">{impact_data_4}</span><br><span class="q-label">{impact_metric_4}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="path-card">
+      <span class="path-type">Contagion Type: {contagion_type_name}</span>
+      <h4>Path 3: {path_title} &middot; {source_industry}&rarr;{first_tier_industry}&rarr;{second_tier_industry}</h4>
+      <p class="path-desc">
+        {path_detail}
+      </p>
+      <div class="node-chain">
+        <span class="node" style="background:rgba(239,68,68,0.15);color:var(--red);font-weight:700;">{source_node}</span>
+        <span class="arrow">&rarr;</span>
+        <span class="node">{ft_node}</span>
+        <span class="arrow">&rarr;</span>
+        <span class="node">{st_node}</span>
+      </div>
+      <div class="quant-box">
+        <div style="display:flex;gap:20px;flex-wrap:wrap;">
+          <div><span class="q-stat">{impact_data_1}</span><br><span class="q-label">{impact_metric_1}</span></div>
+          <div><span class="q-stat">{impact_data_2}</span><br><span class="q-label">{impact_metric_2}</span></div>
+          <div><span class="q-stat">{impact_data_3}</span><br><span class="q-label">{impact_metric_3}</span></div>
+          <div><span class="q-stat">{impact_data_4}</span><br><span class="q-label">{impact_metric_4}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box info-amber" style="margin-top:12px;">
+      <strong>Transmission Path Comprehensive Assessment:</strong>{path_overlap_assessment}
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 3 -- Affected Industries / Entity List -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--blue);"></span>
+      3. Affected Industries / Entity List
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Tabular list with each row showing transmission path type, intensity (1-5), impact magnitude, and
+      confidence level. Sorted by contagion depth tier.
+    </p>
+
+    <div class="card">
+      <h3>Tier 1: Directly Affected Entities (Primary Transmission)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Entity / Industry</th>
+            <th>Contagion Path Type</th>
+            <th>Intensity</th>
+            <th>Impact Magnitude</th>
+            <th>Confidence</th>
+            <th>Risk Signal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{affected_entity_1}</td>
+            <td>{chain_same_industry}</td>
+            <td><span class="tag tag-red">5/5</span></td>
+            <td>{impact_desc}</td>
+            <td><span class="text-green">High</span></td>
+            <td><span class="tag tag-red">Alert</span></td>
+          </tr>
+          <tr>
+            <td>{affected_entity_2}</td>
+            <td>{chain_same_industry}</td>
+            <td><span class="tag tag-red">5/5</span></td>
+            <td>{impact_desc}</td>
+            <td><span class="text-green">High</span></td>
+            <td><span class="tag tag-red">Alert</span></td>
+          </tr>
+          <tr>
+            <td>{affected_entity_3}</td>
+            <td>{chain_same_industry}</td>
+            <td><span class="tag tag-red">4/5</span></td>
+            <td>{impact_desc}</td>
+            <td><span class="text-amber">Medium-High</span></td>
+            <td><span class="tag tag-amber">Watch</span></td>
+          </tr>
+          <tr>
+            <td>{affected_entity_4}</td>
+            <td>{chain_same_industry}</td>
+            <td><span class="tag tag-red">4/5</span></td>
+            <td>{impact_desc}</td>
+            <td><span class="text-amber">Medium-High</span></td>
+            <td><span class="tag tag-amber">Watch</span></td>
+          </tr>
+          <tr>
+            <td>{affected_entity_5}</td>
+            <td>{chain_same_industry}</td>
+            <td><span class="tag tag-amber">3/5</span></td>
+            <td>{impact_desc}</td>
+            <td><span class="text-amber">Medium</span></td>
+            <td><span class="tag tag-amber">Watch</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Tier 2: Indirectly Affected Entities (Secondary Transmission)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Entity / Industry</th>
+            <th>Contagion Path Type</th>
+            <th>Intensity</th>
+            <th>Impact Magnitude</th>
+            <th>Confidence</th>
+            <th>Risk Signal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{indirect_entity_1}</td>
+            <td>{chain_demand_contraction}</td>
+            <td><span class="tag tag-amber">3/5</span></td>
+            <td>{impact_desc}</td>
+            <td><span class="text-amber">Medium</span></td>
+            <td><span class="tag tag-amber">Watch</span></td>
+          </tr>
+          <tr>
+            <td>{indirect_entity_2}</td>
+            <td>{chain_demand_same_rating}</td>
+            <td><span class="tag tag-amber">3/5</span></td>
+            <td>{impact_desc}</td>
+            <td><span class="text-amber">Medium</span></td>
+            <td><span class="tag tag-amber">Watch</span></td>
+          </tr>
+          <tr>
+            <td>{indirect_entity_3}</td>
+            <td>{chain_same_channel}</td>
+            <td><span class="tag tag-amber">2/5</span></td>
+            <td>{impact_desc}</td>
+            <td><span class="text-amber">Medium-Low</span></td>
+            <td><span class="tag tag-green">Monitor</span></td>
+          </tr>
+          <tr>
+            <td>{indirect_entity_4}</td>
+            <td>{chain_regional_resonance}</td>
+            <td><span class="tag tag-amber">2/5</span></td>
+            <td>{impact_desc}</td>
+            <td><span class="text-amber">Medium-Low</span></td>
+            <td><span class="tag tag-green">Monitor</span></td>
+          </tr>
+          <tr>
+            <td>{indirect_entity_5}</td>
+            <td>{chain_same_rating_contagion}</td>
+            <td><span class="tag tag-amber">2/5</span></td>
+            <td>{impact_desc}</td>
+            <td><span class="text-amber">Medium-Low</span></td>
+            <td><span class="tag tag-green">Monitor</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Tier 3: Macro / Systemic Impact (Tertiary Transmission)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Area Affected</th>
+            <th>Contagion Path Type</th>
+            <th>Intensity</th>
+            <th>Impact Description</th>
+            <th>Confidence</th>
+            <th>Risk Signal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{macro_area_1}</td>
+            <td>{systemic_impact}</td>
+            <td><span class="tag tag-amber">3/5</span></td>
+            <td>{impact_desc}</td>
+            <td><span class="text-amber">Medium</span></td>
+            <td><span class="tag tag-amber">Watch</span></td>
+          </tr>
+          <tr>
+            <td>{macro_area_2}</td>
+            <td>{systemic_impact}</td>
+            <td><span class="tag tag-amber">2/5</span></td>
+            <td>{impact_desc}</td>
+            <td><span class="text-amber">Medium-Low</span></td>
+            <td><span class="tag tag-green">Monitor</span></td>
+          </tr>
+          <tr>
+            <td>{macro_area_3}</td>
+            <td>{systemic_impact}</td>
+            <td><span class="tag tag-green">1/5</span></td>
+            <td>{impact_desc}</td>
+            <td><span class="text-green">Low</span></td>
+            <td><span class="tag tag-green">Monitor</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="info-box info-red" style="margin-top:12px;">
+      <strong>Affected Entities Summary:</strong>{affected_summary}
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 4 -- Contagion Timeline -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--red);"></span>
+      4. Contagion Timeline
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Full timeline projection from the trigger event through first-round contagion, second-round contagion,
+      and market recovery. Mark the contagion type and scope expansion at each key node.
+    </p>
+
+    <div class="card">
+      <div class="tl-phase">
+        <h4>Phase 1: Trigger Event &middot; {trigger_timeframe}</h4>
+        <ul>
+          <li>{trigger_detail_1}</li>
+          <li>{trigger_detail_2}</li>
+          <li>{trigger_detail_3}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <div class="tl-phase">
+        <h4>Phase 2: First-Round Contagion &middot; {round1_timeframe}</h4>
+        <ul>
+          <li>{round1_event_1}</li>
+          <li>{round1_event_2}</li>
+          <li>{round1_event_3}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <div class="tl-phase">
+        <h4>Phase 3: Second-Round Contagion &middot; {round2_timeframe}</h4>
+        <ul>
+          <li>{round2_event_1}</li>
+          <li>{round2_event_2}</li>
+          <li>{round2_event_3}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <div class="tl-phase">
+        <h4>Phase 4: Market Recovery / Stabilization &middot; {recovery_timeframe}</h4>
+        <ul>
+          <li>{policy_response}</li>
+          <li>{credit_pricing_signal}</li>
+          <li>{structural_change_desc}</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="info-box info-amber" style="margin-top:12px;">
+      <strong>Timeline Key Findings:</strong>{timeline_key_findings}
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 5 -- Magnitude Estimation -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--purple);"></span>
+      5. Magnitude Estimation
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Quantitative estimates of various contagion metrics, covering spread changes, rating migrations, issuance
+      cancellations, price declines, and other dimensions.
+    </p>
+
+    <div class="card">
+      <h3>5.1 Spread Changes</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Contagion Round</th>
+            <th>Time Period</th>
+            <th>Bond / Index</th>
+            <th>Spread Change / Absolute</th>
+            <th>Trigger Event</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>First Round</td>
+            <td>{time_period}</td>
+            <td>{bond_type_1}</td>
+            <td class="text-red">{spread_change}</td>
+            <td>{trigger_event}</td>
+          </tr>
+          <tr>
+            <td>First Round</td>
+            <td>{time_period}</td>
+            <td>{bond_type_2}</td>
+            <td class="text-red">{spread_change}</td>
+            <td>{trigger_event}</td>
+          </tr>
+          <tr>
+            <td>Second Round</td>
+            <td>{time_period}</td>
+            <td>{bond_type_3}</td>
+            <td class="text-amber">{spread_change}</td>
+            <td>{trigger_event}</td>
+          </tr>
+          <tr>
+            <td>Third Round</td>
+            <td>{time_period}</td>
+            <td>{bond_type_4}</td>
+            <td class="text-amber">{spread_change}</td>
+            <td>{trigger_event}</td>
+          </tr>
+          <tr>
+            <td>Recovery</td>
+            <td>{time_period}</td>
+            <td>{bond_type_5}</td>
+            <td class="text-green">{spread_change}</td>
+            <td>{trigger_event}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>5.2 Rating Migration</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Time Period</th>
+            <th>Downgraded Entities</th>
+            <th>Downgrade Actions</th>
+            <th>Default / Restructured Entities</th>
+            <th>Default Bond Volume</th>
+            <th>Primary Downgrade Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{time_period_1}</td>
+            <td>{downgraded_entities}</td>
+            <td>{downgrade_count}</td>
+            <td>{defaulted_entities}</td>
+            <td>{default_scale}</td>
+            <td>{downgrade_reason}</td>
+          </tr>
+          <tr>
+            <td>{time_period_2}</td>
+            <td>{downgraded_entities}</td>
+            <td>{downgrade_count}</td>
+            <td>{defaulted_entities}</td>
+            <td>{default_scale}</td>
+            <td>{downgrade_reason}</td>
+          </tr>
+          <tr>
+            <td>{time_period_3}</td>
+            <td>{downgraded_entities}</td>
+            <td>{downgrade_count}</td>
+            <td>{defaulted_entities}</td>
+            <td>{default_scale}</td>
+            <td>{downgrade_reason}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>5.3 Issuance Cancellations / Price Declines</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Market / Product</th>
+            <th>Cancelled Issuance Volume</th>
+            <th>Price / Index Decline</th>
+            <th>Time Period</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{market_type_1}</td>
+            <td>{cancelled_issuance}</td>
+            <td class="text-red">{price_decline}</td>
+            <td>{time_period}</td>
+            <td>{note}</td>
+          </tr>
+          <tr>
+            <td>{market_type_2}</td>
+            <td>{cancelled_issuance}</td>
+            <td class="text-red">{price_decline}</td>
+            <td>{time_period}</td>
+            <td>{note}</td>
+          </tr>
+          <tr>
+            <td>{market_type_3}</td>
+            <td>{cancelled_issuance}</td>
+            <td class="text-amber">{price_decline}</td>
+            <td>{time_period}</td>
+            <td>{note}</td>
+          </tr>
+          <tr>
+            <td>{market_type_4}</td>
+            <td>{cancelled_issuance}</td>
+            <td class="text-amber">{price_decline}</td>
+            <td>{time_period}</td>
+            <td>{note}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>5.4 Magnitude Summary</h3>
+      <div class="heat-map">
+        <div class="heat-item" style="background:rgba(239,68,68,0.2);border:1px solid var(--red);">
+          <strong style="color:var(--red);">Spread Peak</strong><br>
+          <span style="font-size:18px;font-weight:800;color:var(--red);">{spread_peak}</span><br>
+          <span style="font-size:10px;color:var(--text-tertiary);">Historical high</span>
+        </div>
+        <div class="heat-item" style="background:rgba(239,68,68,0.15);border:1px solid var(--red);">
+          <strong style="color:var(--red);">Max Decline</strong><br>
+          <span style="font-size:18px;font-weight:800;color:var(--red);">{max_decline}</span><br>
+          <span style="font-size:10px;color:var(--text-tertiary);">Price / Index</span>
+        </div>
+        <div class="heat-item" style="background:rgba(245,158,11,0.15);border:1px solid var(--amber);">
+          <strong style="color:var(--amber);">Rating Downgrades</strong><br>
+          <span style="font-size:18px;font-weight:800;color:var(--amber);">{downgrade_data}</span><br>
+          <span style="font-size:10px;color:var(--text-tertiary);">Entity count</span>
+        </div>
+        <div class="heat-item" style="background:rgba(245,158,11,0.15);border:1px solid var(--amber);">
+          <strong style="color:var(--amber);">Shock Duration</strong><br>
+          <span style="font-size:18px;font-weight:800;color:var(--amber);">{impact_duration}</span><br>
+          <span style="font-size:10px;color:var(--text-tertiary);">Impact time span</span>
+        </div>
+        <div class="heat-item" style="background:rgba(99,102,241,0.15);border:1px solid var(--blue);">
+          <strong style="color:var(--blue);">Issuance Cancelled</strong><br>
+          <span style="font-size:18px;font-weight:800;color:var(--blue);">{cancellation_data}</span><br>
+          <span style="font-size:10px;color:var(--text-tertiary);">Full market volume</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 6 -- Historical Comparable Cases -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--green);"></span>
+      6. Historical Comparable Cases
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      References similar contagion patterns from historical cases such as contagion-yongmei/realestate/ziguang,
+      comparing similarities and differences between the current event and historical cases through horizontal
+      analysis.
+    </p>
+
+    <div class="comparison-grid">
+      <div class="comparison-item" style="border-left:3px solid var(--red);">
+        <h5>Case 1: Yongmei Holdings (2020.10-11)</h5>
+        <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
+          <strong>Contagion Type:</strong> Regional Resonance + Confidence Collapse + Liquidity Run<br>
+          <strong>Transmission Pattern:</strong> AAA SOE unexpected default &rarr; indiscriminate sell-off of Henan SOE bonds &rarr; regional/peer SOE spreads widening 300-500bp &rarr; ~150 billion RMB of credit bond issuance cancelled market-wide &rarr; credit bond ETF down 2.5%<br>
+          <strong>Similarities:</strong>{case_yongmei_similar}<br>
+          <strong>Differences:</strong>{case_yongmei_diff}
+        </p>
+        <div class="c-stat">{benchmark_data}</div>
+      </div>
+      <div class="comparison-item" style="border-left:3px solid var(--red);">
+        <h5>Case 2: Real Estate Contagion Chain (2021-2023)</h5>
+        <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
+          <strong>Contagion Type:</strong> Credit Chain Transmission + Liquidity Run + Confidence Collapse + Regional Resonance<br>
+          <strong>Transmission Pattern:</strong> Evergrande default &rarr; builders/supplier accounts receivable write-downs (14 industries, 40+ A-share listed companies) &rarr; property USD bonds crash 30-70% &rarr; bank/trust/LGFV chain shock &rarr; lasting 2+ years<br>
+          <strong>Similarities:</strong>{case_realestate_similar}<br>
+          <strong>Differences:</strong>{case_realestate_diff}
+        </p>
+        <div class="c-stat">{benchmark_data}</div>
+      </div>
+    </div>
+
+    <div class="comparison-grid" style="margin-top:1px;">
+      <div class="comparison-item" style="border-left:3px solid var(--amber);">
+        <h5>Case 3: Ziguang Group (2020.11)</h5>
+        <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
+          <strong>Contagion Type:</strong> Confidence Collapse + Liquidity Run + Credit Chain Transmission<br>
+          <strong>Transmission Pattern:</strong> Ziguang PPN default &rarr; Tsinghua-affiliated bonds crash (Tsinghua Holdings bonds -27%) &rarr; semiconductor sector spreads widen &rarr; same-industry high-leverage tech bonds under pressure &rarr; still AAA-rated 30 days before default<br>
+          <strong>Similarities:</strong>{ziguang_similar}<br>
+          <strong>Differences:</strong>{ziguang_diff}
+        </p>
+        <div class="c-stat">{benchmark_data}</div>
+      </div>
+      <div class="comparison-item" style="border-left:3px solid var(--blue);">
+        <h5>Comparative Analysis</h5>
+        <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
+          <strong>Common Characteristics of Historical Cases:</strong><br>
+          &middot; Unexpected default or rating lag is the core element triggering contagion<br>
+          &middot; The longer the industry chain and the more diversified the financing channels, the broader the contagion scope<br>
+          &middot; The higher the regional concentration, the more pronounced the regional resonance effect<br>
+          &middot; The speed of policy intervention determines the duration and depth of contagion<br>
+          <strong>Positioning of the Current Case in the Historical Spectrum:</strong>{case_positioning}
+        </p>
+        <div class="c-stat">{assessment_conclusion}</div>
+      </div>
+    </div>
+
+    <div class="info-box info-blue" style="margin-top:12px;">
+      <strong>Historical Comparable Case Insights:</strong>{historical_insights}
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 7 -- Contagion Type Distribution & Theoretical Framework -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--purple);"></span>
+      7. Contagion Type Distribution &amp; Theoretical Framework
+    </h2>
+
+    <div class="card">
+      <h3>Contagion Type Weight Distribution</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Contagion Type</th>
+            <th>Weight</th>
+            <th>Primary Transmission Path</th>
+            <th>Attenuation Distance</th>
+            <th>Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Credit Chain Contagion</td>
+            <td>{weight_pct}</td>
+            <td>{transmission_path}</td>
+            <td>{decay_level}</td>
+            <td>{example}</td>
+          </tr>
+          <tr>
+            <td>Liquidity Run / Same Financing Channel</td>
+            <td>{weight_pct}</td>
+            <td>{transmission_path}</td>
+            <td>{decay_level}</td>
+            <td>{example}</td>
+          </tr>
+          <tr>
+            <td>Confidence Collapse / Same-Rating Contagion</td>
+            <td>{weight_pct}</td>
+            <td>{transmission_path}</td>
+            <td>{decay_level}</td>
+            <td>{example}</td>
+          </tr>
+          <tr>
+            <td>Regional Resonance</td>
+            <td>{weight_pct}</td>
+            <td>{transmission_path}</td>
+            <td>{decay_level}</td>
+            <td>{example}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box info-amber" style="margin-top:10px;">
+        <strong>Theoretical Validation:</strong>{theoretical_validation}
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Contagion Theory Core Proposition Validation Table</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Theoretical Proposition</th>
+            <th>Current Event Validation</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Credit chain contagion attenuation distance (1-2 layers)</td>
+            <td>{validation_desc}</td>
+            <td><span class="tag tag-green">{validation_result}</span></td>
+          </tr>
+          <tr>
+            <td>Multiplicative effect of same financing channel freeze</td>
+            <td>{validation_desc}</td>
+            <td><span class="tag tag-green">{validation_result}</span></td>
+          </tr>
+          <tr>
+            <td>Regional resonance via fiscal/industry transmission</td>
+            <td>{validation_desc}</td>
+            <td><span class="tag tag-green">{validation_result}</span></td>
+          </tr>
+          <tr>
+            <td>Stepwise spread of same-rating contagion</td>
+            <td>{validation_desc}</td>
+            <td><span class="tag tag-amber">{validation_result}</span></td>
+          </tr>
+          <tr>
+            <td>Confidence collapse most severe when leading companies default</td>
+            <td>{validation_desc}</td>
+            <td><span class="tag tag-green">{validation_result}</span></td>
+          </tr>
+          <tr>
+            <td>High leverage environment amplifies liquidity runs</td>
+            <td>{validation_desc}</td>
+            <td><span class="tag tag-green">{validation_result}</span></td>
+          </tr>
+          <tr>
+            <td>Information asymmetry leads to indiscriminate selling</td>
+            <td>{validation_desc}</td>
+            <td><span class="tag tag-amber">{validation_result}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 8 -- Systematic Smart Warning Layer -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--blue);"></span>
+      8. Systematic Smart Warning Layer Analysis
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      If contagion matrix + concentration framework monitoring had been applied before the contagion occurred,
+      when would warning signals have first been identified? A retrospective assessment of the smart warning
+      layer's capability at different stages.
+    </p>
+
+    <div class="card card-red">
+      <h3>Retrospective Warning Capability of Contagion Matrix &amp; Concentration Framework</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Warning Content</th>
+            <th>Earliest Warning Date</th>
+            <th>Lead Time</th>
+            <th>Warning Signal</th>
+            <th>Confidence</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{warning_content_1}</td>
+            <td>{earliest_warning_time}</td>
+            <td>{lead_time_desc}</td>
+            <td><span class="tag tag-red">{warning_signal}</span></td>
+            <td><span class="text-green">High</span></td>
+          </tr>
+          <tr>
+            <td>{warning_content_2}</td>
+            <td>{earliest_warning_time}</td>
+            <td>{lead_time_desc}</td>
+            <td><span class="tag tag-red">{warning_signal}</span></td>
+            <td><span class="text-green">High</span></td>
+          </tr>
+          <tr>
+            <td>{warning_content_3}</td>
+            <td>{earliest_warning_time}</td>
+            <td>{lead_time_desc}</td>
+            <td><span class="tag tag-amber">{warning_signal}</span></td>
+            <td><span class="text-amber">Medium-High</span></td>
+          </tr>
+          <tr>
+            <td>{warning_content_4}</td>
+            <td>{earliest_warning_time}</td>
+            <td>{lead_time_desc}</td>
+            <td><span class="tag tag-amber">{warning_signal}</span></td>
+            <td><span class="text-amber">Medium</span></td>
+          </tr>
+          <tr>
+            <td>{warning_content_5}</td>
+            <td>{earliest_warning_time}</td>
+            <td>{lead_time_desc}</td>
+            <td><span class="tag tag-amber">{warning_signal}</span></td>
+            <td><span class="text-amber">Medium-Low</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box info-red" style="margin-top:10px;">
+        <strong>Smart Warning Layer Key Findings:</strong>{smart_warning_key_findings}
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>Warning Capability Timeline Retrospective</h3>
+      <div class="timeline">
+        <div class="tl-item red">
+          <div class="tl-date">{warning_time_1}</div>
+          <div><span class="warn-badge red">{warning_level}</span> {warning_desc_red}</div>
+        </div>
+        <div class="tl-item red">
+          <div class="tl-date">{warning_time_2}</div>
+          <div><span class="warn-badge red">{warning_level}</span> {warning_desc}</div>
+        </div>
+        <div class="tl-item amber">
+          <div class="tl-date">{warning_time_3}</div>
+          <div><span class="warn-badge amber">{warning_level}</span> {warning_desc_amber}</div>
+        </div>
+        <div class="tl-item amber">
+          <div class="tl-date">{warning_time_4}</div>
+          <div><span class="warn-badge amber">{warning_level}</span> {warning_desc}</div>
+        </div>
+        <div class="tl-item green">
+          <div class="tl-date">{warning_time_5}</div>
+          <div><span class="warn-badge green">{warning_level}</span> {warning_description_early_green_signal}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-blue" style="margin-top:14px;">
+      <h3>Contagion Matrix Parameter Optimization Recommendations</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Optimization Area</th>
+            <th>Current Engine Status</th>
+            <th>Improvement Suggestion</th>
+            <th>Priority</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{improvement_1}</td>
+            <td>{current_status}</td>
+            <td>{improvement_suggestion}</td>
+            <td><span class="tag tag-red">P0</span></td>
+          </tr>
+          <tr>
+            <td>{improvement_2}</td>
+            <td>{current_status}</td>
+            <td>{improvement_suggestion}</td>
+            <td><span class="tag tag-red">P0</span></td>
+          </tr>
+          <tr>
+            <td>{improvement_3}</td>
+            <td>{current_status}</td>
+            <td>{improvement_suggestion}</td>
+            <td><span class="tag tag-red">P0</span></td>
+          </tr>
+          <tr>
+            <td>{improvement_4}</td>
+            <td>{current_status}</td>
+            <td>{improvement_suggestion}</td>
+            <td><span class="tag tag-amber">P1</span></td>
+          </tr>
+          <tr>
+            <td>{improvement_5}</td>
+            <td>{current_status}</td>
+            <td>{improvement_suggestion}</td>
+            <td><span class="tag tag-amber">P1</span></td>
+          </tr>
+          <tr>
+            <td>{improvement_6}</td>
+            <td>{current_status}</td>
+            <td>{improvement_suggestion}</td>
+            <td><span class="tag tag-green">P2</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 9 -- Escalation Factor Analysis -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--amber);"></span>
+      9. Escalation Factor Analysis
+    </h2>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Escalation Factor</th>
+            <th>Current Contagion Event Status</th>
+            <th>Impact Level</th>
+            <th>Specific Manifestation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Market Panic Sentiment</td>
+            <td>{panic_sentiment_desc}</td>
+            <td><span class="tag tag-red">{level}</span></td>
+            <td>{specific_performance}</td>
+          </tr>
+          <tr>
+            <td>Regulatory Policy Vacuum / Lag</td>
+            <td>{policy_env_desc}</td>
+            <td><span class="tag tag-red">{level}</span></td>
+            <td>{specific_performance}</td>
+          </tr>
+          <tr>
+            <td>High Leverage Environment</td>
+            <td>{leverage_desc}</td>
+            <td><span class="tag tag-red">{level}</span></td>
+            <td>{specific_performance}</td>
+          </tr>
+          <tr>
+            <td>Information Asymmetry</td>
+            <td>{transparency_desc}</td>
+            <td><span class="tag tag-red">{level}</span></td>
+            <td>{specific_performance}</td>
+          </tr>
+          <tr>
+            <td>Timing Effect</td>
+            <td>{timepoint_desc}</td>
+            <td><span class="tag tag-amber">{level}</span></td>
+            <td>{specific_performance}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box info-red" style="margin-top:10px;">
+        <strong>Escalation Factor Synergy Assessment:</strong>{escalation_synergy_assessment}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- SECTION 10 -- Completeness Report -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <h2 class="section-title">
+      <span class="signal" style="background:var(--green);"></span>
+      10. Completeness Report
+    </h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:12px;">
+      Completeness check for this report -- covering all dimensions of contagion analysis, data sources,
+      methodological limitations, and subsequent update plans.
+    </p>
+
+    <div class="card">
+      <h3>10.1 Coverage Dimension Check</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Analysis Dimension</th>
+            <th>Coverage Status</th>
+            <th>Data Source</th>
+            <th>Confidence</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Source Credit Profile</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{data_source}</td>
+            <td><span class="text-green">High</span></td>
+            <td>{remarks}</td>
+          </tr>
+          <tr>
+            <td>Transmission Path Identification</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{data_source}</td>
+            <td><span class="text-green">High</span></td>
+            <td>{remarks}</td>
+          </tr>
+          <tr>
+            <td>Affected Entity List</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{data_source}</td>
+            <td><span class="text-amber">Medium-High</span></td>
+            <td>{remarks}</td>
+          </tr>
+          <tr>
+            <td>Contagion Timeline</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{data_source}</td>
+            <td><span class="text-amber">Medium</span></td>
+            <td>{remarks}</td>
+          </tr>
+          <tr>
+            <td>Magnitude Estimation</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{data_source}</td>
+            <td><span class="text-amber">Medium</span></td>
+            <td>{remarks}</td>
+          </tr>
+          <tr>
+            <td>Historical Comparable Cases</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{data_source}</td>
+            <td><span class="text-green">High</span></td>
+            <td>{remarks}</td>
+          </tr>
+          <tr>
+            <td>Systematic Smart Warning</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{data_source}</td>
+            <td><span class="text-amber">Medium-High</span></td>
+            <td>{remarks}</td>
+          </tr>
+          <tr>
+            <td>Escalation Factor Analysis</td>
+            <td><span class="tag tag-green">Covered</span></td>
+            <td>{data_source}</td>
+            <td><span class="text-amber">Medium</span></td>
+            <td>{remarks}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>10.2 Data Quality &amp; Limitations</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Data Category</th>
+            <th>Data Quality</th>
+            <th>Completeness</th>
+            <th>Timeliness</th>
+            <th>Limitation Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Financial Data</td>
+            <td><span class="tag tag-green">Good</span></td>
+            <td>90%</td>
+            <td>T+30 days</td>
+            <td>{limitation_desc}</td>
+          </tr>
+          <tr>
+            <td>Market Data</td>
+            <td><span class="tag tag-green">Good</span></td>
+            <td>95%</td>
+            <td>T+1 day</td>
+            <td>{limitation_desc}</td>
+          </tr>
+          <tr>
+            <td>Industry Chain Data</td>
+            <td><span class="tag tag-amber">Fair</span></td>
+            <td>70%</td>
+            <td>T+90 days</td>
+            <td>{limitation_desc}</td>
+          </tr>
+          <tr>
+            <td>Rating Data</td>
+            <td><span class="tag tag-green">Good</span></td>
+            <td>95%</td>
+            <td>T+7 days</td>
+            <td>{limitation_desc}</td>
+          </tr>
+          <tr>
+            <td>Regional Economic Data</td>
+            <td><span class="tag tag-amber">Fair</span></td>
+            <td>60%</td>
+            <td>T+180 days</td>
+            <td>{limitation_desc}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>10.3 Methodological Limitations Statement</h3>
+      <div class="card card-amber">
+        <h4>Limitation 1: {limitation_title_1}</h4>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
+          {limitation_detail}
+        </p>
+      </div>
+      <div class="card card-amber" style="margin-top:10px;">
+        <h4>Limitation 2: {limitation_title_2}</h4>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
+          {limitation_detail}
+        </p>
+      </div>
+      <div class="card card-amber" style="margin-top:10px;">
+        <h4>Limitation 3: {limitation_title_3}</h4>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">
+          {limitation_detail}
+        </p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>10.4 Completeness Score</h3>
+      <!-- BEFORE outputting any rating in this template, confirm that all dimensions used meet the density rules in mosaic-engine.md §4. If not, output 'Insufficient information to assess' instead. -->
+      <table>
+        <thead>
+          <tr>
+            <th>Assessment Dimension</th>
+            <th>Score</th>
+            <th>Completeness %</th>
+            <th>Items to Improve</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Source Analysis Depth</td>
+            <td><span class="tag tag-green">{score}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{source_density_pct}%;background:var(--green);">{source_density_pct}%</div>
+              </div>
+            </td>
+            <td>{improvement_item}</td>
+          </tr>
+          <tr>
+            <td>Transmission Path Coverage</td>
+            <td><span class="tag tag-green">{score}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{path_density_pct}%;background:var(--green);">{path_density_pct}%</div>
+              </div>
+            </td>
+            <td>{improvement_item}</td>
+          </tr>
+          <tr>
+            <td>Data Support Strength</td>
+            <td><span class="tag tag-amber">{score}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{data_density_pct}%;background:var(--amber);">{data_density_pct}%</div>
+              </div>
+            </td>
+            <td>{improvement_item}</td>
+          </tr>
+          <tr>
+            <td>Magnitude Estimation Precision</td>
+            <td><span class="tag tag-amber">{score}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{magnitude_density_pct}%;background:var(--amber);">{magnitude_density_pct}%</div>
+              </div>
+            </td>
+            <td>{improvement_item}</td>
+          </tr>
+          <tr>
+            <td>Historical Comparison Adequacy</td>
+            <td><span class="tag tag-green">{score}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{history_density_pct}%;background:var(--green);">{history_density_pct}%</div>
+              </div>
+            </td>
+            <td>{improvement_item}</td>
+          </tr>
+          <tr>
+            <td>Warning Retrospective Depth</td>
+            <td><span class="tag tag-amber">{score}</span></td>
+            <td>
+              <div class="completeness-bar">
+                <div class="completeness-fill" style="width:{warning_density_pct}%;background:var(--amber);">{warning_density_pct}%</div>
+              </div>
+            </td>
+            <td>{improvement_item}</td>
+          </tr>
+          <tr>
+            <td><strong>Overall Completeness</strong></td>
+            <td><span class="tag tag-amber">{composite_score}</span></td>
+            <td>
+              <div class="completeness-bar" style="height:24px;">
+                <div class="completeness-fill" style="width:{composite_pct}%;background:var(--blue);font-size:12px;line-height:24px;">{composite_pct}%</div>
+              </div>
+            </td>
+            <td>{composite_improvement}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3>10.5 Update Plan</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Update Content</th>
+            <th>Expected Update Date</th>
+            <th>Trigger Condition</th>
+            <th>Responsible Party</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{update_1}</td>
+            <td>{expected_update}</td>
+            <td>{trigger_condition}</td>
+            <td>{responsible_party}</td>
+          </tr>
+          <tr>
+            <td>{update_2}</td>
+            <td>{expected_update}</td>
+            <td>{trigger_condition}</td>
+            <td>{responsible_party}</td>
+          </tr>
+          <tr>
+            <td>{update_3}</td>
+            <td>{expected_update}</td>
+            <td>{trigger_condition}</td>
+            <td>{responsible_party}</td>
+          </tr>
+          <tr>
+            <td>{update_4}</td>
+            <td>{expected_update}</td>
+            <td>{trigger_condition}</td>
+            <td>{responsible_party}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box info-blue" style="margin-top:12px;">
+        <strong>Completeness Summary:</strong>{completeness_summary}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- DISCLAIMER -->
+  <!-- ================================================================ -->
+  <div class="section">
+    <div class="card card-red">
+      <h3>Disclaimer</h3>
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.7;">
+        This Contagion Analysis Report (Type 13) is for internal risk assessment reference only. The contagion
+        intensity scores, transmission path analysis, magnitude estimates, and other content herein are preliminary
+        assessments based on public information and model projections. They do not constitute investment advice or
+        credit decision-making basis. Contagion analysis involves numerous assumptions and simplifications; actual
+        contagion processes may deviate significantly from the analytical results due to market conditions, policy
+        changes, entity behavior, and other factors. The retrospective warning analysis of the systematic smart
+        warning layer is a theoretical projection only and does not represent actual warning capability. Before
+        making any investment or credit decisions, comprehensive assessment should be performed in conjunction with
+        the latest market information and professional judgment.
+      </p>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<!-- ================================================================ -->
+<!-- FOOTER -->
+<!-- ================================================================ -->
+<div class="footer">
+  <p><strong>Contagion Analysis Report</strong> &mdash; Type 13 Template</p>
+  <p>Report ID T13-{report_number} &middot; Version v0.0.8 &middot; Generated {generation_date} &middot; For Internal Risk Assessment Only</p>
+  <p style="margin-top:6px; font-size:10px; color:var(--text-tertiary);">
+    Based on Unified Credit Assessment Framework v0.0.8 &middot; Contagion Theory v0.0.8 &middot; All analysis is internal projection and does not constitute investment advice
+  </p>
+</div>
+
+</body>
+</html>

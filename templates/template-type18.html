@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<!-- @template: ${CLAUDE_PLUGIN_ROOT}/templates/template-type18.html -->
+<!-- @engine-version: v0.0.8 -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Outlook & Continuous Monitoring Report Template Type 18 · Rating Outlook · Confidence · Trigger Signals · Watch List · Migration Matrix · Action Recommendations">
+<title>Outlook & Continuous Monitoring Report · Type 18 Template</title>
+<link rel="stylesheet" href="template-base.css">
+<style>
+.hero { background: linear-gradient(135deg, #0f172a, #1e3a5f, #2563eb); }
+.hero .chip { background: rgba(37,99,235,0.22); color: #bfdbfe; border-color: rgba(37,99,235,0.4); }
+.outlook-badge { display:inline-block; padding:10px 26px; border-radius:999px; font-size:22px; font-weight:800; }
+.outlook-positive { background:var(--green); color:#fff; }
+.outlook-stable { background:var(--amber); color:#fff; }
+.outlook-negative { background:var(--red); color:#fff; }
+.outlook-developing { background:var(--purple); color:#fff; }
+.confidence-meter { display:flex; gap:6px; margin:10px 0 4px; }
+.confidence-meter .seg { flex:1; height:10px; border-radius:5px; background:var(--bg-tertiary); }
+.confidence-meter .seg.on { background:#2563eb; }
+.metric-row { display:flex; gap:24px; flex-wrap:wrap; justify-content:center; margin:16px 0; }
+.metric-box { text-align:center; min-width:120px; }
+.metric-box .val { font-size:26px; font-weight:800; }
+.metric-box .lbl { font-size:12px; color:var(--text-tertiary); }
+.signal-card { background:var(--bg-secondary); border-radius:var(--radius); padding:14px 18px; margin:10px 0; border:1px solid var(--border-default); }
+.signal-card.pos { border-left:4px solid var(--green); }
+.signal-card.neg { border-left:4px solid var(--red); }
+.signal-card .layer-tag { font-size:11px; color:var(--text-tertiary); margin-bottom:4px; }
+.signal-card .sig-desc { font-size:13px; color:var(--text-secondary); line-height:1.7; }
+.watchlist-card { background:var(--bg-secondary); border-radius:var(--radius); padding:18px 22px; margin:14px 0; border:1px solid var(--border-default); border-left:4px solid #2563eb; }
+.watchlist-card h4 { font-size:14px; margin-bottom:8px; color:#2563eb; }
+.migration-table td, .migration-table th { text-align:center; }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="chip">Type 18 · Outlook & Continuous Monitoring</div>
+  <h1>Outlook & Continuous Monitoring Report</h1>
+  <div class="hero-sub">{entity_name} · Current Rating {current_rating} · {report_date}</div>
+</header>
+
+<section>
+  <h2>1. Rating Outlook (12-24 Months)</h2>
+  <div style="text-align:center; margin:18px 0;">
+    <span class="outlook-badge outlook-{outlook_lower}">{outlook}</span>
+  </div>
+  <div class="metric-row">
+    <div class="metric-box"><div class="val">{net_direction_score}</div><div class="lbl">Net Direction Score (±2.0 Threshold)</div></div>
+    <div class="metric-box"><div class="val">{positive_signal_count}</div><div class="lbl">Positive Signals</div></div>
+    <div class="metric-box"><div class="val">{negative_signal_count}</div><div class="lbl">Negative Signals</div></div>
+  </div>
+  <div style="max-width:520px; margin:0 auto;">
+    <div class="lbl" style="font-size:12px; color:var(--text-tertiary);">Confidence: {confidence}</div>
+    <div class="confidence-meter">{confidence_level}</div>
+  </div>
+  <p>{outlook_summary}</p>
+
+</section>
+
+<section>
+  <h2>2. Trigger Signal Details</h2>
+  <h3>Positive Signals (by Pyramid Layer)</h3>
+  <div class="signal-card pos"><div class="layer-tag">{layer}</div><div class="sig-desc">{signal_description} · Source: {data_source}</div></div>
+  <h3>Negative Signals (by Pyramid Layer)</h3>
+  <div class="signal-card neg"><div class="layer-tag">{layer}</div><div class="sig-desc">{signal_description} · Source: {data_source}</div></div>
+</section>
+
+<section>
+  <h2>3. Watch List (90-Day Rating Action Window)</h2>
+  <div class="watchlist-card">
+    <h4>{watchlist_side}</h4>
+    <div class="sig-desc">
+      Trigger Event: {trigger_event}<br>
+      Entry Date: {entry_date} · Observation Period: 90 days (extendable once ≤60 days)<br>
+      Review Deadline: {review_deadline}<br>
+      Current Status: {current_status}
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>4. Rating Migration Matrix Summary (1-Year)</h2>
+  <table class="migration-table">
+    <tr><th>Current Rating</th><th>Upgrade Probability</th><th>Maintain Probability</th><th>Downgrade Probability</th><th>Default Probability</th></tr>
+    <tr><td>{current_rating}</td><td>{upgrade_probability}</td><td>{maintain_probability}</td><td>{downgrade_probability}</td><td>{default_probability}</td></tr>
+  </table>
+  <p class="sig-desc">{industry_note}</p>
+</section>
+
+<section>
+  <h2>5. Action Recommendations</h2>
+  <p>{action_recommendations}</p>
+</section>
+
+<footer>
+  <p>Report No. T18-{report_number} · Version v0.0.8 · Generated on {generation_date} · For Internal Risk Assessment Only</p>
+  <p>Based on outlook-monitoring-framework v0.0.8 · All analysis is internal deliberation and does not constitute investment advice</p>
+</footer>
+</body>
+</html>
