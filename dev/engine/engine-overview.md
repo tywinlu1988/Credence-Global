@@ -1,6 +1,6 @@
 # Fixed Income Credit Analysis Engine — Architecture Overview
 
-**Version**: v0.0.7 | **Date**: 2026-07-18
+**Version**: v0.0.8 | **Date**: 2026-07-18
 
 ---
 
@@ -114,10 +114,10 @@ Pyramid)       signals)
 
 | Layer | Name | Function | Status |
 |---|---|---|---|
-| **Layer 1** | Mosaic Engine (Mode A) | Extract signals from unstructured public data, assemble, assess completeness | Implemented (v0.0.7) |
-| **Layer 2** | Dual-Track Analysis (Track A + B) | Fundamental pyramid scoring + market pricing signal cross-validation | Implemented (v0.0.7) |
+| **Layer 1** | Mosaic Engine (Mode A) | Extract signals from unstructured public data, assemble, assess completeness | Implemented (v0.0.8) |
+| **Layer 2** | Dual-Track Analysis (Track A + B) | Fundamental pyramid scoring + market pricing signal cross-validation | Implemented (v0.0.8) |
 | **Layer 3** | Multi-Stakeholder Perspective (6 roles) | Coverage across Credit Selector, Portfolio Manager, Risk Officer, Trader, Advisor, Individual Investor | All 6 roles defined (multi-stakeholder.md) |
-| **Layer 4** | System Intelligence Layer (Aggregation) *NEW | Contagion mapping, concentration dashboard, early warning thermometer; cross-industry and cross-issuer systemic risk perception | Implemented (v0.0.7) |
+| **Layer 4** | System Intelligence Layer (Aggregation) *NEW | Contagion mapping, concentration dashboard, early warning thermometer; cross-industry and cross-issuer systemic risk perception | Implemented (v0.0.8) |
 
 ### Dual-Track Parallel Structure
 
@@ -211,40 +211,40 @@ The engine documentation system uses two parallel version numbering schemes:
 
 | Version Scheme | Scope | Example | Description |
 |---|---|---|---|
-| **Engine Version** | Core methodology documents | v0.0.7 | Reflects the overall iteration stage of engine methodology; all core methodology documents are uniformly labeled with this version |
+| **Engine Version** | Core methodology documents | v0.0.8 | Reflects the overall iteration stage of engine methodology; all core methodology documents are uniformly labeled with this version |
 | **Review Report Version** | Audit, self-assessment, final review documents | v1.0, v1.1 | Independent versioning for review reports; document headers note "Corresponding engine version: v0.0.1" |
 
 ### 7.2 Core Methodology Document Version Mapping
 
 | Document | Current Version | Description |
 |---|---|---|
-| engine-overview.md | v0.0.7 | Engine architecture overview |
-| dual-track-methodology.md | v0.0.7 | Dual-track analysis methodology |
-| industry-framework.md | v0.0.7 | Industry classification and analysis framework |
-| qualitative-analysis.md | v0.0.7 | Qualitative analysis methodology |
-| quantitative-analysis.md | v0.0.7 | Quantitative analysis methodology |
-| mosaic-engine.md | v0.0.7 | Mosaic engine |
-| output-layered-framework.md | v0.0.7 | Layered output framework |
-| contagion-theory.md | v0.0.7 | Contagion theory foundations (System Intelligence Layer) |
-| contagion-matrix.md | v0.0.7 | 19-industry contagion matrix |
-| concentration-framework.md | v0.0.7 | 5-dimension concentration analysis framework |
-| systemic-warning-framework.md | v0.0.7 | Systemic early warning framework |
-| validation-methodology.md | v0.0.7 | Black swan backtesting validation methodology |
-| financial-bond-framework.md | v0.0.7 | Financial bond analysis framework |
-| holding-company-framework.md | v0.0.7 | Holding company credit analysis framework |
-| non-credit-risk-overlay.md | v0.0.7 | Non-credit risk overlay |
-| external-support-framework.md | v0.0.7 | External support assessment framework |
-| esg-framework.md | v0.0.7 | ESG and governance risk framework |
-| governance-fraud-risk.md | v0.0.7 | Governance and fraud risk framework |
-| outlook-monitoring-framework.md | v0.0.7 | Outlook and ongoing monitoring framework |
-| lgd-recovery-framework.md | v0.0.7 | LGD and recovery analysis framework |
-| multi-stakeholder.md | v0.0.7 | Multi-stakeholder framework |
-| financial-deep-dive.md | v0.0.7 | Financial deep dive analysis framework |
-| paradigm-brand-channel.md | v0.0.7 | Brand + channel paradigm specification |
-| paradigm-network-traffic.md | v0.0.7 | Network + traffic paradigm specification |
-| work-path-registry.md | v0.0.7 | Work path registry |
-| dimension-registry.md | v0.0.7 | Dimension registry |
-| pipeline-contract.md | v0.0.7 | Four-stage pipeline product contracts |
+| engine-overview.md | v0.0.8 | Engine architecture overview |
+| dual-track-methodology.md | v0.0.8 | Dual-track analysis methodology |
+| industry-framework.md | v0.0.8 | Industry classification and analysis framework |
+| qualitative-analysis.md | v0.0.8 | Qualitative analysis methodology |
+| quantitative-analysis.md | v0.0.8 | Quantitative analysis methodology |
+| mosaic-engine.md | v0.0.8 | Mosaic engine |
+| output-layered-framework.md | v0.0.8 | Layered output framework |
+| contagion-theory.md | v0.0.8 | Contagion theory foundations (System Intelligence Layer) |
+| contagion-matrix.md | v0.0.8 | 19-industry contagion matrix |
+| concentration-framework.md | v0.0.8 | 5-dimension concentration analysis framework |
+| systemic-warning-framework.md | v0.0.8 | Systemic early warning framework |
+| validation-methodology.md | v0.0.8 | Black swan backtesting validation methodology |
+| financial-bond-framework.md | v0.0.8 | Financial bond analysis framework |
+| holding-company-framework.md | v0.0.8 | Holding company credit analysis framework |
+| non-credit-risk-overlay.md | v0.0.8 | Non-credit risk overlay |
+| external-support-framework.md | v0.0.8 | External support assessment framework |
+| esg-framework.md | v0.0.8 | ESG and governance risk framework |
+| governance-fraud-risk.md | v0.0.8 | Governance and fraud risk framework |
+| outlook-monitoring-framework.md | v0.0.8 | Outlook and ongoing monitoring framework |
+| lgd-recovery-framework.md | v0.0.8 | LGD and recovery analysis framework |
+| multi-stakeholder.md | v0.0.8 | Multi-stakeholder framework |
+| financial-deep-dive.md | v0.0.8 | Financial deep dive analysis framework |
+| paradigm-brand-channel.md | v0.0.8 | Brand + channel paradigm specification |
+| paradigm-network-traffic.md | v0.0.8 | Network + traffic paradigm specification |
+| work-path-registry.md | v0.0.8 | Work path registry |
+| dimension-registry.md | v0.0.8 | Dimension registry |
+| pipeline-contract.md | v0.0.8 | Four-stage pipeline product contracts |
 
 **Responsibility boundary note:** The Risk Officer portfolio risk control framework (multi-stakeholder.md §5) handles single-issuer and single-portfolio risk control (concentration limits, stress testing, rating adjustments). The System Intelligence Layer (contagion-matrix.md, concentration-framework.md, systemic-warning-framework.md) adds cross-issuer and cross-portfolio systemic risk analysis on top of it — the contagion matrix covers full-market industry pair transmission, the concentration framework covers 5-dimension portfolio concentration, and the early warning framework provides market-wide SRI readings. The division is clear: the Risk Officer framework handles single-issuer risk control; the System Intelligence Layer handles cross-issuer systemic risk.
 

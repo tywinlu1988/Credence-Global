@@ -13,7 +13,7 @@ Paths written as `${CLAUDE_PLUGIN_ROOT}/engine/...` and `${CLAUDE_PLUGIN_ROOT}/t
 
 ## Purpose
 
-**Engine version**: v0.0.7
+**Engine version**: v0.0.8
 
 **Non-Negotiables (see AGENTS.md)**: no analysis without a Path Sheet · no numbers without a `doc §section` citation · no report outside `dev/templates/` · no delivery without a QA Verdict · no invented dimensions or vocabulary.
 
