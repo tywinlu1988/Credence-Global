@@ -483,6 +483,37 @@ def check_changelog_version() -> list[str]:
     return []
 
 
+def check_changelog_dates() -> list[str]:
+    """CHANGELOG entry dates must be non-increasing from top to bottom.
+
+    Catches copy-pasted dates when a new entry is stamped with the previous
+    release's date (v0.0.8 initially shipped dated the same day as v0.0.7).
+    """
+    import datetime as _dt
+    path = ROOT / "CHANGELOG.md"
+    if not path.exists():
+        return []  # absence is reported by check_changelog_version
+    entries = re.findall(
+        r"^## \[(\d+\.\d+\.\d+)\] - (\d{4}-\d{2}-\d{2})",
+        path.read_text(encoding="utf-8"), re.MULTILINE,
+    )
+    errors: list[str] = []
+    prev: tuple[str, _dt.date] | None = None
+    for ver, date_s in entries:
+        try:
+            date = _dt.date.fromisoformat(date_s)
+        except ValueError:
+            errors.append(f"CHANGELOG: [{ver}] unparseable date {date_s!r}")
+            continue
+        if prev and date > prev[1]:
+            errors.append(
+                f"CHANGELOG: [{ver}] dated {date_s} is NEWER than the entry above it "
+                f"([{prev[0]}] {prev[1].isoformat()}) — entries must be newest-first"
+            )
+        prev = (ver, date)
+    return errors
+
+
 def check_dependency_completeness() -> list[str]:
     """Third-party imports in src/ and scripts/ must be declared in pyproject dependencies."""
     import ast
@@ -798,6 +829,7 @@ def collect_errors(only_links: bool = False) -> list[str]:
     errors.extend(check_paradigm_coverage())
     errors.extend(check_dependency_completeness())
     errors.extend(check_changelog_version())
+    errors.extend(check_changelog_dates())
     errors.extend(check_template_index())
     errors.extend(check_playbooks())
     # formerly warning-level; promoted to blocking after the underlying issues were fixed
