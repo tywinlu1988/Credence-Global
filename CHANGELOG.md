@@ -5,17 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.8] - 2026-07-22
+## [0.0.8] - 2026-07-27
 
 ### Added
 - `plugin.json` manifest now carries author / homepage / repository / license / keywords.
 - LICENSE now ships inside the dist package.
 - CHANGELOG version gate in consistency_check.
+- `scripts/publish_plugin.py` — publishes the dist package to the orphan `plugin-dist` branch (package root = branch root), the stable git location used as the marketplace source.
+- `.claude-plugin/marketplace.json` at the repo root — `/plugin marketplace add tywinlu1988/Credence-Global` entry point.
 
 ### Changed
 - LICENSE switched from custom Source-Available Non-Commercial to **MIT**.
 - Skill and engine-document references in the dist package are prefixed with `${CLAUDE_PLUGIN_ROOT}` so they resolve under plugin installs (Model B) as well as open-as-project (Model A).
 - All 4 SKILL.md now carry a Path Resolution note explaining both install modes.
+- Dist README rewritten as a storefront page (positioning, architecture, four-stage chain, install routes, disclaimer).
 
 ### Removed
 - Non-English README variants (zh / ja / ko / fr) — repository is now English-only.
