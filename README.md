@@ -3,11 +3,13 @@
 > **A methodology-first credit analysis engine for global fixed-income markets** — delivered as **Agent Skills** (`SKILL.md`), installable into Claude Code, Codex, Cursor, Gemini, and OpenCode. Built for credit professionals who need rigorous, reproducible, and transparent credit analysis that goes beyond traditional financial metrics.
 
 <p align="center">
-  <strong>Version <code>v0.0.2</code></strong> ·
-  <strong>License</strong> MIT ·
-  <strong>Tests</strong> pytest regression suite + consistency gates · CI on Python 3.11 &amp; 3.12 ·
-  <strong>27 methodology documents</strong>
+  <a href="https://github.com/tywinlu1988/Credence-Global/releases"><img alt="Release" src="https://img.shields.io/github/v/release/tywinlu1988/Credence-Global"></a>
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
+  <a href="https://github.com/tywinlu1988/Credence-Global/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/tywinlu1988/Credence-Global/actions/workflows/ci.yml/badge.svg"></a>
+  <img alt="Python" src="https://img.shields.io/badge/python-3.11%20%7C%203.12-blue.svg">
 </p>
+
+**Version `v0.0.8`** ([changelog](CHANGELOG.md)) · **27 methodology documents** · **16 work paths** · **4 coded engines** · pytest regression suite + consistency gates (CI: Ubuntu & Windows) · 🌐 English
 
 ---
 
@@ -192,7 +194,7 @@ When multiple stakeholders analyze the same issuer, the engine constructs a cons
 | Risk Appetite | Portfolio Manager and Risk Officer align on concentration | Trader sees short-term opportunity, Risk Officer warns of tail risk |
 | Time Horizon | All roles' signals point to the same trigger window | Diverging time horizons expose maturity-mismatch risk |
 
-The cross-role matrix is proven in the Brilliance Auto case study, where differing role perspectives revealed structural weaknesses that single-role analysis missed.
+The cross-role matrix construction is single-sourced in `dev/engine/multi-stakeholder.md`; the historical default cases that exercise it (Lehman Brothers, Wirecard, Valeant, Credit Suisse, Greece) are documented in `dev/engine/validation-methodology.md` §6.
 
 ---
 
@@ -301,7 +303,9 @@ All non-wired paths are LLM-orchestrated per engine documentation.
 - **L1** (Snapshot) — One-page dashboard with radar charts and key anomaly list
 - **L2** (Deep Dive) — Full analytical report with pyramid layering and cross-validation
 
-**S4 — QA** : The `credit-qa-verifier` skill performs a pre-delivery quality gate review, enforcing signal-density rules, one-shot-veto ceiling compliance, Mode B guardrails, and single-source-of-truth integrity. This is the terminal stage in the four-stage chain — no report is delivered without passing QA.
+**S4 — QA** : The `credit-qa-verifier` skill performs a pre-delivery quality gate review, enforcing signal-density rules, one-shot-veto ceiling compliance, Mode B guardrails, and single-source-of-truth integrity — plus **process compliance**: correct template usage, citation of engine documents for every number, registered dimension vocabulary, and chain completeness. This is the terminal stage in the four-stage chain — no report is delivered without passing QA.
+
+**Anti-drift constraint layer**: to keep agents on the methodology without explicit instructions, every entry point carries a **Non-Negotiables** block (`AGENTS.md` + all four `SKILL.md`): no analysis without a Path Sheet, no numbers without engine citations, no reports outside the fixed templates, no delivery without a QA verdict, no invented dimensions. Each active work path additionally ships an execution contract in `dev/engine/path-playbooks/` (procedure with document section pointers, dimension vocabulary, output shape, quality gates, drift blacklist), and derived tables in the engine documents are machine-generated with drift-gate checks in CI.
 
 **Executable Orchestrator**: `src/pipeline.py` drives the entire four-stage chain in code. It reads stage definitions from `dev/engine/pipeline-contract.md` (never hardcodes stage names), validates path sheets using `src/path_sheet.py`, and invokes coded engines only for explicitly wired paths. The single source of truth for all four artifacts (path sheet, analysis artifact, delivery note, QA verdict) and their chaining edges is `dev/engine/pipeline-contract.md`.
 
@@ -403,9 +407,18 @@ Each work path maps to one or more HTML report templates:
 
 ## Quick Start
 
-**Key premise**: the skills are NOT self-contained — at runtime they read `engine/` and `templates/` from the **package root** (single source of truth, never copied). The install unit is the whole package root; **open the package root as your project** and everything resolves with zero copying.
+**Key premise**: the skills are NOT self-contained — at runtime they read `engine/` and `templates/` from the **package root** (single source of truth, never copied). Under a Claude Code plugin install the harness resolves these via `${CLAUDE_PLUGIN_ROOT}`; for every other client, **open the package root as your project** and the paths resolve with zero copying.
 
-### A. npx (Recommended)
+### A. Claude Code Plugin (Recommended)
+
+```
+/plugin marketplace add tywinlu1988/Credence-Global
+/plugin install credence@credence-marketplace
+```
+
+Installs the four-stage skill chain into Claude Code from the `plugin-dist` branch (the installable package root, kept in sync with each release by `scripts/publish_plugin.py`). Engine and template references inside the skills resolve via `${CLAUDE_PLUGIN_ROOT}` automatically.
+
+### B. npx
 
 ```bash
 npx github:tywinlu1988/credence-global
@@ -413,11 +426,11 @@ npx github:tywinlu1988/credence-global
 
 Downloads the latest release zip from GitHub Releases, verifies its SHA-256 checksum, and unpacks it into `./credence/`; open that folder with your agent CLI. Pin a specific version with `--tag vX.Y.Z`.
 
-### B. GitHub Release
+### C. GitHub Release
 
 Download the latest `vX.Y.Z-release.zip` from the [Releases page](https://github.com/tywinlu1988/Credence-Global/releases), verify it against the attached `vX.Y.Z-release.zip.sha256`, unzip, and open the package root as a project.
 
-### C. Clone the Source
+### D. Clone the Source
 
 ```bash
 git clone git@github.com:tywinlu1988/Credence-Global.git
@@ -425,7 +438,7 @@ cd credence-global
 pip install -e .
 ```
 
-### D. Running Tests
+### E. Running Tests
 
 ```bash
 python -m pytest tests/ -q          # full regression suite
@@ -450,7 +463,7 @@ Credence delivers its methodology as Agent Skills (`SKILL.md`) that any AI codin
 
 | Agent CLI | Discovery Mechanism | Setup Complexity | Notes |
 |---|---|---|---|
-| **Claude Code** | Auto-discovers `dev/.claude/skills/` | None | Full support; automatic skill loading |
+| **Claude Code** | Plugin install (marketplace) or auto-discovers `dev/.claude/skills/` | None | Full support; plugin install recommended, automatic skill loading |
 | **Codex** | Reads `AGENTS.md` + manual `SKILL.md` load | Low | See `docs/adapters/codex.md` for deep-dive setup |
 | **Cursor** | Reads `AGENTS.md` + manual `SKILL.md` load | Low | Manual skill invocation |
 | **Gemini** | Reads `AGENTS.md` + manual `SKILL.md` load | Medium | May require prompt engineering for skill context |
@@ -494,11 +507,13 @@ credence-global/
 |   |   |-- dimension-registry.md       # Addressable index of 6 paradigms + M0-M5 roles
 |   |   |-- work-path-registry.md       # 16 work paths, routing, pipeline integration
 |   |   |-- pipeline-contract.md        # 4-stage pipeline I/O contracts, chain edges
+|   |   |-- path-playbooks/             # Per-path execution contracts (9 active-path playbooks)
 |   |
 |   |-- templates/                      # Report template source of truth (16 HTML files)
 |   |   |-- template-base.css           # Shared style base
 |   |   |-- template-type{1..15}.html   # Type 1-15 report templates
 |   |   |-- template-type18.html        # Type 18 outlook monitoring template
+|   |   |-- index.yaml                  # Machine-generated template manifest (build_template_index.py)
 |   |
 |   |-- design/                         # Report design system
 |   |-- data/                           # Data architecture & pipeline specs
@@ -519,13 +534,24 @@ credence-global/
 |
 |-- tests/                              # Regression test suite (pytest)
 |-- scripts/                            # Build & validation tools
-|   |-- build_dist.py                   # dev/ -> release-package assembler
+|   |-- build_dist.py                   # dev/ -> release-package assembler (zip + sha256)
 |   |-- consistency_check.py            # Cross-document consistency validation
 |   |-- promote.py                      # Version promotion utility
+|   |-- publish_plugin.py               # Publishes dist package to the plugin-dist branch
+|   |-- build_contagion_derived.py      # Regenerates machine-derived contagion tables
+|   |-- build_template_index.py         # Regenerates templates/index.yaml
+|   |-- smoke_install.sh                # End-to-end installer smoke test
 |
+|-- bin/
+|   |-- install.js                      # npx installer (download + SHA-256 verify + extract)
+|-- .claude-plugin/
+|   |-- marketplace.json                # /plugin marketplace add entry point
+|-- .github/workflows/
+|   |-- ci.yml                          # Gates: Ubuntu & Windows x Python 3.11/3.12
 |-- docs/                               # Cross-CLI adapters & version management
 |-- validation/                         # Capability evidence (2 public methodology reference reports)
 |-- version/                            # Locally built release zips (gitignored; shipped via GitHub Releases)
+|-- CHANGELOG.md                        # Release history (Keep a Changelog)
 |-- AGENTS.md                           # Cross-CLI universal entry point
 |-- DEVELOPMENT.md                      # Development guide
 |-- LICENSE                             # MIT License
@@ -603,6 +629,6 @@ See the full [LICENSE](LICENSE) file for complete terms.
 ---
 
 <p align="center">
-  <strong>Credence</strong> · Fixed-Income Credit Analysis Engine · v0.0.2<br>
+  <strong>Credence</strong> · Fixed-Income Credit Analysis Engine · v0.0.8<br>
   Built for rigorous, transparent, and reproducible credit analysis.
 </p>
