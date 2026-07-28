@@ -9,10 +9,6 @@
   <strong>27 methodology documents</strong>
 </p>
 
-<p align="center">
-  🌐 <strong>English</strong>
-</p>
-
 ---
 
 ## Table of Contents
