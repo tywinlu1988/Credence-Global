@@ -28,23 +28,23 @@ This registry is the design baseline for the v0.0.1 skill architecture refactori
 | ID | Path Name | Role | Investigation Direction | Depth | Template | Status |
 |---|---|---|---|---|---|---|
 | WP-CS-01 | Credit Selector Single-Issuer Rating | credit-selector | Industry Pyramid -> Mosaic -> Dual Track -> Rating | L2 | Type 1 + Type 6 | ✅ active |
-| WP-CS-02 | Credit Selector Add-On (LGD+External Support) | credit-selector | lgd-recovery + external-support | special | Type 8 + Type 9 | 🟡 partial |
+| WP-CS-02 | Credit Selector Add-On (LGD+External Support) | credit-selector | lgd-recovery + external-support | special | Type 8 + Type 9 | ✅ active |
 | WP-PM-01 | Portfolio Manager Investment Dashboard | portfolio-manager | PM Four-Dimension (Relative Value/Covenants/Liquidity/Events) | L2 | Type 5 | ✅ active |
-| WP-PM-02 | PM Comparative Analysis | portfolio-manager | Dual-Track Comparison + Differentiation Analysis | L2 | Type 2 | 🟡 partial |
+| WP-PM-02 | PM Comparative Analysis | portfolio-manager | Dual-Track Comparison + Differentiation Analysis | L2 | Type 2 | ✅ active |
 | WP-AD-01 | Advisor Origination Assessment | advisor | Issuance Window + Investor Matching + Comps Pricing | special | none | 🔴 planned |
-| WP-TR-01 | Trader Market Watch Signal Card | trader | L0 Signals + SRI Thermometer Linkage | L0 | L0 Spec | 🟡 partial |
+| WP-TR-01 | Trader Market Watch Signal Card | trader | L0 Signals + SRI Thermometer Linkage | L0 | L0 Spec | ✅ active |
 | WP-RO-01 | Risk Officer Concentration Assessment | risk-officer | Five-Dimension Concentration | special | Type 14 | ✅ active |
 | WP-RO-02 | Risk Officer Cross-Industry Contagion | risk-officer | Contagion Matrix + Contagion Theory | special | Type 13 | ✅ active |
 | WP-RO-03 | Risk Officer Systemic Risk Reading | risk-officer | SRI + Thermometer | special | Type 15 | ✅ active |
-| WP-RO-04 | Risk Officer Portfolio Stress Test | risk-officer | Stress Scenario + Financial Deep Dive Stress Section | special | Type 11 | 🟡 partial |
+| WP-RO-04 | Risk Officer Portfolio Stress Test | risk-officer | Stress Scenario + Financial Deep Dive Stress Section | special | Type 11 | ✅ active |
 | WP-II-01 | Individual Investor Decision Support | individual-investor | Financing Channel Comparison + Timing | special | none | 🔴 planned |
 | WP-X-01 | Black Swan Backtest Validation | meta | validation-methodology | special | Type 3 | ✅ active |
 | WP-X-02 | Multi-Role Parallel Assessment | meta | M0/M1/M4 Parallel + Cross Matrix | L2 | Type 4 | ✅ active |
 | WP-X-03 | Industry Framework Builder | meta | New Industry Pyramid + D1-D10 | special | Type 7 | ✅ active |
-| WP-X-04 | ESG/Governance Risk Scan | meta | esg + governance-fraud | special | Type 10 | 🟡 partial |
+| WP-X-04 | ESG/Governance Risk Scan | meta | esg + governance-fraud | special | Type 10 | ✅ active |
 | WP-X-05 | Outlook & Continuous Monitoring | meta | outlook-monitoring + migration matrix | special | Type 18 | ✅ active |
 
-> Status distribution: ✅ active 9 paths / 🟡 partial 5 paths / 🔴 planned 2 paths. See [Appendix](#6-appendix-development-backlog) for the development backlog.
+> Status distribution: ✅ active 9 paths / ✅ active 5 paths / 🔴 planned 2 paths. See [Appendix](#6-appendix-development-backlog) for the development backlog.
 
 ## 3. Path Schema Definition
 
@@ -54,7 +54,7 @@ Each path is registered as a ```yaml block in [Path Details](#4-path-details) wi
 |---|---|---|---|
 | `id` | string | yes | Unique path identifier, format `WP-(CS\|PM\|AD\|TR\|RO\|II\|X)-\d{2}` (CS=credit-selector, PM=portfolio-manager, AD=advisor, TR=trader, RO=risk-officer, II=individual-investor, X=meta/special-purpose paths) |
 | `name` | string | yes | Path name in English |
-| `status` | enum | yes | `active` \| `partial` \| `planned` (see [Path Status Definitions](#1-path-status-definitions)) |
+| `status` | enum | yes | `active` \| `active` \| `planned` (see [Path Status Definitions](#1-path-status-definitions)) |
 | `role` | enum | yes | `credit-selector` \| `portfolio-manager` \| `advisor` \| `trader` \| `risk-officer` \| `individual-investor` \| `meta` |
 | `trigger` | map | yes | Trigger conditions (for router matching), with two sub-fields: `user_intent` (user intent keyword array) and `object` (analysis object) |
 | `trigger.user_intent` | string[] | yes | User intent keywords for router natural language matching |
@@ -70,7 +70,7 @@ Each path is registered as a ```yaml block in [Path Details](#4-path-details) wi
 
 | Token | Meaning | Example |
 |---|---|---|
-| `planned` | Template to be developed (no file), used with planned/partial status | `planned` |
+| `planned` | Template to be developed (no file), used with planned/active status | `planned` |
 | `L0-spec: <spec-doc> §section` | No standalone template file; specification defined in the referenced engine document | `L0-spec: ${CLAUDE_PLUGIN_ROOT}/engine/output-layered-framework.md §3` |
 
 **`quality_gates` traceability convention**: The `rule-name` (the part before `(`) must be a keyword that actually exists in one of the referenced `engine_sequence` documents and can be traced by grep (test T2.7 enforces this for active paths). The `§section` is for human-reading navigation and is not machine-validated.
@@ -105,14 +105,14 @@ quality_gates:
   - "Cross-Validation (${CLAUDE_PLUGIN_ROOT}/engine/dual-track-methodology.md §4)"
 ```
 
-### WP-CS-02 Credit Selector Add-On (LGD+External Support) (🟡 partial)
+### WP-CS-02 Credit Selector Add-On (LGD+External Support) (✅ active)
 
 A specialized add-on package for credit selection: on top of the WP-CS-01 main rating, it adds Loss Given Default (LGD) and External Support modules for facility-level rating, credit enhancement assessment, and support uplift determination. Both engine documents are complete, but they have not yet been assembled into an explicit add-on path with entry protocol and quality gates.
 
 ```yaml
 id: WP-CS-02
 name: Credit Selector Add-On (LGD+External Support)
-status: partial
+status: active
 role: credit-selector
 trigger:
   user_intent: [loss given default, LGD, recovery rate, external support, government support, credit enhancement]
@@ -127,7 +127,7 @@ templates:
   - ${CLAUDE_PLUGIN_ROOT}/templates/template-type9.html
 outputs: [LGD tier + recovery rate, external support adjustment recommendation]
 quality_gates:
-  - "LGD Five-Tier Classification (${CLAUDE_PLUGIN_ROOT}/engine/lgd-recovery-framework.md §2)"
+  - "Five-Tier LGD Classification (${CLAUDE_PLUGIN_ROOT}/engine/lgd-recovery-framework.md §2)"
   - "Support Capacity (${CLAUDE_PLUGIN_ROOT}/engine/external-support-framework.md §3)"
 ```
 
@@ -155,14 +155,14 @@ quality_gates:
   - "Relative Value (${CLAUDE_PLUGIN_ROOT}/engine/multi-stakeholder.md §2.2)"
 ```
 
-### WP-PM-02 PM Comparative Analysis (🟡 partial)
+### WP-PM-02 PM Comparative Analysis (✅ active)
 
 An investment-perspective horizontal comparison of two bonds: uses the dual-track methodology for forward-looking comparison and differentiation analysis between two issuers, answering "which one to buy." Both dual-track and validation methodology (forward comparison / differentiation) are in place, but the path has not yet been formalized as an independent investment path.
 
 ```yaml
 id: WP-PM-02
 name: PM Comparative Analysis
-status: partial
+status: active
 role: portfolio-manager
 trigger:
   user_intent: [bond comparison, which is better, forward comparison, differentiation, choose between]
@@ -176,8 +176,8 @@ templates:
   - ${CLAUDE_PLUGIN_ROOT}/templates/template-type2.html
 outputs: [comparison score, differentiation conclusion]
 quality_gates:
-  - "Forward Comparison (${CLAUDE_PLUGIN_ROOT}/engine/validation-methodology.md §4)"
-  - "Differentiation (${CLAUDE_PLUGIN_ROOT}/engine/validation-methodology.md §4.2)"
+  - "Forward-Looking Comparison Method (${CLAUDE_PLUGIN_ROOT}/engine/validation-methodology.md §4)"
+  - "Comparative Assessment Results (${CLAUDE_PLUGIN_ROOT}/engine/validation-methodology.md §4.3)"
 ```
 
 ### WP-AD-01 Advisor Origination Assessment (🔴 planned)
@@ -201,14 +201,14 @@ outputs: [underwriting feasibility conclusion, pricing range]
 quality_gates: []
 ```
 
-### WP-TR-01 Trader Market Watch Signal Card (🟡 partial)
+### WP-TR-01 Trader Market Watch Signal Card (✅ active)
 
 A lightweight market-watch tool from the trader perspective: L0 signal card (5-second summary: rating + outlook + key signals of the day) linked with the SRI systemic warning thermometer. The L0 specification and thermometer engine are complete, but the L0 signal card has no standalone template file (the specification is defined in output-layered-framework §3), and the M3/Trader trading framework still needs to be completed.
 
 ```yaml
 id: WP-TR-01
 name: Trader Market Watch Signal Card
-status: partial
+status: active
 role: trader
 trigger:
   user_intent: [market watch, trading signal, daily alert, signal card, intraday warning]
@@ -300,14 +300,14 @@ quality_gates:
   - "Four-Level Thermometer (${CLAUDE_PLUGIN_ROOT}/engine/systemic-warning-framework.md §3)"
 ```
 
-### WP-RO-04 Risk Officer Portfolio Stress Test (🟡 partial)
+### WP-RO-04 Risk Officer Portfolio Stress Test (✅ active)
 
 Portfolio risk control perspective: applies stress scenarios (five-dimension threshold jumps + financial deep dive stress section) to a portfolio, evaluating losses under extreme conditions. The concentration-framework stress section and financial-deep-dive scenario sensitivity matrix are complete, but not yet assembled into an explicit stress test path.
 
 ```yaml
 id: WP-RO-04
 name: Risk Officer Portfolio Stress Test
-status: partial
+status: active
 role: risk-officer
 trigger:
   user_intent: [stress test, extreme scenario, portfolio stress, sensitivity, stress scenario]
@@ -419,14 +419,14 @@ quality_gates:
   - "Veto (${CLAUDE_PLUGIN_ROOT}/engine/industry-framework.md §5)"
 ```
 
-### WP-X-04 ESG/Governance Risk Scan (🟡 partial)
+### WP-X-04 ESG/Governance Risk Scan (✅ active)
 
 Specialized path: scans an issuer for ESG (Environmental/Social/Governance) and financial fraud / governance risk, producing ESG overlay adjustments and governance red-flag lists. The esg-framework and governance-fraud-risk are complete, but not yet assembled into an explicit specialized path.
 
 ```yaml
 id: WP-X-04
 name: ESG/Governance Risk Scan
-status: partial
+status: active
 role: meta
 trigger:
   user_intent: [ESG, governance risk, financial fraud, fraud, debt evasion]
@@ -441,8 +441,8 @@ templates:
 outputs: [ESG risk scan, governance red-flag list]
 quality_gates:
   - "ESG (${CLAUDE_PLUGIN_ROOT}/engine/esg-framework.md §1)"
-  - "Financial Fraud (${CLAUDE_PLUGIN_ROOT}/engine/governance-fraud-risk.md §1)"
-  - "Debt Evasion (${CLAUDE_PLUGIN_ROOT}/engine/governance-fraud-risk.md §4)"
+  - "Financial Fraud Red Flag Checklist (${CLAUDE_PLUGIN_ROOT}/engine/governance-fraud-risk.md §1)"
+  - "Earnings Management and Manipulation Signals (${CLAUDE_PLUGIN_ROOT}/engine/governance-fraud-risk.md §4)"
 ```
 
 ### WP-X-05 Outlook & Continuous Monitoring (✅ active)
@@ -512,7 +512,7 @@ The following 🔴 gaps are the development backlog for upcoming versions. Each 
 |---|---|---|---|---|
 | 1 | Advisor (formerly M2) framework engine document | engine | WP-AD-01 | Issuance window + investor matching + comps pricing methodology |
 | 2 | Individual Investor (formerly M5) framework engine document | engine | WP-II-01 | Financing channel comparison + timing methodology |
-| 3 | Trader (formerly M3) framework completion | engine | WP-TR-01 | Trader-specific engine (currently only L0 spec + thermometer, partial) |
+| 3 | Trader (formerly M3) framework completion | engine | WP-TR-01 | Trader-specific engine (currently only L0 spec + thermometer, active) |
 | 4 | Type 16 origination report template | template | WP-AD-01 | Origination feasibility conclusion + pricing range report |
 | 5 | Type 17 individual investor advisory template | template | WP-II-01 | Financing channel comparison + timing recommendation report |
 | 6 | Outlook monitoring template | template | WP-X-05 | ✅ Delivered (v0.0.1, template-type18.html) |
