@@ -70,7 +70,7 @@ The single source of truth for the four artifacts (path sheet / analysis artifac
 
 ## Routing Baseline (Work Path Registry)
 
-`dev/engine/work-path-registry.md` is the single source of truth for routing: **16 work paths (9 active / 5 partial / 2 planned)**. The router maps vague requests to concrete work paths using this registry; when a planned path is recommended, it MUST honestly state "under development" and offer an alternative active path.
+`dev/engine/work-path-registry.md` is the single source of truth for routing: **16 work paths (14 active / 0 partial / 2 planned)**. The router maps vague requests to concrete work paths using this registry; when a planned path is recommended, it MUST honestly state "under development" and offer an alternative active path.
 
 ## Validation Commands
 

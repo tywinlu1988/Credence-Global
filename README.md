@@ -376,7 +376,7 @@ The engine defines **16 work paths** mapped to international buy-side roles, eac
 | WP-X-04 | ESG/Governance Risk Scan | 🟡 Partial | ESG Risk Scan + Governance Red-Flag List |
 | WP-X-05 | Outlook & Continuous Monitoring | ✅ Active | Rating Outlook + Watchlist |
 
-**Status summary**: 9 active, 5 partial, 2 planned.
+**Status summary**: 14 active, 0 partial, 2 planned.
 
 ### Report Templates (Type 1-18)
 
