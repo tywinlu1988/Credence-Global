@@ -37,21 +37,21 @@ Match recommended paths by user input. `Status` column: ✅ active / 🟡 partia
 | Scenario | Example User Statements | Recommended Path | Status | Alternative |
 |---|---|---|---|---|
 | Credit Selector single target | "Can our lending officer approve credit for X?" | WP-CS-01 | ✅ | WP-X-02 |
-| Credit Selector special topic | "What about LGD, recovery rate, external support for this bond?" | WP-CS-02 | 🟡 | WP-CS-01 |
+| Credit Selector special topic | "What about LGD, recovery rate, external support for this bond?" | WP-CS-02 | ✅ | WP-CS-01 |
 | Bond valuation | "Is this bond cheap/expensive, worth buying?" | WP-PM-01 | ✅ | WP-PM-02 |
-| Dual-target comparison | "Which one to buy, LONGi or Yidao?" | WP-PM-02 | 🟡 | WP-X-02 |
-| Underwriting advisory | "Can this bond be underwritten? What is the window?" | WP-AD-01 | 🔴 | WP-PM-01 |
-| Market monitoring signal | "Give me today's market monitoring signal card." | WP-TR-01 | 🟡 | WP-RO-03 |
+| Dual-target comparison | "Which one to buy, LONGi or Yidao?" | WP-PM-02 | ✅ | WP-X-02 |
+| Underwriting advisory | "Can this bond be underwritten? What is the window?" | WP-AD-01 | ✅ | WP-PM-01 |
+| Market monitoring signal | "Give me today's market monitoring signal card." | WP-TR-01 | ✅ | WP-RO-03 |
 | Portfolio concentration | "Portfolio has too much solar exposure, how concentrated is it?" | WP-RO-01 | ✅ | WP-RO-04 |
 | Contagion screening | "If sector X defaults, which holdings would be affected?" | WP-RO-02 | ✅ | WP-RO-01 |
 | SRI reading | "What level is systemic risk at now?" | WP-RO-03 | ✅ | WP-TR-01 |
-| Stress testing | "How much would the portfolio lose under extreme scenarios?" | WP-RO-04 | 🟡 | WP-RO-01 |
-| Financing advisory | "Should this company issue bonds or take a loan? When to raise?" | WP-II-01 | 🔴 | WP-CS-01 |
+| Stress testing | "How much would the portfolio lose under extreme scenarios?" | WP-RO-04 | ✅ | WP-RO-01 |
+| Financing advisory | "Should this company issue bonds or take a loan? When to raise?" | WP-II-01 | ✅ | WP-CS-01 |
 | Backtest validation | "How accurate was this framework historically?" | WP-X-01 | ✅ | WP-X-02 |
 | Multi-role parallel | "Evaluate X from Credit Selector/PM/Risk Officer perspectives simultaneously." | WP-X-02 | ✅ | WP-CS-01 |
 | Industry framework building | "Help me build an analytical framework for a new industry." | WP-X-03 | ✅ | WP-CS-01 |
-| ESG scan | "Check this company's governance and ESG risks." | WP-X-04 | 🟡 | WP-CS-01 |
-| Outlook monitoring | "Give X a rating outlook and keep monitoring." | WP-X-05 | 🟡 | WP-CS-01 |
+| ESG scan | "Check this company's governance and ESG risks." | WP-X-04 | ✅ | WP-CS-01 |
+| Outlook monitoring | "Give X a rating outlook and keep monitoring." | WP-X-05 | ✅ | WP-CS-01 |
 | Vague need | "Evaluate this company" / "What analysis should I do?" | Four Questions protocol | — | — |
 
 ## Path Sheet Output

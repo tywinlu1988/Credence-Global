@@ -23,10 +23,12 @@ Each dimension is scored on a 1-5 scale to quantify the structural characteristi
 
 ---
 
-> **Reading guide**: §§1-3 contain the executable methodology — thresholds,
+> **Reading guide**: §§1-5 contain the executable methodology — paradigms,
+> scoring framework, industry pyramids, and veto mechanism — thresholds,
 > weights, scoring rules, and decision frameworks. These sections are required
 > reading before executing any work path that references this document.
-> §§4-6 contain worked examples, derivations, historical validation, and
+> §6 contains extended discussion and paradigm reference
+> material — read on demand, historical validation, and
 > extended discussion — read only when the analysis needs detailed justification
 > or the user asks for methodological background.
 

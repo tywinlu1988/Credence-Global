@@ -198,6 +198,9 @@ Indicator Score = f(Raw Value, Threshold, Direction)
 
 | Version | Date | Changes |
 |---|---|---|
+| v0.1.0 | 2026-07-29 | Architecture: CSS dedup, boilerplate consolidation, reading guides |
+| v0.0.9 | 2026-07-29 | Final 2 planned paths delivered (16/16 active) |
+| v0.0.8 | 2026-07-27 | 5 partial paths promoted, report-index navigation |
 | v0.0.7 | 2026-07-22 | Agent constraint layer: AGENTS.md + SKILL.md Non-Negotiables (no analysis without Path Sheet, no numbers without citation, no report outside templates/, no delivery without QA, no invented dimensions); 9 per-path execution contracts (path-playbooks/) with registry drift checks; QA process-compliance checks (template/citation/dimension/chain); templates/index.yaml machine-generated; strict path-sheet posture; installer Linux hotfix (v0.0.6) |
 | v0.0.6 | 2026-07-21 | Hotfix: installer unzip fallback chain — GNU tar (Linux) cannot extract zip; install.js now tries unzip -> tar -> PowerShell (caught by the new CI npm-installer-smoke job on day one) |
 | v0.0.5 | 2026-07-21 | Engineering hardening: SRI rules runtime-parsed from document (no hardcoded thresholds); concentration drift guard; input validation hardened (invalid enums/ranges fail loudly, per-stage error isolation); path_sheet semantic validation against registry; consistency_check gains release-artifact + dependency-completeness gates (3 checks promoted to blocking); CI adds installer smoke (ubuntu+windows), full windows matrix, pip-install check, skip-count gate |

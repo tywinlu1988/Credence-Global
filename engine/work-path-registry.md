@@ -524,7 +524,7 @@ The following 🔴 gaps are the development backlog for upcoming versions. Each 
 | # | Gap | Missing Component Type | Affected Path | Notes |
 |---|---|---|---|---|
 | 1 | Advisor (formerly M2) framework engine document | engine | WP-AD-01 | ✅ Delivered (v0.0.8, advisor-origination-framework.md + template-type16.html) |
-| 2 | Individual Investor (formerly M5) framework engine document | engine | WP-II-01 | Financing channel comparison + timing methodology |
+| 2 | Individual Investor (formerly M5) framework engine document | engine | WP-II-01 | ✅ Delivered (v0.0.8, financing-channel-framework.md + template-type17.html) |
 | 3 | Trader (formerly M3) framework completion | engine | WP-TR-01 | Trader-specific engine (currently only L0 spec + thermometer, active) |
 | 4 | Type 16 origination report template | template | WP-AD-01 | ✅ Delivered (v0.0.8, template-type16.html) |
 | 5 | Type 17 individual investor advisory template | template | WP-II-01 | ✅ Delivered (v0.0.8, template-type17.html + financing-channel-framework.md) |

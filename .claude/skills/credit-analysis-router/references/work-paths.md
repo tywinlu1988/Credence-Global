@@ -23,4 +23,4 @@
 | WP-X-04 | ESG/Governance Risk Scan | Meta | 🟡 partial | ESG overlay and governance/fraud red-flag scanning |
 | WP-X-05 | Outlook & Continuous Monitoring | Meta | ✅ active | Rating outlook / watchlist / continuous monitoring |
 
-> Status distribution: **9 active, 5 partial, 2 planned**. When recommending planned paths (WP-AD-01, WP-II-01), honestly state "this path is under development" and provide alternative active paths. Do not fabricate capabilities.
+> Status distribution: **16 active (all delivered in v0.1.0)**. When recommending planned paths (WP-AD-01, WP-II-01), honestly state "this path is under development" and provide alternative active paths. Do not fabricate capabilities.

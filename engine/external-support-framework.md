@@ -78,8 +78,8 @@ Input: Industry + Entity + Analysis Date
 > **Reading guide**: §§1-3 contain the executable methodology — thresholds,
 > weights, scoring rules, and decision frameworks. These sections are required
 > reading before executing any work path that references this document.
-> §§4-6 contain worked examples, derivations, historical validation, and
-> extended discussion — read only when the analysis needs detailed justification
+> §§4-6 contain support capacity assessment and uplift rules —
+> required reading for the LGD + support add-on paths — read only when the analysis needs detailed justification
 > or the user asks for methodological background.
 
 
