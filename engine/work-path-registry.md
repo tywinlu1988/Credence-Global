@@ -31,20 +31,20 @@ This registry is the design baseline for the v0.0.1 skill architecture refactori
 | WP-CS-02 | Credit Selector Add-On (LGD+External Support) | credit-selector | lgd-recovery + external-support | special | Type 8 + Type 9 | ✅ active |
 | WP-PM-01 | Portfolio Manager Investment Dashboard | portfolio-manager | PM Four-Dimension (Relative Value/Covenants/Liquidity/Events) | L2 | Type 5 | ✅ active |
 | WP-PM-02 | PM Comparative Analysis | portfolio-manager | Dual-Track Comparison + Differentiation Analysis | L2 | Type 2 | ✅ active |
-| WP-AD-01 | Advisor Origination Assessment | advisor | Issuance Window + Investor Matching + Comps Pricing | special | none | 🔴 planned |
+| WP-AD-01 | Advisor Origination Assessment | advisor | Issuance Window + Investor Matching + Comps Pricing | special | Type 16 | ✅ active |
 | WP-TR-01 | Trader Market Watch Signal Card | trader | L0 Signals + SRI Thermometer Linkage | L0 | L0 Spec | ✅ active |
 | WP-RO-01 | Risk Officer Concentration Assessment | risk-officer | Five-Dimension Concentration | special | Type 14 | ✅ active |
 | WP-RO-02 | Risk Officer Cross-Industry Contagion | risk-officer | Contagion Matrix + Contagion Theory | special | Type 13 | ✅ active |
 | WP-RO-03 | Risk Officer Systemic Risk Reading | risk-officer | SRI + Thermometer | special | Type 15 | ✅ active |
 | WP-RO-04 | Risk Officer Portfolio Stress Test | risk-officer | Stress Scenario + Financial Deep Dive Stress Section | special | Type 11 | ✅ active |
-| WP-II-01 | Individual Investor Decision Support | individual-investor | Financing Channel Comparison + Timing | special | none | 🔴 planned |
+| WP-II-01 | Individual Investor Decision Support | individual-investor | Financing Channel Comparison + Timing | special | Type 17 | ✅ active |
 | WP-X-01 | Black Swan Backtest Validation | meta | validation-methodology | special | Type 3 | ✅ active |
 | WP-X-02 | Multi-Role Parallel Assessment | meta | M0/M1/M4 Parallel + Cross Matrix | L2 | Type 4 | ✅ active |
 | WP-X-03 | Industry Framework Builder | meta | New Industry Pyramid + D1-D10 | special | Type 7 | ✅ active |
 | WP-X-04 | ESG/Governance Risk Scan | meta | esg + governance-fraud | special | Type 10 | ✅ active |
 | WP-X-05 | Outlook & Continuous Monitoring | meta | outlook-monitoring + migration matrix | special | Type 18 | ✅ active |
 
-> Status distribution: ✅ active 9 paths / ✅ active 5 paths / 🔴 planned 2 paths. See [Appendix](#6-appendix-development-backlog) for the development backlog.
+> Status distribution: ✅ active 16 paths / 🟡 partial 0 paths / 🔴 planned 0 paths. See [Appendix](#6-appendix-development-backlog) for the development backlog.
 
 ## 3. Path Schema Definition
 
@@ -180,25 +180,29 @@ quality_gates:
   - "Comparative Assessment Results (${CLAUDE_PLUGIN_ROOT}/engine/validation-methodology.md §4.3)"
 ```
 
-### WP-AD-01 Advisor Origination Assessment (🔴 planned)
+### WP-AD-01 Advisor Origination Assessment (✅ active)
 
-Underwriter perspective: assesses the feasibility of underwriting a bond issuance -- issuance window judgment, investor matching, and comparable pricing. **Engine missing**: The M2/Advisor framework engine document and Type 16 origination report template are both to be developed. See [Appendix](#6-appendix-development-backlog).
+Underwriter perspective: assesses the feasibility of underwriting a bond issuance -- issuance window judgment, investor matching, and comparable pricing. Engine document () and Type 16 template are delivered. See [Appendix](#6-appendix-development-backlog).
 
 ```yaml
 id: WP-AD-01
 name: Advisor Origination Assessment
-status: planned
+status: active
 role: advisor
 trigger:
   user_intent: [underwriting feasibility, issuance window, comparable pricing, investor matching, bookbuilding]
   object: single-issuer
 depth: special
-engine_sequence: []
-paradigm_selection: TBD (To be determined after advisor framework development)
+engine_sequence:
+  - ${CLAUDE_PLUGIN_ROOT}/engine/advisor-origination-framework.md
+paradigm_selection: n/a (Origination assessment layers on WP-CS-01 rating; paradigm inherited from the base analysis)
 templates:
-  - planned
+  - ${CLAUDE_PLUGIN_ROOT}/templates/template-type16.html
 outputs: [underwriting feasibility conclusion, pricing range]
-quality_gates: []
+quality_gates:
+  - "Issuance Window (${CLAUDE_PLUGIN_ROOT}/engine/advisor-origination-framework.md §2)"
+  - "Investor Matching (${CLAUDE_PLUGIN_ROOT}/engine/advisor-origination-framework.md §3)"
+  - "Comparable Pricing (${CLAUDE_PLUGIN_ROOT}/engine/advisor-origination-framework.md §4)"
 ```
 
 ### WP-TR-01 Trader Market Watch Signal Card (✅ active)
@@ -325,25 +329,28 @@ quality_gates:
   - "Scenario Sensitivity (${CLAUDE_PLUGIN_ROOT}/engine/financial-deep-dive.md §E)"
 ```
 
-### WP-II-01 Individual Investor Decision Support (🔴 planned)
+### WP-II-01 Individual Investor Decision Support (✅ active)
 
-Enterprise (issuer) perspective reverse application: compares financing channels (bond/loan/non-standard), judges financing timing and cost. **Engine missing**: The individual investor framework engine document and Type 17 advisory template are both to be developed. See [Appendix](#6-appendix-development-backlog).
+Enterprise (issuer) perspective reverse application: compares financing channels (bond/loan/non-standard), judges financing timing and cost. Engine document () and Type 17 template are delivered. See [Appendix](#6-appendix-development-backlog).
 
 ```yaml
 id: WP-II-01
 name: Individual Investor Decision Support
-status: planned
+status: active
 role: individual-investor
 trigger:
   user_intent: [financing channels, bond vs loan, financing timing, financing cost, how to finance]
   object: single-issuer
 depth: special
-engine_sequence: []
-paradigm_selection: TBD (To be determined after individual investor framework development)
+engine_sequence:
+  - ${CLAUDE_PLUGIN_ROOT}/engine/financing-channel-framework.md
+paradigm_selection: n/a (Channel comparison layers on WP-CS-01 rating; paradigm inherited from the base analysis)
 templates:
-  - planned
+  - ${CLAUDE_PLUGIN_ROOT}/templates/template-type17.html
 outputs: [financing channel comparison, timing recommendation]
-quality_gates: []
+quality_gates:
+  - "Channel Comparison (${CLAUDE_PLUGIN_ROOT}/engine/financing-channel-framework.md §3)"
+  - "Timing Assessment (${CLAUDE_PLUGIN_ROOT}/engine/financing-channel-framework.md §4)"
 ```
 
 ### WP-X-01 Black Swan Backtest Validation (✅ active)
@@ -510,11 +517,11 @@ The following 🔴 gaps are the development backlog for upcoming versions. Each 
 
 | # | Gap | Missing Component Type | Affected Path | Notes |
 |---|---|---|---|---|
-| 1 | Advisor (formerly M2) framework engine document | engine | WP-AD-01 | Issuance window + investor matching + comps pricing methodology |
+| 1 | Advisor (formerly M2) framework engine document | engine | WP-AD-01 | ✅ Delivered (v0.0.8, advisor-origination-framework.md + template-type16.html) |
 | 2 | Individual Investor (formerly M5) framework engine document | engine | WP-II-01 | Financing channel comparison + timing methodology |
 | 3 | Trader (formerly M3) framework completion | engine | WP-TR-01 | Trader-specific engine (currently only L0 spec + thermometer, active) |
-| 4 | Type 16 origination report template | template | WP-AD-01 | Origination feasibility conclusion + pricing range report |
-| 5 | Type 17 individual investor advisory template | template | WP-II-01 | Financing channel comparison + timing recommendation report |
+| 4 | Type 16 origination report template | template | WP-AD-01 | ✅ Delivered (v0.0.8, template-type16.html) |
+| 5 | Type 17 individual investor advisory template | template | WP-II-01 | ✅ Delivered (v0.0.8, template-type17.html + financing-channel-framework.md) |
 | 6 | Outlook monitoring template | template | WP-X-05 | ✅ Delivered (v0.0.1, template-type18.html) |
 
 > Evolution tracking: each version release should update the status distribution in this table (🔴->🟡->✅) and record it in engine-overview.md §6 Version History.

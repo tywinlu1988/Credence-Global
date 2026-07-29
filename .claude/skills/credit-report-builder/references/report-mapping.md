@@ -12,13 +12,13 @@
 | WP-CS-02 | Credit Selector Add-On (LGD+External Support) | Special | Special (template-defined) | template-type8 + template-type9 |
 | WP-PM-01 | Portfolio Manager Investment Dashboard | L2 | L2 Deep Report | template-type5 |
 | WP-PM-02 | PM Comparative Analysis | L2 | L2 Deep Report | template-type2 |
-| WP-AD-01 | Advisor Origination Assessment | Special | Special (template-defined) | planned |
+| WP-AD-01 | Advisor Origination Assessment | Special | Special (template-defined) | template-type16 |
 | WP-TR-01 | Trader Market Watch Signal Card | L0 | L0 Signal Card | L0-spec |
 | WP-RO-01 | Risk Officer Concentration Assessment | Special | Special (template-defined) | template-type14 |
 | WP-RO-02 | Risk Officer Cross-Industry Contagion | Special | Special (template-defined) | template-type13 |
 | WP-RO-03 | Risk Officer Systemic Risk Reading | Special | Special (template-defined) | template-type15 |
 | WP-RO-04 | Risk Officer Portfolio Stress Test | Special | Special (template-defined) | template-type11 |
-| WP-II-01 | Individual Investor Decision Support | Special | Special (template-defined) | planned |
+| WP-II-01 | Individual Investor Decision Support | Special | Special (template-defined) | template-type17 |
 | WP-X-01 | Black Swan Backtest Validation | Special | Special (template-defined) | template-type3 |
 | WP-X-02 | Multi-Role Parallel Assessment | L2 | L2 Deep Report | template-type4 |
 | WP-X-03 | Industry Framework Builder | Special | Special (template-defined) | template-type7 |
