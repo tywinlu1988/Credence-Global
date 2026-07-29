@@ -60,7 +60,7 @@ Each path is registered as a ```yaml block in [Path Details](#4-path-details) wi
 |---|---|---|---|
 | `id` | string | yes | Unique path identifier, format `WP-(CS\|PM\|AD\|TR\|RO\|II\|X)-\d{2}` (CS=credit-selector, PM=portfolio-manager, AD=advisor, TR=trader, RO=risk-officer, II=individual-investor, X=meta/special-purpose paths) |
 | `name` | string | yes | Path name in English |
-| `status` | enum | yes | `active` \| `active` \| `planned` (see [Path Status Definitions](#1-path-status-definitions)) |
+| `status` | enum | yes | `active` \| `partial` \| `planned` (see [Path Status Definitions](#1-path-status-definitions)) |
 | `role` | enum | yes | `credit-selector` \| `portfolio-manager` \| `advisor` \| `trader` \| `risk-officer` \| `individual-investor` \| `meta` |
 | `trigger` | map | yes | Trigger conditions (for router matching), with two sub-fields: `user_intent` (user intent keyword array) and `object` (analysis object) |
 | `trigger.user_intent` | string[] | yes | User intent keywords for router natural language matching |

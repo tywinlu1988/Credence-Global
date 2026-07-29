@@ -336,13 +336,13 @@ The engine defines **16 work paths** mapped to international buy-side roles, eac
 | ID | Path | Status | Output |
 |---|---|---|---|
 | WP-CS-01 | Single-Issuer Rating | ✅ Active | Rating + Signals + Completeness Report |
-| WP-CS-02 | LGD + External Support Add-On | 🟡 Partial | LGD Tier + Recovery Rate + Support Adjustment |
+| WP-CS-02 | LGD + External Support Add-On | ✅ Active | LGD Tier + Recovery Rate + Support Adjustment |
 
 **Portfolio Manager (2 paths)**
 | ID | Path | Status | Output |
 |---|---|---|---|
 | WP-PM-01 | Investment Dashboard | ✅ Active | Four-Dimension Score + Investment Recommendation |
-| WP-PM-02 | Comparative Analysis | 🟡 Partial | Comparison Score + Differentiation Conclusion |
+| WP-PM-02 | Comparative Analysis | ✅ Active | Comparison Score + Differentiation Conclusion |
 
 **Risk Officer (4 paths)**
 | ID | Path | Status | Output |
@@ -350,22 +350,22 @@ The engine defines **16 work paths** mapped to international buy-side roles, eac
 | WP-RO-01 | Concentration Assessment | ✅ Active | Five-Dimension Concentration Score + Adjustment Recommendations |
 | WP-RO-02 | Cross-Industry Contagion | ✅ Active | Contagion Path Map + Adjustment Recommendations |
 | WP-RO-03 | Systemic Risk Reading | ✅ Active | SRI Reading + Thermometer Tier |
-| WP-RO-04 | Portfolio Stress Test | 🟡 Partial | Stress Scenario Loss + Threshold Jump Results |
+| WP-RO-04 | Portfolio Stress Test | ✅ Active | Stress Scenario Loss + Threshold Jump Results |
 
 **Trader (1 path)**
 | ID | Path | Status | Output |
 |---|---|---|---|
-| WP-TR-01 | Market Watch Signal Card | 🟡 Partial | L0 Signal Card + Thermometer Reading |
+| WP-TR-01 | Market Watch Signal Card | ✅ Active | L0 Signal Card + Thermometer Reading |
 
 **Advisor (1 path)**
 | ID | Path | Status | Output |
 |---|---|---|---|
-| WP-AD-01 | Origination Assessment | 🔴 Planned | Underwriting Feasibility + Pricing Range |
+| WP-AD-01 | Origination Assessment | ✅ Active | Underwriting Feasibility + Pricing Range |
 
 **Individual Investor (1 path)**
 | ID | Path | Status | Output |
 |---|---|---|---|
-| WP-II-01 | Decision Support | 🔴 Planned | Financing Channel Comparison + Timing Recommendation |
+| WP-II-01 | Decision Support | ✅ Active | Financing Channel Comparison + Timing Recommendation |
 
 **Meta / Special-Purpose (5 paths)**
 | ID | Path | Status | Output |
@@ -373,7 +373,7 @@ The engine defines **16 work paths** mapped to international buy-side roles, eac
 | WP-X-01 | Black Swan Backtest Validation | ✅ Active | Validation Conclusion + Framework Improvements |
 | WP-X-02 | Multi-Role Parallel Assessment | ✅ Active | Multi-Role Score Matrix + Consensus/Divergence Report |
 | WP-X-03 | Industry Framework Builder | ✅ Active | Industry Pyramid + D1-D10 Scores |
-| WP-X-04 | ESG/Governance Risk Scan | 🟡 Partial | ESG Risk Scan + Governance Red-Flag List |
+| WP-X-04 | ESG/Governance Risk Scan | ✅ Active | ESG Risk Scan + Governance Red-Flag List |
 | WP-X-05 | Outlook & Continuous Monitoring | ✅ Active | Rating Outlook + Watchlist |
 
 **Status summary**: 16 active, 0 partial, 0 planned.
@@ -629,6 +629,6 @@ See the full [LICENSE](LICENSE) file for complete terms.
 ---
 
 <p align="center">
-  <strong>Credence</strong> · Fixed-Income Credit Analysis Engine · v0.0.8<br>
+  <strong>Credence</strong> · Fixed-Income Credit Analysis Engine · v0.1.0<br>
   Built for rigorous, transparent, and reproducible credit analysis.
 </p>

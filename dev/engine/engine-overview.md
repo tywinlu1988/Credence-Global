@@ -19,6 +19,12 @@
 | **lgd-recovery-framework.md** | LGD 5-tier classification, collateral valuation, recovery path | Recovery rate assessment |
 | **external-support-framework.md** | Government/group/strategic investor support, support capability vs. willingness, upgrade rules, trap signals | External support assessment |
 | **outlook-monitoring-framework.md** | Rating outlook, watch list, ongoing monitoring, transition matrix | Forward-looking monitoring mechanism |
+| **advisor-origination-framework.md** | Issuance window, investor matching, comparable pricing | Underwriter origination assessment (WP-AD-01) |
+| **financing-channel-framework.md** | Bond vs loan vs private credit, timing recommendation | Issuer-side financing decision (WP-II-01) |
+| **agent-protocol.md** | Path Resolution, Non-Negotiables, skill reference conventions | Shared infrastructure for all skills |
+| **advisor-origination-framework.md** | Issuance window, investor matching, comparable pricing | Underwriter origination assessment (WP-AD-01) |
+| **financing-channel-framework.md** | Bond vs loan vs private credit, timing recommendation | Issuer-side financing decision (WP-II-01) |
+| **agent-protocol.md** | Path Resolution, Non-Negotiables, skill reference conventions | Shared infrastructure for all skills |
 | **financial-deep-dive.md** | Three-statement linkage, working capital, FCF, scenario sensitivity, stress testing upgrade | Financial deep dive analysis |
 | **governance-fraud-risk.md** | 20+ fraud signals, default evasion detection, high deposit & high debt, governance assessment | Financial fraud detection |
 | **non-credit-risk-overlay.md** | Market/operational/reputational/strategic/liquidity risk overlay | Non-credit risk assessment |
