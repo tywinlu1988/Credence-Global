@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financing Channel Comparison & Timing</title>
+<style>:root{--bg:#0f1117;--card:#1a1d28;--card2:#212433;--text:#e2e4ea;--text2:#9398a9;--border:#2a2e3c;--green:#22c55e;--green-bg:rgba(34,197,94,.08);--red:#ef4444;--red-bg:rgba(239,68,68,.08);--amber:#f59e0b;--amber-bg:rgba(245,158,11,.08);--blue:#6366f1;--blue-bg:rgba(99,102,241,.08);--purple:#a855f7;--purple-bg:rgba(168,85,247,.08)}*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.6}.container{max-width:960px;margin:0 auto;padding:0 28px}
+.hero{text-align:center;padding:64px 0 48px;background:linear-gradient(135deg,#0f172a,#312e81)}.hero .chip{display:inline-block;background:rgba(168,85,247,.12);color:var(--purple);border:1px solid rgba(168,85,247,.25);border-radius:20px;padding:4px 16px;font-size:12px;letter-spacing:1px;margin-bottom:20px}.hero h1{font-size:34px;font-weight:800;letter-spacing:-.5px;margin-bottom:12px}.hero .kicker{font-size:15px;color:var(--text2);max-width:620px;margin:0 auto 28px}.hero .meta{display:flex;justify-content:center;gap:28px;font-size:12px;color:var(--text2);flex-wrap:wrap}.hero .meta span{padding:6px 14px;background:var(--card);border-radius:6px;border:1px solid var(--border)}
+.section{margin:48px 0}.section-title{font-size:20px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px}.section-title .num{width:28px;height:28px;background:var(--purple-bg);color:var(--purple);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.strip{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:10px;overflow:hidden;margin:0 0 48px}.strip-item{background:var(--card);padding:22px 20px;text-align:center}.strip-item .label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}.strip-item .val{font-size:26px;font-weight:800;margin-bottom:4px}.strip-item .sub{font-size:11px;color:var(--text2)}
+.card{background:var(--card);border-radius:10px;padding:22px 26px;margin:14px 0;border:1px solid var(--border)}.card h3{font-size:15px;margin-bottom:10px}.card.green{border-left:4px solid var(--green)}.card.amber{border-left:4px solid var(--amber)}.card.blue{border-left:4px solid var(--blue)}
+.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.metric{background:var(--card2);border-radius:8px;padding:16px 14px;text-align:center;border:1px solid var(--border)}.metric .m-num{font-size:22px;font-weight:800;margin-bottom:4px}.metric .m-label{font-size:12px;color:var(--text2)}
+.tag{display:inline-block;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600}.tag-green{background:var(--green-bg);color:var(--green)}.tag-amber{background:var(--amber-bg);color:var(--amber)}.tag-purple{background:var(--purple-bg);color:var(--purple)}
+table{width:100%;border-collapse:collapse;font-size:13px;margin:14px 0}thead th{background:var(--card2);padding:10px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text2);border-bottom:1px solid var(--border)}tbody td{padding:10px 14px;border-bottom:1px solid var(--border)}td.ct{text-align:center}td.rt{text-align:right}td.highlight{background:rgba(34,197,94,.06);font-weight:600}
+.footer{text-align:center;padding:32px 0;font-size:12px;color:var(--text2);border-top:1px solid var(--border)}
+@media(max-width:768px){.strip,.metric-grid{grid-template-columns:1fr}.hero h1{font-size:24px}}</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+  <div class="chip">FINANCING CHANNEL COMPARISON</div>
+  <h1>{{ISSUER_NAME}}</h1>
+  <div class="kicker">Channel comparison: bond vs. loan vs. private credit · Timing recommendation · Cost estimate</div>
+  <div class="meta"><span>Report Date: {{DATE}}</span><span>Path: WP-II-01</span><span>Rating: {{RATING}}</span><span>Engine v0.0.8</span></div>
+</div>
+
+<!-- ===== VERDICT ===== -->
+<div class="section"><div class="section-title"><span class="num">1</span>Financing Recommendation</div>
+
+<div class="strip">
+  <div class="strip-item"><div class="label">Primary Channel</div><div class="val" style="color:var(--green)">{{PRIMARY_CHANNEL}}</div><div class="sub">Score: {{PRIMARY_SCORE}}/10</div></div>
+  <div class="strip-item"><div class="label">Timing</div><div class="val" style="color:var(--blue)">{{TIMING_REC}}</div><div class="sub">Target: {{TARGET_WINDOW}}</div></div>
+  <div class="strip-item"><div class="label">Est. All-In Cost</div><div class="val">{{ALL_IN_COST}}</div><div class="sub">After-tax, annualised</div></div>
+</div>
+
+<div class="card green"><h3>Recommendation</h3><p style="font-size:13px;color:var(--text2);line-height:1.7">{{RECOMMENDATION_TEXT}}</p></div>
+</div>
+
+<!-- ===== CHANNEL COMPARISON ===== -->
+<div class="section"><div class="section-title"><span class="num">2</span>Channel Comparison</div>
+<table><thead><tr><th>Factor (Weight)</th><th>Public Bond</th><th>Syndicated Loan</th><th>Private Credit</th></tr></thead>
+<tbody>
+  <tr><td>Cost — all-in after-tax (30%)</td><td class="ct">{{BOND_COST}} / 10</td><td class="ct">{{LOAN_COST}} / 10</td><td class="ct">{{PC_COST}} / 10</td></tr>
+  <tr><td>Tenor Flexibility (20%)</td><td class="ct">{{BOND_TENOR}} / 10</td><td class="ct">{{LOAN_TENOR}} / 10</td><td class="ct">{{PC_TENOR}} / 10</td></tr>
+  <tr><td>Execution Certainty (20%)</td><td class="ct">{{BOND_EXEC}} / 10</td><td class="ct">{{LOAN_EXEC}} / 10</td><td class="ct">{{PC_EXEC}} / 10</td></tr>
+  <tr><td>Covenant Burden (15%)</td><td class="ct">{{BOND_COV}} / 10</td><td class="ct">{{LOAN_COV}} / 10</td><td class="ct">{{PC_COV}} / 10</td></tr>
+  <tr><td>Disclosure Requirement (10%)</td><td class="ct">{{BOND_DISC}} / 10</td><td class="ct">{{LOAN_DISC}} / 10</td><td class="ct">{{PC_DISC}} / 10</td></tr>
+  <tr><td>Post-Issuance Flexibility (5%)</td><td class="ct">{{BOND_FLEX}} / 10</td><td class="ct">{{LOAN_FLEX}} / 10</td><td class="ct">{{PC_FLEX}} / 10</td></tr>
+  <tr style="font-weight:700"><td>Weighted Composite</td><td class="ct highlight">{{BOND_TOTAL}} / 10</td><td class="ct highlight">{{LOAN_TOTAL}} / 10</td><td class="ct highlight">{{PC_TOTAL}} / 10</td></tr>
+</tbody></table>
+</div>
+
+<!-- ===== TIMING ===== -->
+<div class="section"><div class="section-title"><span class="num">3</span>Timing Assessment</div>
+<div class="metric-grid">
+  <div class="metric"><div class="m-num">{{WINDOW_SCORE}}/10</div><div class="m-label">Issuance Window (30%)</div></div>
+  <div class="metric"><div class="m-num">{{URGENCY_SCORE}}/10</div><div class="m-label">Refinancing Urgency (25%)</div></div>
+  <div class="metric"><div class="m-num">{{RATE_SCORE}}/10</div><div class="m-label">Rate Environment (20%)</div></div>
+  <div class="metric"><div class="m-num">{{MOMENTUM_SCORE}}/10</div><div class="m-label">Rating Momentum (15%)</div></div>
+  <div class="metric"><div class="m-num">{{SECTOR_SCORE}}/10</div><div class="m-label">Sector Rotation (10%)</div></div>
+  <div class="metric"><div class="m-num" style="color:var(--purple)">{{TIMING_COMPOSITE}}/10</div><div class="m-label">Composite Timing</div></div>
+</div>
+</div>
+
+<!-- ===== RISKS ===== -->
+<div class="section"><div class="section-title"><span class="num">4</span>Key Risks</div>
+<div class="card amber"><h3>Top Risks to Recommendation</h3><p style="font-size:13px;color:var(--text2);line-height:1.7">{{KEY_RISKS}}</p></div>
+</div>
+
+<div class="footer"><p><strong>{{ISSUER_NAME}} Financing Channel Comparison</strong></p><p style="margin-top:4px">Credence Fixed-Income Credit Analysis Engine v0.0.8 · Path WP-II-01 · Type 17 · Not Investment Advice</p></div>
+</div>
+</body>
+</html>

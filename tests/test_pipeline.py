@@ -216,12 +216,22 @@ def test_t9_4_unwired_path_skips_gracefully(contract, registry_paths):
 # --------------------------------------------------------------------------
 
 def test_t9_5_planned_path_notice(registry_paths):
-    notice = planned_path_notice(_sheet("WP-AD-01"), registry_paths)
-    assert notice is not None
-    assert "planned" in notice
-    assert "WP-AD-01" in notice
-    # an active path yields no notice
-    assert planned_path_notice(_sheet("WP-RO-03"), registry_paths) is None
+    # v0.0.8: all 16 paths are now active. The planned_path_notice function
+    # returns None for active paths (no planned paths exist to trigger a notice).
+    for pid, entry in registry_paths.items():
+        sheet = {
+            "role": entry.get("role", "meta"),
+            "object": entry.get("object", "single-issuer"),
+            "depth": entry.get("depth", "special"),
+            "mode": "A",
+            "path_id": pid,
+            "engine_reading_order": list(entry.get("engine_sequence") or []),
+            "quality_gates": list(entry.get("quality_gates") or []),
+            "notes": "",
+        }
+        assert planned_path_notice(sheet, registry_paths) is None, (
+            f"path {pid} is active — planned_path_notice should return None"
+        )
 
 
 # --------------------------------------------------------------------------

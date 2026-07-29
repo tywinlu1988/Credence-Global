@@ -71,6 +71,16 @@ templates:
     title: 'Systemic Risk Alert Report · Type 15 Template'
     used_by: [WP-RO-03]
     on_disk: true
+  - type: 16
+    file: dev/templates/template-type16.html
+    title: 'Origination Feasibility Report'
+    used_by: [WP-AD-01]
+    on_disk: true
+  - type: 17
+    file: dev/templates/template-type17.html
+    title: 'Financing Channel Comparison & Timing'
+    used_by: [WP-II-01]
+    on_disk: true
   - type: 18
     file: dev/templates/template-type18.html
     title: 'Outlook & Continuous Monitoring Report · Type 18 Template'
@@ -79,8 +89,6 @@ templates:
 markers:
   - value: 'L0-spec: dev/engine/output-layered-framework.md §3'
     used_by: [WP-TR-01]
-  - value: 'planned'
-    used_by: [WP-AD-01, WP-II-01]
 navigation:
   - file: dev/templates/report-index.html
     title: 'Report Index - {{ENGAGEMENT_TITLE}}'
