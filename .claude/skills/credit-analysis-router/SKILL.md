@@ -97,7 +97,7 @@ notes: "If information is insufficient, downgrade to L1 Decision Snapshot with a
 
 - **Do not replicate engine content**: This skill only references path IDs and document names/sections; it does not replicate any thresholds, weights, or rating mappings. Rule content is always determined by the engine documents pointed to by `engine_reading_order`.
 - **Mode B guardrail**: When the user has not explicitly provided data sources (CSV/API/MCP), `mode` must not be set to B; all Mode B fields are treated as data gaps; do not fabricate external data values.
-- **Planned paths must be disclosed**: When recommending a 🔴 planned path (e.g., WP-AD-01, WP-II-01), must explicitly state "this path is under development" and provide an alternative active path; do not misrepresent capability.
+- **Planned paths must be disclosed**: When recommending a 🔴 planned path (e.g., future planned paths), must explicitly state "this path is under development" and provide an alternative active path; do not misrepresent capability.
 - **Route then hand off**: Once the Path Sheet is produced, switch to the `fixed-income-credit-analysis` skill, read engine documents in `engine_reading_order` and execute; validate quality gates per `quality_gates`. (Since v0.0.1 the execution skill is driven by the Path Sheet for reading order; without a Path Sheet, fall back to the core set `engine-overview.md` + `dual-track-methodology.md` + topic-specific documents requested.)
 
 ## Chaining

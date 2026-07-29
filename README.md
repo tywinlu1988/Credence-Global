@@ -5,7 +5,7 @@
 > load and execute directly. Not an agent framework, not a standalone app: a
 > domain-methodology skill pack for institutional-grade, reproducible credit analysis.
 
-**Version** v0.1.0 · **License** MIT (see `LICENSE`) · **27 methodology documents** ·
+**Version** v0.1.0 · **License** MIT (see `LICENSE`) · **29 methodology documents** ·
 **4 executable engines** · pytest regression suite + consistency gates
 
 ---
@@ -90,7 +90,7 @@ every delivery gated by QA.
 ## Package Contents
 
 - `.claude/skills/` — Four-stage chain skills (router / analysis / report / qa)
-- `engine/` — 27 methodology documents: thresholds, weights, rating maps, contagion matrix
+- `engine/` — 29 methodology documents: thresholds, weights, rating maps, contagion matrix
   (the single source of truth; coded engines parse rules from these at runtime)
 - `engine/path-playbooks/` — Per-work-path execution contracts (procedure, dimension
   vocabulary, output shape, quality gates, drift blacklist)
