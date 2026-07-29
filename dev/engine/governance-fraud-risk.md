@@ -1,6 +1,6 @@
 # Governance and Financial Fraud Risk Analysis Module
 
-**Version**: v0.0.9 | **Date**: 2026-07-17 | **Status**: Published
+**Version**: v0.1.0 | **Date**: 2026-07-17 | **Status**: Published
 
 ---
 

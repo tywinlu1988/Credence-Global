@@ -1,6 +1,6 @@
 # Contagion Theory -- Credit Risk Transmission Pathways and Sector Exposure Framework
 
-**Version**: v0.0.9 | **Date**: 2026-07-10
+**Version**: v0.1.0 | **Date**: 2026-07-10
 
 ---
 

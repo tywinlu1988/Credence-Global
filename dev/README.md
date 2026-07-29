@@ -1,7 +1,7 @@
 # Fixed Income Credit Intelligent Analysis Engine
 
 **Project Codename**: Credence
-**Version**: v0.0.9
+**Version**: v0.1.0
 **Status**: Methodology documentation complete — 4 coded engines wired (concentration / contagion / SRI / outlook) — 19-industry GICS coverage — four-stage skill chain delivered
 
 ---

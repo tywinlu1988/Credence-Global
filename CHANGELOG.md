@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0] - 2026-07-29
+
+### Changed
+- **Template CSS deduplication**: 4 inline-CSS templates (type1, type16, type17,
+  report-index) converted to shared `template-base.css` via external `<link>`. CSS
+  inlined at build time by `build_dist.py` — dist HTMLs remain self-contained.
+  ~800 lines of duplicated CSS eliminated.
+- **Boilerplate consolidation**: new `dev/engine/agent-protocol.md` (shared Path
+  Resolution + Non-Negotiables); 4 SKILL.md inline Path Resolution blocks replaced
+  with 1-line references (~24 lines eliminated); CLAUDE.md/GEMINI.md generators
+  merged into a single parameterized function.
+- **Engine doc reading guides**: 28 engine documents annotated with reading-guide
+  metadata blocks separating core methodology (required reading) from reference
+  material (worked examples, derivations, history — read on demand).
+- **Version bump**: v0.0.9 → v0.1.0 (minor — architecture change, not just content).
+
 ## [0.0.9] - 2026-07-29
 
 ### Added
