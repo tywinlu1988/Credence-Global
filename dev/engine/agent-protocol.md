@@ -1,6 +1,6 @@
 # Agent Protocol — Shared Infrastructure for All Skills
 
-**Version**: v0.0.9 | **Date**: 2026-07-29
+**Version**: v0.1.0 | **Date**: 2026-07-29
 
 > This document is referenced by every SKILL.md. It defines two pieces of shared
 > infrastructure that every skill needs: path resolution and non-negotiable constraints.

@@ -49,7 +49,7 @@ dev/
 |   |-- work-path-registry.md                       Work path registry (16 paths: 9 active / 5 partial / 2 planned)
 |   |-- pipeline-contract.md                        Pipeline contract (Path Sheet / Analysis Artifact / Delivery Note / QA Verdict)
 |
-|-- templates/                                      Report template single source of truth (17 files)
+|-- templates/                                      Report template single source of truth (21 files (19 HTML + 1 CSS + 1 YAML))
 |   |-- template-base.css                           Shared style base
 |   +-- template-type1..15.html + type18.html       Type 1-15 and Type 18 report templates
 |
@@ -100,7 +100,7 @@ dev/
 
 | Item | Count | Description |
 |---|---|---|
-| Report templates | 16 types (Type 1-15, Type 18) | templates/ single source of truth (template-base.css + type1-15.html + type18.html) |
+| Report templates | 18 types (Type 1-15, Type 16-18) | templates/ single source of truth (template-base.css + type1-15.html + type18.html) |
 
 ### Product Design (Complete)
 

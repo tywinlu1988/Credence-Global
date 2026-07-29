@@ -10,11 +10,11 @@
 
 ---
 
-> **Reading guide**: §1 contain the executable methodology — thresholds,
-> weights, scoring rules, and decision frameworks. These sections are required
+> **Reading guide**: §§2-5 contain the executable methodology — risk assessment,
+> scoring dimensions, and mapping rules. These sections are required
 > reading before executing any work path that references this document.
-> §§2-5 contain worked examples, derivations, historical validation, and
-> extended discussion — read only when the analysis needs detailed justification
+> §1 is conceptual background — read for context on first
+> encounter, then reference §§2-5 for execution — read only when the analysis needs detailed justification
 > or the user asks for methodological background.
 
 

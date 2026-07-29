@@ -36,8 +36,8 @@ The core logic of this framework comes from three validated default cases. Altho
 > **Reading guide**: §§1-2 contain the executable methodology — thresholds,
 > weights, scoring rules, and decision frameworks. These sections are required
 > reading before executing any work path that references this document.
-> §§3-5 contain worked examples, derivations, historical validation, and
-> extended discussion — read only when the analysis needs detailed justification
+> §§3-4 contain the three-step process and linkage rules;
+> §5 contains case analysis — read on demand — read only when the analysis needs detailed justification
 > or the user asks for methodological background.
 
 

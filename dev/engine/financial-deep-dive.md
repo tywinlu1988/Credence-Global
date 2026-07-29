@@ -8,10 +8,10 @@
 
 ---
 
-> **Reading guide**: §§1-4 contain the executable methodology — thresholds,
+> **Reading guide**: §§A-D contain the executable methodology — thresholds,
 > weights, scoring rules, and decision frameworks. These sections are required
 > reading before executing any work path that references this document.
-> §§A-E contain worked examples, derivations, historical validation, and
+> §§E-G contain worked examples, derivations, historical validation, and
 > extended discussion — read only when the analysis needs detailed justification
 > or the user asks for methodological background.
 

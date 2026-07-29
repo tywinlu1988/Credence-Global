@@ -1,6 +1,6 @@
 # Advisor Origination Assessment Framework
 
-**Version**: v0.0.8 | **Date**: 2026-07-29 | **Status**: Published
+**Version**: v0.1.0 | **Date**: 2026-07-29 | **Status**: Published
 
 **Module**: Fixed Income Credit Analysis Engine · Multi-Stakeholder Layer
 
@@ -17,8 +17,8 @@
 > **Reading guide**: §§1-4 contain the executable methodology — thresholds,
 > weights, scoring rules, and decision frameworks. These sections are required
 > reading before executing any work path that references this document.
-> §§5-6 contain worked examples, derivations, historical validation, and
-> extended discussion — read only when the analysis needs detailed justification
+> §§5-6 contain the decision framework and quality gates — read when
+> assembling the origination conclusion — read only when the analysis needs detailed justification
 > or the user asks for methodological background.
 
 
@@ -50,6 +50,7 @@ and pricing-feasibility dimensions.
 | WP-PM-01 (Investment Dashboard) | Supplements demand-side assessment with relative-value context |
 | WP-RO-03 (SRI Reading) | Macro conditions feed issuance-window judgment |
 | WP-TR-01 (Signal Card) | Short-term market signals inform window timing |
+| WP-II-01 (Financing Channel) | Complements — AD-01 assesses underwriting feasibility, II-01 recommends the issuer's optimal channel |
 
 ---
 

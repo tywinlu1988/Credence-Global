@@ -511,7 +511,7 @@ credence-global/
 |   |
 |   |-- templates/                      # Report template source of truth (16 HTML files)
 |   |   |-- template-base.css           # Shared style base
-|   |   |-- template-type{1..15}.html   # Type 1-15 report templates
+|   |   |-- template-type{1..18}.html   # Type 1-15 report templates
 |   |   |-- template-type18.html        # Type 18 outlook monitoring template
 |   |   |-- index.yaml                  # Machine-generated template manifest (build_template_index.py)
 |   |
