@@ -478,7 +478,7 @@ Credence delivers its methodology as Agent Skills (`SKILL.md`) that any AI codin
 credence-global/
 |
 |-- dev/                                # Methodology & skill source
-|   |-- engine/                         # 27 core methodology documents
+|   |-- engine/                         # 29 core methodology documents
 |   |   |-- engine-overview.md          # Architecture overview & document navigation
 |   |   |-- industry-framework.md       # Industry classification, 10-dimension scoring, 6 paradigms
 |   |   |-- mosaic-engine.md            # Signal extraction, puzzle assembly, completeness

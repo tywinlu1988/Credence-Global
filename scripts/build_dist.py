@@ -543,7 +543,7 @@ def validate(out_dir=None) -> list:
         if keys != ["name", "description"]:
             errors.append(f"FRONTMATTER: {name} keys={keys}, want ['name','description']")
 
-    # (v) 27 CORE_DOCS under engine/
+    # (v) 29 CORE_DOCS under engine/
     for doc in CORE_DOCS:
         if not (base / "engine" / doc).exists():
             errors.append(f"MISSING_CORE_DOC: engine/{doc}")
