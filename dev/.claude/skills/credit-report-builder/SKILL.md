@@ -35,7 +35,11 @@ Assembly layer — **this skill does not perform analysis**. Responsibility is t
 2. **Select templates**: Based on `path_id`, retrieve the template list from the registry's `templates` field (Type 1–18 or allowed marker values `planned` / `L0-spec:`). Marker value meanings are defined in registry §schema; when hitting `planned`, must explicitly state "template under development" and not fabricate rendered output.
 3. **Map tiers**: Map the Analysis Artifact to L0 Signal Card / L1 Snapshot / L2 Deep Report tiers. The definitions, consumption time, and information density of the three tiers use `dev/engine/output-layered-framework.md` §2 (three-tier overview) / §3 (L0 Signal Card) / §5 (L2 Deep Report) as the single source of truth; this skill does not redefine them.
 4. **Render**: Use templates from `dev/templates/` to assemble the report; completeness lamp caliber follows output-layered-framework §8.4.
-5. **Output Delivery Note**: Produce the Delivery Note per the schema below.
+5. **Generate report index (when >2 reports)**: After all path reports are rendered, count the files in `rendered`. If the count (excluding `report-index.html` itself if already present) exceeds 2, generate a `report-index.html` navigation page from `dev/templates/report-index.html`. The index must:
+   - Use the same dark-theme inline CSS as the other templates
+   - List every report file from `rendered` with: its file name, a relative-path link (e.g., `./template-type1.html`), and a one-sentence description/summary of that report's content
+   - Append `dev/templates/report-index.html` to the `rendered` list (NOT to `templates_used` — `templates_used` is reserved for per-path registry templates)
+6. **Output Delivery Note**: Produce the Delivery Note per the schema below.
 
 ## Delivery Note Output
 
@@ -45,7 +49,7 @@ Template (schema single source of truth is `dev/engine/pipeline-contract.md` §2
 path_id: ""                 # join key (inherited from Path Sheet, must not change)
 depth: ""                   # L0|L1|L2|special (inherited from Path Sheet)
 templates_used: []          # templates selected from the path's registry templates field
-rendered: []                # actual report files produced (from dev/templates/)
+rendered: []                # actual report files produced (from dev/templates/); includes report-index.html when >2 reports
 tier_mapping:               # Analysis Artifact → L0/L1/L2 tiers
   L0: ""
   L1: ""
@@ -84,6 +88,7 @@ source_analysis: Upstream Analysis Artifact (findings/completeness/veto, see pip
 - **Do not replicate engine content**: Only reference path IDs, template names, and document sections; do not replicate any thresholds, layered time budgets, signal priority floors, or rating mappings. Tier semantics are based on `dev/engine/output-layered-framework.md`; template lists are based on `dev/engine/work-path-registry.md`.
 - **Low density — no fabricated values**: Dimension scores set to null by the upstream Analysis Artifact due to insufficient density (`insufficient information to evaluate`) must retain that annotation in the report; do not fabricate values to make the report look complete.
 - **Planned templates must be disclosed**: When a path's template is marked `planned`, must explicitly state "this template is under development" and provide alternative deliverable items available for that path; do not fabricate rendered output.
+- **Report index rule — when >2 reports, auto-generate**: When a single engagement produces more than 2 report files, a `report-index.html` must be generated from `dev/templates/report-index.html`, linking to all reports with relative paths and descriptions. The threshold is exclusive: exactly 2 reports do not trigger the index. The index is appended to `rendered` only, not to `templates_used`.
 
 ## References
 

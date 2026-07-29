@@ -64,6 +64,23 @@ def build_index() -> str:
         for marker, pids in sorted(markers.items()):
             lines.append(f"  - value: {marker!r}")
             lines.append(f"    used_by: [{', '.join(pids)}]")
+    # Non-path-specific navigation templates (not in any path's templates field)
+    nav_files = [
+        f for f in sorted(TEMPLATES_DIR.glob("*.html"))
+        if f.name not in {"template-base.css"}  # exclude CSS files
+        and not TYPE_RE.search(f.name)           # exclude standard type-numbered templates
+    ]
+    if nav_files:
+        lines.append("navigation:")
+        for nav in nav_files:
+            title = "?"
+            m = TITLE_RE.search(nav.read_text(encoding="utf-8"))
+            if m:
+                title = " ".join(m.group(1).split())
+            rel = f"dev/templates/{nav.name}"
+            lines.append(f"  - file: {rel}")
+            lines.append(f"    title: {title!r}")
+            lines.append(f"    on_disk: true")
     return "\n".join(lines) + "\n"
 
 

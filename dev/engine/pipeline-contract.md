@@ -79,7 +79,7 @@ Produced by credit-report-builder. Template selection is governed by the path's 
 path_id: ""                 # join key (inherited from path sheet, must not change)
 depth: ""                   # L0|L1|L2|special (inherited from path sheet)
 templates_used: []          # Templates selected from the path's registry templates field (single source of truth)
-rendered: []                # Actually produced report files (from dev/templates/)
+rendered: []                # Actually produced report files (from dev/templates/); may include report-index.html when >2 reports
 tier_mapping:               # Analysis artifact -> L0/L1/L2 tier (semantics per output-layered-framework §2/§3/§5)
   L0: ""
   L1: ""

@@ -49,6 +49,7 @@ QA layer — final stage of the four-stage chain. Responsibility: perform pre-de
 - **Citation compliance**: Every numeric claim (threshold, weight, score, tier, rating) carries a `doc §section` citation or is marked `engine_undefined`. Rule source: AGENTS.md Non-Negotiables.
 - **Dimension compliance**: All analysis dimensions/metrics use engine vocabulary only (industry-framework D1-D10 + paradigm pyramids; concentration-framework five dimensions; contagion-matrix 19 industries; P1-P6 paradigms) — no invented dimensions or industries. Rule source: `dev/engine/industry-framework.md` + `dev/engine/contagion-matrix.md`.
 - **Chain compliance**: A Path Sheet exists for the `path_id`, and this QA Verdict is produced before delivery — no analysis ships without it. Rule source: `dev/engine/pipeline-contract.md`.
+- **Index compliance**: When the Delivery Note's `rendered` list (excluding `report-index.html` itself) contains more than 2 entries, `dev/templates/report-index.html` MUST be present in `rendered`, and every link within it must be a relative path to one of the other rendered files. Rule source: `credit-report-builder` skill §Assembly Protocol step 5.
 
 ## QA Verdict Output
 

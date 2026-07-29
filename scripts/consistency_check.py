@@ -402,6 +402,14 @@ def check_template_index() -> list[str]:
     return []
 
 
+def check_navigation_template() -> list[str]:
+    """Navigation templates (report-index.html) must exist on disk per index.yaml."""
+    nav = TEMPLATES_DIR / "report-index.html"
+    if not nav.exists():
+        return ["NAV_TEMPLATE: dev/templates/report-index.html is missing (required for >2 report engagements)"]
+    return []
+
+
 def check_playbooks() -> list[str]:
     """Every active registry path must have an execution-contract playbook at
     engine/path-playbooks/<path_id>.md containing its registry engine_sequence docs
@@ -823,6 +831,7 @@ def collect_errors(only_links: bool = False) -> list[str]:
     errors.extend(check_agents_entry())
     errors.extend(check_version_alignment())
     errors.extend(check_registry_templates())
+    errors.extend(check_navigation_template())
     errors.extend(check_registry_quality_gates())
     errors.extend(check_migration_matrix_structure())
     errors.extend(check_readme_methodology())

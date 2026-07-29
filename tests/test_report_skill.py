@@ -150,3 +150,32 @@ def test_t7_5_contract_declares_four_stages_and_skill_dirs():
         assert (SKILLS_DIR / skill / "SKILL.md").exists(), (
             f"skill dir {skill}/SKILL.md missing on disk"
         )
+
+
+def test_t7_6_navigation_template_exists():
+    """T7.6: dev/templates/report-index.html exists as a template on disk."""
+    nav = TEMPLATES_DIR / "report-index.html"
+    assert nav.exists(), (
+        "report-index.html template missing — required for >2 report engagements"
+    )
+
+
+def test_t7_7_skill_instructs_index_generation():
+    """T7.7: SKILL.md contains the report-index instruction and >2 threshold."""
+    assert "report-index" in SKILL_TEXT, (
+        "SKILL.md missing report-index instruction"
+    )
+    assert ">2" in SKILL_TEXT or "more than 2" in SKILL_TEXT or "exceeds 2" in SKILL_TEXT, (
+        "SKILL.md must specify the >2 threshold for index generation"
+    )
+
+
+def test_t7_8_index_not_in_registry_paths():
+    """T7.8: report-index.html must NOT be in any path's registry templates field."""
+    registry_paths = load_registry_paths(REGISTRY)
+    for pid, entry in registry_paths.items():
+        for tmpl in entry.get("templates") or []:
+            assert "report-index" not in str(tmpl), (
+                f"{pid} must not list report-index.html in its templates field — "
+                "the index is a cross-cut navigation page, not a per-path template"
+            )

@@ -135,3 +135,13 @@ def test_t8_5_new_skills_referenced_in_agents_md():
         assert f"skills/{name}/SKILL.md" in agents, (
             f"AGENTS.md does not reference skills/{name}/SKILL.md"
         )
+
+
+def test_t8_6_qa_checklist_index_rule():
+    """T8.6: QA checklist references report-index compliance."""
+    assert "report-index" in CHECKLIST_TEXT, (
+        "qa-checklist.md must reference the report-index rule"
+    )
+    assert "index_compliance" in CHECKLIST_TEXT, (
+        "qa-checklist.md must list index_compliance in the process-compliance table"
+    )
