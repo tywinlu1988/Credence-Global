@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.9] - 2026-07-29
+
+### Added
+- 5 partial paths completed to active: WP-CS-02 (LGD + External Support), WP-PM-02
+  (Comparative Analysis), WP-TR-01 (Trader L0 Signal Card), WP-RO-04 (Portfolio
+  Stress Test), WP-X-04 (ESG/Governance Risk Scan) — each with playbook, quality
+  gates, and drift blacklist.
+- 2 planned paths completed to active: WP-AD-01 (Advisor Origination Assessment —
+  new engine doc `advisor-origination-framework.md` + template-type16) and WP-II-01
+  (Individual Investor Decision Support — new engine doc
+  `financing-channel-framework.md` + template-type17).
+- `report-index.html` navigation page auto-generated when an engagement produces
+  more than 2 reports (new template + report-builder Assembly Protocol step 5 +
+  QA index_compliance check).
+- CHANGELOG date-ordering gate in consistency_check.
+- End-to-end walkthrough: Siemens AG four-stage chain in validation/reports/industrial/.
+- All 16 work paths active (0 partial, 0 planned).
+
+### Changed
+- Registry status distribution: 9→14→16 active over three v0.0.8 batches.
+- Master README: badges, plugin install route, current architecture, stale-content purge.
+- AGENTS.md Non-Negotiable #3: report-index sub-rule.
+
 ## [0.0.8] - 2026-07-27
 
 ### Added
