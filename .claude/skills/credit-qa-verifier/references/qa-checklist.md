@@ -42,6 +42,7 @@ Any failure results in `fail`:
 | dimension_compliance | Six International Paradigms | ${CLAUDE_PLUGIN_ROOT}/engine/industry-framework.md |
 | dimension_compliance | Contagion Matrix | ${CLAUDE_PLUGIN_ROOT}/engine/contagion-matrix.md |
 | chain_compliance | Path Sheet | ${CLAUDE_PLUGIN_ROOT}/engine/pipeline-contract.md |
+| index_compliance | report-index | credit-report-builder skill |
 
 **What each check verifies:**
 
@@ -49,6 +50,7 @@ Any failure results in `fail`:
 - **citation_compliance**: Every numeric claim (threshold, weight, score, tier, rating) carries a `doc §section` citation or is marked `engine_undefined`.
 - **dimension_compliance**: All analysis dimensions/metrics use engine vocabulary only (industry-framework D1-D10 + paradigm pyramids; concentration-framework five dimensions; contagion-matrix 19 industries; P1-P6 paradigms) — no invented dimensions, industries, or paradigms.
 - **chain_compliance**: A Path Sheet exists for the `path_id`, and this QA Verdict is produced before delivery — analysis never ships without it.
+- **index_compliance**: When a Delivery Note's `rendered` list (excluding `report-index.html` itself) contains more than 2 report files, `${CLAUDE_PLUGIN_ROOT}/templates/report-index.html` must be present and must link to each report with a relative path.
 
 ## Fail Conditions (not limited to)
 
@@ -62,5 +64,6 @@ Any failure results in `fail`:
 - Numeric claims without a `doc §section` citation that are not marked `engine_undefined`.
 - Dimensions, industries, metrics, or paradigms not present in the engine vocabulary.
 - Analysis delivered without a passing QA Verdict.
+- A Delivery Note with >2 rendered reports (excluding the index itself) missing the `report-index.html` index page.
 
 > If any inconsistency arises between this checklist and the referenced engine documents, the engine documents prevail.

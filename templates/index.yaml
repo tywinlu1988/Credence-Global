@@ -81,3 +81,7 @@ markers:
     used_by: [WP-TR-01]
   - value: 'planned'
     used_by: [WP-AD-01, WP-II-01]
+navigation:
+  - file: ${CLAUDE_PLUGIN_ROOT}/templates/report-index.html
+    title: 'Report Index - {{ENGAGEMENT_TITLE}}'
+    on_disk: true

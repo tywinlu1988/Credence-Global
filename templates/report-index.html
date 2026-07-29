@@ -1,0 +1,100 @@
+<!--
+  Report Index Navigation Page
+  Dark theme, card-based report navigation with relative links.
+  Sections: Hero → Report Navigation → Footer.
+  Auto-generated when a single engagement produces more than 2 reports.
+  Replace all {{PLACEHOLDERS}} with actual data.
+  Colors: Blue #6366f1 (nav links), Purple #a855f7 (meta badges)
+  Font: System stack
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Report Index - {{ENGAGEMENT_TITLE}}</title>
+<style>:root{--bg:#0f1117;--card:#1a1d28;--card2:#212433;--text:#e2e4ea;--text2:#9398a9;--border:#2a2e3c;--green:#22c55e;--green-bg:rgba(34,197,94,.08);--red:#ef4444;--red-bg:rgba(239,68,68,.08);--amber:#f59e0b;--amber-bg:rgba(245,158,11,.08);--blue:#6366f1;--blue-bg:rgba(99,102,241,.08);--purple:#a855f7;--purple-bg:rgba(168,85,247,.08)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.container{max-width:960px;margin:0 auto;padding:0 28px}
+/* --- HERO --- */
+.hero{text-align:center;padding:64px 0 48px}
+.hero .chip{display:inline-block;background:var(--blue-bg);color:var(--blue);border:1px solid rgba(99,102,241,.25);border-radius:20px;padding:4px 16px;font-size:12px;letter-spacing:1px;margin-bottom:20px}
+.hero h1{font-size:34px;font-weight:800;letter-spacing:-.5px;margin-bottom:12px}
+.hero .subtitle{font-size:15px;color:var(--text2);max-width:620px;margin:0 auto 28px}
+.hero .meta{display:flex;justify-content:center;gap:32px;font-size:12px;color:var(--text2)}
+.hero .meta span{padding:6px 14px;background:var(--card);border-radius:6px;border:1px solid var(--border)}
+/* --- SECTIONS --- */
+.section{margin:48px 0}
+.section-title{font-size:20px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.section-title .num{width:28px;height:28px;background:var(--blue-bg);color:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+/* --- CARDS --- */
+.card{background:var(--card);border-radius:10px;padding:22px 26px;margin:14px 0;border:1px solid var(--border);display:flex;flex-wrap:wrap;align-items:flex-start;gap:16px}
+.card:hover{background:var(--card2);border-color:var(--blue)}
+.card .c-body{flex:1;min-width:260px}
+.card .c-body h3{font-size:16px;font-weight:700;margin-bottom:6px}
+.card .c-body h3 a{color:var(--blue);text-decoration:none}
+.card .c-body h3 a:hover{text-decoration:underline}
+.card .c-body p{font-size:13px;color:var(--text2);line-height:1.55;margin:0}
+.card .c-badge{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px;padding-top:2px}
+/* --- TAGS --- */
+.tag{display:inline-block;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;letter-spacing:.3px}
+.tag-blue{background:var(--blue-bg);color:var(--blue)}
+.tag-purple{background:var(--purple-bg);color:var(--purple)}
+.tag-green{background:var(--green-bg);color:var(--green)}
+.tag-amber{background:var(--amber-bg);color:var(--amber)}
+/* --- FOOTER --- */
+.footer{text-align:center;padding:40px 0 32px;margin-top:48px;border-top:1px solid var(--border)}
+.footer p{font-size:12px;color:var(--text2)}
+@media(max-width:768px){.hero h1{font-size:22px}.hero .meta{flex-direction:column;gap:10px}.card{flex-direction:column}.card .c-badge{align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="chip">REPORT INDEX</div>
+  <h1>{{ENGAGEMENT_TITLE}}</h1>
+  <div class="subtitle">
+    This navigation page indexes all reports produced in this engagement.
+    Click any report name to open it.  Every link is a relative path — the
+    files work from any location as long as they stay together in the same
+    folder.
+  </div>
+  <div class="meta">
+    <span>Date: {{DATE}}</span>
+    <span>{{REPORT_COUNT}} report{{REPORT_COUNT_PLURAL}} indexed</span>
+    <span>Engine {{VERSION}}</span>
+  </div>
+</div>
+
+<!-- ===== REPORT NAVIGATION ===== -->
+<div class="section">
+  <div class="section-title"><span class="num">&#9776;</span>Report Navigation</div>
+
+  {{REPORT_LIST}}
+  <!-- Each entry:
+  <div class="card">
+    <div class="c-body">
+      <h3><a href="./template-typeN.html">template-typeN.html</a></h3>
+      <p>One-sentence summary of what this report contains and its role in the analysis.</p>
+    </div>
+    <div class="c-badge">
+      <span class="tag tag-blue">Type N</span>
+      <span class="tag tag-purple">L2 Deep</span>
+    </div>
+  </div>
+  -->
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<div class="footer">
+  <p>Credence Fixed-Income Credit Analysis Engine &middot; {{VERSION}} &middot; Report Index (auto-generated)</p>
+  <p style="margin-top:4px">This page is not investment advice.  Reports linked from this page are methodology demonstrations.</p>
+</div>
+
+</div>
+</body>
+</html>
