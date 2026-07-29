@@ -1,6 +1,6 @@
 # Industry Classification & Analysis Framework
 
-**Version**: v0.0.9 | **Date**: 2026-07-17 | **Status**: Internationalized (Phase 2)
+**Version**: v0.1.0 | **Date**: 2026-07-17 | **Status**: Internationalized (Phase 2)
 
 ---
 
@@ -22,6 +22,14 @@ Each dimension is scored on a 1-5 scale to quantify the structural characteristi
 | D10 | Barriers to Entry / Moat Durability | How defensible is the moat? | 1=Commoditized / 5=Unassailable moat |
 
 ---
+
+> **Reading guide**: §§1-3 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§4-6 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
 
 ## 2 Six International Paradigms (P1-P6)
 

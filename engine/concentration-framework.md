@@ -1,6 +1,6 @@
 # Five-Dimensional Concentration Analysis Framework
 
-**Version**: v0.0.9 | **Date**: 2026-07-10 | **Status**: Released
+**Version**: v0.1.0 | **Date**: 2026-07-10 | **Status**: Released
 
 ---
 
@@ -19,6 +19,14 @@
 11. [Limitations Statement](#11-limitations-statement)
 
 ---
+
+> **Reading guide**: §§1-2 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§3-9 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
 
 ## 1. Design Overview
 
@@ -275,7 +283,7 @@ The regional fiscal health weighted share serves as a supplementary indicator th
 
 According to the [Contagion Matrix](contagion-matrix.md) §4.1 Principle 3 (intra-regional dependency transmission is high), regional concentration risk is amplified through the following pathways:
 
-> **Cross-document consumption note:** When the Concentration Framework references the Contagion Matrix, it only consumes each cell's **`intensity`** and **`direction`** fields, used to identify contagion strength and determine uni/bidirectional relationships. The `type`, `confidence`, and `historical_cases` fields do not enter the quantitative calculation in the current v0.0.9.
+> **Cross-document consumption note:** When the Concentration Framework references the Contagion Matrix, it only consumes each cell's **`intensity`** and **`direction`** fields, used to identify contagion strength and determine uni/bidirectional relationships. The `type`, `confidence`, and `historical_cases` fields do not enter the quantitative calculation in the current v0.1.0.
 
 | Regional Resonance Pathway | Contagion Intensity | Logic Description |
 |--------------------------|-------------------|-------------------|
@@ -597,7 +605,7 @@ Step 6: Output the final funding channel concentration risk score (1-10)
 
 ## 7. Concentration to Rating Adjustment Mapping
 
-**Version**: v0.0.9 | **Date**: 2026-07-10 | **Status**: Released
+**Version**: v0.1.0 | **Date**: 2026-07-10 | **Status**: Released
 
 The five-dimensional concentration composite score identifies the concentration risk level (🟢🟡🟠🔴) of the portfolio across five dimensions, but does not directly answer a core question: "How does concentration risk affect the credit rating of individual issuers?" This section establishes the mapping rules from dimension threshold breaches to issuer rating adjustments.
 
@@ -886,4 +894,4 @@ Use the following table to quickly estimate the composite risk score:
 
 ---
 
-*This document should be used in conjunction with the Contagion Matrix (v0.0.9) and Financial Deep Dive (v0.0.9). The Concentration Analysis Framework is the core component of the M4 Portfolio Risk Control Layer and forms a complete risk control loop with the Industry Pyramid (M1-M2) and Dual-Track Analysis (M3).*
+*This document should be used in conjunction with the Contagion Matrix (v0.1.0) and Financial Deep Dive (v0.1.0). The Concentration Analysis Framework is the core component of the M4 Portfolio Risk Control Layer and forms a complete risk control loop with the Industry Pyramid (M1-M2) and Dual-Track Analysis (M3).*

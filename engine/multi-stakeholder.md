@@ -1,6 +1,6 @@
 # Multi-Stakeholder Perspective Framework
 
-**Version**: v0.0.9 | **Date**: 2026-07-17
+**Version**: v0.1.0 | **Date**: 2026-07-17
 **Source**: Fixed Income Credit Intelligence Engine v0.0.1 · Mosaic Engine Architecture
 **Nature**: Structured archive — compiled from existing skill packages and specification documents
 
@@ -44,6 +44,14 @@ Each role operates under a distinct set of constraints that shape its analytical
 | **Individual Investor** | Bond price, coupon rate, maturity date, credit rating | News headlines, analyst summaries, fund flow data | Full prospectus too long — needs concise risk summary |
 
 ---
+
+> **Reading guide**: §§1-2 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§3-5 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
 
 ## 2. Role Deep-Dive Frameworks
 

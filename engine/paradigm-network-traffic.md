@@ -1,6 +1,6 @@
 # Network-Effect and Traffic/Throughput Analysis: Secondary-Attribute Application Note
 
-**Version**: v0.0.9 | **Paradigm Version**: v1.0.0 | **Date**: 2026-07-18 | **Status**: Initial international release
+**Version**: v0.1.0 | **Paradigm Version**: v1.0.0 | **Date**: 2026-07-18 | **Status**: Initial international release
 
 > **Taxonomy note**: This document is an **application note**, not a standalone paradigm.
 > Under the six-paradigm taxonomy (single source of truth: [industry-framework.md](industry-framework.md) §2-§3),
@@ -41,6 +41,11 @@ An industry is a candidate for the network and throughput lens by meeting the fo
 > **Exclusion rule:** Industries where brand perception is the primary purchase driver (e.g., consumer staples, luxury goods, apparel) or where technology patents are the core barrier (semiconductors, innovative pharma) are not suited for this paradigm.
 
 ---
+
+> **Reading guide**: This is a full — application note, read as needed. It does not contain executable scoring
+> rules or thresholds — it is a reference document consulted for structure and
+> definitions, not read linearly before every analysis.
+
 
 ## 2. Paradigm Core
 

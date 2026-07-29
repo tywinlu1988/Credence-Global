@@ -1,6 +1,6 @@
 # Loss Given Default (LGD) and Recovery Analysis Framework
 
-**Version**: v0.0.9 | **Date**: 2026-07-17 | **Status**: Published
+**Version**: v0.1.0 | **Date**: 2026-07-17 | **Status**: Published
 
 **Module**: Fixed Income Credit Analysis Engine — Expected Loss (EL) Framework Supplement
 
@@ -9,6 +9,14 @@
 > **Honesty Statement:** The LGD estimation methods in this framework constitute **simplified estimates** rather than precise measurements. Accurate LGD requires internal collateral valuation data, historical default-and-recovery databases, and workout process tracking — data that belongs to institutional internal records and is unavailable through public channels across most markets. This framework aims to provide *discriminating LGD rankings* under public-data constraints, not precise loss-given-default predictions. Sections are annotated to indicate which parts are "precise indicators" (computable values with public data support), which are "simplified estimates" (inferences based on covenants and industry benchmarks), and which draw on international recovery studies.
 
 ---
+
+> **Reading guide**: §§1-3 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§4-6 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
 
 ## Table of Contents
 

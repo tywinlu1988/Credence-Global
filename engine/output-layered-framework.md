@@ -1,6 +1,6 @@
 # Layered Output Framework — Product Design Specification
 
-**Version**: v0.0.9 | **Date**: 2026-07-10
+**Version**: v0.1.0 | **Date**: 2026-07-10
 **Status**: Product design document (not code implementation)
 **Design Basis**: Practitioner Usability Audit (P0-level output model reform)
 
@@ -27,6 +27,14 @@ The current engine demonstrates solid academic rigor on the methodology level, b
 4. **Workflow embeddable**: Support four scenarios: "morning push - intraday query - post-market deep dive - weekly scan"
 
 ---
+
+> **Reading guide**: §§1-3 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§4-8 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
 
 ## 2. Three-Layer Output System Overview
 

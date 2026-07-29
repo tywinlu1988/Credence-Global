@@ -1,6 +1,6 @@
 # Financial Bond Credit Analysis Framework
 
-**Version**: v0.0.9 | **Date**: 2026-07-10 | **Status**: Published
+**Version**: v0.1.0 | **Date**: 2026-07-10 | **Status**: Published
 
 **Module**: Fixed Income Credit Analysis Engine - Financial Industry Analysis Track (Parallel to Corporate Bond Pyramid)
 
@@ -9,6 +9,14 @@
 > **Honesty Statement:** This framework is specifically designed for credit analysis of financial enterprises (banks, securities firms, insurance companies, financial leasing companies). The credit logic of financial enterprises is fundamentally different from corporate enterprises -- there is no "inventory turnover," "accounts receivable aging," or "gross margin," which are core indicators for corporate analysis. For financial enterprises, the "raw material" is funding, the "product" is loans and investments, and the "cost" is risk. This framework aims to fill the gap in the engine regarding financial bonds, but does not replace the specialized regulatory frameworks for each sub-type (such as the Basel Accords, Solvency II, etc.).
 
 ---
+
+> **Reading guide**: §§1-2 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§3-6 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
 
 ## Table of Contents
 

@@ -1,6 +1,6 @@
 # Non-Credit Risk Overlay
 
-**Version**: v0.0.9 | **Date**: 2026-07-10 | **Position**: Independent adjustment layer above the credit pyramid baseline rating
+**Version**: v0.1.0 | **Date**: 2026-07-10 | **Position**: Independent adjustment layer above the credit pyramid baseline rating
 
 ---
 
@@ -20,6 +20,14 @@
 - [Appendix A: Data Source Inventory by Risk Dimension](#appendix-a-data-source-inventory-by-risk-dimension)
 
 ---
+
+> **Reading guide**: §§1-2 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§3-6 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
 
 ## 1. Methodological Gap: Risk Coverage Scope
 

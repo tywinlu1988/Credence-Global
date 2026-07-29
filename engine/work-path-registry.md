@@ -1,10 +1,16 @@
 # Work Path Registry
 
-**Version**: v0.0.9 | **Date**: 2026-07-18
+**Version**: v0.1.0 | **Date**: 2026-07-18
 
-This registry is the design baseline for the v0.0.1 skill architecture refactoring (requirement understanding -> path routing -> engine invocation -> report delivery, all fully controllable). It makes all 16 work paths explicit and machine-readable, serving as the single source of truth for the Intake Router (v0.0.9) routing and execution-layer skill decomposition (v0.0.9).
+This registry is the design baseline for the v0.0.1 skill architecture refactoring (requirement understanding -> path routing -> engine invocation -> report delivery, all fully controllable). It makes all 16 work paths explicit and machine-readable, serving as the single source of truth for the Intake Router (v0.1.0) routing and execution-layer skill decomposition (v0.1.0).
 
 **Single Source of Truth Principle**: This registry only records "which engine documents a path uses, which templates it employs, and which quality gates it must pass." It does NOT copy any thresholds, weights, or rule text -- the rule text always resides in the engine documents referenced by `engine_sequence`.
+
+
+> **Reading guide**: This is a full — routing table, read as needed. It does not contain executable scoring
+> rules or thresholds — it is a reference document consulted for structure and
+> definitions, not read linearly before every analysis.
+
 
 ## Table of Contents
 

@@ -1,6 +1,6 @@
 # International Industry Contagion Matrix
 
-**Version**: v0.0.9 | **Date**: 2026-07-10
+**Version**: v0.1.0 | **Date**: 2026-07-10
 
 > **[PRELIMINARY]** Matrix intensities are initial methodological estimates pending empirical calibration against international default correlation data. All scores are theoretical constructs based on economic linkage analysis and historical precedent mapping, not statistical estimation. Users should treat these as directional indicators rather than precise measures.
 
@@ -19,6 +19,14 @@
 9. [Appendix](#9-appendix)
 
 ---
+
+> **Reading guide**: §§1-2 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§3-6 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
 
 ## 1. Industry Classification and Paradigm Mapping
 
@@ -985,4 +993,4 @@ Each industry methodology document should include a "Contagion Exposure" chapter
 
 ---
 
-*This document is the operational extension of [Contagion Theory](contagion-theory.md) (v0.0.9). The two documents must be used together.*
+*This document is the operational extension of [Contagion Theory](contagion-theory.md) (v0.1.0). The two documents must be used together.*

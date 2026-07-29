@@ -1,6 +1,6 @@
 # Defensive (P2) Paradigm: Brand Moat and Distribution Channel Analysis
 
-**Version**: v0.0.9 | **Paradigm Version**: v1.0.0 | **Date**: 2026-07-18 | **Status**: Initial international release
+**Version**: v0.1.0 | **Paradigm Version**: v1.0.0 | **Date**: 2026-07-18 | **Status**: Initial international release
 
 ---
 
@@ -32,6 +32,11 @@ An industry qualifies for the Defensive (P2) paradigm by meeting the following c
 > **Exclusion rule:** Industries where product technology is the primary purchase driver (e.g., semiconductors, specialty pharmaceuticals, capital equipment) are not suited for this paradigm.
 
 ---
+
+> **Reading guide**: This is a full — application note, read as needed. It does not contain executable scoring
+> rules or thresholds — it is a reference document consulted for structure and
+> definitions, not read linearly before every analysis.
+
 
 ## 2. Paradigm Core
 

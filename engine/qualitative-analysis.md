@@ -1,6 +1,6 @@
 # Qualitative Analysis Methodology — Fixed Income Credit Analysis Engine
 
-**Version**: v0.0.9 | **Date**: 2026-07-10
+**Version**: v0.1.0 | **Date**: 2026-07-10
 **Role**: Qualitative judgment methodology for Track A (Fundamental Analysis) · Normative guidance for "direction judgment" in the dual-track framework
 
 ---
@@ -75,6 +75,14 @@ This engine uses four types of qualitative analysis methods, listed by frequency
 | **Mosaic Assembly** | Aggregate multi-source fragments into a complete credit profile | Reasoning when information is insufficient | Chapter 5 |
 
 ---
+
+> **Reading guide**: §§1-3 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§4-7 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
 
 ## 2. Information Source Classification and Credibility Assessment
 

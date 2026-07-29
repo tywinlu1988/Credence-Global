@@ -1,6 +1,6 @@
 # Holding Company Credit Analysis Framework
 
-**Version**: v0.0.9 | **Date**: 2026-07-10
+**Version**: v0.1.0 | **Date**: 2026-07-10
 **Position**: Independent cross-sectional analysis framework separate from the seven-industry pyramid - applicable to credit analysis of holding companies / financial-industrial conglomerates
 **Driving Cases**: Validation of "strong subsidiary, weak parent" patterns from multiple conglomerate default cases
 
@@ -32,6 +32,14 @@ The core logic of this framework comes from three validated default cases. Altho
 **Core commonality**: All three companies exhibited a "strong subsidiary, weak parent" structure -- core subsidiaries were operating normally or even excellently, but at the parent level, excessive expansion, related fund occupation, and short-debt-long-investment led to cash flow disruption. **This is not a subsidiary problem; it is a fund management problem at the parent level.**
 
 ---
+
+> **Reading guide**: §§1-2 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§3-5 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
 
 ## 2. Three Core Analytical Dimensions
 

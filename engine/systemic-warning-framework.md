@@ -1,6 +1,6 @@
 # Systemic Warning Framework — Signal Aggregation Algorithm + Thermometer + Historical Backtests
 
-**Version**: v0.0.9 | **Date**: 2026-07-10 | **Status**: Released
+**Version**: v0.1.0 | **Date**: 2026-07-10 | **Status**: Released
 
 ---
 
@@ -20,6 +20,14 @@
 12. [Appendix](#12-appendix)
 
 ---
+
+> **Reading guide**: §§1-3 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§4-8 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
 
 ## 1. Design Philosophy and Positioning
 
@@ -1199,4 +1207,4 @@ Where:
 
 ---
 
-*This document should be used in conjunction with the Dual-Track Methodology (v0.0.9), Contagion Matrix (v0.0.9), Five-Dimensional Concentration Analysis Framework (v0.0.9), and Outlook Monitoring Framework. The Systemic Warning Framework is the top-level dashboard for the engine's M4 Portfolio Risk Control Layer, providing a unified systemic risk reading for dispersed industry signals.*
+*This document should be used in conjunction with the Dual-Track Methodology (v0.1.0), Contagion Matrix (v0.1.0), Five-Dimensional Concentration Analysis Framework (v0.1.0), and Outlook Monitoring Framework. The Systemic Warning Framework is the top-level dashboard for the engine's M4 Portfolio Risk Control Layer, providing a unified systemic risk reading for dispersed industry signals.*

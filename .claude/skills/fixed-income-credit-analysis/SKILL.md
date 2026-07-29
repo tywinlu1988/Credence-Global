@@ -5,10 +5,7 @@ description: Use when analyzing industries or companies for credit decisions in 
 
 ## Path Resolution
 
-Paths written as `${CLAUDE_PLUGIN_ROOT}/engine/...` and `${CLAUDE_PLUGIN_ROOT}/templates/...` resolve to the package root:
-
-- **Plugin install** (Claude Code plugin/marketplace): `${CLAUDE_PLUGIN_ROOT}` is the package root inside the plugins directory — all references resolve automatically.
-- **Opened as a project** (downloaded zip / Model A): treat `${CLAUDE_PLUGIN_ROOT}` as the package root you opened (the directory holding the engine and templates folders).
+See `${CLAUDE_PLUGIN_ROOT}/engine/agent-protocol.md` §1 — engine/ and templates/ paths resolve to the package root in both plugin-install and open-as-project modes.
 
 
 ## Invocation Protocol
@@ -26,7 +23,7 @@ When this Skill is invoked:
 7. Do not invoke Mode B or generate external-data values unless the user has explicitly provided a CSV upload, API endpoint, or MCP server. Treat Mode B fields as data gaps until then.
 8. **Before delivering**: hand the analysis artifact to `credit-report-builder` (if a report is requested) and obtain a passing QA Verdict from `credit-qa-verifier`. No verdict, no delivery.
 
-# Fixed Income Credit Analysis Engine v0.0.9
+# Fixed Income Credit Analysis Engine v0.1.0
 
 ## Overview
 

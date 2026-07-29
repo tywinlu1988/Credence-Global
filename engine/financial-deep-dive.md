@@ -1,12 +1,20 @@
 # Financial Deep Dive Sub-Module
 
-**Version**: v0.0.9 | **Date**: 2026-07-17 | **Status**: Published
+**Version**: v0.1.0 | **Date**: 2026-07-17 | **Status**: Published
 
 ---
 
 > **Note:** This module is a deep-dive sub-module of the L4 Financial Layer within the Dual-Track Methodology (dual-track-methodology.md). It provides detailed calculation specifications for the financial layer indicators across all 7 industries in the industry framework (industry-framework.md). The module is structured as three-statement linkage + four-dimensional deep analysis + three-scenario sensitivity matrix, with additional extensions for sovereign and banking sector analysis.
 
 ---
+
+> **Reading guide**: §§1-4 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§A-E contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
 
 ## Table of Contents
 

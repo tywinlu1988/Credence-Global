@@ -5,15 +5,12 @@ description: Use when verifying a fixed-income credit report or analysis — che
 
 ## Path Resolution
 
-Paths written as `${CLAUDE_PLUGIN_ROOT}/engine/...` and `${CLAUDE_PLUGIN_ROOT}/templates/...` resolve to the package root:
-
-- **Plugin install** (Claude Code plugin/marketplace): `${CLAUDE_PLUGIN_ROOT}` is the package root inside the plugins directory — all references resolve automatically.
-- **Opened as a project** (downloaded zip / Model A): treat `${CLAUDE_PLUGIN_ROOT}` as the package root you opened (the directory holding the engine and templates folders).
+See `${CLAUDE_PLUGIN_ROOT}/engine/agent-protocol.md` §1 — engine/ and templates/ paths resolve to the package root in both plugin-install and open-as-project modes.
 
 
 ## Purpose
 
-**Engine version**: v0.0.9
+**Engine version**: v0.1.0
 
 **Non-Negotiables (see AGENTS.md)**: **no delivery of analysis conclusions without a passing QA Verdict from this skill** (pure knowledge questions exempt) · no numbers without a `doc §section` citation (`engine_undefined` otherwise) · no report outside `${CLAUDE_PLUGIN_ROOT}/templates/`.
 

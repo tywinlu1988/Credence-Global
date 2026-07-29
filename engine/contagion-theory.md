@@ -1,6 +1,6 @@
 # Contagion Theory -- Credit Risk Transmission Pathways and Sector Exposure Framework
 
-**Version**: v0.0.9 | **Date**: 2026-07-10
+**Version**: v0.1.0 | **Date**: 2026-07-10
 
 ---
 
@@ -14,6 +14,14 @@
 6. [Practical Application Guide](#6-practical-application-guide)
 
 ---
+
+> **Reading guide**: §§1-2 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§3-5 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
 
 ## 1. Introduction: Why Contagion Theory
 

@@ -1,6 +1,6 @@
 # Validation Methodology
 
-**Version**: v0.0.9 | **Date**: 2026-07-10
+**Version**: v0.1.0 | **Date**: 2026-07-10
 **Source**: Fixed-Income Credit Analysis Skill Pack v0.0.10.3.0 . Black Swan Back-Testing Cases
 **Date**: 2026-07-08
 **Nature**: Structured Archive -- extracted and organized from existing skill packs and validation cases
@@ -25,6 +25,14 @@
 - **Data gaps themselves are signals**: Certain missing data (e.g., no market pricing for private entities) are themselves important risk signals
 
 ---
+
+> **Reading guide**: §§1-4 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§5-6 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
 
 ## 2. Black Swan Back-Testing Standard Process (6 Steps)
 

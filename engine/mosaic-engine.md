@@ -1,6 +1,6 @@
 # Mosaic Engine
 
-**Version**: v0.0.9 | **Date**: 2026-07-10
+**Version**: v0.1.0 | **Date**: 2026-07-10
 **Core Principle**: Data is always incomplete -- turn "incompleteness" from a weakness into a product feature
 
 ---
@@ -32,6 +32,14 @@ Skill Pack v0.0.1
 ```
 
 ---
+
+> **Reading guide**: §§1-4 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§5-7 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
 
 ## 2. Mode A: Mosaic Engine (Current Implementation) -- System Architecture
 

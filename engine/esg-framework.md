@@ -1,6 +1,6 @@
 # ESG Risk Assessment Framework (Applicable to Global Fixed Income Markets)
 
-**Version**: v0.0.9 | **Date**: 2026-07-10 | **Status**: Published | **Type**: Non-Credit Risk Overlay Sub-Module
+**Version**: v0.1.0 | **Date**: 2026-07-10 | **Status**: Published | **Type**: Non-Credit Risk Overlay Sub-Module
 
 ---
 
@@ -9,6 +9,14 @@
 > **Overlay Attribute**: Consistent with non-credit-risk-overlay.md, this framework serves as an overlay layer, not altering base ratings, with a maximum +/-1 notch adjustment. ESG signals feed into the "Reputational Risk" and "Operational Risk" dimensions of the non-credit-risk-overlay.
 
 ---
+
+> **Reading guide**: §1 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§2-5 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
 
 ## Table of Contents
 

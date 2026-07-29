@@ -1,6 +1,6 @@
 # Dual-Track Analysis Methodology
 
-**Version**: v0.0.9 | **Date**: 2026-07-10
+**Version**: v0.1.0 | **Date**: 2026-07-10
 
 ---
 
@@ -41,6 +41,14 @@ Fundamentals        Market Pricing
 | Core Value | Identify structural unsustainability | Capture market pricing errors |
 
 ---
+
+> **Reading guide**: §§1-4 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§5-7 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
 
 ## 2. Track A: Fundamental Pyramid Scoring
 

@@ -1,6 +1,6 @@
 # Quantitative Analysis Methodology — Fixed Income Credit Analysis Engine
 
-**Version**: v0.0.9 | **Date**: 2026-07-10
+**Version**: v0.1.0 | **Date**: 2026-07-10
 **Positioning**: Deep quantitative layer of Track B (Market Pricing) · Quantitative analysis specification in the dual-track framework
 
 > **Honest Statement**: The statistical correction methods defined in this document (confidence intervals / ADF test / B-P test / FDR correction) are methodological documentation and have not yet been verified through code implementation.
@@ -61,6 +61,14 @@ This engine **does not require paid terminals such as Wind/Bloomberg as prerequi
 **Core conclusion: Without relying on paid terminals, we can perform trend analysis, anomaly detection, and relative value ranking based on public market data, but cannot conduct fine-grained analysis requiring precise cash flow discount models and option pricing models.**
 
 ---
+
+> **Reading guide**: §§1-4 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§5-8 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
 
 ## 2. Credit Spread Analysis
 

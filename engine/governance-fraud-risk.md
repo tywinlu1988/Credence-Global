@@ -1,6 +1,6 @@
 # Governance and Financial Fraud Risk Analysis Module
 
-**Version**: v0.0.9 | **Date**: 2026-07-17 | **Status**: Published
+**Version**: v0.1.0 | **Date**: 2026-07-17 | **Status**: Published
 
 ---
 
@@ -8,6 +8,14 @@
 > **Note:** This module fills the blind spot created when the engine treats an enterprise purely as a "financial + operational + technological system" rather than a "social system driven by people, institutions, and culture." In major fraud cases globally, traditional financial analysis alone systematically fails to detect risks that are deliberately concealed by management. This module provides systematic detection frameworks for financial fraud, management governance, related-party transactions, and earnings manipulation risk.
 
 ---
+
+> **Reading guide**: §§1-2 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§3-10 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
 
 ## Table of Contents
 
