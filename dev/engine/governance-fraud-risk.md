@@ -9,6 +9,14 @@
 
 ---
 
+> **Reading guide**: §§1-2 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§3-10 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
+
 ## Table of Contents
 
 - [1. Financial Fraud Red Flag Checklist](#1-financial-fraud-red-flag-checklist)

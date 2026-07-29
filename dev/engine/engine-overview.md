@@ -38,6 +38,11 @@
 
 ---
 
+> **Reading guide**: This is a full — architecture reference, read as needed. It does not contain executable scoring
+> rules or thresholds — it is a reference document consulted for structure and
+> definitions, not read linearly before every analysis.
+
+
 ## 1. Core Philosophy: Why Traditional Financial Analysis Is Not Enough
 
 Traditional financial analysis rests on an implicit assumption — **that a firm's credit risk can be read from its financial statements**. This assumption systematically fails in the following three industry types:

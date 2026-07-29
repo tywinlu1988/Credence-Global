@@ -45,6 +45,14 @@ Each role operates under a distinct set of constraints that shape its analytical
 
 ---
 
+> **Reading guide**: §§1-2 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§3-5 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
+
 ## 2. Role Deep-Dive Frameworks
 
 ### 2.1 Credit Selector — Single-Issuer Credit Assessment

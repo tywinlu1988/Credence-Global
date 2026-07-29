@@ -127,6 +127,23 @@ def _write_text(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8", newline="\n")
 
 
+def _inline_css(html_text: str, templates_dir: Path) -> str:
+    """Replace <link rel="stylesheet" href="template-base.css"> with inline <style>.
+
+    Dev templates use an external CSS link (single source of truth, zero duplication).
+    At build time we inline the CSS so the dist HTML files are self-contained — copy
+    a report anywhere and it renders correctly, no missing CSS dependency.
+    """
+    css_path = templates_dir / "template-base.css"
+    css_content = css_path.read_text(encoding="utf-8")
+    # Wrap in <style> with a marker so it's clear this was build-time inlined
+    inline_block = f"<style>/* inlined from template-base.css at build time */\n{css_content}\n</style>"
+    return html_text.replace(
+        '<link rel="stylesheet" href="template-base.css">',
+        inline_block,
+    )
+
+
 def _copy_and_transform(src: Path, dst: Path, log: list, scrub: bool) -> None:
     for f in sorted(src.rglob("*")):
         if f.is_dir():
@@ -141,6 +158,8 @@ def _copy_and_transform(src: Path, dst: Path, log: list, scrub: bool) -> None:
             text = _apply_rewrites(text)
             if scrub:
                 text = _scrub(text, str(rel), log)
+            if f.suffix == ".html":
+                text = _inline_css(text, src)
             _write_text(out, text)
         else:
             out.parent.mkdir(parents=True, exist_ok=True)
@@ -236,21 +255,16 @@ This installable package is a **runtime artifact** and does not include tests or
 """
 
 
-def _gen_claude_md() -> str:
-    return """# CLAUDE.md — Credence
+def _gen_cli_entry(name: str, note: str = "") -> str:
+    """Generate a minimal CLI entry-point file (CLAUDE.md / GEMINI.md).
 
-Read `AGENTS.md` first. Skills are in `.claude/skills/`.
+    Both files share the same structure: pointer to AGENTS.md, skills location,
+    SSOT rule, and Path Resolution block. The only difference is the filename
+    header and an optional CLI-specific note.
+    """
+    return f"""# {name}.md — Credence
 
-Thresholds, weights, and rating maps live only in `engine/*.md`; never fabricate values -- reference `engine/<doc>.md SS<section>`, output `engine_undefined` if not defined.
-
-""" + _PATH_NOTE + """
-"""
-
-
-def _gen_gemini_md() -> str:
-    return """# GEMINI.md — Credence
-
-Read `AGENTS.md` first. Skills are in `.claude/skills/` (Gemini CLI compatibly reads this directory).
+Read `AGENTS.md` first. Skills are in `.claude/skills/`{(' (' + note + ')') if note else ''}.
 
 Thresholds, weights, and rating maps live only in `engine/*.md`; never fabricate values -- reference `engine/<doc>.md SS<section>`, output `engine_undefined` if not defined.
 
@@ -621,8 +635,8 @@ def build(out_dir=None) -> list:
     v = _version()
     shutil.copyfile(ROOT / "LICENSE", out / "LICENSE")
     _write_text(out / "AGENTS.md", _gen_agents_md(v))
-    _write_text(out / "CLAUDE.md", _gen_claude_md())
-    _write_text(out / "GEMINI.md", _gen_gemini_md())
+    _write_text(out / "CLAUDE.md", _gen_cli_entry("CLAUDE"))
+    _write_text(out / "GEMINI.md", _gen_cli_entry("GEMINI", "Gemini CLI compatibly reads this directory"))
     _write_text(out / "INSTALL.md", _gen_install_md(v))
     _write_text(out / "README.md", _gen_readme_md(v))
     _write_text(out / ".claude-plugin" / "plugin.json", _gen_plugin_json(v))

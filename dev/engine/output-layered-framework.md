@@ -28,6 +28,14 @@ The current engine demonstrates solid academic rigor on the methodology level, b
 
 ---
 
+> **Reading guide**: §§1-3 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§4-8 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
+
 ## 2. Three-Layer Output System Overview
 
 ### 2.1 Three-Layer Definitions

@@ -75,6 +75,14 @@ Input: Industry + Entity + Analysis Date
 
 ---
 
+> **Reading guide**: §§1-3 contain the executable methodology — thresholds,
+> weights, scoring rules, and decision frameworks. These sections are required
+> reading before executing any work path that references this document.
+> §§4-6 contain worked examples, derivations, historical validation, and
+> extended discussion — read only when the analysis needs detailed justification
+> or the user asks for methodological background.
+
+
 ## 2. Four Types of External Support and Typical Scenarios
 
 ### 2.1 Type Overview
