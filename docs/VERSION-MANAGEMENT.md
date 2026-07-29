@@ -43,7 +43,7 @@ Before cutting a new release, the following checks must be completed:
 - [ ] All core methodology documents' `**Version**:` headers are unified to the current engine version.
 - [ ] Claude Skill package (`dev/.claude/skills/fixed-income-credit-analysis/`) has been synced and upgraded to the current engine version.
 - [ ] `scripts/consistency_check.py` runs successfully (no broken links, consistent version numbers, SRI examples within valid range).
-- [ ] `python scripts/build_dist.py --zip` build + built-in validation passes (zero absolute paths, zero dev/ tokens, all links resolvable, 4 skills with strict frontmatter, 27 CORE_DOCS complete) and produces `version/<v>-release.zip` + `.sha256`.
+- [ ] `python scripts/build_dist.py --zip` build + built-in validation passes (zero absolute paths, zero dev/ tokens, all links resolvable, 4 skills with strict frontmatter, 29 CORE_DOCS complete) and produces `version/<v>-release.zip` + `.sha256`.
 - [ ] All templates and reports have version numbers aligned with the engine version.
 - [ ] `dev/README.md` version history and directory structure description have been updated.
 

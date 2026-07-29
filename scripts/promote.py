@@ -2,7 +2,7 @@
 """Credence version promotion script (Recommendation 4: single source of truth for version declarations).
 
 Accepts a new version number, rewrites all version declaration points per **explicit rule table**
-(28 CORE_DOCS headers, 4 SKILL.md files, references headers, README/AGENTS/dev README,
+(29 CORE_DOCS headers, 4 SKILL.md files, references headers, README/AGENTS/dev README,
 pyproject/package.json, EXPECTED_VERSION, build_dist fallback, .gitignore anti-pattern,
 VERSION-MANAGEMENT's "currently" lines). Only matches declaration forms -- version history
 tables, "since vX" narratives, "v0.0.1 skill architecture" era descriptions, paradigm version

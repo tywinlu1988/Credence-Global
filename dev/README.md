@@ -20,7 +20,7 @@ International fixed-income credit analysis engine. Through industry-customized m
 ../AGENTS.md                                       Cross-CLI entry point (repo root -- any agent CLI starts here)
 dev/
 |-- README.md                                        You are here
-|-- engine/                                          Methodology and algorithms (27 current documents)
+|-- engine/                                          Methodology and algorithms (29 current documents)
 |   |-- engine-overview.md                          Architecture overview, document navigation
 |   |-- industry-framework.md                       Industry classification (D1-D10 scoring, six paradigms P1-P6, pyramids, veto)
 |   |-- qualitative-analysis.md                     Qualitative analysis (sources, policy, mosaic, narrative)
@@ -46,12 +46,12 @@ dev/
 |   |-- paradigm-brand-channel.md                   Brand/channel application note (P2 Defensive)
 |   |-- paradigm-network-traffic.md                 Network/throughput secondary-attribute application note
 |   |-- dimension-registry.md                       Dimension registry (6 paradigms + 6 roles, addressable pointer index)
-|   |-- work-path-registry.md                       Work path registry (16 paths: 9 active / 5 partial / 2 planned)
+|   |-- work-path-registry.md                       Work path registry (16 paths: 16 active / 0 partial / 0 planned)
 |   |-- pipeline-contract.md                        Pipeline contract (Path Sheet / Analysis Artifact / Delivery Note / QA Verdict)
 |
-|-- templates/                                      Report template single source of truth (21 files (19 HTML + 1 CSS + 1 YAML))
+|-- templates/                                      Report template single source of truth (20 files (18 HTML + 1 CSS + 1 YAML))
 |   |-- template-base.css                           Shared style base
-|   +-- template-type1..15.html + type18.html       Type 1-15 and Type 18 report templates
+|   +-- template-type{1..18}.html       Type 1-15 and Type 18 report templates
 |
 |-- design/                                         Report design system
 |   |-- report-style-system.md                      Report style system
@@ -100,7 +100,7 @@ dev/
 
 | Item | Count | Description |
 |---|---|---|
-| Report templates | 18 types (Type 1-15, Type 16-18) | templates/ single source of truth (template-base.css + type1-15.html + type18.html) |
+| Report templates | 18 types (Type 1-15, Type 16-18) | templates/ single source of truth (template-base.css + type1-18.html) |
 
 ### Product Design (Complete)
 
@@ -152,4 +152,4 @@ Product vision, Magic Experience, 3-layer output system, commercial model, prici
 
 ---
 
-*Last updated: 2026-07-21*
+*Last updated: 2026-07-29*

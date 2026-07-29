@@ -9,7 +9,7 @@
   <img alt="Python" src="https://img.shields.io/badge/python-3.11%20%7C%203.12-blue.svg">
 </p>
 
-**Version `v0.1.0`** ([changelog](CHANGELOG.md)) · **27 methodology documents** · **16 work paths** · **4 coded engines** · pytest regression suite + consistency gates (CI: Ubuntu & Windows) · 🌐 English
+**Version `v0.1.0`** ([changelog](CHANGELOG.md)) · **29 methodology documents** · **16 work paths** · **4 coded engines** · pytest regression suite + consistency gates (CI: Ubuntu & Windows) · 🌐 English
 
 ---
 
@@ -395,12 +395,11 @@ Each work path maps to one or more HTML report templates:
 | Type 9 | External Support | WP-CS-02 |
 | Type 10 | ESG/Governance Scan | WP-X-04 |
 | Type 11 | Stress Test | WP-RO-04 |
-| Type 12 | *Reserved* | — |
 | Type 13 | Contagion Map | WP-RO-02 |
 | Type 14 | Concentration Dashboard | WP-RO-01 |
 | Type 15 | SRI Thermometer | WP-RO-03 |
-| Type 16 | *Planned (Origination)* | WP-AD-01 |
-| Type 17 | *Planned (Advisory)* | WP-II-01 |
+| Type 16 | Origination Feasibility | WP-AD-01 |
+| Type 17 | Financing Channel Comparison | WP-II-01 |
 | Type 18 | Outlook Monitoring | WP-X-05 |
 
 ---
@@ -507,9 +506,9 @@ credence-global/
 |   |   |-- dimension-registry.md       # Addressable index of 6 paradigms + M0-M5 roles
 |   |   |-- work-path-registry.md       # 16 work paths, routing, pipeline integration
 |   |   |-- pipeline-contract.md        # 4-stage pipeline I/O contracts, chain edges
-|   |   |-- path-playbooks/             # Per-path execution contracts (9 active-path playbooks)
+|   |   |-- path-playbooks/             # Per-path execution contracts (16 active-path playbooks)
 |   |
-|   |-- templates/                      # Report template source of truth (16 HTML files)
+|   |-- templates/                      # Report template source of truth (18 HTML files)
 |   |   |-- template-base.css           # Shared style base
 |   |   |-- template-type{1..18}.html   # Type 1-15 report templates
 |   |   |-- template-type18.html        # Type 18 outlook monitoring template
@@ -581,7 +580,7 @@ Yes. Credence is CLI-agnostic. It works with Claude Code (full auto-discovery), 
 
 ### Q5: How are the 16 work paths organized?
 
-Paths are organized by buy-side role: Credit Selector (2 paths), Portfolio Manager (2), Risk Officer (4), Trader (1), Advisor (1), Individual Investor (1), and Meta/Special-Purpose (5). Each path specifies an engine sequence, report template, and quality gates. 9 paths are fully active, 5 are partially implemented, and 2 are planned.
+Paths are organized by buy-side role: Credit Selector (2 paths), Portfolio Manager (2), Risk Officer (4), Trader (1), Advisor (1), Individual Investor (1), and Meta/Special-Purpose (5). Each path specifies an engine sequence, report template, and quality gates. All 16 paths are fully active (0 partial, 0 planned).
 
 ### Q6: What are the 6 international paradigms?
 
