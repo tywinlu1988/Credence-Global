@@ -43,6 +43,8 @@ Any failure results in `fail`:
 | dimension_compliance | Contagion Matrix | ${CLAUDE_PLUGIN_ROOT}/engine/contagion-matrix.md |
 | chain_compliance | Path Sheet | ${CLAUDE_PLUGIN_ROOT}/engine/pipeline-contract.md |
 | index_compliance | report-index | credit-report-builder skill |
+| css_self_contained | template-base.css | credit-report-builder skill |
+| relative_paths | rendered paths | credit-report-builder skill |
 
 **What each check verifies:**
 
@@ -50,7 +52,9 @@ Any failure results in `fail`:
 - **citation_compliance**: Every numeric claim (threshold, weight, score, tier, rating) carries a `doc §section` citation or is marked `engine_undefined`.
 - **dimension_compliance**: All analysis dimensions/metrics use engine vocabulary only (industry-framework D1-D10 + paradigm pyramids; concentration-framework five dimensions; contagion-matrix 19 industries; P1-P6 paradigms) — no invented dimensions, industries, or paradigms.
 - **chain_compliance**: A Path Sheet exists for the `path_id`, and this QA Verdict is produced before delivery — analysis never ships without it.
-- **index_compliance**: When a Delivery Note's `rendered` list (excluding `report-index.html` itself) contains more than 2 report files, `${CLAUDE_PLUGIN_ROOT}/templates/report-index.html` must be present and must link to each report with a relative path.
+- **index_compliance**: When a Delivery Note's `rendered` list (excluding `report-index.html` itself) contains more than 1 report file, `report-index.html` must be present and must link to each report with a relative path.
+- **css_self_contained**: Every rendered HTML file must have `template-base.css` inlined — no external `<link>` tags in delivered reports. Verify inline CSS is present in each `.html` file.
+- **relative_paths**: All file paths in `rendered` and `source_analysis` must be relative paths — no absolute paths.
 
 ## Fail Conditions (not limited to)
 
@@ -64,6 +68,8 @@ Any failure results in `fail`:
 - Numeric claims without a `doc §section` citation that are not marked `engine_undefined`.
 - Dimensions, industries, metrics, or paradigms not present in the engine vocabulary.
 - Analysis delivered without a passing QA Verdict.
-- A Delivery Note with >2 rendered reports (excluding the index itself) missing the `report-index.html` index page.
+- A Delivery Note with >1 rendered reports (excluding the index itself) missing the `report-index.html` index page.
+- An HTML report file containing an external `<link rel="stylesheet">` tag instead of inline CSS.
+- Absolute file paths in the Delivery Note's `rendered` or `source_analysis` fields.
 
 > If any inconsistency arises between this checklist and the referenced engine documents, the engine documents prevail.

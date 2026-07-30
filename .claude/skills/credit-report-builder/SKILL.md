@@ -31,12 +31,13 @@ Assembly layer — **this skill does not perform analysis**. Responsibility is t
 1. **Read join key**: Take `path_id` from both the Path Sheet and the Analysis Artifact; verify it points to a registered path in the registry. If inconsistent, stop and report.
 2. **Select templates**: Based on `path_id`, retrieve the template list from the registry's `templates` field (Type 1–18 or allowed marker values `planned` / `L0-spec:`). Marker value meanings are defined in registry §schema; when hitting `planned`, must explicitly state "template under development" and not fabricate rendered output.
 3. **Map tiers**: Map the Analysis Artifact to L0 Signal Card / L1 Snapshot / L2 Deep Report tiers. The definitions, consumption time, and information density of the three tiers use `${CLAUDE_PLUGIN_ROOT}/engine/output-layered-framework.md` §2 (three-tier overview) / §3 (L0 Signal Card) / §5 (L2 Deep Report) as the single source of truth; this skill does not redefine them.
-4. **Render**: Use templates from `${CLAUDE_PLUGIN_ROOT}/templates/` to assemble the report; completeness lamp caliber follows output-layered-framework §8.4.
-5. **Generate report index (when >2 reports)**: After all path reports are rendered, count the files in `rendered`. If the count (excluding `report-index.html` itself if already present) exceeds 2, generate a `report-index.html` navigation page from `${CLAUDE_PLUGIN_ROOT}/templates/report-index.html`. The index must:
-   - Use the same dark-theme inline CSS as the other templates
-   - List every report file from `rendered` with: its file name, a relative-path link (e.g., `./template-type1.html`), and a one-sentence description/summary of that report's content
-   - Append `${CLAUDE_PLUGIN_ROOT}/templates/report-index.html` to the `rendered` list (NOT to `templates_used` — `templates_used` is reserved for per-path registry templates)
-6. **Output Delivery Note**: Produce the Delivery Note per the schema below.
+4. **Render + CSS inline**: Use templates from `${CLAUDE_PLUGIN_ROOT}/templates/` to assemble the report; completeness lamp caliber follows output-layered-framework §8.4. After rendering each HTML file, make it **self-contained**: read `${CLAUDE_PLUGIN_ROOT}/templates/template-base.css`, inject its content into a `<style>` block in the report's `<head>`, and remove the `<link rel="stylesheet">` tag. This ensures reports render correctly when copied or forwarded — no missing CSS dependency.
+5. **Naming convention**: Name rendered report files as `<issuer-slug>-type<NN>.html` where `<issuer-slug>` is a lowercase-hyphenated issuer name (e.g., `andritz-ag`) and `<NN>` is the two-digit template type number (e.g., `type01`, `type06`). This makes reports sortable and identifiable without opening them.
+6. **Generate report index (when >1 reports)**: After all path reports are rendered, count the files in `rendered`. If the count (excluding `report-index.html` itself if already present) exceeds 1, generate a `report-index.html` navigation page from `${CLAUDE_PLUGIN_ROOT}/templates/report-index.html`. The index must:
+   - Be self-contained (template-base.css inlined, same as reports — see step 4)
+   - List every report file from `rendered` with: its file name, a relative-path link (e.g., `./andritz-ag-type01.html`), and a one-sentence description/summary of that report's content
+   - Append `report-index.html` to the `rendered` list (NOT to `templates_used` — `templates_used` is reserved for per-path registry templates); use a relative path for portability
+7. **Output Delivery Note**: Produce the Delivery Note per the schema below. All paths in `rendered` and `source_analysis` MUST be relative paths (no absolute paths) — the Delivery Note travels with the report files.
 
 ## Delivery Note Output
 
@@ -46,7 +47,7 @@ Template (schema single source of truth is `${CLAUDE_PLUGIN_ROOT}/engine/pipelin
 path_id: ""                 # join key (inherited from Path Sheet, must not change)
 depth: ""                   # L0|L1|L2|special (inherited from Path Sheet)
 templates_used: []          # templates selected from the path's registry templates field
-rendered: []                # actual report files produced (from ${CLAUDE_PLUGIN_ROOT}/templates/); includes report-index.html when >2 reports
+rendered: []                # actual report files produced (relative paths); includes report-index.html when >1 reports
 tier_mapping:               # Analysis Artifact → L0/L1/L2 tiers
   L0: ""
   L1: ""
@@ -64,14 +65,15 @@ templates_used:
   - ${CLAUDE_PLUGIN_ROOT}/templates/template-type1.html
   - ${CLAUDE_PLUGIN_ROOT}/templates/template-type6.html
 rendered:
-  - ${CLAUDE_PLUGIN_ROOT}/templates/template-type1.html
-  - ${CLAUDE_PLUGIN_ROOT}/templates/template-type6.html
+  - ./issuer-name-type01.html
+  - ./issuer-name-type06.html
+  - ./report-index.html
 tier_mapping:
   L0: Signal card (rating + outlook + key signals today + completeness lamp)
   L1: Snapshot (four-dimension radar + key anomalies + rating comparison)
   L2: Deep Report (pyramid layer-by-layer + dual-track cross-comparison + completeness report)
 completeness_lamp: yellow (medium confidence, caliber per output-layered-framework §8.4)
-source_analysis: Upstream Analysis Artifact (findings/completeness/veto, see pipeline-contract §2.2)
+source_analysis: ./analysis-artifact.yaml
 ```
 
 ## Chaining
@@ -85,7 +87,10 @@ source_analysis: Upstream Analysis Artifact (findings/completeness/veto, see pip
 - **Do not replicate engine content**: Only reference path IDs, template names, and document sections; do not replicate any thresholds, layered time budgets, signal priority floors, or rating mappings. Tier semantics are based on `${CLAUDE_PLUGIN_ROOT}/engine/output-layered-framework.md`; template lists are based on `${CLAUDE_PLUGIN_ROOT}/engine/work-path-registry.md`.
 - **Low density — no fabricated values**: Dimension scores set to null by the upstream Analysis Artifact due to insufficient density (`insufficient information to evaluate`) must retain that annotation in the report; do not fabricate values to make the report look complete.
 - **Planned templates must be disclosed**: When a path's template is marked `planned`, must explicitly state "this template is under development" and provide alternative deliverable items available for that path; do not fabricate rendered output.
-- **Report index rule — when >2 reports, auto-generate**: When a single engagement produces more than 2 report files, a `report-index.html` must be generated from `${CLAUDE_PLUGIN_ROOT}/templates/report-index.html`, linking to all reports with relative paths and descriptions. The threshold is exclusive: exactly 2 reports do not trigger the index. The index is appended to `rendered` only, not to `templates_used`.
+- **Report index rule — when >1 reports, auto-generate**: When a single engagement produces more than 1 report file, a `report-index.html` must be generated from `${CLAUDE_PLUGIN_ROOT}/templates/report-index.html`, linking to all reports with relative paths and descriptions. The index is appended to `rendered` only, not to `templates_used`.
+- **CSS self-containment**: Every rendered HTML report must be self-contained. Read `${CLAUDE_PLUGIN_ROOT}/templates/template-base.css` and inline its content into each report's `<style>` block, replacing the `<link>` tag. Reports must render correctly when copied to any location or forwarded to others.
+- **Relative paths only**: All file paths in the Delivery Note (`rendered`, `source_analysis`) must be relative paths. No absolute paths (e.g., a full Windows or Unix path starting with a drive letter or root slash). Reports travel together in one directory — use `./filename` not absolute paths.
+- **Naming convention**: Report files follow `<issuer-slug>-type<NN>.html`. The index is `report-index.html`.
 
 ## References
 
