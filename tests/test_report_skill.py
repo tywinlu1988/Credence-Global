@@ -165,8 +165,8 @@ def test_t7_7_skill_instructs_index_generation():
     assert "report-index" in SKILL_TEXT, (
         "SKILL.md missing report-index instruction"
     )
-    assert ">2" in SKILL_TEXT or "more than 2" in SKILL_TEXT or "exceeds 2" in SKILL_TEXT, (
-        "SKILL.md must specify the >2 threshold for index generation"
+    assert ">1" in SKILL_TEXT or "more than 1" in SKILL_TEXT or "exceeds 1" in SKILL_TEXT, (
+        "SKILL.md must specify the >1 threshold for index generation"
     )
 
 

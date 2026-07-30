@@ -378,6 +378,40 @@ Expected loss rate = 0.50% of principal (1.0% PD x 50% LGD)
 
 ---
 
+### 7.5 Unrated and Thinly-Traded Issuers
+
+Approximately 30% of European mid-cap industrial companies and a significant share of
+emerging-market issuers are unrated by the major agencies (S&P/Moody's/Fitch). These
+issuers lack CDS contracts, have illiquid or no public bonds, and do not benefit from
+the cross-validation framework that Track B provides for rated issuers. This section
+defines the proxy-signal methodology for unrated issuers.
+
+**Completeness expectation**: Unrated issuers will typically score below the 80% green
+threshold on completeness density. This is expected and not a failure — the analysis
+must document which signals are missing and which proxies are used.
+
+**Proxy signals (in priority order)**:
+
+| Proxy | Source | Strength | Limitation |
+|---|---|---|---|
+| **Equity-implied credit risk** | EV/EBITDA vs rated peers, equity volatility, short interest | Moderate | Equity markets price growth, not credit; can be misleading in distress |
+| **Peer spread benchmarking** | Public bond spreads of nearest-rated comparable companies (industry, size, leverage) | Moderate | Rating, structure, and jurisdiction differences introduce noise |
+| **Schuldschein / private placement data** | Issuer's own private-placement pricing if disclosed | Moderate | Limited public availability; terms vary widely |
+| **Bank loan margin** | Syndicated loan pricing if disclosed in financial notes | Weak | Relationship pricing; not mark-to-market |
+| **Altman Z-score / Merton model** | Public financials only | Weak | Book-value based; lags market signals |
+
+**Confidence adjustment**: For unrated issuers, the default confidence cap is **medium**
+(two levels below the standard "high" for fully-rated issuers with liquid CDS). The
+QA review should verify that the analysis does not claim "high confidence" for an
+unrated issuer without exceptional justification (e.g., public benchmark bond issued
+within 6 months with observable secondary trading).
+
+**Track B handling**: When Track B is absent or severely limited, the analysis defaults
+to Track A-leading with a documented data gap. The cross-validation outcome is
+`incomplete`, not `Track A strong` — the distinction matters for the QA verdict.
+
+---
+
 ## 8. Decision Rules
 
 | Scenario | Rule | Explanation |

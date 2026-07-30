@@ -49,6 +49,17 @@ Universal posture: **read your instructions file first, then the `SKILL.md` for 
 | `credit-report-builder` | Turn a completed credit analysis into a deliverable report — select template (Type 1–18), map to L0/L1/L2 tiers, assemble dashboard; requires upstream analysis artifact, does NOT perform analysis | `dev/.claude/skills/credit-report-builder/SKILL.md` |
 | `credit-qa-verifier` | Pre-delivery quality gate review of a report/analysis — signal-density rules, one-shot-veto ceiling, Mode B guardrails, single-source compliance; terminal QA in the four-stage chain | `dev/.claude/skills/credit-qa-verifier/SKILL.md` |
 
+## Headless / Non-Interactive Mode
+
+When running Claude Code in `-p` (print/pipe) mode or any non-interactive environment, plugin skills may not appear in the auto-discovered skill list (the model receives a truncated subset). **In these modes, invoke Credence skills by name using the Skill tool:**
+
+- `credit-analysis-router` — intake + Path Sheet
+- `fixed-income-credit-analysis` — execution per playbook
+- `credit-report-builder` — report assembly
+- `credit-qa-verifier` — pre-delivery QA
+
+The skills are loaded and functional; you just need to name them explicitly.
+
 ## Four-Stage Pipeline
 
 The engine decomposes each credit analysis into a four-stage chained contract, with `path_id` as the join key across stages:
