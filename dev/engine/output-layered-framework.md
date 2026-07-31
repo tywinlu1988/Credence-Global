@@ -1,6 +1,6 @@
 # Layered Output Framework — Product Design Specification
 
-**Version**: v0.1.1 | **Date**: 2026-07-10
+**Version**: v0.2.0 | **Date**: 2026-07-10
 **Status**: Product design document (not code implementation)
 **Design Basis**: Practitioner Usability Audit (P0-level output model reform)
 

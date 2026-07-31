@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-07-31
+
+### Added
+- **Trader Execution Framework** (`dev/engine/trader-framework.md`) — the final
+  development-backlog item. Four execution dimensions (L0 Signal 35% / Spreads
+  25% / Liquidity 25% / Market Context 15%), spread-vs-fair-value bands
+  (±10bp), liquidity tiers with a data-gap rule, SRI thermometer overlay
+  (Alert/Danger suspends new longs), and the Execution Decision Matrix —
+  elevated from `multi-stakeholder.md` §2.4/§5.4 as the single source of truth.
+- **WP-TR-01 completion**: `engine_sequence` gains trader-framework.md; two new
+  quality gates (Execution Dimensions §2, Execution Decision Matrix §5);
+  playbook procedure rewritten (score dimensions → matrix row → thermometer
+  overlay → one-line execution posture in the L0 card); drift blacklist +4.
+
+### Fixed
+- `engine-overview.md`: duplicated navigation rows removed; §6 history backfilled
+  (v0.1.1); §7.2 version-mapping table backfilled (advisor-origination,
+  financing-channel — missing since v0.0.8).
+- `dev/README.md` version history backfilled (v0.0.8–v0.1.1).
+- Skill reference files: stale WP-TR-01 (partial) and WP-AD-01/WP-II-01
+  (planned) statuses corrected to active.
+- `multi-stakeholder.md` §2.4 gains an Authoritative Source Reference pointer
+  to trader-framework.md (no dual-source drift).
+
 ## [0.1.1] - 2026-07-31
 
 ### Added
