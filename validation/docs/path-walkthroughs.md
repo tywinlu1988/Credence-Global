@@ -1,6 +1,6 @@
 # Path Walkthroughs — 16/16 Active Paths
 
-**Date**: 2026-07-31 · **Engine Version**: v0.2.0
+**Date**: 2026-07-31 · **Engine Version**: v0.3.0
 **Nature**: Test execution record (validation evidence archive — not a project deliverable; never enters `version/` snapshots)
 
 ---
@@ -61,7 +61,7 @@ exactly as registered in `dev/engine/work-path-registry.md` and contracted in
   Mode B, single source) → QA Verdict.
 - **Evidence**: ✅ **Executed** — Siemens AG full walkthrough
   (`validation/reports/industrial/siemens-walkthrough.md` + 3 rendered reports + index).
-  A second executed run (Andritz AG, unrated issuer, §7.5 proxy-signal methodology) is
+  A second executed run (Andritz AG, unrated issuer, §7.7 proxy-signal methodology) is
   retained in the maintainer's local isolated-sandbox record (not shipped, per this
   archive's local-evidence convention).
 

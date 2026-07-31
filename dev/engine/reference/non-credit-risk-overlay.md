@@ -1,6 +1,6 @@
 # Non-Credit Risk Overlay
 
-**Version**: v0.2.0 | **Date**: 2026-07-10 | **Position**: Independent adjustment layer above the credit pyramid baseline rating
+**Version**: v0.3.0 | **Date**: 2026-07-10 | **Position**: Independent adjustment layer above the credit pyramid baseline rating
 
 ---
 

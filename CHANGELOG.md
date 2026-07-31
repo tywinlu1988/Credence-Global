@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-07-31
+
+### Changed
+- **Slimming round 2 — reference extraction**: pure-narrative sections (worked
+  examples, historical backtests, derivations, case studies) physically moved
+  from 15 engine documents into `dev/engine/appendix/<doc>-appendix.md`
+  (4,285 lines). Parent documents keep the executable core with original
+  section numbers and one-line appendix pointers; machine-parsed and
+  gate-pinned sections verified and kept in place. Engine root: 19,515 →
+  15,487 lines.
+- **Legacy demotion**: `quantitative-analysis`, `qualitative-analysis`,
+  `non-credit-risk-overlay` (on no active path's engine sequence) moved to
+  `dev/engine/reference/`. CORE_DOCS now uses engine-relative paths; new
+  `DIST_CORE_DOCS` (27 shipped docs) is the dist manifest.
+- **dist package weight reduction**: `appendix/` and `reference/` are no longer
+  shipped in the plugin package; pointer lines to them are scrubbed at build
+  time (zero dangling references). 30 → 27 methodology documents shipped.
+- **Template placeholder manifest**: `index.yaml` now carries a machine-generated
+  `placeholders` list per template; the report builder fills fields from the
+  manifest instead of scanning whole templates, with zero-leftover verification.
+
+### Fixed
+- `dual-track-methodology.md` duplicate `### 7.5` heading (unrated issuers → §7.7).
+- `build_contagion_derived.py` regenerates derived blocks in the appendix file
+  (cluster composition is machine-parsed — caught by the drift-guard test).
+- outlook-monitoring appendix tail renumbered sequentially (was 6,8,7,8).
+
 ## [0.2.0] - 2026-07-31
 
 ### Added

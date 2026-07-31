@@ -1,6 +1,6 @@
 # Advisor Origination Assessment Framework
 
-**Version**: v0.2.0 | **Date**: 2026-07-29 | **Status**: Published
+**Version**: v0.3.0 | **Date**: 2026-07-29 | **Status**: Published
 
 **Module**: Fixed Income Credit Analysis Engine · Multi-Stakeholder Layer
 

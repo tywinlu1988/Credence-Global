@@ -1,6 +1,6 @@
 # International Industry Contagion Matrix
 
-**Version**: v0.2.0 | **Date**: 2026-07-10
+**Version**: v0.3.0 | **Date**: 2026-07-10
 
 > **[PRELIMINARY]** Matrix intensities are initial methodological estimates pending empirical calibration against international default correlation data. All scores are theoretical constructs based on economic linkage analysis and historical precedent mapping, not statistical estimation. Users should treat these as directional indicators rather than precise measures.
 
