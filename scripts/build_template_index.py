@@ -27,6 +27,21 @@ from src.path_sheet import is_template_marker, load_registry_paths  # noqa: E402
 TYPE_RE = re.compile(r"template-type(\d+)\.html$")
 TITLE_RE = re.compile(r"<title>(.*?)</title>", re.DOTALL)
 
+# Fill-in tokens across the template family: {{UPPER}} (type1/16/17/report-index),
+# {lower_snake} (type2/10/13/14/15/18), {UPPER_SNAKE} (mixed files). CSS/JS braces
+# never match: every alternative requires the whole content to be a bare identifier.
+PLACEHOLDER_RE = re.compile(
+    r"\{\{\s*([A-Za-z][A-Za-z0-9_ ]*?)\s*\}\}"
+    r"|\{([a-z_][a-z0-9_]*)\}"
+    r"|\{([A-Z][A-Z0-9_]{2,})\}"
+)
+
+
+def _placeholders(path: Path) -> list[str]:
+    """Sorted unique fill-in tokens (braces stripped) found in a template file."""
+    text = path.read_text(encoding="utf-8")
+    return sorted({next(g for g in m.groups() if g) for m in PLACEHOLDER_RE.finditer(text)})
+
 
 def build_index() -> str:
     paths = load_registry_paths(REGISTRY)
@@ -59,6 +74,8 @@ def build_index() -> str:
         lines.append(f"    title: {title!r}")
         lines.append(f"    used_by: [{', '.join(pids)}]")
         lines.append(f"    on_disk: {str(f.exists()).lower()}")
+        if f.exists():
+            lines.append(f"    placeholders: [{', '.join(_placeholders(f))}]")
     if markers:
         lines.append("markers:")
         for marker, pids in sorted(markers.items()):
@@ -81,6 +98,7 @@ def build_index() -> str:
             lines.append(f"  - file: {rel}")
             lines.append(f"    title: {title!r}")
             lines.append(f"    on_disk: true")
+            lines.append(f"    placeholders: [{', '.join(_placeholders(nav))}]")
     return "\n".join(lines) + "\n"
 
 
