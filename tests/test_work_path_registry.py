@@ -178,7 +178,7 @@ PLAYBOOKS_DIR = ROOT / "dev" / "engine" / "path-playbooks"
 
 def test_t2_8_playbook_reading_order_is_layered():
     """T2.8: every playbook's Required Reading Order separates must-read core
-    sections from on-demand reference material (v0.1.0 slimming, Part C).
+    sections from on-demand reference material (slimming plan, Part C).
 
     Each playbook must exist on disk and its '## 2. Required Reading Order'
     section must contain a '**Must read' block and a '**Reference' block, so the
