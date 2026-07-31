@@ -521,7 +521,7 @@ All ratings that include external support uplift must carry the following annota
 
 - [Engine Architecture Overview](engine-overview.md) — Core concepts, overall architecture, design principles
 - [Industry Classification and Framework](industry-framework.md) — Ten-dimension scoring, four industry paradigms, seven-industry pyramid
-- [Qualitative Analysis Methodology](qualitative-analysis.md) — Source grading, policy interpretation, mosaic assembly
+- [Qualitative Analysis Methodology](reference/qualitative-analysis.md) — Source grading, policy interpretation, mosaic assembly
 - [Dual-Track Methodology](dual-track-methodology.md) — Track A + Track B, cross-validation, rating mapping
 - [Mosaic Engine](mosaic-engine.md) — Signal extraction, mosaic assembly, completeness assessment
 - External support G3/G4 gap analysis — see industry-framework.md for paradigm-specific support evaluation

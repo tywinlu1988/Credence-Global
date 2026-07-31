@@ -44,8 +44,8 @@ CORE_DOCS = [
     "dual-track-methodology.md",
     "industry-framework.md",
     "validation-methodology.md",
-    "qualitative-analysis.md",
-    "quantitative-analysis.md",
+    "reference/qualitative-analysis.md",
+    "reference/quantitative-analysis.md",
     "mosaic-engine.md",
     "output-layered-framework.md",
     "advisor-origination-framework.md",
@@ -56,7 +56,7 @@ CORE_DOCS = [
     "financial-bond-framework.md",
     "systemic-warning-framework.md",
     "holding-company-framework.md",
-    "non-credit-risk-overlay.md",
+    "reference/non-credit-risk-overlay.md",
     "external-support-framework.md",
     "esg-framework.md",
     "governance-fraud-risk.md",
@@ -70,6 +70,12 @@ CORE_DOCS = [
     "work-path-registry.md",
     "dimension-registry.md",
     "pipeline-contract.md",
+]
+
+# Docs shipped in the dist/plugin package: CORE_DOCS minus on-demand material
+# (reference/ legacy library and appendix/ extracted sections stay repo-only).
+DIST_CORE_DOCS = [
+    d for d in CORE_DOCS if not d.startswith(("reference/", "appendix/"))
 ]
 
 SRI_PCT_PATTERN = re.compile(r"SRI\s*[:：]\s*\d{2}\s*/\s*100", re.IGNORECASE)

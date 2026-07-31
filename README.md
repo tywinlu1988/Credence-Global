@@ -487,8 +487,6 @@ credence-global/
 |   |   |-- advisor-origination-framework.md # Issuance window, investor matching, comps pricing
 |   |   |-- financing-channel-framework.md   # Bond vs loan vs private credit, timing
 |   |   |-- trader-framework.md         # Execution dimensions, thermometer overlay, decision matrix
-|   |   |-- quantitative-analysis.md    # Spread, volatility, multi-factor models, stress testing
-|   |   |-- qualitative-analysis.md     # Information source grading, policy, mosaic assembly
 |   |   |-- financial-deep-dive.md      # 3-statement linkage, working capital, FCF
 |   |   |-- lgd-recovery-framework.md   # LGD 5-tier, collateral valuation, recovery path
 |   |   |-- external-support-framework.md    # Government/group/strategic support
@@ -497,7 +495,6 @@ credence-global/
 |   |   |-- esg-framework.md            # ESG + governance/fraud detection
 |   |   |-- financial-bond-framework.md # FI bond analysis framework
 |   |   |-- holding-company-framework.md
-|   |   |-- non-credit-risk-overlay.md  # Market/operational/reputational/strategic/liquidity
 |   |   |-- output-layered-framework.md # L0 signal card, L1 snapshot, L2 deep dive
 |   |   |-- contagion-theory.md         # 4 contagion types, 7 transmission paths
 |   |   |-- contagion-matrix.md         # 19x19 industry contagion matrix
@@ -510,6 +507,8 @@ credence-global/
 |   |   |-- work-path-registry.md       # 16 work paths, routing, pipeline integration
 |   |   |-- pipeline-contract.md        # 4-stage pipeline I/O contracts, chain edges
 |   |   |-- path-playbooks/             # Per-path execution contracts (16 active-path playbooks)
+|   |   |-- appendix/                   # Per-doc reference material (moved sections, on-demand; not shipped)
+|   |   |-- reference/                  # Legacy on-demand library (qualitative/quantitative/non-credit; not shipped)
 |   |
 |   |-- templates/                      # Report template source of truth (18 HTML files)
 |   |   |-- template-base.css           # Shared style base

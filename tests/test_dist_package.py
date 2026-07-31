@@ -154,7 +154,7 @@ def test_t12_5_pointers_scrubbed_neighbors_intact(dist):
     assert "external support assessment was identified as a critical component" in es.lower()
     assert "rating-agency-benchmark-audit" not in es
 
-    nc = (dist / "engine" / "non-credit-risk-overlay.md").read_text(encoding="utf-8")
+    nc = (dist / "engine" / "reference" / "non-credit-risk-overlay.md").read_text(encoding="utf-8")
     assert "risk-management-standards-audit" not in nc
 
     dt = (dist / "engine" / "dual-track-methodology.md").read_text(encoding="utf-8")

@@ -260,5 +260,5 @@ The mosaic engine completeness report should separately annotate governance dime
 - [Mosaic Engine](mosaic-engine.md) — GOV type signal inclusion in signal register and assembly logic
 - [Financial Deep Dive](financial-deep-dive.md) — L4 financial layer scenario sensitivity analysis and fraud detection linkage
 - [Industry Classification and Framework](industry-framework.md) — Governance risk special characteristics and differentiated thresholds by industry
-- [Non-Credit Risk Overlay](non-credit-risk-overlay.md) — Operational risk signal integration
+- [Non-Credit Risk Overlay](reference/non-credit-risk-overlay.md) — Operational risk signal integration
 - [ESG Risk Assessment Framework](esg-framework.md) — Governance ESG dimension complementary framework

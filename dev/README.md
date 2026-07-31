@@ -20,11 +20,9 @@ International fixed-income credit analysis engine. Through industry-customized m
 ../AGENTS.md                                       Cross-CLI entry point (repo root -- any agent CLI starts here)
 dev/
 |-- README.md                                        You are here
-|-- engine/                                          Methodology and algorithms (30 current documents)
+|-- engine/                                          Methodology and algorithms (30 current documents: 27 root + 3 reference/)
 |   |-- engine-overview.md                          Architecture overview, document navigation
 |   |-- industry-framework.md                       Industry classification (D1-D10 scoring, six paradigms P1-P6, pyramids, veto)
-|   |-- qualitative-analysis.md                     Qualitative analysis (sources, policy, mosaic, narrative)
-|   |-- quantitative-analysis.md                    Quantitative analysis (spread, volatility, factors, stress, market signals)
 |   |-- dual-track-methodology.md                   Dual-track + cross-validation, 18-notch rating mapping, worked examples
 |   |-- mosaic-engine.md                            Mosaic engine (signals, puzzle, completeness, Mode B)
 |   |-- multi-stakeholder.md                        Multi-stakeholder (6 buy-side roles, cross-role matrix)
@@ -37,7 +35,6 @@ dev/
 |   |-- esg-framework.md                            ESG + governance/fraud detection framework
 |   |-- financial-bond-framework.md                 Financial institution bond analysis framework (P5)
 |   |-- holding-company-framework.md                Holding company credit analysis framework
-|   |-- non-credit-risk-overlay.md                  Non-credit risk overlay (market/operational/reputational/strategic/liquidity)
 |   |-- output-layered-framework.md                 Layered output (L0 signal card + L1 snapshot + L2 deep dive + thermometer card)
 |   |-- contagion-theory.md                         Contagion theory (4 types, 7 transmission paths, escalation factors)
 |   |-- contagion-matrix.md                         19x19 industry contagion matrix (intensity, clustering, escalation)
@@ -48,6 +45,8 @@ dev/
 |   |-- dimension-registry.md                       Dimension registry (6 paradigms + 6 roles, addressable pointer index)
 |   |-- work-path-registry.md                       Work path registry (16 paths: 16 active / 0 partial / 0 planned)
 |   |-- pipeline-contract.md                        Pipeline contract (Path Sheet / Analysis Artifact / Delivery Note / QA Verdict)
+|   |-- appendix/                                   Per-document reference material (moved sections, read on demand; not shipped)
+|   |-- reference/                                  Legacy on-demand library (qualitative/quantitative/non-credit-overlay; not shipped)
 |
 |-- templates/                                      Report template single source of truth (20 files (18 HTML + 1 CSS + 1 YAML))
 |   |-- template-base.css                           Shared style base
@@ -118,8 +117,8 @@ Product vision, Magic Experience, 3-layer output system, commercial model, prici
 | Commercial model and GTM strategy | `product/commercial-model.md` |
 | Analysis engine architecture overview | `engine/engine-overview.md` |
 | Industry analysis framework | `engine/industry-framework.md` |
-| Qualitative analysis methodology | `engine/qualitative-analysis.md` |
-| Quantitative analysis methodology | `engine/quantitative-analysis.md` |
+| Qualitative analysis methodology | `engine/reference/qualitative-analysis.md` |
+| Quantitative analysis methodology | `engine/reference/quantitative-analysis.md` |
 | Dual-track framework + cross-validation | `engine/dual-track-methodology.md` |
 | Mosaic engine + completeness | `engine/mosaic-engine.md` |
 | Multi-stakeholder perspective | `engine/multi-stakeholder.md` |

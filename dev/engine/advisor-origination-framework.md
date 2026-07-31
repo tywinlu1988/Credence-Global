@@ -198,5 +198,5 @@ for QA verification:
 - [Work Path Registry](work-path-registry.md) — WP-AD-01 path definition and routing
 - [Dual-Track Methodology](dual-track-methodology.md) — Track B market pricing signals (feeds comparables)
 - [Systemic Warning Framework](systemic-warning-framework.md) — SRI thermometer (macro conditions feed window assessment)
-- [Quantitative Analysis](quantitative-analysis.md) — §7.4 issuance rate changes (market repricing signals)
+- [Quantitative Analysis](reference/quantitative-analysis.md) — §7.4 issuance rate changes (market repricing signals)
 - [Industry Framework](industry-framework.md) — P1-P6 paradigm classification (industry matching for comparables)

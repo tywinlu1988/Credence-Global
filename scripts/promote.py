@@ -70,7 +70,7 @@ def _rules(root: Path, old: str, new: str, semver: str, old_semver: str):
         ("engine-current", [f"dev/engine/{d}" for d in CORE_DOCS],
          re.compile(r"((?:当前|current) )" + O), r"\g<1>" + new),
         ("overview-table", ["dev/engine/engine-overview.md"],
-         re.compile(r"(\|\s*[\w.-]+\.md\s*\|\s*)" + O + r"(?=\s*\|)"), r"\g<1>" + new),
+         re.compile(r"(\|\s*[\w./-]+\.md\s*\|\s*)" + O + r"(?=\s*\|)"), r"\g<1>" + new),
         ("overview-sysver", ["dev/engine/engine-overview.md"],
          re.compile(r"(\*\*(?:引擎版本|Engine Version)\*\*\s*\|[^|\n]*\|\s*)" + O + r"(?=\s*\|)"), r"\g<1>" + new),
         ("skill-version", [f"dev/.claude/skills/{s}/SKILL.md" for s in SKILL_NAMES],

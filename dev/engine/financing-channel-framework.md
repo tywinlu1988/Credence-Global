@@ -170,5 +170,5 @@ The following quality gates are defined for WP-II-01:
 - [Engine Architecture Overview](engine-overview.md)
 - [Work Path Registry](work-path-registry.md) — WP-II-01 path definition
 - [Advisor Origination Framework](advisor-origination-framework.md) — issuance window assessment (feeds timing)
-- [Quantitative Analysis](quantitative-analysis.md) — §7.4 issuance rate changes
+- [Quantitative Analysis](reference/quantitative-analysis.md) — §7.4 issuance rate changes
 - [Financial Deep Dive](financial-deep-dive.md) — capital structure analysis (feeds cost calculation)
