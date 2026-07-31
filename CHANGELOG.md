@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-07-31
+
+### Added
+- **Playbook reading-order layering** (slimming Part C completion): all 16
+  path-playbooks' Required Reading Order now separates must-read core sections
+  from on-demand reference material; enforced by new gate T2.8.
+- **Isolated-sandbox E2E audit fixes** (from the v0.1.0 Andritz walkthrough):
+  report-index threshold lowered to >1 reports; CSS self-containment,
+  relative-paths-only, and `<issuer-slug>-type<NN>.html` naming rules added to
+  the report builder's Assembly Protocol; QA gains `css_self_contained` /
+  `relative_paths` checks; dual-track §7.5 unrated & thinly-traded issuer
+  proxy-signal methodology; AGENTS.md headless-mode invocation note.
+
+### Fixed
+- **Reading-guide accuracy**: 8 engine docs re-derived against actual section
+  content (dual-track §6 Rating Mapping and mosaic §5 Completeness had been
+  misclassified as reference material); 5 broken guide sentence artifacts and
+  1 self-contradiction removed.
+- Registry `Engine document ()` empty parentheses filled (WP-AD-01, WP-II-01).
+
 ## [0.1.0] - 2026-07-29
 
 ### Changed
