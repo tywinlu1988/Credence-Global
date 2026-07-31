@@ -39,7 +39,7 @@ Note: `multi-stakeholder.md`'s `../engine/`, `../templates/` resolve in both lay
 ## Validation (--check or auto-run after build; any failure exits loudly)
 (i) Zero `[A-Za-z]:[\\/]` absolute paths; (ii) zero residual `dev/` path tokens; (iii) every
 relative link resolves within dist; (iv) 4 SKILL.md with frontmatter exactly name+description;
-(v) 29 CORE_DOCS all present under engine/; (vi) src can locate engine/templates in dist layout;
+(v) 30 CORE_DOCS all present under engine/; (vi) src can locate engine/templates in dist layout;
 (vii) zero excluded artifacts present.
 (viii) No CRLF in text files (LF enforced per root .gitattributes).
 """
@@ -341,7 +341,7 @@ def _gen_readme_md(v: str) -> str:
 > load and execute directly. Not an agent framework, not a standalone app: a
 > domain-methodology skill pack for institutional-grade, reproducible credit analysis.
 
-**Version** {v} · **License** MIT (see `LICENSE`) · **29 methodology documents** ·
+**Version** {v} · **License** MIT (see `LICENSE`) · **30 methodology documents** ·
 **4 executable engines** · pytest regression suite + consistency gates
 
 ---
@@ -426,7 +426,7 @@ every delivery gated by QA.
 ## Package Contents
 
 - `.claude/skills/` — Four-stage chain skills (router / analysis / report / qa)
-- `engine/` — 29 methodology documents: thresholds, weights, rating maps, contagion matrix
+- `engine/` — 30 methodology documents: thresholds, weights, rating maps, contagion matrix
   (the single source of truth; coded engines parse rules from these at runtime)
 - `engine/path-playbooks/` — Per-work-path execution contracts (procedure, dimension
   vocabulary, output shape, quality gates, drift blacklist)
@@ -543,7 +543,7 @@ def validate(out_dir=None) -> list:
         if keys != ["name", "description"]:
             errors.append(f"FRONTMATTER: {name} keys={keys}, want ['name','description']")
 
-    # (v) 29 CORE_DOCS under engine/
+    # (v) 30 CORE_DOCS under engine/
     for doc in CORE_DOCS:
         if not (base / "engine" / doc).exists():
             errors.append(f"MISSING_CORE_DOC: engine/{doc}")

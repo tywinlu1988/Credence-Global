@@ -63,6 +63,7 @@ CORE_DOCS = [
     "outlook-monitoring-framework.md",
     "lgd-recovery-framework.md",
     "multi-stakeholder.md",
+    "trader-framework.md",
     "financial-deep-dive.md",
     "paradigm-brand-channel.md",
     "paradigm-network-traffic.md",

@@ -90,7 +90,7 @@ def _texts(base):
 
 
 # T12.1 — builder's own validate passes all checks (covers a: zero absolute paths / b: zero dev tokens / c: links resolvable /
-#          d: 4 skills + strict frontmatter / e: 29 CORE_DOCS / layout / excluded items absent)
+#          d: 4 skills + strict frontmatter / e: 30 CORE_DOCS / layout / excluded items absent)
 def test_t12_1_builder_validate_passes(builder, dist):
     assert builder.validate(dist) == []
 

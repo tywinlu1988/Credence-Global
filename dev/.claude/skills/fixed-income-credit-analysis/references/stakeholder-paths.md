@@ -11,9 +11,9 @@
 | Credit Selector | "Does this credit belong in the book?" — single-issuer rating, default probability | WP-CS-01 (active), WP-CS-02 (partial) | Covered (Track A+B) |
 | Portfolio Manager | "Is this the best risk/reward?" — relative value, sector allocation | WP-PM-01 (active), WP-PM-02 (partial) | Covered |
 | Risk Officer | "Where are concentration/contagion hotspots?" — portfolio risk monitoring | WP-RO-01/02/03 (active), WP-RO-04 (partial) | Covered |
-| Trader | "Is today the day to act?" — execution, market timing | WP-TR-01 (partial) | Partial |
-| Advisor | "What should my client do?" — allocation advice, suitability | WP-AD-01 (planned) | Planned |
-| Individual Investor | "Should I own this bond?" — personal investment decision | WP-II-01 (planned) | Planned |
+| Trader | "Is today the day to act?" — execution, market timing | WP-TR-01 (active) | Active |
+| Advisor | "What should my client do?" — allocation advice, suitability | WP-AD-01 (active) | Active |
+| Individual Investor | "Should I own this bond?" — personal investment decision | WP-II-01 (active) | Active |
 
 ## Portfolio Manager: Single-Instrument Dashboard (WP-PM-01)
 

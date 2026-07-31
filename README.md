@@ -9,7 +9,7 @@
   <img alt="Python" src="https://img.shields.io/badge/python-3.11%20%7C%203.12-blue.svg">
 </p>
 
-**Version `v0.1.1`** ([changelog](CHANGELOG.md)) · **29 methodology documents** · **16 work paths** · **4 coded engines** · pytest regression suite + consistency gates (CI: Ubuntu & Windows) · 🌐 English
+**Version `v0.1.1`** ([changelog](CHANGELOG.md)) · **30 methodology documents** · **16 work paths** · **4 coded engines** · pytest regression suite + consistency gates (CI: Ubuntu & Windows) · 🌐 English
 
 ---
 
@@ -478,12 +478,15 @@ Credence delivers its methodology as Agent Skills (`SKILL.md`) that any AI codin
 credence-global/
 |
 |-- dev/                                # Methodology & skill source
-|   |-- engine/                         # 29 core methodology documents
+|   |-- engine/                         # 30 core methodology documents
 |   |   |-- engine-overview.md          # Architecture overview & document navigation
 |   |   |-- industry-framework.md       # Industry classification, 10-dimension scoring, 6 paradigms
 |   |   |-- mosaic-engine.md            # Signal extraction, puzzle assembly, completeness
 |   |   |-- dual-track-methodology.md   # Track A+B cross-validation, rating mapping, worked examples
 |   |   |-- multi-stakeholder.md         # 6 buy-side roles, cross-role matrix
+|   |   |-- advisor-origination-framework.md # Issuance window, investor matching, comps pricing
+|   |   |-- financing-channel-framework.md   # Bond vs loan vs private credit, timing
+|   |   |-- trader-framework.md         # Execution dimensions, thermometer overlay, decision matrix
 |   |   |-- quantitative-analysis.md    # Spread, volatility, multi-factor models, stress testing
 |   |   |-- qualitative-analysis.md     # Information source grading, policy, mosaic assembly
 |   |   |-- financial-deep-dive.md      # 3-statement linkage, working capital, FCF

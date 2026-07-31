@@ -20,7 +20,7 @@ International fixed-income credit analysis engine. Through industry-customized m
 ../AGENTS.md                                       Cross-CLI entry point (repo root -- any agent CLI starts here)
 dev/
 |-- README.md                                        You are here
-|-- engine/                                          Methodology and algorithms (29 current documents)
+|-- engine/                                          Methodology and algorithms (30 current documents)
 |   |-- engine-overview.md                          Architecture overview, document navigation
 |   |-- industry-framework.md                       Industry classification (D1-D10 scoring, six paradigms P1-P6, pyramids, veto)
 |   |-- qualitative-analysis.md                     Qualitative analysis (sources, policy, mosaic, narrative)
@@ -142,6 +142,11 @@ Product vision, Magic Experience, 3-layer output system, commercial model, prici
 
 | Version | Date | Milestone |
 |---|---|---|
+| v0.2.0 | 2026-07-31 | Trader execution framework (trader-framework.md): execution dimensions, thermometer overlay, Execution Decision Matrix — WP-TR-01 engine completion; development backlog cleared |
+| v0.1.1 | 2026-07-31 | Patch: sandbox E2E audit fixes shipped; playbook reading-order layering (slimming Part C completion); reading-guide accuracy fixes |
+| v0.1.0 | 2026-07-29 | Architecture slimming: template CSS dedup (dev external-link + build-time inline), boilerplate consolidation (agent-protocol.md), 28 engine doc reading guides |
+| v0.0.9 | 2026-07-29 | Final 2 planned paths delivered (WP-AD-01 advisor origination, WP-II-01 financing channel) — 16/16 active |
+| v0.0.8 | 2026-07-27 | 5 partial paths promoted to active; report-index.html navigation; MIT license; plugin distribution (plugin-dist orphan branch + marketplace.json) |
 | v0.0.7 | 2026-07-22 | Agent constraint layer: AGENTS.md + SKILL.md Non-Negotiables (no analysis without Path Sheet, no numbers without citation, no report outside templates/, no delivery without QA, no invented dimensions); 9 per-path execution contracts (path-playbooks/) with registry drift checks; QA process-compliance checks (template/citation/dimension/chain); templates/index.yaml machine-generated; strict path-sheet posture; installer Linux hotfix (v0.0.6) |
 | v0.0.6 | 2026-07-21 | Hotfix: installer unzip fallback chain — GNU tar (Linux) cannot extract zip; install.js now tries unzip -> tar -> PowerShell (caught by the new CI npm-installer-smoke job on day one) |
 | v0.0.5 | 2026-07-21 | Engineering hardening: SRI runtime rule parsing; drift guards; input validation + error isolation; path_sheet semantic validation; checker release/dependency gates; CI windows+npm+pip expansion |
@@ -152,4 +157,4 @@ Product vision, Magic Experience, 3-layer output system, commercial model, prici
 
 ---
 
-*Last updated: 2026-07-29*
+*Last updated: 2026-07-31*

@@ -21,9 +21,7 @@
 | **outlook-monitoring-framework.md** | Rating outlook, watch list, ongoing monitoring, transition matrix | Forward-looking monitoring mechanism |
 | **advisor-origination-framework.md** | Issuance window, investor matching, comparable pricing | Underwriter origination assessment (WP-AD-01) |
 | **financing-channel-framework.md** | Bond vs loan vs private credit, timing recommendation | Issuer-side financing decision (WP-II-01) |
-| **agent-protocol.md** | Path Resolution, Non-Negotiables, skill reference conventions | Shared infrastructure for all skills |
-| **advisor-origination-framework.md** | Issuance window, investor matching, comparable pricing | Underwriter origination assessment (WP-AD-01) |
-| **financing-channel-framework.md** | Bond vs loan vs private credit, timing recommendation | Issuer-side financing decision (WP-II-01) |
+| **trader-framework.md** | Execution dimensions, thermometer overlay, Execution Decision Matrix | Trader execution assessment (WP-TR-01) |
 | **agent-protocol.md** | Path Resolution, Non-Negotiables, skill reference conventions | Shared infrastructure for all skills |
 | **financial-deep-dive.md** | Three-statement linkage, working capital, FCF, scenario sensitivity, stress testing upgrade | Financial deep dive analysis |
 | **governance-fraud-risk.md** | 20+ fraud signals, default evasion detection, high deposit & high debt, governance assessment | Financial fraud detection |
@@ -204,6 +202,8 @@ Indicator Score = f(Raw Value, Threshold, Direction)
 
 | Version | Date | Changes |
 |---|---|---|
+| v0.2.0 | 2026-07-31 | Trader execution framework (trader-framework.md): execution dimensions, thermometer overlay, Execution Decision Matrix — WP-TR-01 engine completion; development backlog cleared |
+| v0.1.1 | 2026-07-31 | Patch: sandbox E2E audit fixes shipped; playbook reading-order layering (slimming Part C completion); reading-guide accuracy fixes |
 | v0.1.0 | 2026-07-29 | Architecture: CSS dedup, boilerplate consolidation, reading guides |
 | v0.0.9 | 2026-07-29 | Final 2 planned paths delivered (16/16 active) |
 | v0.0.8 | 2026-07-27 | 5 partial paths promoted, report-index navigation |
@@ -253,6 +253,9 @@ The engine documentation system uses two parallel version numbering schemes:
 | outlook-monitoring-framework.md | v0.1.1 | Outlook and ongoing monitoring framework |
 | lgd-recovery-framework.md | v0.1.1 | LGD and recovery analysis framework |
 | multi-stakeholder.md | v0.1.1 | Multi-stakeholder framework |
+| advisor-origination-framework.md | v0.1.1 | Advisor origination assessment framework |
+| financing-channel-framework.md | v0.1.1 | Financing channel comparison framework |
+| trader-framework.md | v0.1.1 | Trader execution framework |
 | financial-deep-dive.md | v0.1.1 | Financial deep dive analysis framework |
 | paradigm-brand-channel.md | v0.1.1 | Brand + channel paradigm specification |
 | paradigm-network-traffic.md | v0.1.1 | Network + traffic paradigm specification |
