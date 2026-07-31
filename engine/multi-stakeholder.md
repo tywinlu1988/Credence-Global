@@ -1,6 +1,6 @@
 # Multi-Stakeholder Perspective Framework
 
-**Version**: v0.1.1 | **Date**: 2026-07-17
+**Version**: v0.2.0 | **Date**: 2026-07-17
 **Source**: Fixed Income Credit Intelligence Engine v0.0.1 · Mosaic Engine Architecture
 **Nature**: Structured archive — compiled from existing skill packages and specification documents
 
@@ -173,6 +173,8 @@ The Risk Officer monitors concentration and contagion risks across the portfolio
 ### 2.4 Trader — Execution & Market Timing
 
 The Trader decides whether today is the right day to execute a trade. This role operates at the shortest horizon, converting analytical signals into market actions.
+
+> **Authoritative Source Reference**: The execution methodology (dimension weights, spread-vs-FV bands, liquidity tiers, thermometer overlay, and the Execution Decision Matrix) is canonically defined in [Trader Execution Framework](trader-framework.md) §2/§4/§5. This section is the role-definition summary; in case of discrepancies, trader-framework.md takes precedence.
 
 **Decision Logic**: Given a signal from the Credit Selector, Portfolio Manager, or Risk Officer, is now the right time to buy, sell, or hedge? What is the optimal execution strategy?
 

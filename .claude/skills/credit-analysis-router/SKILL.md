@@ -10,7 +10,7 @@ See `${CLAUDE_PLUGIN_ROOT}/engine/agent-protocol.md` §1 — engine/ and templat
 
 ## Purpose
 
-**Engine version**: v0.1.1
+**Engine version**: v0.2.0
 
 **Non-Negotiables (see AGENTS.md)**: no analysis without a Path Sheet · no numbers without a `doc §section` citation · no report outside `${CLAUDE_PLUGIN_ROOT}/templates/` · no delivery without a QA Verdict · no invented dimensions or vocabulary.
 

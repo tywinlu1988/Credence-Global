@@ -10,7 +10,7 @@ See `${CLAUDE_PLUGIN_ROOT}/engine/agent-protocol.md` §1 — engine/ and templat
 
 ## Purpose
 
-**Engine version**: v0.1.1
+**Engine version**: v0.2.0
 
 **Non-Negotiables (see AGENTS.md)**: no report without a template from `${CLAUDE_PLUGIN_ROOT}/templates/` (never design ad-hoc HTML, dashboards, or layouts) · no numbers without a `doc §section` citation · no delivery without a QA Verdict.
 

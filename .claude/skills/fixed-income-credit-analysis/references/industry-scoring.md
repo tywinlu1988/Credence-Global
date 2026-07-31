@@ -1,6 +1,6 @@
 # Industry Scoring (Track A)
 
-**Version**: v0.1.1
+**Version**: v0.2.0
 
 > This document is derived from `fixed-income-credit-analysis` SKILL.md, organizing Track A industry scoring content. The single source of truth is `${CLAUDE_PLUGIN_ROOT}/engine/industry-framework.md` (ten-dimension scoring, six paradigms, pyramids, veto); this file is for navigation and organization only and introduces no new values.
 

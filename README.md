@@ -1,11 +1,11 @@
-# Credence — Fixed-Income Credit Intelligent Analysis Engine (v0.1.1)
+# Credence — Fixed-Income Credit Intelligent Analysis Engine (v0.2.0)
 
 > **A methodology-first credit analysis engine for global fixed-income markets** — the
 > methodology of a seasoned credit analyst, packaged as **Agent Skills** an AI agent can
 > load and execute directly. Not an agent framework, not a standalone app: a
 > domain-methodology skill pack for institutional-grade, reproducible credit analysis.
 
-**Version** v0.1.1 · **License** MIT (see `LICENSE`) · **29 methodology documents** ·
+**Version** v0.2.0 · **License** MIT (see `LICENSE`) · **30 methodology documents** ·
 **4 executable engines** · pytest regression suite + consistency gates
 
 ---
@@ -90,7 +90,7 @@ every delivery gated by QA.
 ## Package Contents
 
 - `.claude/skills/` — Four-stage chain skills (router / analysis / report / qa)
-- `engine/` — 29 methodology documents: thresholds, weights, rating maps, contagion matrix
+- `engine/` — 30 methodology documents: thresholds, weights, rating maps, contagion matrix
   (the single source of truth; coded engines parse rules from these at runtime)
 - `engine/path-playbooks/` — Per-work-path execution contracts (procedure, dimension
   vocabulary, output shape, quality gates, drift blacklist)

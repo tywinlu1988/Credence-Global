@@ -1,8 +1,8 @@
 # Work Path Registry
 
-**Version**: v0.1.1 | **Date**: 2026-07-18
+**Version**: v0.2.0 | **Date**: 2026-07-18
 
-This registry is the design baseline for the v0.0.1 skill architecture refactoring (requirement understanding -> path routing -> engine invocation -> report delivery, all fully controllable). It makes all 16 work paths explicit and machine-readable, serving as the single source of truth for the Intake Router (v0.1.1) routing and execution-layer skill decomposition (v0.1.1).
+This registry is the design baseline for the v0.0.1 skill architecture refactoring (requirement understanding -> path routing -> engine invocation -> report delivery, all fully controllable). It makes all 16 work paths explicit and machine-readable, serving as the single source of truth for the Intake Router (v0.2.0) routing and execution-layer skill decomposition (v0.2.0).
 
 **Single Source of Truth Principle**: This registry only records "which engine documents a path uses, which templates it employs, and which quality gates it must pass." It does NOT copy any thresholds, weights, or rule text -- the rule text always resides in the engine documents referenced by `engine_sequence`.
 
@@ -213,7 +213,7 @@ quality_gates:
 
 ### WP-TR-01 Trader Market Watch Signal Card (✅ active)
 
-A lightweight market-watch tool from the trader perspective: L0 signal card (5-second summary: rating + outlook + key signals of the day) linked with the SRI systemic warning thermometer. The L0 specification and thermometer engine are complete, but the L0 signal card has no standalone template file (the specification is defined in output-layered-framework §3), and the M3/Trader trading framework still needs to be completed.
+A lightweight market-watch tool from the trader perspective: L0 signal card (5-second summary: rating + outlook + key signals of the day) linked with the SRI systemic warning thermometer. Engine document (trader-framework.md) is delivered — execution dimensions, thermometer overlay, and the Execution Decision Matrix. The L0 signal card has no standalone template file by design (the specification is defined in output-layered-framework §3).
 
 ```yaml
 id: WP-TR-01
@@ -225,15 +225,18 @@ trigger:
   object: single-issuer
 depth: L0
 engine_sequence:
+  - ${CLAUDE_PLUGIN_ROOT}/engine/trader-framework.md
   - ${CLAUDE_PLUGIN_ROOT}/engine/output-layered-framework.md
   - ${CLAUDE_PLUGIN_ROOT}/engine/systemic-warning-framework.md
 paradigm_selection: n/a (L0 signal layer is cross-paradigm; directly reads single-issuer rating + system thermometer)
 templates:
   - "L0-spec: ${CLAUDE_PLUGIN_ROOT}/engine/output-layered-framework.md §3"
-outputs: [L0 signal card, thermometer reading]
+outputs: [L0 signal card, thermometer reading, execution posture]
 quality_gates:
   - "L0 Signal Card (${CLAUDE_PLUGIN_ROOT}/engine/output-layered-framework.md §3)"
   - "Thermometer (${CLAUDE_PLUGIN_ROOT}/engine/systemic-warning-framework.md §3)"
+  - "Execution Dimensions (${CLAUDE_PLUGIN_ROOT}/engine/trader-framework.md §2)"
+  - "Execution Decision Matrix (${CLAUDE_PLUGIN_ROOT}/engine/trader-framework.md §5)"
 ```
 
 ### WP-RO-01 Risk Officer Concentration Assessment (✅ active)
@@ -525,7 +528,7 @@ The following 🔴 gaps are the development backlog for upcoming versions. Each 
 |---|---|---|---|---|
 | 1 | Advisor (formerly M2) framework engine document | engine | WP-AD-01 | ✅ Delivered (v0.0.8, advisor-origination-framework.md + template-type16.html) |
 | 2 | Individual Investor (formerly M5) framework engine document | engine | WP-II-01 | ✅ Delivered (v0.0.8, financing-channel-framework.md + template-type17.html) |
-| 3 | Trader (formerly M3) framework completion | engine | WP-TR-01 | Trader-specific engine (currently only L0 spec + thermometer, active) |
+| 3 | Trader (formerly M3) framework completion | engine | WP-TR-01 | ✅ Delivered (v0.2.0, trader-framework.md) |
 | 4 | Type 16 origination report template | template | WP-AD-01 | ✅ Delivered (v0.0.8, template-type16.html) |
 | 5 | Type 17 individual investor advisory template | template | WP-II-01 | ✅ Delivered (v0.0.8, template-type17.html + financing-channel-framework.md) |
 | 6 | Outlook monitoring template | template | WP-X-05 | ✅ Delivered (v0.0.1, template-type18.html) |

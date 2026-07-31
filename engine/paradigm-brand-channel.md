@@ -1,6 +1,6 @@
 # Defensive (P2) Paradigm: Brand Moat and Distribution Channel Analysis
 
-**Version**: v0.1.1 | **Paradigm Version**: v1.0.0 | **Date**: 2026-07-18 | **Status**: Initial international release
+**Version**: v0.2.0 | **Paradigm Version**: v1.0.0 | **Date**: 2026-07-18 | **Status**: Initial international release
 
 ---
 
