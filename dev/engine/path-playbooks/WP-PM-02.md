@@ -18,8 +18,9 @@ Do not use when: single-issuer rating (→ WP-CS-01 per issuer), portfolio-level
 2. `dev/engine/validation-methodology.md` §§1-5 — forward comparison and differentiation analysis (§4, §4.2 are this path's core)
 
 **Reference (read on demand):**
-- `dev/engine/dual-track-methodology.md` §5, §§7-11 — examples and extended discussion
-- `dev/engine/validation-methodology.md` §§6-7 — case summaries, improvement record
+- `dev/engine/dual-track-methodology.md` §7 — EL integration
+- `dev/engine/appendix/dual-track-methodology-appendix.md` §5, §§9-11 — examples and extended discussion
+- `dev/engine/appendix/validation-methodology-appendix.md` §§6-7 — case summaries, improvement record
 
 ## 3. Procedure
 

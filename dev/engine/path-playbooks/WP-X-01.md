@@ -17,7 +17,7 @@ Do not use when: live analysis (→ role paths), single-issuer rating (→ WP-CS
 1. `dev/engine/validation-methodology.md` §§1-5 — backtest methodology, 6-step process, dual-timepoint protocol, forward-looking comparison, mosaic completeness in validation
 
 **Reference (read on demand):**
-- `dev/engine/validation-methodology.md` §§6-7 — completed case library (Yongmei/Ziguang), framework improvement record
+- `dev/engine/appendix/validation-methodology-appendix.md` §§6-7 — completed case library (Yongmei/Ziguang), framework improvement record
 
 ## 3. Procedure
 

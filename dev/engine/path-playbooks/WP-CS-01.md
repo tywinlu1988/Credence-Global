@@ -19,9 +19,10 @@ Do not use when: portfolio-level questions (→ WP-RO-*), instrument-level inves
 3. `dev/engine/dual-track-methodology.md` §§1-4, §6, §8 — Track A/B, cross-validation, rating mapping, decision rules
 
 **Reference (read on demand):**
-- `dev/engine/industry-framework.md` §6 — paradigm extended discussion
-- `dev/engine/mosaic-engine.md` §§7-8 — worked example, implementation priorities
-- `dev/engine/dual-track-methodology.md` §5, §7, §§9-11 — cash-flow positioning, EL integration, mitigation framework, worked examples; §7.5 is **required** when the issuer is unrated or thinly traded
+- `dev/engine/appendix/industry-framework-appendix.md` — per-paradigm score definitions, legacy comparison
+- `dev/engine/appendix/mosaic-engine-appendix.md` §§7-8 — worked example, implementation priorities
+- `dev/engine/dual-track-methodology.md` §7 — EL integration; §7.7 is **required** when the issuer is unrated or thinly traded
+- `dev/engine/appendix/dual-track-methodology-appendix.md` §5, §§9-11 — cash-flow positioning, mitigation framework, worked examples
 
 ## 3. Procedure
 

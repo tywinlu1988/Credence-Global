@@ -20,8 +20,9 @@ Do not use when: full credit analysis (→ WP-CS-01), portfolio dashboard (→ W
 
 **Reference (read on demand):**
 - `dev/engine/trader-framework.md` §§6-9 — execution tactics, divergence handling, quality gates, limitations
-- `dev/engine/output-layered-framework.md` §§4-5, §§7-10 — L1/L2 specs, workflow embedding, integration notes
-- `dev/engine/systemic-warning-framework.md` §§5-12 — backtests, worked example, sensitivity analysis
+- `dev/engine/output-layered-framework.md` §§4-5 — L1/L2 specs
+- `dev/engine/appendix/output-layered-framework-appendix.md` §7, §§9-10 — workflow embedding, special states, appendices
+- `dev/engine/appendix/systemic-warning-framework-appendix.md` §§5-9, §11 — backtests, worked example, sensitivity analysis
 
 ## 3. Procedure
 

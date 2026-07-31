@@ -20,8 +20,9 @@ Do not use when: issuer-level rating only (→ WP-CS-01), two-issuer comparison 
 
 **Reference (read on demand):**
 - `dev/engine/multi-stakeholder.md` §5 + appendices — dashboard specs, role-to-metric mapping
-- `dev/engine/dual-track-methodology.md` §§5-11 — examples and extended discussion
-- `dev/engine/mosaic-engine.md` §§7-8 — worked example, implementation priorities
+- `dev/engine/dual-track-methodology.md` §7 — EL integration
+- `dev/engine/appendix/dual-track-methodology-appendix.md` §5, §§9-11 — examples and extended discussion
+- `dev/engine/appendix/mosaic-engine-appendix.md` §§7-8 — worked example, implementation priorities
 
 ## 3. Procedure
 

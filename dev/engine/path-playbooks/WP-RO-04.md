@@ -18,8 +18,9 @@ Do not use when: baseline concentration assessment (→ WP-RO-01 first), systemi
 2. `dev/engine/financial-deep-dive.md` §§A-D — core financial methodology; §E — scenario sensitivity matrix, stress effects on financial statements
 
 **Reference (read on demand):**
-- `dev/engine/concentration-framework.md` §§2-6, §§10-11 — dimension details, integration notes
-- `dev/engine/financial-deep-dive.md` §§F-G — worked examples and derivations
+- `dev/engine/concentration-framework.md` §§2-6 — dimension details
+- `dev/engine/appendix/concentration-framework-appendix.md` §§10-11 — integration notes, limitations
+- `dev/engine/appendix/financial-deep-dive-appendix.md` §§F-G — sovereign metrics, bank CAMELS
 
 ## 3. Procedure
 

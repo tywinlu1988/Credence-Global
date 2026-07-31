@@ -13,6 +13,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPT = ROOT / "scripts" / "build_contagion_derived.py"
 DOC = ROOT / "dev" / "engine" / "contagion-matrix.md"
+# derived sections (super-spreaders, distribution, clusters) live in the appendix
+APX = ROOT / "dev" / "engine" / "appendix" / "contagion-matrix-appendix.md"
 
 
 def test_derived_blocks_in_sync():
@@ -49,7 +51,7 @@ def test_derived_values_match_engine_computation():
     assert "| 5 | 4 | 2 |" in dist and "| 1 | 150 | 75 |" in dist
     assert "**342**" in dist and "**171**" in dist
 
-    clusters = bcd.gen_clusters(m, DOC.read_text(encoding="utf-8"))
+    clusters = bcd.gen_clusters(m, APX.read_text(encoding="utf-8"))
     # F/G/H were mis-tiered as moderate in the hand-maintained era; all 7 sit in high
     assert clusters.count("| **A:") == 1 and "| **E:" in clusters.split("Moderate-Contagion")[1]
     high = clusters.split("#### Moderate-Contagion")[0]

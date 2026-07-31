@@ -20,8 +20,8 @@ Do not use when: a single-role answer suffices (→ the role's own path), portfo
 
 **Reference (read on demand):**
 - `dev/engine/multi-stakeholder.md` §5 + appendices — dashboard specs, role-to-metric mapping
-- `dev/engine/industry-framework.md` §6 — paradigm extended discussion
-- `dev/engine/mosaic-engine.md` §§7-8 — worked example, implementation priorities
+- `dev/engine/appendix/industry-framework-appendix.md` — per-paradigm score definitions, legacy comparison
+- `dev/engine/appendix/mosaic-engine-appendix.md` §§7-8 — worked example, implementation priorities
 
 ## 3. Procedure
 

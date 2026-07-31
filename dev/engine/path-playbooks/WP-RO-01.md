@@ -18,7 +18,8 @@ Do not use when: single-issuer rating (→ WP-CS-01), cross-industry transmissio
 
 **Reference (read on demand):**
 - `dev/engine/concentration-framework.md` §§2-6 — the five dimension methodologies; read the specific dimension section when explaining that dimension's score
-- `dev/engine/concentration-framework.md` §§9-11 + appendix — stress procedure, integration notes, limitations
+- `dev/engine/concentration-framework.md` §9 — stress procedure
+- `dev/engine/appendix/concentration-framework-appendix.md` §§10-11 — integration notes, limitations
 
 ## 3. Procedure (coded engine)
 

@@ -19,7 +19,8 @@ Do not use when: full credit rating (→ WP-CS-01), industry framework building 
 
 **Reference (read on demand):**
 - `dev/engine/esg-framework.md` §1 — conceptual background (read on first encounter)
-- `dev/engine/governance-fraud-risk.md` §3, §§5-7 — case studies and extended discussion
+- `dev/engine/governance-fraud-risk.md` §7 — integration (veto linkage)
+- `dev/engine/appendix/governance-fraud-risk-appendix.md` §3, §§5-6 — related-party detection, screening tools, fraud cases
 
 ## 3. Procedure
 

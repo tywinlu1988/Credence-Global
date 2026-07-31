@@ -18,8 +18,8 @@ Do not use when: main credit rating (→ WP-CS-01 first, then this as add-on), p
 2. `dev/engine/external-support-framework.md` §§1-6 — government/group/strategic support assessment, capacity vs willingness, uplift rules
 
 **Reference (read on demand):**
-- `dev/engine/lgd-recovery-framework.md` §§4-6 — worked examples and derivations
-- `dev/engine/external-support-framework.md` §§7-10 — trap signals, integration notes, limitations
+- `dev/engine/appendix/lgd-recovery-framework-appendix.md` §§4-6 — assessment process, priority, collateral valuation
+- `dev/engine/appendix/external-support-framework-appendix.md` §§7-10 — trap signals, integration notes, limitations
 
 ## 3. Procedure
 

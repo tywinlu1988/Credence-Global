@@ -158,7 +158,8 @@ def test_t12_5_pointers_scrubbed_neighbors_intact(dist):
     assert "risk-management-standards-audit" not in nc
 
     dt = (dist / "engine" / "dual-track-methodology.md").read_text(encoding="utf-8")
-    assert "Risk Mitigation Recommendation" in dt  # neighboring content survives
+    assert "Cross-Validation Matrix" in dt  # neighboring content survives
+    assert "Rating Mapping" in dt  # core rating-map section retained in parent
 
 
 # T12.6 — (k) generated entry/install files complete and carry version stamps.

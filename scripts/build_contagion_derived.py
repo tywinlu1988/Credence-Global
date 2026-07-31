@@ -283,8 +283,11 @@ GENERATORS = {
 }
 
 # Each document's derived blocks are regenerated from the contagion heatmap.
+# (contagion-matrix's derived sections live in its appendix file since the
+# 2026-07 reference-extraction restructure.)
 DOCS = [
     ROOT / "dev" / "engine" / "contagion-matrix.md",
+    ROOT / "dev" / "engine" / "appendix" / "contagion-matrix-appendix.md",
     ROOT / "dev" / "engine" / "systemic-warning-framework.md",
 ]
 

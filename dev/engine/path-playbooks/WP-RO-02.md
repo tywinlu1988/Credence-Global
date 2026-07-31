@@ -18,8 +18,9 @@ Do not use when: concentration level alone (→ WP-RO-01), single market-wide SR
 2. `dev/engine/contagion-theory.md` §§1-2 — contagion types and transmission pathways
 
 **Reference (read on demand):**
-- `dev/engine/contagion-matrix.md` §§3-6 — worked examples, derivations, historical validation
-- `dev/engine/contagion-theory.md` §§3-5 — extended discussion and cases
+- `dev/engine/contagion-matrix.md` §6 — stress escalation (gate-pinned)
+- `dev/engine/appendix/contagion-matrix-appendix.md` §§3-5, §§7-9 — pathways, construction, derived metrics, integration, limitations
+- `dev/engine/appendix/contagion-theory-appendix.md` §§4-6 — paradigm exposure, escalation factors, practical guide
 
 ## 3. Procedure (coded engine)
 

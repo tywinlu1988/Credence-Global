@@ -19,8 +19,8 @@ Do not use when: the industry already maps to a registered paradigm and matrix i
 
 **Reference (read on demand):**
 - `dev/engine/dimension-registry.md` — paradigm/role pointer index (lookup table, consult as needed)
-- `dev/engine/industry-framework.md` §6 — paradigm extended discussion
-- `dev/engine/mosaic-engine.md` §§7-8 — worked example, implementation priorities
+- `dev/engine/appendix/industry-framework-appendix.md` — per-paradigm score definitions, legacy comparison
+- `dev/engine/appendix/mosaic-engine-appendix.md` §§7-8 — worked example, implementation priorities
 
 ## 3. Procedure
 

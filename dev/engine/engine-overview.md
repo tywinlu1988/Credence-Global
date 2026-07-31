@@ -40,6 +40,12 @@
 | **dimension-registry.md** | Dimension registry, addressable index of 6 paradigms and 6 stakeholder roles (single-source pointer layer) | Dimension routing and retrieval |
 | **pipeline-contract.md** | Four-stage pipeline I/O contracts, four product schemas, chain edges (machine-readable) | Pipeline stage handoff specifications |
 
+> **Appendix mechanism**: Reference material (worked examples, historical backtests,
+> derivations, case studies) lives in `appendix/<document>-appendix.md` — one appendix
+> file per parent document, section numbers preserved from the parent. Parent documents
+> carry only the executable core; read appendices on demand. Appendices are not shipped
+> in the plugin package (see the source repository).
+
 ---
 
 > **Reading guide**: This is an architecture reference — read as needed. It does not contain executable scoring
