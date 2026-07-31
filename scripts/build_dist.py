@@ -13,7 +13,7 @@ dist/credence/
 |-- AGENTS.md / CLAUDE.md / GEMINI.md / INSTALL.md / README.md   (generated)
 |-- .claude-plugin/plugin.json                                   (generated)
 |-- .claude/skills/<4 skills>/{SKILL.md,references/}            (copied+rewritten from dev/.claude/skills)
-|-- engine/          (dev/engine excluding audits/, rewritten+pointer-cleansed)
+|-- engine/          (dev/engine excluding audits/ + appendix/ + reference/, rewritten+pointer-cleansed)
 |-- templates/       (dev/templates full copy)
 |-- src/             (excluding __pycache__/*.pyc, comments rewritten)
 `-- adapters/codex.md (moved from docs/adapters + rewritten)
@@ -30,16 +30,19 @@ Note: `multi-stakeholder.md`'s `../engine/`, `../templates/` resolve in both lay
 - Full-line deletion: lines still containing `audits/` after parenthetical stripping (table rows,
   source notes, bullet points).
 - Full-line deletion: lines containing `validation/` path tokens (validation/ excluded from package).
+- Full-line deletion: lines containing `appendix/` or `reference/` tokens (on-demand material
+  excluded from package; pointer lines are single-row by design).
 
 ## Exclusions (never allowed into dist)
-`settings.local.json`, `__pycache__`, `*.pyc`, `engine/audits/`, `design/`,
+`settings.local.json`, `__pycache__`, `*.pyc`, `engine/audits/`, `engine/appendix/`,
+`engine/reference/`, `design/`,
 `product/`, `data/`, `validation/`, `.git/`, `version/`, `tests/`, `scripts/`,
 `docs/` (except adapters/codex.md), `dev/README.md` (replaced by generated README).
 
 ## Validation (--check or auto-run after build; any failure exits loudly)
 (i) Zero `[A-Za-z]:[\\/]` absolute paths; (ii) zero residual `dev/` path tokens; (iii) every
 relative link resolves within dist; (iv) 4 SKILL.md with frontmatter exactly name+description;
-(v) 30 CORE_DOCS all present under engine/; (vi) src can locate engine/templates in dist layout;
+(v) 27 shipped CORE_DOCS all present under engine/; (vi) src can locate engine/templates in dist layout;
 (vii) zero excluded artifacts present.
 (viii) No CRLF in text files (LF enforced per root .gitattributes).
 """
@@ -57,7 +60,7 @@ DEV = ROOT / "dev"
 DIST = ROOT / "dist" / "credence"
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from consistency_check import CORE_DOCS  # noqa: E402  single source of truth, don't duplicate manifest
+from consistency_check import CORE_DOCS, DIST_CORE_DOCS  # noqa: E402  single source of truth, don't duplicate manifest
 
 # Ordered rewrite rules (longest prefix first). The skills rule has no trailing slash
 # to cover both `dev/.claude/skills` and `dev/.claude/skills/...` forms.
@@ -115,7 +118,8 @@ def _scrub(text: str, rel: str, log: list) -> str:
         log.append(f"fragment-strip (audits paren) in {rel}")
     kept = []
     for line in text.split("\n"):
-        if "audits/" in line or "validation/" in line:
+        if ("audits/" in line or "validation/" in line
+                or "appendix/" in line or "reference/" in line):
             log.append(f"drop pointer line in {rel}: {line.strip()[:70]}")
             continue
         kept.append(line)
@@ -341,7 +345,7 @@ def _gen_readme_md(v: str) -> str:
 > load and execute directly. Not an agent framework, not a standalone app: a
 > domain-methodology skill pack for institutional-grade, reproducible credit analysis.
 
-**Version** {v} · **License** MIT (see `LICENSE`) · **30 methodology documents** ·
+**Version** {v} · **License** MIT (see `LICENSE`) · **27 core methodology documents** ·
 **4 executable engines** · pytest regression suite + consistency gates
 
 ---
@@ -426,7 +430,8 @@ every delivery gated by QA.
 ## Package Contents
 
 - `.claude/skills/` — Four-stage chain skills (router / analysis / report / qa)
-- `engine/` — 30 methodology documents: thresholds, weights, rating maps, contagion matrix
+- `engine/` — 27 core methodology documents: thresholds, weights, rating maps, contagion matrix
+  (legacy reference docs and per-document appendices live in the source repository)
   (the single source of truth; coded engines parse rules from these at runtime)
 - `engine/path-playbooks/` — Per-work-path execution contracts (procedure, dimension
   vocabulary, output shape, quality gates, drift blacklist)
@@ -520,7 +525,9 @@ def validate(out_dir=None) -> list:
         # (vii) excluded artifacts must not appear
         if "__pycache__" in f.parts or f.suffix == ".pyc" or f.name == "settings.local.json":
             errors.append(f"EXCLUDED_PRESENT: {rel}")
-        if "audits" in f.parts or f.parts[0] in ("design", "product", "data", "validation"):
+        if ("audits" in f.parts or f.parts[0] in ("design", "product", "data", "validation")
+                or (f.parts[0] == "engine" and len(f.parts) > 1
+                    and f.parts[1] in ("appendix", "reference"))):
             errors.append(f"EXCLUDED_DIR_PRESENT: {rel}")
         data = f.read_bytes()
         if b"\0" not in data and b"\r\n" in data:
@@ -531,6 +538,8 @@ def validate(out_dir=None) -> list:
                 errors.append(f"ABS_PATH: {rel}: ...{text[max(0,m.start()-15):m.start()+25]!r}...")
             if DEV_TOKEN_RE.search(text):
                 errors.append(f"DEV_TOKEN: {rel}")
+            if "appendix/" in text or "reference/" in text:
+                errors.append(f"ON_DEMAND_TOKEN: {rel} mentions appendix/ or reference/ (scrub missed a line)")
 
     # (iv) 4 skills + strict frontmatter
     for name in SKILL_NAMES:
@@ -543,8 +552,8 @@ def validate(out_dir=None) -> list:
         if keys != ["name", "description"]:
             errors.append(f"FRONTMATTER: {name} keys={keys}, want ['name','description']")
 
-    # (v) 30 CORE_DOCS under engine/
-    for doc in CORE_DOCS:
+    # (v) shipped CORE_DOCS under engine/ (appendix/ + reference/ are repo-only)
+    for doc in DIST_CORE_DOCS:
         if not (base / "engine" / doc).exists():
             errors.append(f"MISSING_CORE_DOC: engine/{doc}")
 
@@ -616,10 +625,11 @@ def build(out_dir=None) -> list:
     out.mkdir(parents=True)
 
     _copy_and_transform(DEV / ".claude" / "skills", out / ".claude" / "skills", log, scrub=True)
-    # engine: exclude audits/
+    # engine: exclude audits/ (review records) + appendix/ and reference/
+    # (on-demand material stays repo-only; pointer lines to them are scrubbed above)
     engine_src = DEV / "engine"
     for f in sorted(engine_src.rglob("*")):
-        if f.is_dir() or "audits" in f.parts:
+        if f.is_dir() or f.relative_to(engine_src).parts[0] in ("audits", "appendix", "reference"):
             continue
         rel = f.relative_to(engine_src)
         if f.suffix in TEXT_EXTS:

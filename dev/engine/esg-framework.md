@@ -496,7 +496,7 @@ adjustment_rationale: "Major safety accident triggers production suspension + co
 This ESG framework operates as a sub-module of the non-credit-risk-overlay.md:
 
 ```
-Non-Credit Risk Overlay (reference/non-credit-risk-overlay.md)
+Non-Credit Risk Overlay (non-credit-risk-overlay.md)
   ├── Market Risk (20%)
   ├── Operational Risk (30%)  <- Includes governance-fraud-risk.md fraud signals + ESG governance signals
   ├── Reputational Risk (15%)  <- Includes ESG environmental + social event signals

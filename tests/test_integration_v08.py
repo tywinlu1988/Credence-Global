@@ -317,9 +317,11 @@ def test_t11_5_release_zip_integrity(cc, bd, tmp_path):
     for skill in FOUR_SKILLS:
         assert f"{root}.claude/skills/{skill}/SKILL.md" in names, skill
 
-    # engine: 30 CORE_DOCS + report templates + executable orchestrator
-    for doc in cc.CORE_DOCS:
+    # engine: 27 shipped CORE_DOCS (appendix/ + reference/ are repo-only) + templates + orchestrator
+    for doc in cc.DIST_CORE_DOCS:
         assert f"{root}engine/{doc}" in names, f"zip missing engine/{doc}"
+    assert root + "engine/appendix/" not in names, "appendix must not ship in the zip"
+    assert root + "engine/reference/" not in names, "reference must not ship in the zip"
     assert root + "templates/template-base.css" in names, "zip missing templates/"
     assert root + "src/pipeline.py" in names, "zip missing src/pipeline.py"
 

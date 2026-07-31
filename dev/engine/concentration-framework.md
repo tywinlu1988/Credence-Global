@@ -167,7 +167,7 @@ Mapping Rule: For each dimension, select the worst-performing metric as the dime
 
 ### 2.3 Cross-Reference with Contagion Matrix
 
-**The danger level of single industry concentration depends on the industry's position in the contagion matrix** (row sums per appendix/contagion-matrix-appendix.md §9.2; clusters per §5.4):
+**The danger level of single industry concentration depends on the industry's position in the contagion matrix** (row sums per the contagion-matrix appendix §9.2; clusters per §5.4):
 
 | Industry | Contagion Rank | Row/Col Sum | Cluster | MAX1 Threshold Adjustment |
 |---------|---------------|---------------------------|---------|--------------------------|
@@ -197,7 +197,7 @@ Mapping Rule: For each dimension, select the worst-performing metric as the dime
 Step 1: Calculate the raw risk scores for the four metrics (HHI/CR3/CR5/MAX1)
 Step 2: Take the highest score among the four metrics as the raw industry concentration score
 Step 3: Identify the top 3 industries by position weight in the portfolio
-Step 4: Query the contagion matrix to determine if these industries belong to the same high-contagion cluster (appendix/contagion-matrix-appendix.md §5.4 clusters A-H)
+Step 4: Query the contagion matrix to determine if these industries belong to the same high-contagion cluster (the contagion-matrix appendix §5.4 clusters A-H)
   ├── If they belong to the same cluster → raw score + 2 (cluster concentration penalty)
   ├── If they belong to the same paradigm (see industry-framework.md § Four Industry Types) but different clusters → raw score + 1 (intra-paradigm resonance penalty)
   └── If they belong to isolated clusters → no adjustment
@@ -655,7 +655,7 @@ When two dimensions exceed thresholds simultaneously, the adjustment is not a si
 
 The following situations directly trigger **portfolio extreme concentration cap, cap BB** (portfolio-level veto, not issuer-level):
 
-1. **Single industry > 50%** and the industry is in a down-cycle (Track A rating < 5.0), and the industry is a super-spreader in the contagion matrix (per appendix/contagion-matrix-appendix.md §5.1: Financials, Capital Goods, Chemicals, Technology Hardware)
+1. **Single industry > 50%** and the industry is in a down-cycle (Track A rating < 5.0), and the industry is a super-spreader in the contagion matrix (per the contagion-matrix appendix §5.1: Financials, Capital Goods, Chemicals, Technology Hardware)
 2. **Single peripheral region > 35%** and there have been SOE defaults in that region within the past 12 months
 3. **Pseudo-high rating (external AAA, internal < BBB) share > 40%**
 4. **Next 12 months maturity > 70%** and funding channel dependency > 70% overlap
@@ -675,7 +675,7 @@ The following situations directly trigger **portfolio extreme concentration cap,
 > China-market composition (LGFV, Solar/PV, NEV, etc.) and reference its super-spreader
 > rankings. They remain valid as illustrations of the adjustment *mechanics*; the current
 > super-spreader set is Financials, Capital Goods, Chemicals, and Technology Hardware
-> (appendix/contagion-matrix-appendix.md §5.1), and the current industry set is the 19 GICS industries
+> (the contagion-matrix appendix §5.1), and the current industry set is the 19 GICS industries
 > (contagion-matrix.md §1.2). Re-derivation under the 19-industry composition is a
 > scheduled follow-up. Note also: a 50% single-industry concentration maps to the alert
 > band per §1.3 interpolation (score ~6, 🟠), not 5 as printed below.

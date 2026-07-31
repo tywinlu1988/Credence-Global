@@ -40,8 +40,8 @@
 ### Legacy Reference Documents (on-demand)
 
 > The following documents are not on any active path's engine sequence — consult them
-> when an analysis needs their specialized methodology. They live under `reference/`
-> and are not shipped in the plugin package (see the source repository).
+> when an analysis needs their specialized methodology. They live in the legacy `reference`
+> subdirectory and are not shipped in the plugin package (see the source repository).
 
 | Document | Content | When to Consult |
 |---|---|---|

@@ -125,7 +125,7 @@ def test_t12_3_no_parent_escape(dist):
         assert "](../../" not in text, f"{f.relative_to(dist)} contains a ../../ escape link"
 
 
-# T12.4 — (g)+(i) excluded items absent and no audits//validation/ references.
+# T12.4 — (g)+(i) excluded items absent and no audits//validation//on-demand references.
 def test_t12_4_excluded_and_pointer_tokens_absent(dist):
     for f in sorted(dist.rglob("*")):
         if f.is_dir():
@@ -134,9 +134,13 @@ def test_t12_4_excluded_and_pointer_tokens_absent(dist):
         assert "__pycache__" not in f.parts and f.suffix != ".pyc", rel
         assert f.name != "settings.local.json", rel
         assert "audits" not in f.parts, rel
+        assert "appendix" not in f.parts, rel
+        assert "reference" not in f.parts, rel
     for f, text in _texts(dist / "engine"):
         assert "audits/" not in text, f"{f.name} still references audits/"
         assert "validation/" not in text, f"{f.name} still references validation/"
+        assert "appendix/" not in text, f"{f.name} still references appendix/"
+        assert "reference/" not in text, f"{f.name} still references reference/"
 
 
 # T12.5 — (j) provenance pointers scrubbed, neighboring content intact.
@@ -154,8 +158,12 @@ def test_t12_5_pointers_scrubbed_neighbors_intact(dist):
     assert "external support assessment was identified as a critical component" in es.lower()
     assert "rating-agency-benchmark-audit" not in es
 
-    nc = (dist / "engine" / "reference" / "non-credit-risk-overlay.md").read_text(encoding="utf-8")
-    assert "risk-management-standards-audit" not in nc
+    nc = dist / "engine" / "reference" / "non-credit-risk-overlay.md"
+    assert not nc.exists(), "legacy reference docs must not ship in dist"
+    assert not (dist / "engine" / "appendix").exists(), "appendix dir must not ship in dist"
+    # concentration rules referencing the contagion appendix survive tokenless
+    cf = (dist / "engine" / "concentration-framework.md").read_text(encoding="utf-8")
+    assert "contagion-matrix appendix" in cf
 
     dt = (dist / "engine" / "dual-track-methodology.md").read_text(encoding="utf-8")
     assert "Cross-Validation Matrix" in dt  # neighboring content survives
