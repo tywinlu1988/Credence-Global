@@ -13,8 +13,13 @@ Do not use when: single-issuer rating (→ WP-CS-01 per issuer), portfolio-level
 
 ## 2. Required Reading Order
 
-1. `${CLAUDE_PLUGIN_ROOT}/engine/dual-track-methodology.md` — Track A (fundamentals) and Track B (market pricing) cross-validation framework, rating mapping
-2. `${CLAUDE_PLUGIN_ROOT}/engine/validation-methodology.md` — forward comparison and differentiation analysis (§4, §4.2)
+**Must read (core rules):**
+1. `${CLAUDE_PLUGIN_ROOT}/engine/dual-track-methodology.md` §§1-4, §6 — Track A (fundamentals) and Track B (market pricing) cross-validation framework, rating mapping
+2. `${CLAUDE_PLUGIN_ROOT}/engine/validation-methodology.md` §§1-5 — forward comparison and differentiation analysis (§4, §4.2 are this path's core)
+
+**Reference (read on demand):**
+- `${CLAUDE_PLUGIN_ROOT}/engine/dual-track-methodology.md` §5, §§7-11 — examples and extended discussion
+- `${CLAUDE_PLUGIN_ROOT}/engine/validation-methodology.md` §§6-7 — case summaries, improvement record
 
 ## 3. Procedure
 

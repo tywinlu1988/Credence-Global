@@ -13,7 +13,11 @@ Do not use when: live analysis (→ role paths), single-issuer rating (→ WP-CS
 
 ## 2. Required Reading Order
 
-1. `${CLAUDE_PLUGIN_ROOT}/engine/validation-methodology.md` — backtest methodology, dual-timepoint protocol, case library
+**Must read (core rules):**
+1. `${CLAUDE_PLUGIN_ROOT}/engine/validation-methodology.md` §§1-5 — backtest methodology, 6-step process, dual-timepoint protocol, forward-looking comparison, mosaic completeness in validation
+
+**Reference (read on demand):**
+- `${CLAUDE_PLUGIN_ROOT}/engine/validation-methodology.md` §§6-7 — completed case library (Yongmei/Ziguang), framework improvement record
 
 ## 3. Procedure
 

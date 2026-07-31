@@ -1,6 +1,6 @@
 # Dual-Track Analysis Methodology
 
-**Version**: v0.1.0 | **Date**: 2026-07-10
+**Version**: v0.1.1 | **Date**: 2026-07-10
 
 ---
 
@@ -42,12 +42,13 @@ Fundamentals        Market Pricing
 
 ---
 
-> **Reading guide**: §§1-4 contain the executable methodology — thresholds,
-> weights, scoring rules, and decision frameworks. These sections are required
-> reading before executing any work path that references this document.
-> §§5-7 contain worked examples, derivations, historical validation, and
-> extended discussion — read only when the analysis needs detailed justification
-> or the user asks for methodological background.
+> **Reading guide**: §§1-4, §6 (Rating Mapping), and §8 (Decision Rules) contain
+> the executable methodology — required reading before executing any work path
+> that references this document. §7.5 (unrated / thinly-traded issuers) is
+> required when the issuer lacks ratings or liquid market signals.
+> §§5, 7, 9-11 contain positioning summaries, EL integration, mitigation
+> framework, and worked examples — read only when the analysis needs detailed
+> justification or the user asks for methodological background.
 
 
 ## 2. Track A: Fundamental Pyramid Scoring

@@ -13,9 +13,14 @@ Do not use when: the industry already maps to a registered paradigm and matrix i
 
 ## 2. Required Reading Order
 
-1. `${CLAUDE_PLUGIN_ROOT}/engine/industry-framework.md` — D1-D10, paradigms, determination logic, pyramids, veto
-2. `${CLAUDE_PLUGIN_ROOT}/engine/dimension-registry.md` — paradigm/role pointer index
-3. `${CLAUDE_PLUGIN_ROOT}/engine/mosaic-engine.md` — completeness and density rules
+**Must read (core rules):**
+1. `${CLAUDE_PLUGIN_ROOT}/engine/industry-framework.md` §§1-5 — D1-D10, paradigms, determination logic, pyramids, veto
+2. `${CLAUDE_PLUGIN_ROOT}/engine/mosaic-engine.md` §§1-6 — completeness and density rules
+
+**Reference (read on demand):**
+- `${CLAUDE_PLUGIN_ROOT}/engine/dimension-registry.md` — paradigm/role pointer index (lookup table, consult as needed)
+- `${CLAUDE_PLUGIN_ROOT}/engine/industry-framework.md` §6 — paradigm extended discussion
+- `${CLAUDE_PLUGIN_ROOT}/engine/mosaic-engine.md` §§7-8 — worked example, implementation priorities
 
 ## 3. Procedure
 

@@ -1,11 +1,11 @@
-# Credence — Fixed-Income Credit Intelligent Analysis Engine (v0.1.0)
+# Credence — Fixed-Income Credit Intelligent Analysis Engine (v0.1.1)
 
 > **A methodology-first credit analysis engine for global fixed-income markets** — the
 > methodology of a seasoned credit analyst, packaged as **Agent Skills** an AI agent can
 > load and execute directly. Not an agent framework, not a standalone app: a
 > domain-methodology skill pack for institutional-grade, reproducible credit analysis.
 
-**Version** v0.1.0 · **License** MIT (see `LICENSE`) · **29 methodology documents** ·
+**Version** v0.1.1 · **License** MIT (see `LICENSE`) · **29 methodology documents** ·
 **4 executable engines** · pytest regression suite + consistency gates
 
 ---

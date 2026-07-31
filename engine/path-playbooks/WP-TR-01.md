@@ -13,8 +13,13 @@ Do not use when: full credit analysis (→ WP-CS-01), portfolio dashboard (→ W
 
 ## 2. Required Reading Order
 
-1. `${CLAUDE_PLUGIN_ROOT}/engine/output-layered-framework.md` — L0 Signal Card specification (§3), signal priority scoring, information tiers
-2. `${CLAUDE_PLUGIN_ROOT}/engine/systemic-warning-framework.md` — SRI four-tier thermometer (§3), signal aggregation, escalation trigger definitions
+**Must read (core rules):**
+1. `${CLAUDE_PLUGIN_ROOT}/engine/output-layered-framework.md` §§1-3 — L0 Signal Card specification (§3), three-tier overview; §6 — information priority sorting rules
+2. `${CLAUDE_PLUGIN_ROOT}/engine/systemic-warning-framework.md` §§1-4 — SRI four-tier thermometer (§3), signal aggregation, escalation trigger definitions
+
+**Reference (read on demand):**
+- `${CLAUDE_PLUGIN_ROOT}/engine/output-layered-framework.md` §§4-5, §§7-10 — L1/L2 specs, workflow embedding, integration notes
+- `${CLAUDE_PLUGIN_ROOT}/engine/systemic-warning-framework.md` §§5-12 — backtests, worked example, sensitivity analysis
 
 ## 3. Procedure
 

@@ -1,6 +1,6 @@
 # System-Intelligence Layer
 
-**Version**: v0.1.0
+**Version**: v0.1.1
 
 > This document is derived from `fixed-income-credit-analysis` SKILL.md, organizing the system-intelligence layer (cross-industry contagion / five-dimensional concentration / systemic risk index) content. The single sources of truth for algorithms and thresholds are `${CLAUDE_PLUGIN_ROOT}/engine/systemic-warning-framework.md`, `${CLAUDE_PLUGIN_ROOT}/engine/contagion-matrix.md`, and `${CLAUDE_PLUGIN_ROOT}/engine/concentration-framework.md`; this file is for navigation and organization only and introduces no new values.
 

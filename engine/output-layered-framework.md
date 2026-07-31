@@ -1,6 +1,6 @@
 # Layered Output Framework — Product Design Specification
 
-**Version**: v0.1.0 | **Date**: 2026-07-10
+**Version**: v0.1.1 | **Date**: 2026-07-10
 **Status**: Product design document (not code implementation)
 **Design Basis**: Practitioner Usability Audit (P0-level output model reform)
 
@@ -28,12 +28,12 @@ The current engine demonstrates solid academic rigor on the methodology level, b
 
 ---
 
-> **Reading guide**: §§1-3 contain the executable methodology — thresholds,
-> weights, scoring rules, and decision frameworks. These sections are required
-> reading before executing any work path that references this document.
-> §§4-8 contain worked examples, derivations, historical validation, and
-> extended discussion — read only when the analysis needs detailed justification
-> or the user asks for methodological background.
+> **Reading guide**: §§1-3 (three-tier overview, L0 Signal Card spec) and §6
+> (information priority sorting) contain the executable core — required reading
+> before executing any work path that references this document.
+> §§4-5 contain the L1/L2 tier specifications — read when producing that tier.
+> §§7-10 contain workflow embedding, integration notes, special states, and
+> appendices — read on demand.
 
 
 ## 2. Three-Layer Output System Overview

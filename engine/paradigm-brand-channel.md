@@ -1,6 +1,6 @@
 # Defensive (P2) Paradigm: Brand Moat and Distribution Channel Analysis
 
-**Version**: v0.1.0 | **Paradigm Version**: v1.0.0 | **Date**: 2026-07-18 | **Status**: Initial international release
+**Version**: v0.1.1 | **Paradigm Version**: v1.0.0 | **Date**: 2026-07-18 | **Status**: Initial international release
 
 ---
 
@@ -33,7 +33,7 @@ An industry qualifies for the Defensive (P2) paradigm by meeting the following c
 
 ---
 
-> **Reading guide**: This is a full — application note, read as needed. It does not contain executable scoring
+> **Reading guide**: This is an application note — read as needed. It does not contain executable scoring
 > rules or thresholds — it is a reference document consulted for structure and
 > definitions, not read linearly before every analysis.
 

@@ -1,6 +1,6 @@
 # Validation Methodology
 
-**Version**: v0.1.0 | **Date**: 2026-07-10
+**Version**: v0.1.1 | **Date**: 2026-07-10
 **Source**: Fixed-Income Credit Analysis Skill Pack v0.0.10.3.0 . Black Swan Back-Testing Cases
 **Date**: 2026-07-08
 **Nature**: Structured Archive -- extracted and organized from existing skill packs and validation cases
@@ -26,12 +26,13 @@
 
 ---
 
-> **Reading guide**: §§1-4 contain the executable methodology — thresholds,
-> weights, scoring rules, and decision frameworks. These sections are required
-> reading before executing any work path that references this document.
-> §§5-6 contain worked examples, derivations, historical validation, and
-> extended discussion — read only when the analysis needs detailed justification
-> or the user asks for methodological background.
+> **Reading guide**: §§1-5 contain the executable methodology — the 6-step
+> backtest process, dual-timepoint protocol, forward-looking comparison, and
+> mosaic completeness in validation. These sections are required reading
+> before executing any work path that references this document.
+> §§6-7 contain completed case summaries and the framework improvement record —
+> read only when the analysis needs detailed justification or the user asks
+> for methodological background.
 
 
 ## 2. Black Swan Back-Testing Standard Process (6 Steps)

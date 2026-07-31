@@ -13,7 +13,11 @@ Do not use when: credit rating (→ WP-CS-01 first), portfolio-level view (→ W
 
 ## 2. Required Reading Order
 
-1. `${CLAUDE_PLUGIN_ROOT}/engine/advisor-origination-framework.md` — issuance window (three-dimension), investor matching (five-segment), comparable pricing (five-factor adjustment)
+**Must read (core rules):**
+1. `${CLAUDE_PLUGIN_ROOT}/engine/advisor-origination-framework.md` §§1-4 — issuance window (three-dimension), investor matching (five-segment), comparable pricing (five-factor adjustment)
+2. `${CLAUDE_PLUGIN_ROOT}/engine/advisor-origination-framework.md` §§5-6 — decision framework and quality gates; read when assembling the origination conclusion
+
+**Reference (read on demand):** none beyond the above.
 
 ## 3. Procedure
 

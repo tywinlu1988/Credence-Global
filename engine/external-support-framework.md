@@ -1,6 +1,6 @@
 # External Support Assessment Framework — Fixed Income Credit Analysis Engine
 
-**Version**: v0.1.0 | **Date**: 2026-07-17
+**Version**: v0.1.1 | **Date**: 2026-07-17
 **Position**: Rating Adjustment Layer (independent cross-cutting adjustment factor) · Track A Fundamental Analysis Supplement
 **Core Question**: When an issuer encounters distress, will the sovereign/parent/shareholder provide support? How much capacity do they have?
 
@@ -79,8 +79,8 @@ Input: Industry + Entity + Analysis Date
 > weights, scoring rules, and decision frameworks. These sections are required
 > reading before executing any work path that references this document.
 > §§4-6 contain support capacity assessment and uplift rules —
-> required reading for the LGD + support add-on paths — read only when the analysis needs detailed justification
-> or the user asks for methodological background.
+> required reading for the LGD + support add-on path (WP-CS-02).
+> §§7-10 contain trap signals, integration notes, and limitations — read on demand.
 
 
 ## 2. Four Types of External Support and Typical Scenarios
