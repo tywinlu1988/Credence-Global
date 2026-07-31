@@ -20,8 +20,7 @@ Do not use when: full credit analysis (→ WP-CS-01), portfolio dashboard (→ W
 
 **Reference (read on demand):**
 - `${CLAUDE_PLUGIN_ROOT}/engine/trader-framework.md` §§6-9 — execution tactics, divergence handling, quality gates, limitations
-- `${CLAUDE_PLUGIN_ROOT}/engine/output-layered-framework.md` §§4-5, §§7-10 — L1/L2 specs, workflow embedding, integration notes
-- `${CLAUDE_PLUGIN_ROOT}/engine/systemic-warning-framework.md` §§5-12 — backtests, worked example, sensitivity analysis
+- `${CLAUDE_PLUGIN_ROOT}/engine/output-layered-framework.md` §§4-5 — L1/L2 specs
 
 ## 3. Procedure
 

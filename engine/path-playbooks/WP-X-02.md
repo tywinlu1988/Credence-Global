@@ -20,8 +20,6 @@ Do not use when: a single-role answer suffices (→ the role's own path), portfo
 
 **Reference (read on demand):**
 - `${CLAUDE_PLUGIN_ROOT}/engine/multi-stakeholder.md` §5 + appendices — dashboard specs, role-to-metric mapping
-- `${CLAUDE_PLUGIN_ROOT}/engine/industry-framework.md` §6 — paradigm extended discussion
-- `${CLAUDE_PLUGIN_ROOT}/engine/mosaic-engine.md` §§7-8 — worked example, implementation priorities
 
 ## 3. Procedure
 

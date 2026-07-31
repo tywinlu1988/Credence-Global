@@ -17,7 +17,6 @@ Do not use when: single-issuer outlook (→ WP-X-05), portfolio concentration (�
 1. `${CLAUDE_PLUGIN_ROOT}/engine/systemic-warning-framework.md` §§1-4 — signal aggregation, four-level thermometer, industry weights, contagion coefficients (needed to interpret coded-engine output)
 
 **Reference (read on demand):**
-- `${CLAUDE_PLUGIN_ROOT}/engine/systemic-warning-framework.md` §§5-12 — historical backtests, worked example, threshold sensitivity, integration notes, limitations
 
 ## 3. Procedure (coded engine)
 

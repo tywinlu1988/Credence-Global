@@ -18,8 +18,7 @@ Do not use when: baseline concentration assessment (→ WP-RO-01 first), systemi
 2. `${CLAUDE_PLUGIN_ROOT}/engine/financial-deep-dive.md` §§A-D — core financial methodology; §E — scenario sensitivity matrix, stress effects on financial statements
 
 **Reference (read on demand):**
-- `${CLAUDE_PLUGIN_ROOT}/engine/concentration-framework.md` §§2-6, §§10-11 — dimension details, integration notes
-- `${CLAUDE_PLUGIN_ROOT}/engine/financial-deep-dive.md` §§F-G — worked examples and derivations
+- `${CLAUDE_PLUGIN_ROOT}/engine/concentration-framework.md` §§2-6 — dimension details
 
 ## 3. Procedure
 

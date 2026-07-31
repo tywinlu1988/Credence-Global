@@ -18,8 +18,7 @@ Do not use when: concentration level alone (→ WP-RO-01), single market-wide SR
 2. `${CLAUDE_PLUGIN_ROOT}/engine/contagion-theory.md` §§1-2 — contagion types and transmission pathways
 
 **Reference (read on demand):**
-- `${CLAUDE_PLUGIN_ROOT}/engine/contagion-matrix.md` §§3-6 — worked examples, derivations, historical validation
-- `${CLAUDE_PLUGIN_ROOT}/engine/contagion-theory.md` §§3-5 — extended discussion and cases
+- `${CLAUDE_PLUGIN_ROOT}/engine/contagion-matrix.md` §6 — stress escalation (gate-pinned)
 
 ## 3. Procedure (coded engine)
 

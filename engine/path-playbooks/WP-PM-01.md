@@ -20,8 +20,7 @@ Do not use when: issuer-level rating only (→ WP-CS-01), two-issuer comparison 
 
 **Reference (read on demand):**
 - `${CLAUDE_PLUGIN_ROOT}/engine/multi-stakeholder.md` §5 + appendices — dashboard specs, role-to-metric mapping
-- `${CLAUDE_PLUGIN_ROOT}/engine/dual-track-methodology.md` §§5-11 — examples and extended discussion
-- `${CLAUDE_PLUGIN_ROOT}/engine/mosaic-engine.md` §§7-8 — worked example, implementation priorities
+- `${CLAUDE_PLUGIN_ROOT}/engine/dual-track-methodology.md` §7 — EL integration
 
 ## 3. Procedure
 

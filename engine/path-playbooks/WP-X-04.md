@@ -19,7 +19,7 @@ Do not use when: full credit rating (→ WP-CS-01), industry framework building 
 
 **Reference (read on demand):**
 - `${CLAUDE_PLUGIN_ROOT}/engine/esg-framework.md` §1 — conceptual background (read on first encounter)
-- `${CLAUDE_PLUGIN_ROOT}/engine/governance-fraud-risk.md` §3, §§5-7 — case studies and extended discussion
+- `${CLAUDE_PLUGIN_ROOT}/engine/governance-fraud-risk.md` §7 — integration (veto linkage)
 
 ## 3. Procedure
 

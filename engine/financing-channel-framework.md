@@ -1,6 +1,6 @@
 # Financing Channel Comparison & Timing Framework
 
-**Version**: v0.2.0 | **Date**: 2026-07-29 | **Status**: Published
+**Version**: v0.3.0 | **Date**: 2026-07-29 | **Status**: Published
 
 **Module**: Fixed Income Credit Analysis Engine · Multi-Stakeholder Layer
 
@@ -170,5 +170,4 @@ The following quality gates are defined for WP-II-01:
 - [Engine Architecture Overview](engine-overview.md)
 - [Work Path Registry](work-path-registry.md) — WP-II-01 path definition
 - [Advisor Origination Framework](advisor-origination-framework.md) — issuance window assessment (feeds timing)
-- [Quantitative Analysis](quantitative-analysis.md) — §7.4 issuance rate changes
 - [Financial Deep Dive](financial-deep-dive.md) — capital structure analysis (feeds cost calculation)

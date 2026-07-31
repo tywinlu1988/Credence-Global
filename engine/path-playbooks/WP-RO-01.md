@@ -18,7 +18,7 @@ Do not use when: single-issuer rating (→ WP-CS-01), cross-industry transmissio
 
 **Reference (read on demand):**
 - `${CLAUDE_PLUGIN_ROOT}/engine/concentration-framework.md` §§2-6 — the five dimension methodologies; read the specific dimension section when explaining that dimension's score
-- `${CLAUDE_PLUGIN_ROOT}/engine/concentration-framework.md` §§9-11 + appendix — stress procedure, integration notes, limitations
+- `${CLAUDE_PLUGIN_ROOT}/engine/concentration-framework.md` §9 — stress procedure
 
 ## 3. Procedure (coded engine)
 

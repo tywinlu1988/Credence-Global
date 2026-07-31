@@ -19,8 +19,6 @@ Do not use when: the industry already maps to a registered paradigm and matrix i
 
 **Reference (read on demand):**
 - `${CLAUDE_PLUGIN_ROOT}/engine/dimension-registry.md` — paradigm/role pointer index (lookup table, consult as needed)
-- `${CLAUDE_PLUGIN_ROOT}/engine/industry-framework.md` §6 — paradigm extended discussion
-- `${CLAUDE_PLUGIN_ROOT}/engine/mosaic-engine.md` §§7-8 — worked example, implementation priorities
 
 ## 3. Procedure
 

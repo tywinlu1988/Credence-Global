@@ -17,7 +17,6 @@ Do not use when: current rating (→ WP-CS-01), market-wide SRI (→ WP-RO-03).
 1. `${CLAUDE_PLUGIN_ROOT}/engine/outlook-monitoring-framework.md` §§1-3 — trigger factors, scoring, watchlist, migration matrix (single source for all rule values)
 
 **Reference (read on demand):**
-- `${CLAUDE_PLUGIN_ROOT}/engine/outlook-monitoring-framework.md` §§4-5 — worked examples and historical validation
 
 ## 3. Procedure (coded engine)
 
