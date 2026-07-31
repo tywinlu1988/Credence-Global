@@ -171,3 +171,32 @@ def test_t2_7_active_quality_gates_traceable():
             assert rule in corpus, (
                 f"{p['id']}: quality-gate rule {rule!r} not found in engine_sequence docs"
             )
+
+
+PLAYBOOKS_DIR = ROOT / "dev" / "engine" / "path-playbooks"
+
+
+def test_t2_8_playbook_reading_order_is_layered():
+    """T2.8: every playbook's Required Reading Order separates must-read core
+    sections from on-demand reference material (v0.1.0 slimming, Part C).
+
+    Each playbook must exist on disk and its '## 2. Required Reading Order'
+    section must contain a '**Must read' block and a '**Reference' block, so the
+    LLM reads core rules first and treats examples/derivations as on-demand.
+    """
+    for p in PATHS:
+        pb = PLAYBOOKS_DIR / f"{p['id']}.md"
+        assert pb.exists(), f"{p['id']}: playbook missing on disk"
+        text = pb.read_text(encoding="utf-8")
+        m = re.search(
+            r"## 2\. Required Reading Order\n(.*?)(?=\n## )", text, re.DOTALL
+        )
+        assert m, f"{p['id']}: '## 2. Required Reading Order' section not found"
+        section = m.group(1)
+        assert "**Must read" in section, (
+            f"{p['id']}: reading order missing '**Must read' core block"
+        )
+        assert "**Reference" in section, (
+            f"{p['id']}: reading order missing '**Reference' on-demand block"
+        )
+

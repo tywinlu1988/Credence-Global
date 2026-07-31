@@ -13,8 +13,13 @@ Do not use when: full credit rating (→ WP-CS-01), industry framework building 
 
 ## 2. Required Reading Order
 
-1. `dev/engine/esg-framework.md` — ESG scoring dimensions, environmental/social/governance factors (§1), red-flag triggers
-2. `dev/engine/governance-fraud-risk.md` — financial fraud red flags (§1), earnings management and manipulation signals (§4)
+**Must read (core rules):**
+1. `dev/engine/esg-framework.md` §§2-5 — ESG scoring dimensions, risk assessment, mapping rules, red-flag triggers
+2. `dev/engine/governance-fraud-risk.md` §§1-2 — financial fraud red flags; §4 — earnings management and manipulation signals
+
+**Reference (read on demand):**
+- `dev/engine/esg-framework.md` §1 — conceptual background (read on first encounter)
+- `dev/engine/governance-fraud-risk.md` §3, §§5-7 — case studies and extended discussion
 
 ## 3. Procedure
 

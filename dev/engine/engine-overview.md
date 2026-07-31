@@ -44,7 +44,7 @@
 
 ---
 
-> **Reading guide**: This is a full — architecture reference, read as needed. It does not contain executable scoring
+> **Reading guide**: This is an architecture reference — read as needed. It does not contain executable scoring
 > rules or thresholds — it is a reference document consulted for structure and
 > definitions, not read linearly before every analysis.
 

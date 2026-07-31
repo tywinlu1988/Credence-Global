@@ -13,7 +13,12 @@ Do not use when: single-issuer rating (→ WP-CS-01), cross-industry transmissio
 
 ## 2. Required Reading Order
 
-1. `dev/engine/concentration-framework.md` — the entire definition of this path
+**Must read (core rules):**
+1. `dev/engine/concentration-framework.md` §1, §§7-8 — design overview, rating adjustment mapping, weighted composite score (needed to interpret coded-engine output)
+
+**Reference (read on demand):**
+- `dev/engine/concentration-framework.md` §§2-6 — the five dimension methodologies; read the specific dimension section when explaining that dimension's score
+- `dev/engine/concentration-framework.md` §§9-11 + appendix — stress procedure, integration notes, limitations
 
 ## 3. Procedure (coded engine)
 

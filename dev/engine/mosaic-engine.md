@@ -33,12 +33,14 @@ Skill Pack v0.0.1
 
 ---
 
-> **Reading guide**: §§1-4 contain the executable methodology — thresholds,
-> weights, scoring rules, and decision frameworks. These sections are required
-> reading before executing any work path that references this document.
-> §§5-7 contain worked examples, derivations, historical validation, and
-> extended discussion — read only when the analysis needs detailed justification
-> or the user asks for methodological background.
+> **Reading guide**: §§1-5 contain the executable methodology — signal
+> extraction, assembly, density rules, and the completeness assessment layer
+> (core differentiator). §6 (Mode B guardrail) is required for QA compliance.
+> These sections are required reading before executing any work path that
+> references this document.
+> §§7-8 contain a worked example and implementation priorities — read only
+> when the analysis needs detailed justification or the user asks for
+> methodological background.
 
 
 ## 2. Mode A: Mosaic Engine (Current Implementation) -- System Architecture

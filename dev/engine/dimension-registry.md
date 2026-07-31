@@ -7,7 +7,7 @@ This registry objectifies the engine's **analysis dimensions** into addressable,
 **Single Source of Truth Principle**: This registry is a **pointer layer** -- it only registers each dimension as an addressable entry (id + pointer to the defining document + applicable industries + which work paths consume it). It does **not copy** any definition text, thresholds, or weights. The judging criteria, pyramid weights, veto rules, etc., for each dimension are always ultimately governed by the corresponding section of the engine document referenced by `definition`. If any inconsistency arises between this registry and those engine documents, the engine documents prevail.
 
 
-> **Reading guide**: This is a full — lookup table, read as needed. It does not contain executable scoring
+> **Reading guide**: This is a lookup table — read as needed. It does not contain executable scoring
 > rules or thresholds — it is a reference document consulted for structure and
 > definitions, not read linearly before every analysis.
 

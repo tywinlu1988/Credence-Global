@@ -42,7 +42,7 @@ An industry is a candidate for the network and throughput lens by meeting the fo
 
 ---
 
-> **Reading guide**: This is a full — application note, read as needed. It does not contain executable scoring
+> **Reading guide**: This is an application note — read as needed. It does not contain executable scoring
 > rules or thresholds — it is a reference document consulted for structure and
 > definitions, not read linearly before every analysis.
 

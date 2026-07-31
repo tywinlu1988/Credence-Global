@@ -13,7 +13,11 @@ Do not use when: credit rating (→ WP-CS-01 first), underwriter-side originatio
 
 ## 2. Required Reading Order
 
-1. `dev/engine/financing-channel-framework.md` — three-channel framework, six-factor comparison, timing assessment, recommendation structure
+**Must read (core rules):**
+1. `dev/engine/financing-channel-framework.md` §§1-4 — three-channel framework, six-factor comparison, timing assessment
+2. `dev/engine/financing-channel-framework.md` §§5-6 — recommendation structure and quality gates; read when assembling the financing recommendation
+
+**Reference (read on demand):** none beyond the above.
 
 ## 3. Procedure
 

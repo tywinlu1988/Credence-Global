@@ -79,8 +79,8 @@ Input: Industry + Entity + Analysis Date
 > weights, scoring rules, and decision frameworks. These sections are required
 > reading before executing any work path that references this document.
 > §§4-6 contain support capacity assessment and uplift rules —
-> required reading for the LGD + support add-on paths — read only when the analysis needs detailed justification
-> or the user asks for methodological background.
+> required reading for the LGD + support add-on path (WP-CS-02).
+> §§7-10 contain trap signals, integration notes, and limitations — read on demand.
 
 
 ## 2. Four Types of External Support and Typical Scenarios

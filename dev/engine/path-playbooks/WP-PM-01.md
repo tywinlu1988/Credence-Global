@@ -13,9 +13,15 @@ Do not use when: issuer-level rating only (→ WP-CS-01), two-issuer comparison 
 
 ## 2. Required Reading Order
 
-1. `dev/engine/multi-stakeholder.md` — §2.2b Single-Instrument Dashboard (this path's definition) and §2.2 Portfolio Construction Assessment (distinct lens, do not conflate)
-2. `dev/engine/dual-track-methodology.md` — Track A/B foundations for relative value
-3. `dev/engine/mosaic-engine.md` — completeness and density rules
+**Must read (core rules):**
+1. `dev/engine/multi-stakeholder.md` §2.2b Single-Instrument Dashboard (this path's definition) and §2.2 Portfolio Construction Assessment (distinct lens, do not conflate)
+2. `dev/engine/dual-track-methodology.md` §§1-4 — Track A/B foundations for relative value
+3. `dev/engine/mosaic-engine.md` §§1-6 — completeness and density rules
+
+**Reference (read on demand):**
+- `dev/engine/multi-stakeholder.md` §5 + appendices — dashboard specs, role-to-metric mapping
+- `dev/engine/dual-track-methodology.md` §§5-11 — examples and extended discussion
+- `dev/engine/mosaic-engine.md` §§7-8 — worked example, implementation priorities
 
 ## 3. Procedure
 

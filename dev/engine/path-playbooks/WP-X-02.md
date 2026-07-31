@@ -13,9 +13,15 @@ Do not use when: a single-role answer suffices (→ the role's own path), portfo
 
 ## 2. Required Reading Order
 
-1. `dev/engine/multi-stakeholder.md` — role definitions (§1), role deep-dives (§2), cross-role matrix (§3), five-step parallel process (§4)
-2. `dev/engine/industry-framework.md` — per-role underlying analysis basis
-3. `dev/engine/mosaic-engine.md` — completeness and density rules
+**Must read (core rules):**
+1. `dev/engine/multi-stakeholder.md` §§1-4 — role definitions (§1), role deep-dives (§2), cross-role matrix (§3), five-step parallel process (§4)
+2. `dev/engine/industry-framework.md` §§1-5 — per-role underlying analysis basis
+3. `dev/engine/mosaic-engine.md` §§1-6 — completeness and density rules
+
+**Reference (read on demand):**
+- `dev/engine/multi-stakeholder.md` §5 + appendices — dashboard specs, role-to-metric mapping
+- `dev/engine/industry-framework.md` §6 — paradigm extended discussion
+- `dev/engine/mosaic-engine.md` §§7-8 — worked example, implementation priorities
 
 ## 3. Procedure
 

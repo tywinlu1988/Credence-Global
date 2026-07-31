@@ -20,12 +20,13 @@
 
 ---
 
-> **Reading guide**: §§1-2 contain the executable methodology — thresholds,
-> weights, scoring rules, and decision frameworks. These sections are required
-> reading before executing any work path that references this document.
-> §§3-9 contain dimension-level methodology and stress-test procedures —
-> reference the specific dimension section when executing that dimension — read only when the analysis needs detailed justification
-> or the user asks for methodological background.
+> **Reading guide**: §1 (design overview) and §§7-8 (rating adjustment mapping,
+> weighted composite score) contain the executable core — required reading
+> before executing any work path that references this document.
+> §§2-6 contain the five dimension methodologies — read the specific dimension
+> section when executing that dimension. §9 (stress test procedure) is required
+> for stress-test paths (WP-RO-04).
+> §§10-11 and the appendix contain integration notes and limitations — read on demand.
 
 
 ## 1. Design Overview

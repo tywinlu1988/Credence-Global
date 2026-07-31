@@ -13,9 +13,15 @@ Do not use when: portfolio-level questions (→ WP-RO-*), instrument-level inves
 
 ## 2. Required Reading Order
 
-1. `dev/engine/industry-framework.md` — paradigm determination, pyramid, veto
-2. `dev/engine/mosaic-engine.md` — signal extraction, completeness, density rules
-3. `dev/engine/dual-track-methodology.md` — Track A/B, cross-validation, rating mapping
+**Must read (core rules):**
+1. `dev/engine/industry-framework.md` §§1-5 — paradigm determination, pyramid, veto
+2. `dev/engine/mosaic-engine.md` §§1-6 — signal extraction, completeness, density rules, Mode B guardrail
+3. `dev/engine/dual-track-methodology.md` §§1-4, §6, §8 — Track A/B, cross-validation, rating mapping, decision rules
+
+**Reference (read on demand):**
+- `dev/engine/industry-framework.md` §6 — paradigm extended discussion
+- `dev/engine/mosaic-engine.md` §§7-8 — worked example, implementation priorities
+- `dev/engine/dual-track-methodology.md` §5, §7, §§9-11 — cash-flow positioning, EL integration, mitigation framework, worked examples; §7.5 is **required** when the issuer is unrated or thinly traded
 
 ## 3. Procedure
 

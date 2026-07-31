@@ -13,8 +13,13 @@ Do not use when: concentration level alone (→ WP-RO-01), single market-wide SR
 
 ## 2. Required Reading Order
 
-1. `dev/engine/contagion-matrix.md` — the 19x19 matrix, clusters, escalation rules (single source for all matrix values)
-2. `dev/engine/contagion-theory.md` — contagion types and transmission pathways
+**Must read (core rules):**
+1. `dev/engine/contagion-matrix.md` §§1-2 — the 19x19 matrix, clusters, escalation rules (single source for all matrix values)
+2. `dev/engine/contagion-theory.md` §§1-2 — contagion types and transmission pathways
+
+**Reference (read on demand):**
+- `dev/engine/contagion-matrix.md` §§3-6 — worked examples, derivations, historical validation
+- `dev/engine/contagion-theory.md` §§3-5 — extended discussion and cases
 
 ## 3. Procedure (coded engine)
 

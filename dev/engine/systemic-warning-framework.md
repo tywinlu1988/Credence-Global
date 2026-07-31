@@ -21,12 +21,14 @@
 
 ---
 
-> **Reading guide**: §§1-3 contain the executable methodology — thresholds,
-> weights, scoring rules, and decision frameworks. These sections are required
-> reading before executing any work path that references this document.
-> §§4-8 contain worked examples, derivations, historical validation, and
-> extended discussion — read only when the analysis needs detailed justification
-> or the user asks for methodological background.
+> **Reading guide**: §§1-4 contain the executable methodology — signal
+> aggregation, the four-level thermometer, industry weights, and contagion
+> coefficients. These sections are required reading before executing any work
+> path that references this document.
+> §§5-12 contain historical backtests, a current-period worked example,
+> threshold sensitivity analysis, integration notes, and limitations — read
+> only when the analysis needs detailed justification or the user asks for
+> methodological background.
 
 
 ## 1. Design Philosophy and Positioning

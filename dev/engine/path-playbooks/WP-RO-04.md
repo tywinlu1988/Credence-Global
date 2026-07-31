@@ -13,8 +13,13 @@ Do not use when: baseline concentration assessment (→ WP-RO-01 first), systemi
 
 ## 2. Required Reading Order
 
-1. `dev/engine/concentration-framework.md` — stress scenario definitions (§9), five-dimension thresholds as stress inputs
-2. `dev/engine/financial-deep-dive.md` — scenario sensitivity matrix (§E), stress effects on financial statements
+**Must read (core rules):**
+1. `dev/engine/concentration-framework.md` §9 — stress scenario definitions; §§7-8 — five-dimension thresholds as stress inputs
+2. `dev/engine/financial-deep-dive.md` §§A-D — core financial methodology; §E — scenario sensitivity matrix, stress effects on financial statements
+
+**Reference (read on demand):**
+- `dev/engine/concentration-framework.md` §§2-6, §§10-11 — dimension details, integration notes
+- `dev/engine/financial-deep-dive.md` §§F-G — worked examples and derivations
 
 ## 3. Procedure
 

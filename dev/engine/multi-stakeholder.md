@@ -45,12 +45,13 @@ Each role operates under a distinct set of constraints that shape its analytical
 
 ---
 
-> **Reading guide**: §§1-2 contain the executable methodology — thresholds,
-> weights, scoring rules, and decision frameworks. These sections are required
-> reading before executing any work path that references this document.
-> §§3-5 contain worked examples, derivations, historical validation, and
-> extended discussion — read only when the analysis needs detailed justification
-> or the user asks for methodological background.
+> **Reading guide**: §§1-2 contain the executable methodology — role overview
+> and role deep-dive frameworks. These sections are required reading before
+> executing any work path that references this document.
+> §§3-4 contain the cross-role matrix and the WP-X-02 parallel assessment
+> methodology — required reading for multi-role assessments.
+> §5 and the appendices contain dashboard specifications and role-to-metric
+> mappings — read on demand.
 
 
 ## 2. Role Deep-Dive Frameworks

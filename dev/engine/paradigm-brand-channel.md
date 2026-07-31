@@ -33,7 +33,7 @@ An industry qualifies for the Defensive (P2) paradigm by meeting the following c
 
 ---
 
-> **Reading guide**: This is a full — application note, read as needed. It does not contain executable scoring
+> **Reading guide**: This is an application note — read as needed. It does not contain executable scoring
 > rules or thresholds — it is a reference document consulted for structure and
 > definitions, not read linearly before every analysis.
 
