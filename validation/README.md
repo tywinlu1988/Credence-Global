@@ -51,6 +51,7 @@ Organized by "13 industries + system intelligence layer + validation special top
 ### `docs/` — Test Execution Records
 
 - `false-positive-negative-testing.md` — False positive/false negative testing methodology and multi-case actual test execution records
+- `path-walkthroughs.md` — End-to-end walkthrough matrix for all 16 active work paths (four-stage trace per path, evidence-class labeled)
 
 ---
 

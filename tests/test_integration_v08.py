@@ -41,14 +41,15 @@ CONTRACT = ROOT / "dev" / "engine" / "pipeline-contract.md"
 REGISTRY = ROOT / "dev" / "engine" / "work-path-registry.md"
 ENGINE_DIR = ROOT / "dev" / "engine"
 SKILLS_DIR = ROOT / "dev" / ".claude" / "skills"
-WALKTHROUGH = ROOT / "validation" / "docs" / "v0.0.1-to-end-walkthroughs.md"
+WALKTHROUGH = ROOT / "validation" / "docs" / "path-walkthroughs.md"
 
 CONSISTENCY_CHECK = ROOT / "scripts" / "consistency_check.py"
 BUILD_DIST = ROOT / "scripts" / "build_dist.py"
 
 ACTIVE_PATHS = [
-    "WP-CS-01", "WP-PM-01", "WP-RO-01", "WP-RO-02",
-    "WP-RO-03", "WP-X-01", "WP-X-02", "WP-X-03", "WP-X-05",
+    "WP-CS-01", "WP-CS-02", "WP-PM-01", "WP-PM-02", "WP-AD-01",
+    "WP-TR-01", "WP-RO-01", "WP-RO-02", "WP-RO-03", "WP-RO-04",
+    "WP-II-01", "WP-X-01", "WP-X-02", "WP-X-03", "WP-X-04", "WP-X-05",
 ]
 WIRED_PATHS = ["WP-RO-01", "WP-RO-02", "WP-RO-03", "WP-X-05"]
 UNWIRED_ACTIVE = [p for p in ACTIVE_PATHS if p not in WIRED_PATHS]
@@ -183,7 +184,7 @@ def _wired_inputs(path_id):
 
 
 # --------------------------------------------------------------------------
-# T11.1 — all 8 active paths produce a valid 4-stage plan (S1..S4)
+# T11.1 — all 16 active paths produce a valid 4-stage plan (S1..S4)
 # --------------------------------------------------------------------------
 
 def test_t11_1_all_active_paths_yield_valid_four_stage_plan(contract, registry_paths):
@@ -208,7 +209,7 @@ def test_t11_1_all_active_paths_yield_valid_four_stage_plan(contract, registry_p
 
 
 # --------------------------------------------------------------------------
-# T11.2 — 3 wired paths execute code; the other 5 are LLM-orchestrated
+# T11.2 — 4 wired paths execute code; the other 12 are LLM-orchestrated
 # --------------------------------------------------------------------------
 
 EXPECTED_OUTPUT_KEYS = {
@@ -234,7 +235,7 @@ def test_t11_2_wired_execute_code_others_llm_orchestrated(contract, registry_pat
         assert set(analysis["outputs"]) == EXPECTED_OUTPUT_KEYS[pid]
 
     # unwired: complete plan, analysis not executable, every stage llm-orchestrated
-    assert len(UNWIRED_ACTIVE) == 5
+    assert len(UNWIRED_ACTIVE) == 12
     for pid in UNWIRED_ACTIVE:
         assert pid not in EXECUTABLE_ENGINES
         plan = load_stage_plan(_sheet_for(pid, registry_paths), registry_paths, contract)
@@ -247,11 +248,10 @@ def test_t11_2_wired_execute_code_others_llm_orchestrated(contract, registry_pat
 
 
 # --------------------------------------------------------------------------
-# T11.3 — walkthrough record exists and literally names all 8 path ids
+# T11.3 — walkthrough record exists and literally names all 16 path ids
 # --------------------------------------------------------------------------
 
-@pytest.mark.skip(reason="walkthrough docs removed in v0.0.1 cleanup; to be re-created")
-def test_t11_3_walkthrough_covers_all_eight_paths():
+def test_t11_3_walkthrough_covers_all_active_paths():
     assert WALKTHROUGH.exists(), f"walkthrough missing: {WALKTHROUGH}"
     text = WALKTHROUGH.read_text(encoding="utf-8")
     for pid in ACTIVE_PATHS:
