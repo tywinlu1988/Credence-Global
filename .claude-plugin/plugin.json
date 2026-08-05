@@ -1,6 +1,6 @@
 {
   "name": "credence",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Credence Fixed-Income Credit Analysis Engine: industry multi-layer pyramids + dual-track cross-validation + mosaic engine + system-intelligence layer. Four-stage skills: intake router / analysis / report / qa.",
   "author": {
     "name": "tywinlu1988",

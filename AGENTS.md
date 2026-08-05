@@ -1,7 +1,7 @@
 # AGENTS.md — Credence Cross-CLI Universal Entry
 
 **Project**: Credence (Fixed-Income Credit Intelligent Analysis Engine)
-**Engine Version**: v0.3.1
+**Engine Version**: v0.3.2
 **Tagline**: Methodology-first credit analysis engine; portable unit is `SKILL.md`.
 
 > Any agent CLI starts here: read your instructions file first, then the `SKILL.md` for the current task.

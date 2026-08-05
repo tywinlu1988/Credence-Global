@@ -1,6 +1,6 @@
 # Trader Execution Framework
 
-**Version**: v0.3.1 | **Date**: 2026-07-31 | **Status**: Published
+**Version**: v0.3.2 | **Date**: 2026-07-31 | **Status**: Published
 
 **Module**: Fixed Income Credit Analysis Engine · Multi-Stakeholder Layer
 

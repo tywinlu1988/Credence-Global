@@ -1,4 +1,4 @@
-# INSTALL — Install Credence (v0.3.1)
+# INSTALL — Install Credence (v0.3.2)
 
 Credence is a self-contained agent package. **Key premise**: skills are not self-contained --
 they read `engine/` methodology documents and `templates/` report templates from the
@@ -12,7 +12,7 @@ directly in natural language; `credit-analysis-router` handles the four-question
 All references (`engine/`, `templates/`, `.claude/skills/`) resolve automatically.
 
 ```
-unzip credence-v0.3.1.zip        # or git clone <repo> credence
+unzip credence-v0.3.2.zip        # or git clone <repo> credence
 cd credence                   # use package root as project root
 # Claude Code: claude   .   Codex: codex   .   Others: open the folder
 ```

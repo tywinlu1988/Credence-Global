@@ -1,6 +1,6 @@
 # Four-Stage Pipeline I/O Contract (Pipeline Contract)
 
-**Version**: v0.3.1 | **Date**: 2026-07-18
+**Version**: v0.3.2 | **Date**: 2026-07-18
 
 This contract is the **single source of truth** for the v0.0.1 skill architecture four-stage pipeline (intake -> analysis -> report -> qa). It defines the structure of four artifacts passed between the four stages, as well as the chaining edges that drive stage transitions and re-runs. The four artifacts are carried by four skills respectively:
 
@@ -25,6 +25,8 @@ The four artifacts are linked by the **`path_id`** join key: `path_id` must be a
 ## 2. Artifact Schemas
 
 The following four schemas define the field shapes in yaml fence blocks (`path_id` left empty as template placeholder). Field semantics note their single-source-of-truth sections; schemas contain no numerical values.
+
+**YAML validity (hard requirement)**: every artifact file MUST parse as valid YAML. Quote any scalar value containing a colon, hash, or leading special character (e.g., `L1: "Snapshot (... YTM 3.33% ...)"`) — an unquoted `key: text with: colon` silently corrupts the artifact. Producing skills verify the file parses before handoff; the QA verifier rejects an unparseable artifact as `fail` (chain compliance).
 
 ### 2.1 S1->S2 Path Sheet
 
