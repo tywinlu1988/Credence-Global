@@ -1,6 +1,6 @@
 # Path Walkthroughs — 16/16 Active Paths
 
-**Date**: 2026-07-31 · **Engine Version**: v0.3.0
+**Date**: 2026-07-31 · **Engine Version**: v0.3.1
 **Nature**: Test execution record (validation evidence archive — not a project deliverable; never enters `version/` snapshots)
 
 ---

@@ -10,7 +10,7 @@ See `dev/engine/agent-protocol.md` §1 — engine/ and templates/ paths resolve 
 
 ## Purpose
 
-**Engine version**: v0.3.0
+**Engine version**: v0.3.1
 
 **Non-Negotiables (see AGENTS.md)**: **no delivery of analysis conclusions without a passing QA Verdict from this skill** (pure knowledge questions exempt) · no numbers without a `doc §section` citation (`engine_undefined` otherwise) · no report outside `dev/templates/`.
 

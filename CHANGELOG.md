@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-08-05
+
+### Added
+- **New-Issue Concession (NIP) factor** in advisor-origination §4.2 (+5 to +10bp,
+  combined with issuer-specific premium capped at +15bp) — the Schneider sandbox
+  E2E caught the analysis citing this market convention as engine_undefined.
+- **One Delivery Note per path_id** convention (pipeline-contract §2.3 +
+  report-builder step 7): multi-path engagements write per-path note files.
+- WP-TR-01 playbook: headless split note (SRI compute first, card second).
+
+### Fixed
+- pipeline-contract Delivery Note comment still said ">2 reports" (stale since
+  the >1 index threshold change).
+- Sandbox E2E (Schneider Electric, rated issuer, contrast to Andritz): all
+  v0.1.1/v0.3.0 machinery verified in production — report-index >1 rule, CSS
+  self-containment, relative paths, naming, placeholder-manifest fill, coded
+  SRI engine running from the plugin package. First timing baseline recorded
+  (WP-CS-01 full chain ~18.5 min). WP-TR-01 and WP-AD-01 evidence upgraded to
+  executed in the walkthrough matrix.
+
 ## [0.3.0] - 2026-07-31
 
 ### Changed
