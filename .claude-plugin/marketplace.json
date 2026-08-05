@@ -9,7 +9,7 @@
       "name": "credence",
       "source": "./",
       "description": "Methodology-first fixed-income credit analysis engine (four-stage skill chain: router / analysis / report / qa)",
-      "version": "0.3.0"
+      "version": "0.3.1"
     }
   ]
 }

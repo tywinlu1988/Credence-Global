@@ -1,6 +1,6 @@
 # Advisor Origination Assessment Framework
 
-**Version**: v0.3.0 | **Date**: 2026-07-29 | **Status**: Published
+**Version**: v0.3.1 | **Date**: 2026-07-29 | **Status**: Published
 
 **Module**: Fixed Income Credit Analysis Engine · Multi-Stakeholder Layer
 
@@ -152,6 +152,7 @@ Start from the median comparable spread at issuance, then adjust:
 | Size differential (>2x or <0.5x median comp size) | ±5-10bp | Liquidity premium for small issues; scarcity premium for large benchmarks |
 | Market condition drift (since comp pricing date) | ± current index OAS change | Re-price comps to current market |
 | Issuer-specific premium/discount | −10 to +15bp | Based on news-flow, recent deal performance, sector rotation |
+| New-issue concession (NIP) | +5 to +10bp | Benchmark issues price with a concession vs secondary fair value; 5bp in strong windows, up to 10bp when demand is Narrow or the window is Conditional. Apply within the issuer-specific premium envelope (the two are not additive beyond +15bp combined) |
 
 ### 4.3 Final Pricing Range
 

@@ -64,6 +64,12 @@ Do not fabricate an HTML template for the L0 signal card. Deliver as a structure
 
 ## 8. Drift Blacklist (forbidden)
 
+> **Headless / single-call note**: the full chain (19-industry SRI construction + coded
+> engine + card composition) is heavy for one non-interactive call. Split it: run the
+> SRI reading first (script via `src/sri_calculator.py`, persisted to a file), then
+> compose the card with the reading as a known input. (Learned from the 2026-08
+> sandbox E2E — two single-call attempts exceeded a 10-minute harness limit.)
+
 - Expanding the L0 signal card beyond its 5-second scope (no L1 radar charts, no L2 deep-dive panels); the execution posture is one line, not a trade plan.
 - Emitting more than 3 key signals on the L0 card (per priority scoring floor of >30).
 - Inventing execution thresholds, weights, or matrix rows not defined in `${CLAUDE_PLUGIN_ROOT}/engine/trader-framework.md`.

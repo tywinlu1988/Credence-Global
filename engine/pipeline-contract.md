@@ -1,6 +1,6 @@
 # Four-Stage Pipeline I/O Contract (Pipeline Contract)
 
-**Version**: v0.3.0 | **Date**: 2026-07-18
+**Version**: v0.3.1 | **Date**: 2026-07-18
 
 This contract is the **single source of truth** for the v0.0.1 skill architecture four-stage pipeline (intake -> analysis -> report -> qa). It defines the structure of four artifacts passed between the four stages, as well as the chaining edges that drive stage transitions and re-runs. The four artifacts are carried by four skills respectively:
 
@@ -75,11 +75,13 @@ mode_b_gaps: []             # External data gaps when Mode B is not activated (g
 
 Produced by credit-report-builder. Template selection is governed by the path's `templates` field in [work-path-registry.md](work-path-registry.md). L0/L1/L2 layered semantics are governed by [output-layered-framework.md](output-layered-framework.md) §2/§3/§5.
 
+**One Delivery Note per `path_id`**: the Delivery Note is a per-path artifact — `path_id` is the join key for QA review. In multi-path engagements, produce a separate Delivery Note file per path (e.g., `ad01-delivery-note.yaml`); never merge multiple paths into one note's `rendered` list. The cross-path `report-index.html` is the only shared artifact and appears in each path's note.
+
 ```yaml
 path_id: ""                 # join key (inherited from path sheet, must not change)
 depth: ""                   # L0|L1|L2|special (inherited from path sheet)
 templates_used: []          # Templates selected from the path's registry templates field (single source of truth)
-rendered: []                # Actually produced report files (from ${CLAUDE_PLUGIN_ROOT}/templates/); may include report-index.html when >2 reports
+rendered: []                # Actually produced report files (from ${CLAUDE_PLUGIN_ROOT}/templates/); includes report-index.html when >1 reports
 tier_mapping:               # Analysis artifact -> L0/L1/L2 tier (semantics per output-layered-framework §2/§3/§5)
   L0: ""
   L1: ""
