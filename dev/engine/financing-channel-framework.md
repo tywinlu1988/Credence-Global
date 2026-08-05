@@ -1,6 +1,6 @@
 # Financing Channel Comparison & Timing Framework
 
-**Version**: v0.3.1 | **Date**: 2026-07-29 | **Status**: Published
+**Version**: v0.3.2 | **Date**: 2026-07-29 | **Status**: Published
 
 **Module**: Fixed Income Credit Analysis Engine · Multi-Stakeholder Layer
 

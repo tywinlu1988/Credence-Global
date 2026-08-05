@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2026-08-05
+
+### Added
+- **YAML validity hard requirement** (pipeline-contract §2): every artifact must
+  parse as valid YAML — quote colon/hash-bearing scalars; producing skills
+  verify before handoff; QA chain compliance now fails unparseable artifacts.
+
+### Validation
+- **Full-path sweep**: all 8 remaining structural paths executed end-to-end in
+  the isolated sandbox (package v0.3.1): WP-CS-02, WP-PM-01, WP-PM-02, WP-RO-04,
+  WP-II-01, WP-X-02, WP-X-03, WP-X-04. The sweep surfaced the YAML-quoting
+  defect above (2/8 delivery notes unparseable). All 16 work paths are now
+  executed or coded-engine verified — zero structural remain in the walkthrough
+  matrix.
+
 ## [0.3.1] - 2026-08-05
 
 ### Added

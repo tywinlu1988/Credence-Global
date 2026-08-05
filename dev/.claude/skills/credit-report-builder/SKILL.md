@@ -10,7 +10,7 @@ See `dev/engine/agent-protocol.md` §1 — engine/ and templates/ paths resolve 
 
 ## Purpose
 
-**Engine version**: v0.3.1
+**Engine version**: v0.3.2
 
 **Non-Negotiables (see AGENTS.md)**: no report without a template from `dev/templates/` (never design ad-hoc HTML, dashboards, or layouts) · no numbers without a `doc §section` citation · no delivery without a QA Verdict.
 

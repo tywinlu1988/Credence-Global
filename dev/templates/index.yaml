@@ -33,7 +33,7 @@ templates:
     placeholders: []
   - type: 6
     file: dev/templates/template-type6.html
-    title: 'Mosaic Completeness Report · LONGi Green Energy · v0.3.1'
+    title: 'Mosaic Completeness Report · LONGi Green Energy · v0.3.2'
     used_by: [WP-CS-01]
     on_disk: true
     placeholders: []
