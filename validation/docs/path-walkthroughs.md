@@ -1,6 +1,6 @@
 # Path Walkthroughs — 16/16 Active Paths
 
-**Date**: 2026-07-31 · **Engine Version**: v0.3.1
+**Date**: 2026-07-31 · **Engine Version**: v0.3.2
 **Nature**: Test execution record (validation evidence archive — not a project deliverable; never enters `version/` snapshots)
 
 ---
@@ -27,20 +27,20 @@ exactly as registered in `dev/engine/work-path-registry.md` and contracted in
 | Path | Role | Depth | Templates | Evidence |
 |---|---|---|---|---|
 | WP-CS-01 | credit-selector | L2 | Type 1 + Type 6 | ✅ Executed (Siemens) |
-| WP-CS-02 | credit-selector | special | Type 8 + Type 9 | Structural |
-| WP-PM-01 | portfolio-manager | L2 | Type 5 | Structural |
-| WP-PM-02 | portfolio-manager | L2 | Type 2 | Structural |
+| WP-CS-02 | credit-selector | special | Type 8 + Type 9 | ✅ Executed (Schneider) |
+| WP-PM-01 | portfolio-manager | L2 | Type 5 | ✅ Executed (Schneider) |
+| WP-PM-02 | portfolio-manager | L2 | Type 2 | ✅ Executed (Schneider vs ABB) |
 | WP-AD-01 | advisor | special | Type 16 | ✅ Executed (Schneider) |
 | WP-TR-01 | trader | L0 | L0-spec (no HTML) | ✅ Executed (Schneider) |
 | WP-RO-01 | risk-officer | special | Type 14 | Coded-engine verified |
 | WP-RO-02 | risk-officer | special | Type 13 | Coded-engine verified |
 | WP-RO-03 | risk-officer | special | Type 15 | Coded-engine verified |
-| WP-RO-04 | risk-officer | special | Type 11 | Structural |
-| WP-II-01 | individual-investor | special | Type 17 | Structural |
+| WP-RO-04 | risk-officer | special | Type 11 | ✅ Executed (EUR portfolio) |
+| WP-II-01 | individual-investor | special | Type 17 | ✅ Executed (Schneider) |
 | WP-X-01 | meta | special | Type 3 | ✅ Executed (Yongmei/Ziguang cases) |
-| WP-X-02 | meta | L2 | Type 4 | Structural |
-| WP-X-03 | meta | special | Type 7 | Structural |
-| WP-X-04 | meta | special | Type 10 | Structural |
+| WP-X-02 | meta | L2 | Type 4 | ✅ Executed (Schneider) |
+| WP-X-03 | meta | special | Type 7 | ✅ Executed (green hydrogen) |
+| WP-X-04 | meta | special | Type 10 | ✅ Executed (Schneider) |
 | WP-X-05 | meta | special | Type 18 | Coded-engine verified |
 
 ---
@@ -78,7 +78,7 @@ external support change the picture?"
 - **③ Report** — `template-type8.html` (LGD) + `template-type9.html` (support) + report index.
 - **④ QA** — LGD tier and support adjustment must cite framework sections; uplift may not
   exceed the §6 rules.
-- **Evidence**: Structural (four-stage plan machine-verified).
+- **Evidence**: ✅ **Executed** — 2026-08 sandbox run (maintainer-local record).
 
 ## 3. WP-PM-01 — Portfolio Manager Investment Dashboard (portfolio-manager · L2)
 
@@ -91,7 +91,7 @@ external support change the picture?"
   Portfolio Construction); dual-track foundations for relative value; mosaic density rules.
 - **③ Report** — `template-type5.html` dashboard at L2.
 - **④ QA** — Four-dimension weights from §2.2b only; relative-value claims need citations.
-- **Evidence**: Structural.
+- **Evidence**: ✅ **Executed** — 2026-08 sandbox run (maintainer-local record).
 
 ## 4. WP-PM-02 — PM Comparative Analysis (portfolio-manager · L2)
 
@@ -105,7 +105,7 @@ external support change the picture?"
 - **③ Report** — `template-type2.html` comparison report at L2.
 - **④ QA** — Differentiation conclusion must precede any default event (forward-looking);
   both issuers' ratings from the §6 mapping.
-- **Evidence**: Structural.
+- **Evidence**: ✅ **Executed** — 2026-08 sandbox run (maintainer-local record).
 
 ## 5. WP-AD-01 — Advisor Origination Assessment (advisor · special)
 
@@ -199,7 +199,7 @@ can I act on it?"
   (stress effects on the three statements).
 - **③ Report** — `template-type11.html` stress report: scenario losses, threshold-jump results.
 - **④ QA** — Scenario definitions from §9 only; sensitivity from §E; no invented shocks.
-- **Evidence**: Structural.
+- **Evidence**: ✅ **Executed** — 2026-08 sandbox run (maintainer-local record).
 
 ## 11. WP-II-01 — Individual Investor Decision Support (individual-investor · special)
 
@@ -214,7 +214,7 @@ a warning sign for my holding?"
   recommendation in plain language.
 - **④ QA** — Recommendation must trace to the six-factor/five-factor rules; suitability
   framing, no return promises.
-- **Evidence**: Structural.
+- **Evidence**: ✅ **Executed** — 2026-08 sandbox run (maintainer-local record).
 
 ## 12. WP-X-01 — Black Swan Backtest Validation (meta · special)
 
@@ -243,7 +243,7 @@ a warning sign for my holding?"
 - **③ Report** — `template-type4.html` multi-role score matrix + consensus/divergence report.
 - **④ QA** — Divergences resolved per §3.2 rules (e.g., Trader negative vs CS/PM positive
   → delay 5 trading days); no role may invent dimensions.
-- **Evidence**: Structural.
+- **Evidence**: ✅ **Executed** — 2026-08 sandbox run (maintainer-local record).
 
 ## 14. WP-X-03 — Industry Framework Builder (meta · special)
 
@@ -257,7 +257,7 @@ a warning sign for my holding?"
 - **③ Report** — `template-type7.html` industry framework document (pyramid + D1-D10 scores).
 - **④ QA** — New framework must reuse P1-P6 paradigms and D1-D10 vocabulary — no invented
   dimensions (Non-Negotiable #5).
-- **Evidence**: Structural.
+- **Evidence**: ✅ **Executed** — 2026-08 sandbox run (maintainer-local record).
 
 ## 15. WP-X-04 — ESG/Governance Risk Scan (meta · special)
 
@@ -271,7 +271,7 @@ a warning sign for my holding?"
 - **③ Report** — `template-type10.html` ESG risk scan + governance red-flag list.
 - **④ QA** — Red flags from the checklists only; ESG scores per §2-5 mapping; fraud
   signals feed the veto check where applicable.
-- **Evidence**: Structural.
+- **Evidence**: ✅ **Executed** — 2026-08 sandbox run (maintainer-local record).
 
 ## 16. WP-X-05 — Outlook & Continuous Monitoring (meta · special)
 

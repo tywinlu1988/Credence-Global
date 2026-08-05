@@ -51,7 +51,7 @@ Any failure results in `fail`:
 - **template_compliance**: Every rendered report file maps to a template in the path's registry `templates` field (or a declared marker) — no ad-hoc layouts. Manifest: `dev/templates/index.yaml`.
 - **citation_compliance**: Every numeric claim (threshold, weight, score, tier, rating) carries a `doc §section` citation or is marked `engine_undefined`.
 - **dimension_compliance**: All analysis dimensions/metrics use engine vocabulary only (industry-framework D1-D10 + paradigm pyramids; concentration-framework five dimensions; contagion-matrix 19 industries; P1-P6 paradigms) — no invented dimensions, industries, or paradigms.
-- **chain_compliance**: A Path Sheet exists for the `path_id`, and this QA Verdict is produced before delivery — analysis never ships without it.
+- **chain_compliance**: A Path Sheet exists for the `path_id`, and this QA Verdict is produced before delivery — analysis never ships without it. All artifact files must parse as valid YAML (quote colon-bearing scalars) — an unparseable artifact is a `fail`.
 - **index_compliance**: When a Delivery Note's `rendered` list (excluding `report-index.html` itself) contains more than 1 report file, `report-index.html` must be present and must link to each report with a relative path.
 - **css_self_contained**: Every rendered HTML file must have `template-base.css` inlined — no external `<link>` tags in delivered reports. Verify inline CSS is present in each `.html` file.
 - **relative_paths**: All file paths in `rendered` and `source_analysis` must be relative paths — no absolute paths.
