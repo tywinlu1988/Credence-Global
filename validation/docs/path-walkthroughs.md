@@ -30,8 +30,8 @@ exactly as registered in `dev/engine/work-path-registry.md` and contracted in
 | WP-CS-02 | credit-selector | special | Type 8 + Type 9 | Structural |
 | WP-PM-01 | portfolio-manager | L2 | Type 5 | Structural |
 | WP-PM-02 | portfolio-manager | L2 | Type 2 | Structural |
-| WP-AD-01 | advisor | special | Type 16 | Structural |
-| WP-TR-01 | trader | L0 | L0-spec (no HTML) | Structural |
+| WP-AD-01 | advisor | special | Type 16 | ✅ Executed (Schneider) |
+| WP-TR-01 | trader | L0 | L0-spec (no HTML) | ✅ Executed (Schneider) |
 | WP-RO-01 | risk-officer | special | Type 14 | Coded-engine verified |
 | WP-RO-02 | risk-officer | special | Type 13 | Coded-engine verified |
 | WP-RO-03 | risk-officer | special | Type 15 | Coded-engine verified |
@@ -61,9 +61,9 @@ exactly as registered in `dev/engine/work-path-registry.md` and contracted in
   Mode B, single source) → QA Verdict.
 - **Evidence**: ✅ **Executed** — Siemens AG full walkthrough
   (`validation/reports/industrial/siemens-walkthrough.md` + 3 rendered reports + index).
-  A second executed run (Andritz AG, unrated issuer, §7.7 proxy-signal methodology) is
-  retained in the maintainer's local isolated-sandbox record (not shipped, per this
-  archive's local-evidence convention).
+  Two further executed runs (Andritz AG unrated, 2026-07; Schneider Electric SE rated,
+  2026-08 — timed baseline 1,107s) are retained in the maintainer's local
+  isolated-sandbox records (not shipped, per this archive's local-evidence convention).
 
 ## 2. WP-CS-02 — Credit Selector Add-On: LGD + External Support (credit-selector · special)
 
@@ -121,7 +121,9 @@ external support change the picture?"
 - **③ Report** — `template-type16.html` origination report; Go / Conditional / No-Go
   conclusion with sensitivity table (§5).
 - **④ QA** — Window grade, demand tier, and pricing range must trace to §§2-4 rules.
-- **Evidence**: Structural.
+- **Evidence**: ✅ **Executed** — Schneider Electric SE origination assessment
+  (2026-08 sandbox: Conditional call, Type 16 rendered, QA pass-with-findings);
+  maintainer-local sandbox record.
 
 ## 6. WP-TR-01 — Trader Market Watch Signal Card (trader · L0)
 
@@ -140,7 +142,9 @@ can I act on it?"
   one-line execution posture. **No HTML template by design.**
 - **④ QA** — Card within 5-second scope; SRI reading from the WP-RO-03 coded run, never
   fabricated; posture is one line.
-- **Evidence**: Structural.
+- **Evidence**: ✅ **Executed** — Schneider Electric SE L0 card (2026-08 sandbox:
+  coded SRI 0.23 Normal from the plugin package, Hold posture, data-gap rule honored);
+  maintainer-local sandbox record.
 
 ## 7. WP-RO-01 — Risk Officer Concentration Assessment (risk-officer · special)
 

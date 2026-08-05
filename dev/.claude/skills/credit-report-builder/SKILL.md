@@ -37,7 +37,7 @@ Assembly layer — **this skill does not perform analysis**. Responsibility is t
    - Be self-contained (template-base.css inlined, same as reports — see step 4)
    - List every report file from `rendered` with: its file name, a relative-path link (e.g., `./andritz-ag-type01.html`), and a one-sentence description/summary of that report's content
    - Append `report-index.html` to the `rendered` list (NOT to `templates_used` — `templates_used` is reserved for per-path registry templates); use a relative path for portability
-7. **Output Delivery Note**: Produce the Delivery Note per the schema below. All paths in `rendered` and `source_analysis` MUST be relative paths (no absolute paths) — the Delivery Note travels with the report files.
+7. **Output Delivery Note**: Produce the Delivery Note per the schema below. **One Delivery Note per `path_id`** — in multi-path engagements, write a separate note file per path (e.g., `ad01-delivery-note.yaml`); never merge paths into one note (pipeline-contract §2.3). All paths in `rendered` and `source_analysis` MUST be relative paths (no absolute paths) — the Delivery Note travels with the report files.
 
 ## Delivery Note Output
 
